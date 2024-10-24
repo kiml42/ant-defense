@@ -4,16 +4,15 @@ public class AntMoveController : MonoBehaviour
 {
     public float TorqueMultiplier = 10;
     public float ForceMultiplier = 0.1f;
-    public float RandomTorqueWeighting = 100;
-    public float ReturnTorqueWeighting = 0.1f;
+    private ITargetPositionProvider _positionProvider;
 
     private Rigidbody _rigidbody;
 
-    private Vector3 _targetPosition = new Vector3(10, 0, 20);
 
     void Start()
     {
         _rigidbody = GetComponent<Rigidbody>();
+        _positionProvider = GetComponent<ITargetPositionProvider>();
     }
 
     void FixedUpdate()
@@ -24,7 +23,7 @@ public class AntMoveController : MonoBehaviour
 
     private void Turn()
     {
-        var direction = _targetPosition - _rigidbody.position;
+        var direction = _positionProvider.TargetPosition - _rigidbody.position;
         var targetRotation = Quaternion.LookRotation(direction, Vector3.up);
         Debug.DrawRay(transform.position, direction, Color.magenta);
         Debug.DrawRay(transform.position, transform.forward * 15, Color.blue);
