@@ -4,6 +4,7 @@ public class AntTrailController : MonoBehaviour
 {
     private static GameObject _defaultTrailParent;
     public GameObject TrailParent;
+    public Smell TrailType = Smell.Home;
 
     public Transform TrailPoint;
     public float TrailPointDistance = 1;
@@ -33,6 +34,7 @@ public class AntTrailController : MonoBehaviour
         if (TrailPoint != null && (!_lastTrailPointLocation.HasValue || (_lastTrailPointLocation.Value - this.transform.position).magnitude > TrailPointDistance))
         {
             var newPoint = Instantiate(TrailPoint, this.transform.position, Quaternion.identity, TrailParent.transform);
+            newPoint.GetComponent<TrailPointController>().Smell = TrailType;
             _lastTrailPointLocation = this.transform.position;
         }
     }
