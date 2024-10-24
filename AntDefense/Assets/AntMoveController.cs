@@ -24,9 +24,8 @@ public class AntMoveController : MonoBehaviour
     private void Turn()
     {
         var direction = _positionProvider.TargetPosition - _rigidbody.position;
-        var targetRotation = Quaternion.LookRotation(direction, Vector3.up);
         Debug.DrawRay(transform.position, direction, Color.magenta);
-        Debug.DrawRay(transform.position, transform.forward * 15, Color.blue);
+        //Debug.DrawRay(transform.position, transform.forward * 15, Color.blue);
 
         var headingError = Vector3.Cross(transform.forward, direction);
 
