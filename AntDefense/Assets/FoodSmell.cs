@@ -1,20 +1,8 @@
 using UnityEngine;
 
-public class Food : MonoBehaviour, ISmellable
+public class FoodSmell : MonoBehaviour, ISmellable
 {
     public Smell Smell => Smell.Food;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public override string ToString()
     {

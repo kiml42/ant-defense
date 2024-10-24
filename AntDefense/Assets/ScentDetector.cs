@@ -5,9 +5,19 @@ public class ScentDetector : MonoBehaviour
     public Smell SeekingSmell = Smell.Food;
     private ISmellable currentSmell;
 
-    void OnTriggerEnter(Collider col)
+    void OnTriggerEnter(Collider collider)
     {
-        if(col.gameObject.TryGetComponent<ISmellable>(out var smellable))
+        ProcessSmell(collider.gameObject);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        ProcessSmell(collision.gameObject);
+    }
+
+    private void ProcessSmell(GameObject @object)
+    {
+        if (@object.TryGetComponent<ISmellable>(out var smellable))
         {
             if (smellable.Smell == SeekingSmell)
             {
