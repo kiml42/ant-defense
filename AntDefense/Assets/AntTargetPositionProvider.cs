@@ -9,19 +9,15 @@ public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
     /// Target position relative to this ant
     /// </summary>
     private Vector3 _targetPosition = new Vector3(10, 0, 20);
-    private Rigidbody _rigidbody;
 
     public Vector3 TargetPosition => TargetObject?.position ?? transform.position + _targetPosition;
 
     public Transform TargetObject { get; set; }
 
-    // Start is called before the first frame update
     void Start()
     {
-        _rigidbody = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         if(TargetObject == null)
