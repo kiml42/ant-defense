@@ -2,8 +2,10 @@ using UnityEngine;
 
 public class ScentDetector : MonoBehaviour
 {
-    public Smell SeekingSmell = Smell.Food;
+    public Smell SeekingSmell => AntStateMachine.SeekingSmell;
     private ISmellable currentSmell;
+
+    public AntStateMachine AntStateMachine;
 
     void OnTriggerEnter(Collider collider)
     {
@@ -22,7 +24,7 @@ public class ScentDetector : MonoBehaviour
             if (smellable.Smell == SeekingSmell)
             {
                 currentSmell = smellable;
-                print(currentSmell);
+                AntStateMachine.ProcessSmell(smellable);
             }
         }
     }

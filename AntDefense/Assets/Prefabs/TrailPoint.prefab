@@ -129,6 +129,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e86924570fb3c5346bfe026596dfdf58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _trailSmell: 1
+  Material: {fileID: 5091190672173903247}
 --- !u!135 &2858440292616079122
 SphereCollider:
   m_ObjectHideFlags: 0

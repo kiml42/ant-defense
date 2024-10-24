@@ -114,6 +114,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8542657810488951160}
+  - component: {fileID: 9190200353074072473}
   - component: {fileID: -3196181228672205010}
   - component: {fileID: 6078784432672750216}
   - component: {fileID: 1089436927646635733}
@@ -144,6 +145,19 @@ Transform:
   - {fileID: 8606164866640813380}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9190200353074072473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180791391076224223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63f7aae77b641f04a87fd0f5d14fa0f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  State: 0
 --- !u!114 &-3196181228672205010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,7 +199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TrailParent: {fileID: 0}
-  TrailType: 1
+  AntStateMachine: {fileID: 9190200353074072473}
   TrailPoint: {fileID: 4304061794554422484, guid: 1eb302f6bf4fbbf498a0c8b0ba6e0f99, type: 3}
   TrailPointDistance: 0.3
 --- !u!54 &1150062627286218138
@@ -401,7 +415,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f25b8662b97df66469820cf9fff07270, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SeekingSmell: 0
+  AntStateMachine: {fileID: 9190200353074072473}
 --- !u!33 &8395559401249154884
 MeshFilter:
   m_ObjectHideFlags: 0
