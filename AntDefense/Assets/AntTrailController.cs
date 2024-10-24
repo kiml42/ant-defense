@@ -35,6 +35,7 @@ public class AntTrailController : MonoBehaviour
         {
             var newPoint = Instantiate(TrailPoint, this.transform.position, Quaternion.identity, TrailParent.transform);
             newPoint.GetComponent<TrailPointController>().Smell = TrailType;
+            print(newPoint.GetComponent<TrailPointController>().Smell);
             _lastTrailPointLocation = this.transform.position;
         }
     }
