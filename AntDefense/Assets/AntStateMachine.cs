@@ -1,8 +1,10 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
 {
+    // TODO stop ants getting stuck at the end of a trail if teh food has since gone
+    // TODO make ants look for their own trail after finding food
+    // 
     public float RemainingTime = 120;
     private Smellable _currentTarget;
 
