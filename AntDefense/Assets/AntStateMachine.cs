@@ -3,14 +3,15 @@ using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
 {
+    public float RemainingTime = 120;
     private Smellable _currentTarget;
 
-    public AntState State { get; private set; } = AntState.SeekingFood;
+    public AntState State = AntState.SeekingFood;
     public Smellable CurrentTarget
     {
         get
         {
-            if(_currentTarget != null && _currentTarget.IsDestroyed())
+            if(_currentTarget == null || _currentTarget.gameObject == null || _currentTarget.transform == null)
             {
                 _currentTarget = null;
             }
@@ -36,9 +37,17 @@ public class AntStateMachine : MonoBehaviour
         }
     }
 
+    private void FixedUpdate()
+    {
+        RemainingTime -= Time.deltaTime;
+        if (RemainingTime <= 0 || transform.position.y < -10)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
-        // TODO this needs to be done by the object that has the collider, so that it can detect teh collisions.
         var @object = collision.gameObject;
         if(@object.TryGetComponent<Smellable>(out var smellable))
         {
@@ -131,13 +140,17 @@ public class AntStateMachine : MonoBehaviour
                     case AntState.SeekingFood:
                         Debug.Log("(collision) Found food " + smellable);
                         State = AntState.ReportingFood;
+                        ClearTarget();
                         return;
                      case AntState.ReturningToFood:
                         Debug.Log("(collision) Has hit actual food " + smellable);
-                        State = AntState.CarryingFood;
-                        //TODO actually pick up the food!!!!!!
+                        State = AntState.ReportingFood; // Temporary tuntil they can pick up the food.
+                        ClearTarget();
                         return;
-                        // otherwise, is trying to get home, so doesn't care about food.
+
+                        //TODO actually pick up the food!!!!!!
+                        State = AntState.CarryingFood;
+                        return;
                 }
                 return;
             case Smell.Home:
@@ -147,8 +160,8 @@ public class AntStateMachine : MonoBehaviour
                     case AntState.CarryingFood:
                         Debug.Log("(collision) Returned home " + smellable);
                         State = AntState.ReturningToFood;
+                        ClearTarget();
                         return;
-                        // otherwise doesn't care about home because it's seeking food.
                 }
                 return;
         }

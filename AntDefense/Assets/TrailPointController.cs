@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class TrailPointController : Smellable
 {
-    public float RemainingTime;
+    public float RemainingTime = 30;
     public MeshRenderer Material;
 
     private Smell _trailSmell;
@@ -24,6 +24,10 @@ public class TrailPointController : Smellable
         {
             Destroy(this.gameObject);
         }
+        if(RemainingTime < 2)
+        {
+            this.transform.localScale = Vector3.one * RemainingTime / 2;
+        }
     }
 
     public override string ToString()
@@ -38,12 +42,13 @@ public class TrailPointController : Smellable
 
         if(Material != null)
         {
+            var a = Material.material.color.a;
             switch (_trailSmell)
             {
                 case Smell.Home:
-                    Material.material.color = Color.white; break;
+                    Material.material.color = new Color(Color.white.r, Color.white.g, Color.white.b, a); break;
                 case Smell.Food:
-                    Material.material.color = Color.red; break;
+                    Material.material.color = new Color(Color.red.r, Color.red.g, Color.red.b, a); break;
             }
         }
     }
