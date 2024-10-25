@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3562446625101866731}
   - component: {fileID: 2751621473447891186}
   - component: {fileID: 7331697325458553305}
-  - component: {fileID: -7418136930265993339}
   m_Layer: 0
   m_Name: Berry
   m_TagString: Untagged
@@ -75,19 +74,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2295d608de08f5c44b21df5d8c557d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-7418136930265993339
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2451422094013383525}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e86924570fb3c5346bfe026596dfdf58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TrailSmell: 0
 --- !u!1 &6652936135346501748
 GameObject:
   m_ObjectHideFlags: 0

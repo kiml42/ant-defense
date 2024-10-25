@@ -36,6 +36,7 @@ public class AntTrailController : MonoBehaviour
             _lastTrailPointLocation = null;
             _totalDistance = 0;
         }
+
         LeaveTrail();
     }
 

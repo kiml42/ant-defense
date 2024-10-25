@@ -1,9 +1,22 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
 {
+    private Smellable _currentTarget;
+
     public AntState State { get; private set; } = AntState.SeekingFood;
-    public Smellable CurrentTarget { get; private set; }
+    public Smellable CurrentTarget
+    {
+        get
+        {
+            if(_currentTarget != null && _currentTarget.IsDestroyed())
+            {
+                _currentTarget = null;
+            }
+            return _currentTarget;
+        }
+    }
 
     public Smell TrailSmell
     {
@@ -91,14 +104,20 @@ public class AntStateMachine : MonoBehaviour
 
     private void ClearTarget()
     {
-        CurrentTarget = null;
+        _currentTarget = null;
     }
 
     private void UpdateTarget(Smellable smellable)
     {
-        if(CurrentTarget == null || smellable.Distance < CurrentTarget.Distance)
+        if (CurrentTarget?.IsActual == true)
         {
-            CurrentTarget = smellable;
+            // Always stick with an actual smell
+            return;
+        }
+
+        if (CurrentTarget == null || smellable.IsActual || smellable.Distance < CurrentTarget.Distance)
+        {
+            _currentTarget = smellable;
         }
     }
 
