@@ -12,10 +12,13 @@ public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
 
     public Vector3 TargetPosition => TargetObject?.position ?? transform.position + _targetPosition;
 
-    public Transform TargetObject { get; set; }
+    public Transform TargetObject => AntStateMachine.CurrentTarget?.transform;
+
+    private AntStateMachine AntStateMachine;
 
     void Start()
     {
+        AntStateMachine = GetComponentInChildren<AntStateMachine>();
     }
 
     void FixedUpdate()
@@ -35,6 +38,6 @@ public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
 
 public interface ITargetPositionProvider
 {
-    Transform TargetObject { get; set; }
+    Transform TargetObject { get; }
     Vector3 TargetPosition { get; }
 }

@@ -1,10 +1,15 @@
-using System;
 using UnityEngine;
 
-public class TrailPointController : MonoBehaviour, ISmellable
+public class TrailPointController : Smellable
 {
     public Smell _trailSmell = Smell.Home;
-    public Smell Smell => _trailSmell;
+    private float _distance;
+
+    public Transform Transform => this.transform;
+
+    public override Smell Smell => _trailSmell;
+
+    public override float Distance => _distance;
 
     public MeshRenderer Material;
 
@@ -13,9 +18,11 @@ public class TrailPointController : MonoBehaviour, ISmellable
         return "TrailPoint " + Smell;
     }
 
-    internal void SetSmell(Smell trailSmell)
+    internal void SetSmell(Smell trailSmell, float distance)
     {
         _trailSmell = trailSmell;
+        _distance = distance;
+
         if(Material != null)
         {
             switch (_trailSmell)

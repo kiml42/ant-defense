@@ -1,8 +1,10 @@
 using UnityEngine;
 
-public class HomeSmell : MonoBehaviour, ISmellable
+public class HomeSmell : Smellable
 {
-    public Smell Smell => Smell.Home;
+    public override Smell Smell => Smell.Home;
+
+    public override float Distance => 0;
 
     public override string ToString()
     {

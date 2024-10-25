@@ -2,25 +2,8 @@ using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
 {
-    public AntState State = AntState.SeekingFood;
-
-    public Smell SeekingSmell
-    {
-        get
-        {
-            switch (State)
-            {
-                case AntState.SeekingFood:
-                case AntState.ReturningToFood:
-                    return Smell.Food;
-                case AntState.ReportingFood:
-                case AntState.CarryingFood:
-                    return Smell.Home;
-                default:
-                    throw new System.Exception("Unknown state " + State);
-            }
-        }
-    }
+    public AntState State { get; private set; } = AntState.SeekingFood;
+    public Smellable CurrentTarget { get; private set; }
 
     public Smell TrailSmell
     {
@@ -44,13 +27,13 @@ public class AntStateMachine : MonoBehaviour
     {
         // TODO this needs to be done by the object that has the collider, so that it can detect teh collisions.
         var @object = collision.gameObject;
-        if(@object.TryGetComponent<ISmellable>(out var smellable) && smellable.Smell == SeekingSmell)
+        if(@object.TryGetComponent<Smellable>(out var smellable))
         {
             ProcessCollision(smellable);
         }
     }
 
-    public void ProcessSmell(ISmellable smellable)
+    public void ProcessSmell(Smellable smellable)
     {
         switch (smellable.Smell)
         {
@@ -58,28 +41,68 @@ public class AntStateMachine : MonoBehaviour
                 switch (State)
                 {
                     case AntState.SeekingFood:
-                        State = AntState.ReportingFood;
-                        Debug.Log("(Smelled) food: " + smellable + ". Now seeking " + SeekingSmell + ". Now leaving trail " + TrailSmell);
+
+                        if (smellable.Distance == 0)
+                        {
+                            // Has smelled the actual food, so go back and report it
+                            State = AntState.ReportingFood;
+                            ClearTarget();
+                        }
+                        else
+                        {
+                            // has smelled a food trail, so go and get some food!
+                            State = AntState.ReturningToFood;
+                            ClearTarget();
+                            UpdateTarget(smellable);
+                        }
+
+                        Debug.Log("(Smelled) food: " + smellable + ". Now leaving trail " + TrailSmell);
                         return;
+                    case AntState.ReturningToFood:
+                        UpdateTarget(smellable);
                         // in the Returning to food state, maintain the state until the food is actually collided with.
-                        // otherwise, is trying to get home, so doesn't care about food.
+                        return;
                 }
                 return;
             case Smell.Home:
                 switch (State)
                 {
                     case AntState.ReportingFood:
-                    case AntState.CarryingFood:
-                        Debug.Log("(Smelled) home " + smellable);
-                        State = AntState.ReturningToFood;
+                        if(smellable.Distance == 0)
+                        {
+                            // Has smelled the actual home, so the trail it's currently leaving is close enough
+                            State = AntState.ReturningToFood;
+                            ClearTarget();
+                        }
+                        else
+                        {
+                            UpdateTarget(smellable);
+                        }
                         return;
-                        // otherwise doesn't care about home because it's seeking food.
+                    case AntState.CarryingFood:
+                        // wait until colliding with home to change state.
+                        UpdateTarget(smellable);
+
+                        return;
                 }
                 return;
         }
     }
 
-    private void ProcessCollision(ISmellable smellable)
+    private void ClearTarget()
+    {
+        CurrentTarget = null;
+    }
+
+    private void UpdateTarget(Smellable smellable)
+    {
+        if(CurrentTarget == null || smellable.Distance < CurrentTarget.Distance)
+        {
+            CurrentTarget = smellable;
+        }
+    }
+
+    private void ProcessCollision(Smellable smellable)
     {
         switch (smellable.Smell)
         {

@@ -1,21 +1,13 @@
 using UnityEngine;
 
-public class FoodSmell : MonoBehaviour, ISmellable
+public class FoodSmell : Smellable
 {
-    public Smell Smell => Smell.Food;
+    public override Smell Smell => Smell.Food;
+
+    public override float Distance => 0;
 
     public override string ToString()
     {
         return "Actual Food";
     }
-}
-
-public interface ISmellable
-{
-    public Smell Smell { get; }
-}
-
-public enum Smell
-{
-    Food, Home
 }

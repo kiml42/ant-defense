@@ -157,7 +157,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63f7aae77b641f04a87fd0f5d14fa0f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  State: 0
 --- !u!114 &-3196181228672205010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,6 +171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ForwardsBias: 0.01
   RandomBias: 0.2
+  AntStateMachine: {fileID: 9190200353074072473}
 --- !u!114 &6078784432672750216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -201,7 +201,7 @@ MonoBehaviour:
   TrailParent: {fileID: 0}
   AntStateMachine: {fileID: 9190200353074072473}
   TrailPoint: {fileID: 4304061794554422484, guid: 1eb302f6bf4fbbf498a0c8b0ba6e0f99, type: 3}
-  TrailPointDistance: 0.3
+  TrailPointSpawnDistance: 1
 --- !u!54 &1150062627286218138
 Rigidbody:
   m_ObjectHideFlags: 0

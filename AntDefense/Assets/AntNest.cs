@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AntNest : MonoBehaviour, ISmellable
+public class AntNest : Smellable
 {
     public GameObject AntParent;
     public Transform SpawnPoint;
@@ -11,7 +11,8 @@ public class AntNest : MonoBehaviour, ISmellable
 
     public Transform AntPrefab;
 
-    public Smell Smell => Smell.Home;
+    public override Smell Smell => Smell.Home;
+    public override float Distance => 0;
 
     private float _timeUntilSpawn;
 
