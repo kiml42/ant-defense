@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
@@ -10,6 +11,8 @@ public class AntStateMachine : MonoBehaviour
     public AntState State = AntState.SeekingFood;
 
     public float? TurnAroundDuration = null;
+
+    public LifetimeController LifetimeController;
 
     public Smellable CurrentTarget
     {
@@ -153,11 +156,13 @@ public class AntStateMachine : MonoBehaviour
                         State = AntState.ReportingFood;
                         TurnAroundDuration = 2;
                         ClearTarget();
+                        ResetLifetime();
                         return;
                      case AntState.ReturningToFood:
                         State = AntState.ReportingFood; // Temporary tuntil they can pick up the food.
                         TurnAroundDuration = 2;
                         ClearTarget();
+                        ResetLifetime();
                         return;
 
                         //TODO actually pick up the food!!!!!!
@@ -173,22 +178,19 @@ public class AntStateMachine : MonoBehaviour
                         State = AntState.ReturningToFood;
                         TurnAroundDuration = 2;
                         ClearTarget();
+                        ResetLifetime();
                         return;
                 }
                 return;
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void ResetLifetime()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        if(LifetimeController != null)
+        {
+            LifetimeController.Reset();
+        }
     }
 }
 
