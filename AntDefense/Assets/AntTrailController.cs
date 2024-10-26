@@ -11,7 +11,7 @@ public class AntTrailController : MonoBehaviour
 
     private Smell? _lastSmell = null;
     private Vector3? _lastTrailPointLocation;
-    private float _totalDistance = 0;
+    private float _timeSinceTarget = 0;
 
     void Start()
     {
@@ -34,8 +34,9 @@ public class AntTrailController : MonoBehaviour
             // The smell has changed, so reset the trail.
             _lastSmell = AntStateMachine.TrailSmell;
             _lastTrailPointLocation = null;
-            _totalDistance = 0;
+            _timeSinceTarget = 0;
         }
+        _timeSinceTarget += Time.deltaTime;
 
         LeaveTrail();
     }
@@ -48,8 +49,7 @@ public class AntTrailController : MonoBehaviour
         if (!this._lastTrailPointLocation.HasValue || distanceToLastPoint > this.TrailPointSpawnDistance)
         {
             var newPoint = Instantiate(TrailPoint, this.transform.position, Quaternion.identity, TrailParent.transform);
-            _totalDistance += distanceToLastPoint;
-            newPoint.GetComponent<TrailPointController>().SetSmell(AntStateMachine.TrailSmell, _totalDistance);
+            newPoint.GetComponent<TrailPointController>().SetSmell(AntStateMachine.TrailSmell, _timeSinceTarget);
             //Debug.Log("Leaving trail with smell: " + newPoint.GetComponent<TrailPointController>().Smell);
             _lastTrailPointLocation = this.transform.position;
         }

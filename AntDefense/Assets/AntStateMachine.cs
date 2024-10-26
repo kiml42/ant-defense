@@ -115,7 +115,7 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
-        if (CurrentTarget == null || smellable.IsActual || smellable.Distance < CurrentTarget.Distance)
+        if (CurrentTarget == null || smellable.IsActual || smellable.TimeFromTarget < CurrentTarget.TimeFromTarget)
         {
             var hasLineOfSight = CheckLineOfSight(smellable);
             if (hasLineOfSight)

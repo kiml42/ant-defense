@@ -5,13 +5,13 @@ public class TrailPointController : Smellable
     public MeshRenderer Material;
 
     private Smell _trailSmell;
-    private float _distance;
+    private float _timeFromTarget;
 
     public Transform Transform => this.transform;
 
     public override Smell Smell => _trailSmell;
 
-    public override float Distance => _distance;
+    public override float TimeFromTarget => _timeFromTarget;
 
     public override bool IsActual => false;
 
@@ -20,10 +20,10 @@ public class TrailPointController : Smellable
         return "TrailPoint " + Smell;
     }
 
-    internal void SetSmell(Smell trailSmell, float distance)
+    internal void SetSmell(Smell trailSmell, float timeFromTarget)
     {
         _trailSmell = trailSmell;
-        _distance = distance;
+        _timeFromTarget = timeFromTarget;
 
         if(Material != null)
         {

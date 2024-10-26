@@ -12,7 +12,7 @@ public class AntNest : Smellable
     public Transform AntPrefab;
 
     public override Smell Smell => Smell.Home;
-    public override float Distance => 0;
+    public override float TimeFromTarget => 0;
     public override bool IsActual => true;
 
     private float _timeUntilSpawn;
