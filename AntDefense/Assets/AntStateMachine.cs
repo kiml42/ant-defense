@@ -114,9 +114,32 @@ public class AntStateMachine : MonoBehaviour
 
         if (CurrentTarget == null || smellable.IsActual || smellable.Distance < CurrentTarget.Distance)
         {
-            _currentTarget = smellable;
-            TurnAroundDuration = null;
+            var hasLineOfSight = CheckLineOfSight(smellable);
+            if (hasLineOfSight)
+            {
+                // either there is no hit (no rigidbody int he way) or the hit is the thing we're trying to move towards.
+                _currentTarget = smellable;
+                TurnAroundDuration = null;
+            }
         }
+    }
+
+    private bool CheckLineOfSight(Smellable smellable)
+    {
+        // TODO get this working!!!!!!!!!!!!!!
+        var direction = smellable.transform.position - smellable.transform.position;
+        var isHit = Physics.Raycast(this.transform.position, direction, out var hit);
+        var hasLineOfSight = !(isHit && hit.transform != smellable.transform);
+        if (isHit)
+        {
+            Debug.Log("Hit " + hit.transform);
+            if (!hasLineOfSight)
+            {
+                Debug.Log("hit " + hit.transform + " when looking for " + smellable);
+            }
+        }
+
+        return hasLineOfSight;
     }
 
     private void ProcessCollision(Smellable smellable)
@@ -127,13 +150,11 @@ public class AntStateMachine : MonoBehaviour
                 switch (State)
                 {
                     case AntState.SeekingFood:
-                        Debug.Log("(collision) Found food " + smellable);
                         State = AntState.ReportingFood;
                         TurnAroundDuration = 2;
                         ClearTarget();
                         return;
                      case AntState.ReturningToFood:
-                        Debug.Log("(collision) Has hit actual food " + smellable);
                         State = AntState.ReportingFood; // Temporary tuntil they can pick up the food.
                         TurnAroundDuration = 2;
                         ClearTarget();
@@ -149,7 +170,6 @@ public class AntStateMachine : MonoBehaviour
                 {
                     case AntState.ReportingFood:
                     case AntState.CarryingFood:
-                        Debug.Log("(collision) Returned home " + smellable);
                         State = AntState.ReturningToFood;
                         TurnAroundDuration = 2;
                         ClearTarget();
