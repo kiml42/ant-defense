@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class TrailPointController : Smellable
 {
-    public float RemainingTime = 30;
     public MeshRenderer Material;
 
     private Smell _trailSmell;
@@ -15,20 +14,6 @@ public class TrailPointController : Smellable
     public override float Distance => _distance;
 
     public override bool IsActual => false;
-
-
-    private void FixedUpdate()
-    {
-        RemainingTime -= Time.deltaTime;
-        if (RemainingTime <= 0)
-        {
-            Destroy(this.gameObject);
-        }
-        if(RemainingTime < 2)
-        {
-            this.transform.localScale = Vector3.one * RemainingTime / 2;
-        }
-    }
 
     public override string ToString()
     {

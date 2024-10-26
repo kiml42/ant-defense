@@ -5,7 +5,6 @@ public class AntStateMachine : MonoBehaviour
     // TODO stop ants getting stuck at the end of a trail if teh food has since gone
     // TODO make ants look for their own trail after finding food
     // 
-    public float RemainingTime = 120;
     private Smellable _currentTarget;
 
     public AntState State = AntState.SeekingFood;
@@ -41,8 +40,7 @@ public class AntStateMachine : MonoBehaviour
 
     private void FixedUpdate()
     {
-        RemainingTime -= Time.deltaTime;
-        if (RemainingTime <= 0 || transform.position.y < -10)
+        if (transform.position.y < -10)
         {
             Destroy(this.gameObject);
         }
