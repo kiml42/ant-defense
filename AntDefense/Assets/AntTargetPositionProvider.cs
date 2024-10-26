@@ -14,6 +14,8 @@ public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
 
     public Transform TargetObject => AntStateMachine.CurrentTarget?.transform;
 
+    public bool TurnAround => AntStateMachine.TurnAroundDuration.HasValue && AntStateMachine.TurnAroundDuration.Value > 0;
+
     private AntStateMachine AntStateMachine;
 
     void Start()
@@ -40,4 +42,5 @@ public interface ITargetPositionProvider
 {
     Transform TargetObject { get; }
     Vector3 TargetPosition { get; }
+    bool TurnAround { get; }
 }

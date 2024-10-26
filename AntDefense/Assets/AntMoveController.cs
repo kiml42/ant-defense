@@ -23,13 +23,18 @@ public class AntMoveController : MonoBehaviour
 
     private void Turn()
     {
-        var direction = _positionProvider.TargetPosition - _rigidbody.position;
-        Debug.DrawRay(transform.position, direction, Color.magenta);
-        //Debug.DrawRay(transform.position, transform.forward * 15, Color.blue);
+        Vector3 headingError;
+        if (_positionProvider.TurnAround)
+        {
+            headingError = Vector3.up;
+        }
+        else
+        {
+            var direction = _positionProvider.TargetPosition - _rigidbody.position;
+            Debug.DrawRay(transform.position, direction, Color.magenta);
 
-        var headingError = Vector3.Cross(transform.forward, direction);
-
-        var angle = Vector3.Angle(direction, transform.forward);
+            headingError = Vector3.Cross(transform.forward, direction);
+        }
 
         //_rigidbody.rotation = targetRotation;
         _rigidbody.AddTorque(headingError * TorqueMultiplier);

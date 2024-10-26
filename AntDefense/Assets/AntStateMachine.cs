@@ -8,6 +8,9 @@ public class AntStateMachine : MonoBehaviour
     private Smellable _currentTarget;
 
     public AntState State = AntState.SeekingFood;
+
+    public float? TurnAroundDuration = null;
+
     public Smellable CurrentTarget
     {
         get
@@ -40,6 +43,14 @@ public class AntStateMachine : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (TurnAroundDuration.HasValue)
+        {
+            TurnAroundDuration -= Time.deltaTime;
+            if(TurnAroundDuration.Value <= 0)
+            {
+                TurnAroundDuration = null;
+            }
+        }
         if (transform.position.y < -10)
         {
             Destroy(this.gameObject);
@@ -94,6 +105,7 @@ public class AntStateMachine : MonoBehaviour
 
     private void UpdateTarget(Smellable smellable)
     {
+        // TODO raycast to check line of sight
         if (CurrentTarget?.IsActual == true)
         {
             // Always stick with an actual smell
@@ -116,11 +128,13 @@ public class AntStateMachine : MonoBehaviour
                     case AntState.SeekingFood:
                         Debug.Log("(collision) Found food " + smellable);
                         State = AntState.ReportingFood;
+                        TurnAroundDuration = 2;
                         ClearTarget();
                         return;
                      case AntState.ReturningToFood:
                         Debug.Log("(collision) Has hit actual food " + smellable);
                         State = AntState.ReportingFood; // Temporary tuntil they can pick up the food.
+                        TurnAroundDuration = 2;
                         ClearTarget();
                         return;
 
@@ -136,6 +150,7 @@ public class AntStateMachine : MonoBehaviour
                     case AntState.CarryingFood:
                         Debug.Log("(collision) Returned home " + smellable);
                         State = AntState.ReturningToFood;
+                        TurnAroundDuration = 2;
                         ClearTarget();
                         return;
                 }

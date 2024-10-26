@@ -15,7 +15,7 @@ public class LifetimeController : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
-        if (RemainingTime < ScaleDownTime)
+        if (ScaleDownTime > 0 && RemainingTime < ScaleDownTime)
         {
             this.transform.localScale = Vector3.one * RemainingTime / ScaleDownTime;
         }
