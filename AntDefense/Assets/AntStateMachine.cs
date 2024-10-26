@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
@@ -64,6 +65,11 @@ public class AntStateMachine : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+        if(CurrentTarget != null && !HasLineOfSight(CurrentTarget))
+        {
+            Console.WriteLine("Lost sight of target!");
+            ClearTarget();
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -122,7 +128,7 @@ public class AntStateMachine : MonoBehaviour
 
         if (CurrentTarget == null || smellable.IsActual || smellable.TimeFromTarget < CurrentTarget.TimeFromTarget)
         {
-            var hasLineOfSight = CheckLineOfSight(smellable);
+            var hasLineOfSight = HasLineOfSight(smellable);
             if (hasLineOfSight)
             {
                 // either there is no hit (no rigidbody int he way) or the hit is the thing we're trying to move towards.
@@ -132,7 +138,7 @@ public class AntStateMachine : MonoBehaviour
         }
     }
 
-    private bool CheckLineOfSight(Smellable smellable)
+    private bool HasLineOfSight(Smellable smellable)
     {
         var direction = smellable.transform.position - ViewPoint.position;
 

@@ -1,4 +1,6 @@
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.UI.Image;
 
 public class AntMoveController : MonoBehaviour
 {
@@ -23,6 +25,8 @@ public class AntMoveController : MonoBehaviour
 
     private void Turn()
     {
+        //transform.rotation = Quaternion.LookRotation(transform.forward, Vector3.up);
+
         Vector3 headingError;
         if (_positionProvider.TurnAround)
         {
