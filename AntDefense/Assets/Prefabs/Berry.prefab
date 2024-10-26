@@ -87,7 +87,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cad28941dcdecce49b3926ef7775b49b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RemainingTime: 30
+  RemainingTime: 90
   ScaleDownTime: 5
 --- !u!1 &6652936135346501748
 GameObject:

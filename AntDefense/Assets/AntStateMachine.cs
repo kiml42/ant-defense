@@ -63,22 +63,10 @@ public class AntStateMachine : MonoBehaviour
                 switch (State)
                 {
                     case AntState.SeekingFood:
-
-                        if (smellable.Distance == 0)
-                        {
-                            // Has smelled the actual food, so go back and report it
-                            State = AntState.ReportingFood;
-                            ClearTarget();
-                        }
-                        else
-                        {
-                            // has smelled a food trail, so go and get some food!
-                            State = AntState.ReturningToFood;
-                            ClearTarget();
-                            UpdateTarget(smellable);
-                        }
-
-                        Debug.Log("(Smelled) food: " + smellable + ". Now leaving trail " + TrailSmell);
+                        // has smelled a food or a food trail, follow the trail, or move towards the food!
+                        State = AntState.ReturningToFood;
+                        ClearTarget();
+                        UpdateTarget(smellable);
                         return;
                     case AntState.ReturningToFood:
                         UpdateTarget(smellable);
@@ -90,19 +78,7 @@ public class AntStateMachine : MonoBehaviour
                 switch (State)
                 {
                     case AntState.ReportingFood:
-                        if(smellable.Distance == 0)
-                        {
-                            // Has smelled the actual home, so the trail it's currently leaving is close enough
-                            State = AntState.ReturningToFood;
-                            ClearTarget();
-                        }
-                        else
-                        {
-                            UpdateTarget(smellable);
-                        }
-                        return;
                     case AntState.CarryingFood:
-                        // wait until colliding with home to change state.
                         UpdateTarget(smellable);
 
                         return;
