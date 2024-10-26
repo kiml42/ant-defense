@@ -115,6 +115,7 @@ public class AntStateMachine : MonoBehaviour
         if (CurrentTarget == null || smellable.IsActual || smellable.Distance < CurrentTarget.Distance)
         {
             _currentTarget = smellable;
+            TurnAroundDuration = null;
         }
     }
 
