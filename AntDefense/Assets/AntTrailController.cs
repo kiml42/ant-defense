@@ -50,6 +50,7 @@ public class AntTrailController : MonoBehaviour
         {
             var newPoint = Instantiate(TrailPoint, this.transform.position, Quaternion.identity, TrailParent.transform);
             newPoint.GetComponent<TrailPointController>().SetSmell(AntStateMachine.TrailSmell, _timeSinceTarget);
+            newPoint.gameObject.layer = 2;
             //Debug.Log("Leaving trail with smell: " + newPoint.GetComponent<TrailPointController>().Smell);
             _lastTrailPointLocation = this.transform.position;
         }

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
@@ -13,6 +12,8 @@ public class AntStateMachine : MonoBehaviour
     public float? TurnAroundDuration = null;
 
     public LifetimeController LifetimeController;
+
+    public Transform ViewPoint;
 
     public Smellable CurrentTarget
     {
@@ -42,6 +43,11 @@ public class AntStateMachine : MonoBehaviour
                     throw new System.Exception("Unknown state " + State);
             }
         }
+    }
+
+    private void Start()
+    {
+        ViewPoint = ViewPoint ?? transform;
     }
 
     private void FixedUpdate()
@@ -108,7 +114,6 @@ public class AntStateMachine : MonoBehaviour
 
     private void UpdateTarget(Smellable smellable)
     {
-        // TODO raycast to check line of sight
         if (CurrentTarget?.IsActual == true)
         {
             // Always stick with an actual smell
@@ -129,9 +134,11 @@ public class AntStateMachine : MonoBehaviour
 
     private bool CheckLineOfSight(Smellable smellable)
     {
-        // TODO get this working!!!!!!!!!!!!!!
-        var direction = smellable.transform.position - smellable.transform.position;
-        var isHit = Physics.Raycast(this.transform.position, direction, out var hit);
+        var direction = smellable.transform.position - ViewPoint.position;
+
+        Debug.DrawRay(ViewPoint.position, direction, Color.magenta);
+
+        var isHit = Physics.Raycast(ViewPoint.position, direction, out var hit, direction.magnitude, 0);
         var hasLineOfSight = !(isHit && hit.transform != smellable.transform);
         if (isHit)
         {

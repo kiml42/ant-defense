@@ -31,7 +31,7 @@ public class AntMoveController : MonoBehaviour
         else
         {
             var direction = _positionProvider.TargetPosition - _rigidbody.position;
-            Debug.DrawRay(transform.position, direction, Color.magenta);
+            //Debug.DrawRay(transform.position, direction, Color.magenta);
 
             headingError = Vector3.Cross(transform.forward, direction);
         }
