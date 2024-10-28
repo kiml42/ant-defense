@@ -47,7 +47,7 @@ public class AntMoveController : MonoBehaviour
     private void ApplyForce()
     {
         var force = _rigidbody.transform.forward * ForceMultiplier;
-        force.y = 0;
+        //force.y = 0;
         _rigidbody.AddForce(force, ForceMode.Impulse);
     }
 }
