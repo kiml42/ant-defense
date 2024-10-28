@@ -131,6 +131,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Material: {fileID: 5091190672173903247}
+  _lifetimeController: {fileID: 4957269030129393126}
+  LifetimePenalty: 1.3
 --- !u!135 &2858440292616079122
 SphereCollider:
   m_ObjectHideFlags: 0
