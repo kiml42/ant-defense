@@ -4,8 +4,7 @@ using UnityEngine;
 public class AntStateMachine : MonoBehaviour
 {
     // TODO stop ants getting stuck at the end of a trail if teh food has since gone
-    // TODO make ants look for their own trail after finding food
-    // 
+ 
     private Smellable _currentTarget;
 
     public AntState State = AntState.SeekingFood;
@@ -28,6 +27,9 @@ public class AntStateMachine : MonoBehaviour
         }
     }
 
+    private float _timeSinceTargetAquisition;
+    private float? _maxTargetTime;
+
     public Smell TrailSmell
     {
         get
@@ -41,7 +43,7 @@ public class AntStateMachine : MonoBehaviour
                 case AntState.CarryingFood:
                     return Smell.Food;
                 default:
-                    throw new System.Exception("Unknown state " + State);
+                    throw new Exception("Unknown state " + State);
             }
         }
     }
@@ -53,6 +55,12 @@ public class AntStateMachine : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (transform.position.y < -10)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+
         if (TurnAroundDuration.HasValue)
         {
             TurnAroundDuration -= Time.deltaTime;
@@ -61,14 +69,20 @@ public class AntStateMachine : MonoBehaviour
                 TurnAroundDuration = null;
             }
         }
-        if (transform.position.y < -10)
+        _timeSinceTargetAquisition += Time.deltaTime;
+        if(CurrentTarget != null)
         {
-            Destroy(this.gameObject);
-        }
-        if(CurrentTarget != null && !HasLineOfSight(CurrentTarget))
-        {
-            Console.WriteLine("Lost sight of target!");
-            ClearTarget();
+            if(_timeSinceTargetAquisition > 2)
+            {
+                Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition);
+                _maxTargetTime = CurrentTarget.TimeFromTarget;
+                ClearTarget();
+            }
+            else if(!HasLineOfSight(CurrentTarget))
+            {
+                Console.WriteLine("Lost sight of target!");
+                ClearTarget();
+            }
         }
     }
 
@@ -91,6 +105,7 @@ public class AntStateMachine : MonoBehaviour
                     case AntState.SeekingFood:
                         // has smelled a food or a food trail, follow the trail, or move towards the food!
                         State = AntState.ReturningToFood;
+                        _maxTargetTime = null;
                         ClearTarget();
                         UpdateTarget(smellable);
                         return;
@@ -126,6 +141,12 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
+        if(_maxTargetTime.HasValue && smellable.TimeFromTarget > _maxTargetTime)
+        {
+            //Debug.Log("Ignoring " + smellable + " because it's more than " + _maxTargetTime + " from the target.");
+            return;
+        }
+
         if (CurrentTarget == null || smellable.IsActual || smellable.TimeFromTarget < CurrentTarget.TimeFromTarget)
         {
             var hasLineOfSight = HasLineOfSight(smellable);
@@ -134,17 +155,24 @@ public class AntStateMachine : MonoBehaviour
                 // either there is no hit (no rigidbody int he way) or the hit is the thing we're trying to move towards.
                 _currentTarget = smellable;
                 TurnAroundDuration = null;
+                _timeSinceTargetAquisition = 0;
             }
         }
     }
 
     private bool HasLineOfSight(Smellable smellable)
     {
-        var direction = smellable.transform.position - ViewPoint.position;
+        var direction = smellable?.transform?.position - ViewPoint?.position;
 
-        Debug.DrawRay(ViewPoint.position, direction, Color.magenta);
+        if (!direction.HasValue)
+        {
+            Debug.Log("No direction between " + smellable + " & " + ViewPoint);
+            return false;
+        }
 
-        var isHit = Physics.Raycast(ViewPoint.position, direction, out var hit, direction.magnitude, 0);
+        Debug.DrawRay(ViewPoint.position, direction.Value, Color.magenta);
+
+        var isHit = Physics.Raycast(ViewPoint.position, direction.Value, out var hit, direction.Value.magnitude, 0);
         var hasLineOfSight = !(isHit && hit.transform != smellable.transform);
         if (isHit)
         {
@@ -167,12 +195,14 @@ public class AntStateMachine : MonoBehaviour
                 {
                     case AntState.SeekingFood:
                         State = AntState.ReportingFood;
+                        _maxTargetTime = null;
                         TurnAroundDuration = 2;
                         ClearTarget();
                         ResetLifetime();
                         return;
                      case AntState.ReturningToFood:
                         State = AntState.ReportingFood; // Temporary tuntil they can pick up the food.
+                        _maxTargetTime = null;
                         TurnAroundDuration = 2;
                         ClearTarget();
                         ResetLifetime();
@@ -190,6 +220,7 @@ public class AntStateMachine : MonoBehaviour
                     case AntState.CarryingFood:
                         State = AntState.ReturningToFood;
                         TurnAroundDuration = 2;
+                        _maxTargetTime = null;
                         ClearTarget();
                         ResetLifetime();
                         return;
