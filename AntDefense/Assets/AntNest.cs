@@ -17,6 +17,9 @@ public class AntNest : Smellable
 
     private float _timeUntilSpawn;
 
+    public int MaxAntsPerSpawn = 1; 
+    public float SpawnRadius = 1; 
+
     void Start()
     {
         if (AntParent == null)
@@ -30,9 +33,13 @@ public class AntNest : Smellable
         _timeUntilSpawn -= Time.deltaTime;
         if(_timeUntilSpawn < 0)
         {
-            var instance = Instantiate(AntPrefab, SpawnPoint?.position ?? this.transform.position, Quaternion.identity, AntParent.transform);
-            instance.GetComponent<Rigidbody>().velocity = SpawnVelocity;
-            instance.rotation = Random.rotation;
+            var count = Random.Range(1, MaxAntsPerSpawn + 1);
+            for (int i = 0; i < count; i++)
+            {
+                var position = (SpawnPoint?.position ?? this.transform.position) + Random.insideUnitSphere * SpawnRadius;
+                var instance = Instantiate(this.AntPrefab, position, Random.rotation, this.AntParent.transform);
+                instance.GetComponent<Rigidbody>().velocity = SpawnVelocity;
+            }
             _timeUntilSpawn = Random.Range(MinRespawnTime,MaxRespawnTime);
         }
     }

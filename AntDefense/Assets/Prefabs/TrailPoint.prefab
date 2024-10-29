@@ -166,5 +166,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cad28941dcdecce49b3926ef7775b49b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RemainingTime: 100
+  RemainingTime: 80
   ScaleDownTime: 4
