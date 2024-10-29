@@ -172,7 +172,7 @@ MonoBehaviour:
   MinRespawnTime: 60
   MaxRespawnTime: 100
   AntPrefab: {fileID: 8542657810488951160, guid: 9e8129882c77e4f48886462d12346fd0, type: 3}
-  MaxAntsPerSpawn: 10
+  MaxAntsPerSpawn: 20
   SpawnRadius: 2
 --- !u!1 &4469306870535474989
 GameObject:
