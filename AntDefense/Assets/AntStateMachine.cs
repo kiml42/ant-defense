@@ -4,7 +4,7 @@ using UnityEngine;
 public class AntStateMachine : MonoBehaviour
 {
     // TODO stop ants getting stuck at the end of a trail if teh food has since gone
- 
+    // TODO Make ants turn sideways if they bump into something.
     private Smellable _currentTarget;
 
     public AntState State = AntState.SeekingFood;
@@ -77,9 +77,9 @@ public class AntStateMachine : MonoBehaviour
         _timeSinceTargetAquisition += Time.deltaTime;
         if(CurrentTarget != null)
         {
-            if(_timeSinceTargetAquisition > MaxTimeGoingForTrailPoint)
+            if(!CurrentTarget.IsActual && _timeSinceTargetAquisition > MaxTimeGoingForTrailPoint)
             {
-                Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition);
+                Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget);
                 _maxTargetTime = CurrentTarget.TimeFromTarget;
                 ClearTarget();
             }

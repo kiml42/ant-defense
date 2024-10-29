@@ -37,7 +37,9 @@ public class AntNest : Smellable
             for (int i = 0; i < count; i++)
             {
                 var position = (SpawnPoint?.position ?? this.transform.position) + Random.insideUnitSphere * SpawnRadius;
-                var instance = Instantiate(this.AntPrefab, position, Random.rotation, this.AntParent.transform);
+                var randomLookTarget = Random.insideUnitCircle;
+                var rotation = Quaternion.LookRotation(new Vector3(randomLookTarget.x, 0, randomLookTarget.y), Vector3.up);
+                var instance = Instantiate(this.AntPrefab, position, rotation, this.AntParent.transform);
                 instance.GetComponent<Rigidbody>().velocity = SpawnVelocity;
             }
             _timeUntilSpawn = Random.Range(MinRespawnTime,MaxRespawnTime);
