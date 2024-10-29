@@ -27,6 +27,11 @@ public class AntStateMachine : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// The maximum time an ant is allowed to try to move towards a single trail point.
+    /// If it takes longer than this it'll give up and look for a better trail point.
+    /// </summary>
+    public float MaxTimeGoingForTrailPoint = 4;
     private float _timeSinceTargetAquisition;
     private float? _maxTargetTime;
 
@@ -72,7 +77,7 @@ public class AntStateMachine : MonoBehaviour
         _timeSinceTargetAquisition += Time.deltaTime;
         if(CurrentTarget != null)
         {
-            if(_timeSinceTargetAquisition > 2)
+            if(_timeSinceTargetAquisition > MaxTimeGoingForTrailPoint)
             {
                 Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition);
                 _maxTargetTime = CurrentTarget.TimeFromTarget;

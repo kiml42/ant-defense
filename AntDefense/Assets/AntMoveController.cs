@@ -46,6 +46,11 @@ public class AntMoveController : MonoBehaviour
 
     private void ApplyForce()
     {
+        if (_positionProvider.TurnAround)
+        {
+            return;
+        }
+
         var force = _rigidbody.transform.forward * ForceMultiplier;
         //force.y = 0;
         _rigidbody.AddForce(force, ForceMode.Impulse);
