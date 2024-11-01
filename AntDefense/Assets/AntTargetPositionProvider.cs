@@ -8,13 +8,13 @@ public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
     /// <summary>
     /// Target position relative to this ant
     /// </summary>
-    private Vector3 _targetPosition = new Vector3(10, 0, 20);
+    private Vector3 _targetPosition = Vector3.zero;
 
     public Vector3 TargetPosition => TargetObject?.position ?? transform.position + _targetPosition;
 
     public Transform TargetObject => AntStateMachine.CurrentTarget?.TargetPoint;
 
-    public bool TurnAround => AntStateMachine.TurnAroundDuration.HasValue && AntStateMachine.TurnAroundDuration.Value > 0;
+    public TurnAround? TurnAround => AntStateMachine.TurnAroundMode;
 
     private AntStateMachine AntStateMachine;
 
@@ -42,5 +42,28 @@ public interface ITargetPositionProvider
 {
     Transform TargetObject { get; }
     Vector3 TargetPosition { get; }
-    bool TurnAround { get; }
+
+    TurnAround? TurnAround { get; }
+}
+
+public readonly struct TurnAround
+{
+    public readonly TurnAroundMode Mode;
+    public readonly bool Clockwise;
+    public bool Move => Mode != TurnAroundMode.LookAround;
+
+    private TurnAround(TurnAroundMode mode, bool clockwise)
+    {
+        Mode = mode;
+        Clockwise = clockwise;
+    }
+
+    public static TurnAround AvoidObstacle(bool clockwise) => new TurnAround (TurnAroundMode.AvoidObstacle, clockwise);
+    public static TurnAround LookAround(bool clockwise) => new TurnAround (TurnAroundMode.LookAround, clockwise);
+}
+
+public enum TurnAroundMode
+{
+    LookAround,
+    AvoidObstacle
 }

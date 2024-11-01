@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1289983323271490273}
   - component: {fileID: 2771481760499084461}
   m_Layer: 0
-  m_Name: Cylinder
+  m_Name: AntNestCylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -220,8 +220,8 @@ GameObject:
   - component: {fileID: 911380644377799482}
   - component: {fileID: 8869448057287460055}
   - component: {fileID: 5468239194609964177}
-  m_Layer: 0
-  m_Name: Sphere
+  m_Layer: 3
+  m_Name: AntNestMound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

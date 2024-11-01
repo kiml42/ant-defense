@@ -1,5 +1,6 @@
 using System;
-using System.Xml.Linq;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
@@ -10,11 +11,14 @@ public class AntStateMachine : MonoBehaviour
 
     public AntState State = AntState.SeekingFood;
 
-    public float? TurnAroundDuration = null;
+    private float? TurnAroundDuration = null;
+    public TurnAround? TurnAroundMode = null;
 
     public LifetimeController LifetimeController;
 
     public Transform ViewPoint;
+
+    public readonly List<GameObject> Obstacles = new List<GameObject>();
 
     public Smellable CurrentTarget
     {
@@ -35,6 +39,7 @@ public class AntStateMachine : MonoBehaviour
     public float MaxTimeGoingForTrailPoint = 4;
     private float _timeSinceTargetAquisition;
     private float? _maxTargetTime;
+    public const int GroundLayer = 3;
 
     public Smell TrailSmell
     {
@@ -72,7 +77,7 @@ public class AntStateMachine : MonoBehaviour
             TurnAroundDuration -= Time.deltaTime;
             if(TurnAroundDuration.Value <= 0)
             {
-                TurnAroundDuration = null;
+                ClearTurnAround();
             }
         }
         _timeSinceTargetAquisition += Time.deltaTime;
@@ -80,7 +85,7 @@ public class AntStateMachine : MonoBehaviour
         {
             if(!CurrentTarget.IsActual && _timeSinceTargetAquisition > MaxTimeGoingForTrailPoint)
             {
-                Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget);
+                //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget);
                 _maxTargetTime = CurrentTarget.TimeFromTarget;
                 ClearTarget();
             }
@@ -95,14 +100,40 @@ public class AntStateMachine : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         var @object = collision.gameObject;
-        if(@object.TryGetComponent<Smellable>(out var smellable))
+
+        if (@object.TryGetComponent<Smellable>(out var smellable))
         {
             //Debug.Log($"Collided With {@object} smellable: {smellable}");
-            ProcessCollision(smellable);
+            ProcessCollisionWithSmell(smellable);
+            if(CurrentTarget == smellable)
+            {
+                // this is now the target, and therefore is not an obstacle.
+                return;
+            }
         }
-        else if(!@object.ToString().Contains("Plane"))
+
+        if (@object.layer == GroundLayer)
         {
-            //Debug.Log($"Collided With {@object} Not smellable");
+            // collided with the ground
+            //Debug.Log($"Collided With ground: {@object}");
+            return;
+        }
+
+        // TODO register this as an obstacle, and try to avoid it.
+        Debug.Log($"Collided With obstacle {@object}");
+        this.Obstacles.Add(@object);
+        AvoidObstacle();
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (Obstacles.Contains(collision.gameObject))
+        {
+            Obstacles.Remove(collision.gameObject);
+            if (!Obstacles.Any())
+            {
+                ClearTurnAround();
+            }
         }
     }
 
@@ -165,7 +196,7 @@ public class AntStateMachine : MonoBehaviour
             {
                 // either there is no hit (no rigidbody int he way) or the hit is the thing we're trying to move towards.
                 _currentTarget = smellable;
-                TurnAroundDuration = null;
+                ClearTurnAround();
                 _timeSinceTargetAquisition = 0;
             }
         }
@@ -197,7 +228,7 @@ public class AntStateMachine : MonoBehaviour
         return hasLineOfSight;
     }
 
-    private void ProcessCollision(Smellable smellable)
+    private void ProcessCollisionWithSmell(Smellable smellable)
     {
         switch (smellable.Smell)
         {
@@ -207,14 +238,14 @@ public class AntStateMachine : MonoBehaviour
                     case AntState.SeekingFood:
                         State = AntState.ReportingFood;
                         _maxTargetTime = null;
-                        TurnAroundDuration = 2;
+                        LookAround();
                         ClearTarget();
                         ResetLifetime();
                         return;
-                     case AntState.ReturningToFood:
+                    case AntState.ReturningToFood:
                         State = AntState.ReportingFood; // Temporary tuntil they can pick up the food.
                         _maxTargetTime = null;
-                        TurnAroundDuration = 2;
+                        LookAround();
                         ClearTarget();
                         ResetLifetime();
                         return;
@@ -230,7 +261,7 @@ public class AntStateMachine : MonoBehaviour
                     case AntState.ReportingFood:
                     case AntState.CarryingFood:
                         State = AntState.ReturningToFood;
-                        TurnAroundDuration = 2;
+                        LookAround(false);
                         _maxTargetTime = null;
                         ClearTarget();
                         ResetLifetime();
@@ -238,6 +269,24 @@ public class AntStateMachine : MonoBehaviour
                 }
                 return;
         }
+    }
+
+    private void ClearTurnAround()
+    {
+        TurnAroundDuration = null;
+        TurnAroundMode = null;
+    }
+
+    private void AvoidObstacle(bool turnAroundClockwise = true, float duration = 2)
+    {
+        TurnAroundDuration = duration;
+        TurnAroundMode = TurnAround.AvoidObstacle(turnAroundClockwise);
+    }
+
+    private void LookAround(bool turnAroundClockwise = true, float duration = 2)
+    {
+        TurnAroundDuration = duration;
+        TurnAroundMode = TurnAround.LookAround(turnAroundClockwise);
     }
 
     private void ResetLifetime()

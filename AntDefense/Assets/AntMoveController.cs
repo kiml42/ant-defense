@@ -1,6 +1,4 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.UI.Image;
 
 public class AntMoveController : MonoBehaviour
 {
@@ -28,17 +26,18 @@ public class AntMoveController : MonoBehaviour
         //transform.rotation = Quaternion.LookRotation(transform.forward, Vector3.up);
 
         Vector3 headingError;
-        if (_positionProvider.TurnAround)
+        if (_positionProvider.TurnAround.HasValue)
         {
-            headingError = Vector3.up;
+            headingError = _positionProvider.TurnAround.Value.Clockwise ? Vector3.up : Vector3.down;
         }
         else
         {
             var direction = _positionProvider.TargetPosition - _rigidbody.position;
-            //Debug.DrawRay(transform.position, direction, Color.magenta);
+            Debug.DrawRay(transform.position, direction, Color.blue);
 
             headingError = Vector3.Cross(transform.forward, direction);
         }
+        Debug.DrawRay(transform.position, headingError, Color.green);
 
         //_rigidbody.rotation = targetRotation;
         _rigidbody.AddTorque(headingError * TorqueMultiplier);
@@ -46,7 +45,7 @@ public class AntMoveController : MonoBehaviour
 
     private void ApplyForce()
     {
-        if (_positionProvider.TurnAround)
+        if (_positionProvider.TurnAround?.Move == false)
         {
             return;
         }
