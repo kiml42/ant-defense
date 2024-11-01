@@ -171,10 +171,10 @@ MonoBehaviour:
   AntParent: {fileID: 4243399154530772869}
   SpawnPoint: {fileID: 3492017039928931673}
   SpawnVelocity: {x: 0, y: 0, z: 0}
-  MinRespawnTime: 40
-  MaxRespawnTime: 70
+  MinRespawnTime: 15
+  MaxRespawnTime: 30
   AntPrefab: {fileID: 8542657810488951160, guid: 9e8129882c77e4f48886462d12346fd0, type: 3}
-  MaxAntsPerSpawn: 30
+  MaxAntsPerSpawn: 10
   SpawnRadius: 2
 --- !u!1 &4469306870535474989
 GameObject:

@@ -83,6 +83,7 @@ public class AntStateMachine : MonoBehaviour
         _timeSinceTargetAquisition += Time.deltaTime;
         if(CurrentTarget != null)
         {
+            Debug.DrawLine(transform.position, CurrentTarget.TargetPoint.position, Color.cyan);
             if(!CurrentTarget.IsActual && _timeSinceTargetAquisition > MaxTimeGoingForTrailPoint)
             {
                 //TODO Test this method of making it not go straight back to the target, but let it go to similar targets later.
