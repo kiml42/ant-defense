@@ -1,5 +1,10 @@
 using UnityEngine;
 
+//TODO - Make turn around work by setting the heading direction rather than just generally turning it around.
+//the direction can then be allowed to wander back normal with its random movements.
+// For obstacles the target position should be set to a position along the tangent of teh collision.
+// For turning around to find the way back it should be set behind the ant.
+// When the ant has a target it's moving towards,don't just use that location imediately, instead have the target wander back towards it.
 public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
 {
     public float ForwardsBias = 0.1f;

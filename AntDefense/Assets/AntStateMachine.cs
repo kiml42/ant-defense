@@ -85,8 +85,9 @@ public class AntStateMachine : MonoBehaviour
         {
             if(!CurrentTarget.IsActual && _timeSinceTargetAquisition > MaxTimeGoingForTrailPoint)
             {
+                //TODO Test this method of making it not go straight back to the target, but let it go to similar targets later.
                 //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget);
-                _maxTargetTime = CurrentTarget.TimeFromTarget;
+                _maxTargetTime = CurrentTarget.TimeFromTarget - MaxTimeGoingForTrailPoint;
                 ClearTarget();
             }
             else if(!HasLineOfSight(CurrentTarget))
@@ -94,6 +95,11 @@ public class AntStateMachine : MonoBehaviour
                 Console.WriteLine("Lost sight of target!");
                 ClearTarget();
             }
+        }
+        if (_maxTargetTime.HasValue)
+        {
+            //Debug.Log($"MaxTargetTime {_maxTargetTime}");
+            _maxTargetTime += Time.deltaTime * 0.5f;
         }
     }
 
@@ -119,22 +125,26 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
-        Debug.Log($"Collided With obstacle {@object}");
-        this.Obstacles.Add(@object);
-        AvoidObstacle();
+        //Debug.Log($"Collided With obstacle {@object}");
+        //this.Obstacles.Add(@object);
+        var contact = collision.GetContact(0);
+        var contactPointInAntSpace = transform.InverseTransformPoint(contact.point);
+        //contact.point
+        // TODO decide direction based on where the collision is.
+        AvoidObstacle(turnAroundClockwise: contactPointInAntSpace.x < 0);
     }
 
-    private void OnCollisionExit(Collision collision)
-    {
-        if (Obstacles.Contains(collision.gameObject))
-        {
-            Obstacles.Remove(collision.gameObject);
-            if (!Obstacles.Any())
-            {
-                ClearObstacleAvoidance();
-            }
-        }
-    }
+    //private void OnCollisionExit(Collision collision)
+    //{
+    //    if (Obstacles.Contains(collision.gameObject))
+    //    {
+    //        Obstacles.Remove(collision.gameObject);
+    //        if (!Obstacles.Any())
+    //        {
+    //            ClearObstacleAvoidance();
+    //        }
+    //    }
+    //}
 
     public void ProcessSmell(Smellable smellable)
     {
@@ -211,6 +221,8 @@ public class AntStateMachine : MonoBehaviour
             return false;
         }
 
+        return true;
+        // TODO this still doesn't work!!!
         Debug.DrawRay(ViewPoint.position, direction.Value, Color.magenta);
 
         var isHit = Physics.Raycast(ViewPoint.position, direction.Value, out var hit, direction.Value.magnitude, 0);
@@ -285,7 +297,7 @@ public class AntStateMachine : MonoBehaviour
         TurnAroundState = null;
     }
 
-    private void AvoidObstacle(bool turnAroundClockwise = true, float duration = 2)
+    private void AvoidObstacle(bool turnAroundClockwise = true, float duration = 0.1f)
     {
         if(TurnAroundState?.Mode != TurnAroundMode.LookAround)
         {
