@@ -12,7 +12,7 @@ public class AntStateMachine : MonoBehaviour
     public AntState State = AntState.SeekingFood;
 
     private float? TurnAroundDuration = null;
-    public TurnAround? TurnAroundMode = null;
+    public TurnAround? TurnAroundState = null;
 
     public LifetimeController LifetimeController;
 
@@ -77,7 +77,7 @@ public class AntStateMachine : MonoBehaviour
             TurnAroundDuration -= Time.deltaTime;
             if(TurnAroundDuration.Value <= 0)
             {
-                ClearTurnAround();
+                ClearLookAround();
             }
         }
         _timeSinceTargetAquisition += Time.deltaTime;
@@ -119,7 +119,6 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
-        // TODO register this as an obstacle, and try to avoid it.
         Debug.Log($"Collided With obstacle {@object}");
         this.Obstacles.Add(@object);
         AvoidObstacle();
@@ -132,7 +131,7 @@ public class AntStateMachine : MonoBehaviour
             Obstacles.Remove(collision.gameObject);
             if (!Obstacles.Any())
             {
-                ClearTurnAround();
+                ClearObstacleAvoidance();
             }
         }
     }
@@ -196,7 +195,7 @@ public class AntStateMachine : MonoBehaviour
             {
                 // either there is no hit (no rigidbody int he way) or the hit is the thing we're trying to move towards.
                 _currentTarget = smellable;
-                ClearTurnAround();
+                ClearLookAround();
                 _timeSinceTargetAquisition = 0;
             }
         }
@@ -271,22 +270,34 @@ public class AntStateMachine : MonoBehaviour
         }
     }
 
-    private void ClearTurnAround()
+    private void ClearObstacleAvoidance()
+    {
+        if (TurnAroundState?.Mode != TurnAroundMode.LookAround)
+        {
+            TurnAroundDuration = null;
+            TurnAroundState = null;
+        }
+    }
+
+    private void ClearLookAround()
     {
         TurnAroundDuration = null;
-        TurnAroundMode = null;
+        TurnAroundState = null;
     }
 
     private void AvoidObstacle(bool turnAroundClockwise = true, float duration = 2)
     {
-        TurnAroundDuration = duration;
-        TurnAroundMode = TurnAround.AvoidObstacle(turnAroundClockwise);
+        if(TurnAroundState?.Mode != TurnAroundMode.LookAround)
+        {
+            TurnAroundDuration = duration;
+            TurnAroundState = TurnAround.AvoidObstacle(turnAroundClockwise);
+        }
     }
 
     private void LookAround(bool turnAroundClockwise = true, float duration = 2)
     {
         TurnAroundDuration = duration;
-        TurnAroundMode = TurnAround.LookAround(turnAroundClockwise);
+        TurnAroundState = TurnAround.LookAround(turnAroundClockwise);
     }
 
     private void ResetLifetime()

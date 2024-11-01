@@ -307,7 +307,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aacac913ab312e34b9ccda7eee5f2b7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TorqueMultiplier: 10
+  TorqueMultiplier: 15
   ForceMultiplier: 0.4
 --- !u!114 &1089436927646635733
 MonoBehaviour:
@@ -1165,8 +1165,8 @@ Transform:
   m_GameObject: {fileID: 7444353373745326385}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.38268343, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: 0, y: -0.138, z: 0}
-  m_LocalScale: {x: 0.7220581, y: 0.22299029, z: 0.7220581}
+  m_LocalPosition: {x: 0, y: -0.138, z: -0.036}
+  m_LocalScale: {x: 0.5944127, y: 0.18357007, z: 0.5944127}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8542657810488951160}

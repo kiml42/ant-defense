@@ -14,7 +14,7 @@ public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
 
     public Transform TargetObject => AntStateMachine.CurrentTarget?.TargetPoint;
 
-    public TurnAround? TurnAround => AntStateMachine.TurnAroundMode;
+    public TurnAround? TurnAround => AntStateMachine.TurnAroundState;
 
     private AntStateMachine AntStateMachine;
 

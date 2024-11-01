@@ -28,7 +28,7 @@ public class AntMoveController : MonoBehaviour
         Vector3 headingError;
         if (_positionProvider.TurnAround.HasValue)
         {
-            headingError = _positionProvider.TurnAround.Value.Clockwise ? Vector3.up : Vector3.down;
+            headingError = (_positionProvider.TurnAround.Value.Clockwise ? Vector3.up : Vector3.down);
         }
         else
         {
@@ -37,7 +37,12 @@ public class AntMoveController : MonoBehaviour
 
             headingError = Vector3.Cross(transform.forward, direction);
         }
+        if(headingError.magnitude > 1)
+        {
+            headingError.Normalize();
+        }
         Debug.DrawRay(transform.position, headingError, Color.green);
+
 
         //_rigidbody.rotation = targetRotation;
         _rigidbody.AddTorque(headingError * TorqueMultiplier);
