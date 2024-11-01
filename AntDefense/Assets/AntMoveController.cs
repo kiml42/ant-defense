@@ -23,21 +23,25 @@ public class AntMoveController : MonoBehaviour
 
     private void Turn()
     {
-        //transform.rotation = Quaternion.LookRotation(transform.forward, Vector3.up);
-
-        Vector3 headingError;
-        if (_positionProvider.TurnAround.HasValue)
+        Vector3 headingError = Vector3.zero;
+        if (IsUpright)
         {
-            headingError = (_positionProvider.TurnAround.Value.Clockwise ? Vector3.up : Vector3.down);
-        }
-        else
-        {
-            var direction = _positionProvider.TargetPosition - _rigidbody.position;
-            Debug.DrawRay(transform.position, direction, Color.blue);
+            if (_positionProvider.TurnAround.HasValue)
+            {
+                headingError = (_positionProvider.TurnAround.Value.Clockwise ? Vector3.up : Vector3.down);
+            }
+            else
+            {
+                var direction = _positionProvider.TargetPosition - _rigidbody.position;
+                Debug.DrawRay(transform.position, direction, Color.blue);
 
-            headingError = Vector3.Cross(transform.forward, direction);
+                headingError = Vector3.Cross(transform.forward, direction);
+            }
         }
-        if(headingError.magnitude > 1)
+
+        headingError += Vector3.Cross(transform.up, Vector3.up) * 10;
+
+        if (headingError.magnitude > 1)
         {
             headingError.Normalize();
         }
@@ -48,9 +52,11 @@ public class AntMoveController : MonoBehaviour
         _rigidbody.AddTorque(headingError * TorqueMultiplier);
     }
 
+    private bool IsUpright => transform.up.y > 0.8;
+
     private void ApplyForce()
     {
-        if (_positionProvider.TurnAround?.Move == false)
+        if (!IsUpright || _positionProvider.TurnAround?.Move == false)
         {
             return;
         }
