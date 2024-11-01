@@ -130,6 +130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e86924570fb3c5346bfe026596dfdf58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TargetPoint: {fileID: 4304061794554422484}
   Material: {fileID: 5091190672173903247}
   _lifetimeController: {fileID: 4957269030129393126}
   LifetimePenalty: 1.3

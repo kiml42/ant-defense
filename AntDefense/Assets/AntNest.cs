@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AntNest : Smellable
+public class AntNest : MonoBehaviour
 {
     public GameObject AntParent;
     public Transform SpawnPoint;
@@ -10,10 +10,6 @@ public class AntNest : Smellable
     public float MaxRespawnTime = 5;
 
     public Transform AntPrefab;
-
-    public override Smell Smell => Smell.Home;
-    public override float TimeFromTarget => 0;
-    public override bool IsActual => true;
 
     private float _timeUntilSpawn;
 

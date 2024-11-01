@@ -75,6 +75,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2295d608de08f5c44b21df5d8c557d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TargetPoint: {fileID: 0}
 --- !u!114 &87658727744314253
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -241,6 +242,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2295d608de08f5c44b21df5d8c557d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TargetPoint: {fileID: 3562446625101866731}
 --- !u!33 &2379487973679845947
 MeshFilter:
   m_ObjectHideFlags: 0

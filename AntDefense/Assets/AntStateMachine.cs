@@ -1,4 +1,5 @@
 using System;
+using System.Xml.Linq;
 using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
@@ -96,7 +97,12 @@ public class AntStateMachine : MonoBehaviour
         var @object = collision.gameObject;
         if(@object.TryGetComponent<Smellable>(out var smellable))
         {
+            //Debug.Log($"Collided With {@object} smellable: {smellable}");
             ProcessCollision(smellable);
+        }
+        else if(!@object.ToString().Contains("Plane"))
+        {
+            //Debug.Log($"Collided With {@object} Not smellable");
         }
     }
 
@@ -167,7 +173,7 @@ public class AntStateMachine : MonoBehaviour
 
     private bool HasLineOfSight(Smellable smellable)
     {
-        var direction = smellable?.transform?.position - ViewPoint?.position;
+        var direction = smellable?.TargetPoint?.position - ViewPoint?.position;
 
         if (!direction.HasValue)
         {

@@ -12,7 +12,7 @@ public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
 
     public Vector3 TargetPosition => TargetObject?.position ?? transform.position + _targetPosition;
 
-    public Transform TargetObject => AntStateMachine.CurrentTarget?.transform;
+    public Transform TargetObject => AntStateMachine.CurrentTarget?.TargetPoint;
 
     public bool TurnAround => AntStateMachine.TurnAroundDuration.HasValue && AntStateMachine.TurnAroundDuration.Value > 0;
 
