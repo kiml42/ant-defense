@@ -75,14 +75,14 @@ public class TrailPointController : Smellable
                 {
                     // this one is better, use the best lifetime, and destroy the other.
                     _lifetimeController.RemainingTime = bestLifetime;
-                    Debug.Log($"Destroying other {otherTrailPoint} in favor of {this}");
+                    //Debug.Log($"Destroying other {otherTrailPoint} in favor of {this}");
                     Destroy(otherTrailPoint.gameObject);
                 }
                 else if(otherTrailPoint.TimeFromTarget < TimeFromTarget)
                 {
                     // other is better, reset its lifetime and destroy this one
                     otherTrailPoint._lifetimeController.RemainingTime = bestLifetime;
-                    Debug.Log($"Destroying this {this} in favor of {otherTrailPoint}");
+                    //Debug.Log($"Destroying this {this} in favor of {otherTrailPoint}");
                     Destroy(gameObject);
                     return false;
                 }

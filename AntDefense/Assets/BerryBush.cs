@@ -23,7 +23,7 @@ public class BerryBush : MonoBehaviour
 
     void FixedUpdate()
     {
-        _timeUntilSpawn -= Time.deltaTime;
+        _timeUntilSpawn -= Time.fixedDeltaTime;
         if (_timeUntilSpawn < 0)
         {
             var randomisation = Random.insideUnitCircle * SpawnRadius;

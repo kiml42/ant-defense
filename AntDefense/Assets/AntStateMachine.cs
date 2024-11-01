@@ -74,13 +74,13 @@ public class AntStateMachine : MonoBehaviour
 
         if (TurnAroundDuration.HasValue)
         {
-            TurnAroundDuration -= Time.deltaTime;
+            TurnAroundDuration -= Time.fixedDeltaTime;
             if(TurnAroundDuration.Value <= 0)
             {
                 ClearLookAround();
             }
         }
-        _timeSinceTargetAquisition += Time.deltaTime;
+        _timeSinceTargetAquisition += Time.fixedDeltaTime;
         if(CurrentTarget != null)
         {
             Debug.DrawLine(transform.position, CurrentTarget.TargetPoint.position, Color.cyan);
@@ -100,7 +100,7 @@ public class AntStateMachine : MonoBehaviour
         if (_maxTargetTime.HasValue)
         {
             //Debug.Log($"MaxTargetTime {_maxTargetTime}");
-            _maxTargetTime += Time.deltaTime * 0.5f;
+            _maxTargetTime += Time.fixedDeltaTime * 0.5f;
         }
     }
 

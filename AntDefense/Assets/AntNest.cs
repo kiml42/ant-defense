@@ -26,7 +26,7 @@ public class AntNest : MonoBehaviour
 
     void FixedUpdate()
     {
-        _timeUntilSpawn -= Time.deltaTime;
+        _timeUntilSpawn -= Time.fixedDeltaTime;
         if(_timeUntilSpawn < 0)
         {
             var count = Random.Range(1, MaxAntsPerSpawn + 1);

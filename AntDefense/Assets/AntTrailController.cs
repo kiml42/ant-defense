@@ -36,7 +36,7 @@ public class AntTrailController : MonoBehaviour
             _lastTrailPointLocation = null;
             _timeSinceTarget = 0;
         }
-        _timeSinceTarget += Time.deltaTime;
+        _timeSinceTarget += Time.fixedDeltaTime;
 
         LeaveTrail();
     }
