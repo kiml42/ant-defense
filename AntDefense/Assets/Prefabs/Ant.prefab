@@ -296,6 +296,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ForwardsBias: 0.02
   RandomBias: 0.4
+  AntStateMachine: {fileID: 9190200353074072473}
 --- !u!114 &2951773968300769007
 MonoBehaviour:
   m_ObjectHideFlags: 0

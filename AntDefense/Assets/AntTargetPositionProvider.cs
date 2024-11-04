@@ -1,10 +1,5 @@
 using UnityEngine;
 
-//TODO - Make turn around work by setting the heading direction rather than just generally turning it around.
-//the direction can then be allowed to wander back normal with its random movements.
-// For obstacles the target position should be set to a position along the tangent of teh collision.
-// For turning around to find the way back it should be set behind the ant.
-// When the ant has a target it's moving towards,don't just use that location imediately, instead have the target wander back towards it.
 public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
 {
     public float ForwardsBias = 0.1f;
@@ -13,39 +8,39 @@ public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
     /// <summary>
     /// Target position relative to this ant
     /// </summary>
-    private Vector3 _targetPosition = Vector3.zero;
+    private Vector3 _targetDirection = Vector3.forward;
 
-    public Vector3 TargetPosition => TargetObject?.position ?? transform.position + _targetPosition;
+    /// <summary>
+    /// Target position in world space
+    /// </summary>
+    public Vector3 TargetPosition => TargetObject?.position ?? transform.position + transform.TransformDirection(_targetDirection);
 
     public Transform TargetObject => AntStateMachine.CurrentTarget?.TargetPoint;
 
     public TurnAround? TurnAround => AntStateMachine.TurnAroundState;
 
-    private AntStateMachine AntStateMachine;
-
-    void Start()
-    {
-        AntStateMachine = GetComponentInChildren<AntStateMachine>();
-    }
+    public AntStateMachine AntStateMachine;
 
     void FixedUpdate()
     {
         if(TargetObject == null)
         {
-            _targetPosition += Random.insideUnitSphere * RandomBias + transform.forward * ForwardsBias;
-            _targetPosition.y *= 0.1f;
-            _targetPosition.Normalize();
+            _targetDirection += Random.insideUnitSphere * RandomBias + transform.forward * ForwardsBias;
+            _targetDirection.y *= 0.1f;
+            _targetDirection.Normalize();
         }
         else
         {
-            _targetPosition = TargetObject.position;
+            _targetDirection = Vector3.zero;
         }
+
+        Debug.DrawRay(transform.position, transform.TransformDirection(_targetDirection), Color.gray);
+        Debug.DrawLine(transform.position, TargetPosition, Color.black);
     }
 }
 
 public interface ITargetPositionProvider
 {
-    Transform TargetObject { get; }
     Vector3 TargetPosition { get; }
 
     TurnAround? TurnAround { get; }
