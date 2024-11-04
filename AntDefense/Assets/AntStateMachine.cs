@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
 {
-    // TODO stop ants getting stuck at the end of a trail if teh food has since gone
     // TODO Make ants turn sideways if they bump into something.
     private Smellable _currentTarget;
 
