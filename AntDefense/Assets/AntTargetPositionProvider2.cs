@@ -7,21 +7,35 @@
 // When the ant has a target it's moving towards,don't just use that location imediately, instead have the target wander back towards it.
 public class AntTargetPositionProvider2 : MonoBehaviour, ITargetPositionProvider
 {
-    public float ForwardsBias = 0.1f;
-    public float TargetBias = 1.2f;
-    public float RandomBias = 0.2f;
+    /// <summary>
+    /// Rate at which the position the ant is currently turning towards moves towards the target.
+    /// If there is no currnet target, the target is taken as being straight ahead.
+    /// </summary>
+    public float ForwardsBias =1f;
 
-    public Vector3 LocalTargetDirection {  get; private set; }
-    public Vector3 WorldTargetDirection => transform.TransformDirection(LocalTargetDirection);
+    /// <summary>
+    /// Multiplier for <see cref="ForwardsBias"/> applied when there is a target, to get the ant to turn towards the target faster.
+    /// </summary>
+    public float TargetMultiplier = 1.2f;
+
+    /// <summary>
+    /// Rate at which teh ant's turning direction moves randomly.
+    /// </summary>
+    public float RandomBias = 1f;
+
+    /// <summary>
+    /// World space target direction
+    /// </summary>
+    public Vector3 TargetDirection {  get; private set; }
 
     /// <summary>
     /// Target position in world space
     /// </summary>
-    public Vector3 TargetPosition => transform.position + WorldTargetDirection;
+    public Vector3 TargetPosition => transform.position + TargetDirection;
 
     /// <summary>
     /// The non-randomised target position that this ant should be turning towards.
-    /// Relative to this ant.
+    /// In world space
     /// </summary>
     private Vector3 _eventualTargetDirection = Vector3.zero;
 
@@ -32,29 +46,40 @@ public class AntTargetPositionProvider2 : MonoBehaviour, ITargetPositionProvider
     void Start()
     {
         AntStateMachine = GetComponentInChildren<AntStateMachine>();
-        _eventualTargetDirection = Vector3.forward; // default to walking forwards.
+        _eventualTargetDirection = transform.forward; // default to walking forwards.
         var randomPosition = Random.insideUnitCircle.normalized;
-        LocalTargetDirection = new Vector3(randomPosition.x, 0, randomPosition.y);    // Start with the current target position in a random direction.
+        TargetDirection = new Vector3(randomPosition.x, 0, randomPosition.y);    // Start with the current target position in a random direction.
     }
 
     void FixedUpdate()
     {
         var targetObject = AntStateMachine.CurrentTarget?.TargetPoint;
+        var forwardsBias = ForwardsBias * Time.fixedDeltaTime;
+
         if (targetObject != null)
         {
-            _eventualTargetDirection = transform.InverseTransformPoint(targetObject.position);
+            forwardsBias *= TargetMultiplier;
+            _eventualTargetDirection = targetObject.position - transform.position;
+            this.TargetDirection = _eventualTargetDirection;
+            // TODO don't set it to the target immediately after a recent collision, let it move back gradually for some time,
+            // only return to jumping straight to the target after some time without a collision.
+            return;
         }
         else
         {
-            _eventualTargetDirection = Vector3.forward * ForwardsBias;
+            _eventualTargetDirection = transform.forward;
         }
 
         var randomBias = RandomBias * Time.fixedDeltaTime;
-        var forwardsBias = TargetBias * Time.fixedDeltaTime;
-        var currentBias = 1f - forwardsBias - randomBias;
-        LocalTargetDirection = LocalTargetDirection + (Random.insideUnitSphere - LocalTargetDirection) * randomBias + (_eventualTargetDirection - LocalTargetDirection) * forwardsBias;
+        var randomComponent = (Random.insideUnitSphere - TargetDirection) * randomBias;
+        var forwardsComponent = (_eventualTargetDirection - TargetDirection) * forwardsBias;
+        Debug.DrawRay(transform.position, TargetDirection, Color.red);
+        Debug.Log(forwardsComponent);
+        Debug.DrawRay(TargetPosition, forwardsComponent, Color.white);
+        Debug.DrawRay(TargetPosition + forwardsComponent, randomComponent, Color.gray);
+        this.TargetDirection += forwardsComponent + randomComponent;
 
-        Debug.DrawRay(transform.position, transform.TransformDirection(_eventualTargetDirection), Color.gray);
-        Debug.DrawLine(transform.position, TargetPosition, Color.black);
+        Debug.DrawRay(transform.position, _eventualTargetDirection, Color.black);
+        Debug.DrawRay(transform.position, TargetDirection, Color.green);
     }
 }

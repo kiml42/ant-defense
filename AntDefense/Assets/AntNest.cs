@@ -13,7 +13,7 @@ public class AntNest : MonoBehaviour
 
     private float _timeUntilSpawn;
 
-    public int MaxAntsPerSpawn = 1; 
+    public int AntsPerSpawn = 5; 
     public float SpawnRadius = 1; 
 
     void Start()
@@ -29,8 +29,7 @@ public class AntNest : MonoBehaviour
         _timeUntilSpawn -= Time.fixedDeltaTime;
         if(_timeUntilSpawn < 0)
         {
-            var count = Random.Range(1, MaxAntsPerSpawn + 1);
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < AntsPerSpawn; i++)
             {
                 var position = (SpawnPoint?.position ?? this.transform.position) + Random.insideUnitSphere * SpawnRadius;
                 var randomLookTarget = Random.insideUnitCircle;

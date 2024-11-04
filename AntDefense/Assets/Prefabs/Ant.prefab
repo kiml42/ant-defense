@@ -294,8 +294,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df9ee9cff92526d4098bcc2596b42d61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ForwardsBias: 1
-  RandomBias: 1
+  ForwardsBias: 0.5
+  TargetMultiplier: 10
+  RandomBias: 3
 --- !u!114 &-3196181228672205010
 MonoBehaviour:
   m_ObjectHideFlags: 0
