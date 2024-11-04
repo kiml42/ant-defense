@@ -8,6 +8,7 @@
 public class AntTargetPositionProvider2 : MonoBehaviour, ITargetPositionProvider
 {
     public float ForwardsBias = 0.1f;
+    public float TargetBias = 1.2f;
     public float RandomBias = 0.2f;
 
     public Vector3 LocalTargetDirection {  get; private set; }
@@ -22,7 +23,7 @@ public class AntTargetPositionProvider2 : MonoBehaviour, ITargetPositionProvider
     /// The non-randomised target position that this ant should be turning towards.
     /// Relative to this ant.
     /// </summary>
-    private Vector3 _eventualTargetPosition = Vector3.zero;
+    private Vector3 _eventualTargetDirection = Vector3.zero;
 
     public TurnAround? TurnAround => AntStateMachine.TurnAroundState;
 
@@ -31,7 +32,7 @@ public class AntTargetPositionProvider2 : MonoBehaviour, ITargetPositionProvider
     void Start()
     {
         AntStateMachine = GetComponentInChildren<AntStateMachine>();
-        _eventualTargetPosition = Vector3.forward; // default to walking forwards.
+        _eventualTargetDirection = Vector3.forward; // default to walking forwards.
         var randomPosition = Random.insideUnitCircle.normalized;
         LocalTargetDirection = new Vector3(randomPosition.x, 0, randomPosition.y);    // Start with the current target position in a random direction.
     }
@@ -41,19 +42,19 @@ public class AntTargetPositionProvider2 : MonoBehaviour, ITargetPositionProvider
         var targetObject = AntStateMachine.CurrentTarget?.TargetPoint;
         if (targetObject != null)
         {
-            _eventualTargetPosition = targetObject.position;
+            _eventualTargetDirection = transform.InverseTransformPoint(targetObject.position);
         }
         else
         {
-            _eventualTargetPosition = Vector3.forward;
+            _eventualTargetDirection = Vector3.forward * ForwardsBias;
         }
 
         var randomBias = RandomBias * Time.fixedDeltaTime;
-        var forwardsBias = ForwardsBias * Time.fixedDeltaTime;
+        var forwardsBias = TargetBias * Time.fixedDeltaTime;
         var currentBias = 1f - forwardsBias - randomBias;
-        LocalTargetDirection = LocalTargetDirection * currentBias + Random.insideUnitSphere * randomBias + _eventualTargetPosition * forwardsBias;
+        LocalTargetDirection = LocalTargetDirection + (Random.insideUnitSphere - LocalTargetDirection) * randomBias + (_eventualTargetDirection - LocalTargetDirection) * forwardsBias;
 
-        Debug.DrawRay(transform.position, transform.TransformDirection(_eventualTargetPosition) * 10, Color.gray);
-        Debug.DrawLine(transform.position, transform.TransformDirection(TargetPosition) * 10, Color.black);
+        Debug.DrawRay(transform.position, transform.TransformDirection(_eventualTargetDirection), Color.gray);
+        Debug.DrawLine(transform.position, TargetPosition, Color.black);
     }
 }
