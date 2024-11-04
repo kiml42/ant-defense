@@ -37,6 +37,14 @@ public class AntStateMachine : MonoBehaviour
     public float MaxTimeGoingForTrailPoint = 4;
     private float _timeSinceTargetAquisition;
     private float? _maxTargetTime;
+
+    /// <summary>
+    /// Amount to decrace the max target time by if no better target has been found in <see cref="MaxTimeGoingForTrailPoint"/> seconds.
+    /// </summary>
+    public float GiveUpPenalty = 0.5f;
+
+    public float GiveUpRecoveryMultiplier = 2f;
+
     public const int GroundLayer = 3;
 
     public Smell TrailSmell
@@ -86,7 +94,7 @@ public class AntStateMachine : MonoBehaviour
             {
                 //TODO Test this method of making it not go straight back to the target, but let it go to similar targets later.
                 //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget);
-                _maxTargetTime = CurrentTarget.TimeFromTarget - MaxTimeGoingForTrailPoint;
+                _maxTargetTime = CurrentTarget.TimeFromTarget - GiveUpPenalty;
                 ClearTarget();
             }
             else if(!HasLineOfSight(CurrentTarget))
@@ -98,7 +106,7 @@ public class AntStateMachine : MonoBehaviour
         if (_maxTargetTime.HasValue)
         {
             //Debug.Log($"MaxTargetTime {_maxTargetTime}");
-            _maxTargetTime += Time.fixedDeltaTime * 0.5f;
+            _maxTargetTime += Time.fixedDeltaTime * GiveUpRecoveryMultiplier;
         }
     }
 

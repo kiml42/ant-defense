@@ -74,7 +74,6 @@ public class AntTargetPositionProvider2 : MonoBehaviour, ITargetPositionProvider
         var randomComponent = (Random.insideUnitSphere - TargetDirection) * randomBias;
         var forwardsComponent = (_eventualTargetDirection - TargetDirection) * forwardsBias;
         Debug.DrawRay(transform.position, TargetDirection, Color.red);
-        Debug.Log(forwardsComponent);
         Debug.DrawRay(TargetPosition, forwardsComponent, Color.white);
         Debug.DrawRay(TargetPosition + forwardsComponent, randomComponent, Color.gray);
         this.TargetDirection += forwardsComponent + randomComponent;

@@ -281,7 +281,9 @@ MonoBehaviour:
   State: 0
   LifetimeController: {fileID: 3583501033866052853}
   ViewPoint: {fileID: 9217438795446165722}
-  MaxTimeGoingForTrailPoint: 4
+  MaxTimeGoingForTrailPoint: 2
+  GiveUpPenalty: 0.8
+  GiveUpRecoveryMultiplier: 1.5
 --- !u!114 &2951773968300769007
 MonoBehaviour:
   m_ObjectHideFlags: 0
