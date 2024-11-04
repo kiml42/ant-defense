@@ -296,7 +296,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ForwardsBias: 0.5
   TargetMultiplier: 10
-  RandomBias: 3
+  RandomBias: 20
 --- !u!114 &-3196181228672205010
 MonoBehaviour:
   m_ObjectHideFlags: 0
