@@ -25,7 +25,7 @@ public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
     {
         if(TargetObject == null)
         {
-            _targetDirection += Random.insideUnitSphere * RandomBias + transform.forward * ForwardsBias;
+            _targetDirection += Random.insideUnitSphere * RandomBias + Vector3.forward * ForwardsBias;
             _targetDirection.y *= 0.1f;
             _targetDirection.Normalize();
         }

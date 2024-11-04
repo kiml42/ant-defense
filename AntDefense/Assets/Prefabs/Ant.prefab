@@ -294,7 +294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42426562d79cebb43b98f3407f22c874, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ForwardsBias: 0.02
+  ForwardsBias: 0.2
   RandomBias: 0.4
   AntStateMachine: {fileID: 9190200353074072473}
 --- !u!114 &2951773968300769007
