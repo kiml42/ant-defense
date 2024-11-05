@@ -11,72 +11,67 @@ public class AntTargetPositionProvider : MonoBehaviour
     /// Rate at which the position the ant is currently turning towards moves towards the target.
     /// If there is no currnet target, the target is taken as being straight ahead.
     /// </summary>
-    public float ForwardsBias =1f;
-
-    /// <summary>
-    /// Multiplier for <see cref="ForwardsBias"/> applied when there is a target, to get the ant to turn towards the target faster.
-    /// </summary>
-    public float TargetMultiplier = 1.2f;
+    public float ForwardsWeightingWithoutTarget =1f;
 
     /// <summary>
     /// Rate at which teh ant's turning direction moves randomly.
     /// </summary>
-    public float RandomBias = 1f;
+    public float RandomDirectionChangePerSecond = 1f;
 
     /// <summary>
-    /// World space target direction
+    /// Weighting of the random component when there is no target.
     /// </summary>
-    public Vector3 TargetDirection {  get; private set; }
+    public float MaxRandomMagnitude = 2f;
 
     /// <summary>
-    /// Target position in world space
+    /// direction this ant wants to move in
     /// </summary>
-    public Vector3 TargetPosition => transform.position + TargetDirection;
+    public Vector3 DirectionToMove {  get; private set; }
 
     /// <summary>
-    /// The non-randomised target position that this ant should be turning towards.
-    /// In world space
+    /// The random direction this ant wants to move in.
     /// </summary>
-    private Vector3 _eventualTargetDirection = Vector3.zero;
+    private Vector3 _randomDirection = Vector3.zero;
 
+    /// <summary>
+    /// Current target this ant should move towards
+    /// </summary>
     private Smellable _target;
 
     void Start()
     {
-        _eventualTargetDirection = transform.forward; // default to walking forwards.
         var randomPosition = Random.insideUnitCircle.normalized;
-        TargetDirection = new Vector3(randomPosition.x, 0, randomPosition.y);    // Start with the current target position in a random direction.
+        DirectionToMove = new Vector3(randomPosition.x, 0, randomPosition.y);    // Start with the current target position in a random direction.
     }
 
     void FixedUpdate()
     {
         var targetObject = _target?.TargetPoint;
-        var forwardsBias = ForwardsBias * Time.fixedDeltaTime;
 
         if (targetObject != null)
         {
-            forwardsBias *= TargetMultiplier;
-            _eventualTargetDirection = targetObject.position - transform.position;
-            this.TargetDirection = _eventualTargetDirection;
+            this.DirectionToMove = targetObject.position - transform.position;
             // TODO don't set it to the target immediately after a recent collision, let it move back gradually for some time,
             // only return to jumping straight to the target after some time without a collision.
             return;
         }
-        else
+
+        var randomChangeMagnitude = RandomDirectionChangePerSecond * Time.fixedDeltaTime;
+        var randomComponent = Random.insideUnitSphere * randomChangeMagnitude;
+        _randomDirection += randomComponent;
+        if(_randomDirection.magnitude > MaxRandomMagnitude)
         {
-            _eventualTargetDirection = transform.forward;
+            _randomDirection = _randomDirection.normalized * MaxRandomMagnitude;
         }
 
-        var randomBias = RandomBias * Time.fixedDeltaTime;
-        var randomComponent = (Random.insideUnitSphere - TargetDirection) * randomBias;
-        var forwardsComponent = (_eventualTargetDirection - TargetDirection) * forwardsBias;
-        Debug.DrawRay(transform.position, TargetDirection, Color.red);
-        Debug.DrawRay(TargetPosition, forwardsComponent, Color.white);
-        Debug.DrawRay(TargetPosition + forwardsComponent, randomComponent, Color.gray);
-        this.TargetDirection += forwardsComponent + randomComponent;
+        var forwardsComponent = transform.forward * ForwardsWeightingWithoutTarget;
+        Debug.DrawRay(transform.position, DirectionToMove, Color.red);
 
-        Debug.DrawRay(transform.position, _eventualTargetDirection, Color.black);
-        Debug.DrawRay(transform.position, TargetDirection, Color.green);
+        this.DirectionToMove = _randomDirection + forwardsComponent;
+
+        Debug.DrawRay(transform.position, _randomDirection, Color.grey);
+        Debug.DrawRay(transform.position + _randomDirection, forwardsComponent, Color.grey);
+        Debug.DrawRay(transform.position, DirectionToMove, Color.green);
     }
 
     public void SetTarget(Smellable target)

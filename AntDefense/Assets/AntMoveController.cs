@@ -29,7 +29,7 @@ public class AntMoveController : MonoBehaviour
         if (IsUpright)
         {
             // only turn towards teh target if upright
-            var direction = _positionProvider.TargetPosition - _rigidbody.position;
+            var direction = _positionProvider.DirectionToMove;
 
             var angle = Vector3.SignedAngle(transform.forward, direction, transform.up);
 
