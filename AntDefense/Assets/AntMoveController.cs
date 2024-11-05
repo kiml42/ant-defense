@@ -30,9 +30,24 @@ public class AntMoveController : MonoBehaviour
         {
             // only turn towards teh target if upright
             var direction = _positionProvider.TargetPosition - _rigidbody.position;
-            //Debug.DrawRay(transform.position, direction, Color.blue);
 
-            headingError = Vector3.Cross(transform.forward, direction);
+            var angle = Vector3.Angle(transform.forward, direction);
+
+            if(angle >= 90)
+            {
+                headingError += transform.up;
+            }
+            else if(angle <= -90)
+            {
+            // TODO check this works
+                headingError -= transform.up;
+            }
+            else
+            {
+                //Debug.DrawRay(transform.position, direction, Color.blue);
+
+                headingError = Vector3.Cross(transform.forward, direction);
+            }
         }
 
 
