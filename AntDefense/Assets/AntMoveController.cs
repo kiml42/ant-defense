@@ -45,7 +45,7 @@ public class AntMoveController : MonoBehaviour
             {
                 //Debug.DrawRay(transform.position, direction, Color.blue);
 
-                headingError = Vector3.Cross(transform.forward, direction);
+                headingError = Vector3.Cross(transform.forward, direction).normalized;
             }
         }
 
