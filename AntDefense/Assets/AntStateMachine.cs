@@ -9,9 +9,6 @@ public class AntStateMachine : MonoBehaviour
 
     public AntState State = AntState.SeekingFood;
 
-    private float? TurnAroundDuration = null;
-    private TurnAround? TurnAroundState = null;
-
     public LifetimeController LifetimeController;
 
     public Transform ViewPoint;
@@ -80,14 +77,6 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
-        if (TurnAroundDuration.HasValue)
-        {
-            TurnAroundDuration -= Time.fixedDeltaTime;
-            if(TurnAroundDuration.Value <= 0)
-            {
-                ClearLookAround();
-            }
-        }
         _timeSinceTargetAquisition += Time.fixedDeltaTime;
         if(CurrentTarget != null)
         {
@@ -135,12 +124,8 @@ public class AntStateMachine : MonoBehaviour
         }
 
         //Debug.Log($"Collided With obstacle {@object}");
-        //this.Obstacles.Add(@object);
-        var contact = collision.GetContact(0);
-        var contactPointInAntSpace = transform.InverseTransformPoint(contact.point);
-        //contact.point
-        // TODO decide direction based on where the collision is.
-        AvoidObstacle(turnAroundClockwise: contactPointInAntSpace.x < 0);
+
+        PositionProvider.AvoidObstacle(collision);
     }
 
     public void ProcessSmell(Smellable smellable)
@@ -204,7 +189,7 @@ public class AntStateMachine : MonoBehaviour
                 // either there is no hit (no rigidbody int he way) or the hit is the thing we're trying to move towards.
                 _currentTarget = smellable;
                 PositionProvider.SetTarget(CurrentTarget);
-                ClearLookAround();
+                PositionProvider.ClearTurnAround();
                 _timeSinceTargetAquisition = 0;
             }
         }
@@ -248,14 +233,14 @@ public class AntStateMachine : MonoBehaviour
                     case AntState.SeekingFood:
                         State = AntState.ReportingFood;
                         _maxTargetTime = null;
-                        LookAround();
+                        PositionProvider.SetTurnAround();
                         ClearTarget();
                         ResetLifetime();
                         return;
                     case AntState.ReturningToFood:
                         State = AntState.ReportingFood; // Temporary tuntil they can pick up the food.
                         _maxTargetTime = null;
-                        LookAround();
+                        PositionProvider.SetTurnAround();
                         ClearTarget();
                         ResetLifetime();
                         return;
@@ -271,7 +256,7 @@ public class AntStateMachine : MonoBehaviour
                     case AntState.ReportingFood:
                     case AntState.CarryingFood:
                         State = AntState.ReturningToFood;
-                        LookAround(false);
+                        PositionProvider.SetTurnAround();
                         _maxTargetTime = null;
                         ClearTarget();
                         ResetLifetime();
@@ -279,30 +264,6 @@ public class AntStateMachine : MonoBehaviour
                 }
                 return;
         }
-    }
-
-    private void ClearLookAround()
-    {
-        TurnAroundDuration = null;
-        TurnAroundState = null;
-        PositionProvider.SetTurnAround(TurnAroundState);
-    }
-
-    private void AvoidObstacle(bool turnAroundClockwise = true, float duration = 0.1f)
-    {
-        if(TurnAroundState?.Mode != TurnAroundMode.LookAround)
-        {
-            TurnAroundDuration = duration;
-            TurnAroundState = TurnAround.AvoidObstacle(turnAroundClockwise);
-            PositionProvider.SetTurnAround(TurnAroundState);
-        }
-    }
-
-    private void LookAround(bool turnAroundClockwise = true, float duration = 2)
-    {
-        TurnAroundDuration = duration;
-        TurnAroundState = TurnAround.LookAround(turnAroundClockwise);
-        PositionProvider.SetTurnAround(TurnAroundState);
     }
 
     private void ResetLifetime()

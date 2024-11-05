@@ -4,7 +4,7 @@ public class AntMoveController : MonoBehaviour
 {
     public float TorqueMultiplier = 10;
     public float ForceMultiplier = 0.1f;
-    private ITargetPositionProvider _positionProvider;
+    private AntTargetPositionProvider _positionProvider;
 
     private Rigidbody _rigidbody;
 
@@ -12,7 +12,7 @@ public class AntMoveController : MonoBehaviour
     void Start()
     {
         _rigidbody = GetComponent<Rigidbody>();
-        _positionProvider = GetComponent<ITargetPositionProvider>();
+        _positionProvider = GetComponent<AntTargetPositionProvider>();
     }
 
     void FixedUpdate()
@@ -26,17 +26,10 @@ public class AntMoveController : MonoBehaviour
         Vector3 headingError = Vector3.zero;
         if (IsUpright)
         {
-            if (_positionProvider.TurnAround.HasValue)
-            {
-                headingError = (_positionProvider.TurnAround.Value.Clockwise ? Vector3.up : Vector3.down);
-            }
-            else
-            {
-                var direction = _positionProvider.TargetPosition - _rigidbody.position;
-                //Debug.DrawRay(transform.position, direction, Color.blue);
+            var direction = _positionProvider.TargetPosition - _rigidbody.position;
+            //Debug.DrawRay(transform.position, direction, Color.blue);
 
-                headingError = Vector3.Cross(transform.forward, direction);
-            }
+            headingError = Vector3.Cross(transform.forward, direction);
         }
 
         headingError += Vector3.Cross(transform.up, Vector3.up) * 10;
@@ -56,7 +49,7 @@ public class AntMoveController : MonoBehaviour
 
     private void ApplyForce()
     {
-        if (!IsUpright || _positionProvider.TurnAround?.Move == false)
+        if (!IsUpright)
         {
             return;
         }

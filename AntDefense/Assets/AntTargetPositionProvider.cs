@@ -5,7 +5,7 @@
 // For obstacles the target position should be set to a position along the tangent of teh collision.
 // For turning around to find the way back it should be set behind the ant.
 // When the ant has a target it's moving towards,don't just use that location imediately, instead have the target wander back towards it.
-public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
+public class AntTargetPositionProvider : MonoBehaviour
 {
     /// <summary>
     /// Rate at which the position the ant is currently turning towards moves towards the target.
@@ -38,8 +38,6 @@ public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
     /// In world space
     /// </summary>
     private Vector3 _eventualTargetDirection = Vector3.zero;
-
-    public TurnAround? TurnAround { get; private set; }
 
     private Smellable _target;
 
@@ -86,40 +84,24 @@ public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
         _target = target;
     }
 
-    public void SetTurnAround(TurnAround? turnAround)
+    public void ClearTurnAround()
     {
-        TurnAround = turnAround;
-    }
-}
-public interface ITargetPositionProvider
-{
-    Vector3 TargetPosition { get; }
-
-    TurnAround? TurnAround { get; }
-
-    void SetTarget(Smellable target);
-
-    void SetTurnAround(TurnAround? turnAround);
-}
-
-public readonly struct TurnAround
-{
-    public readonly TurnAroundMode Mode;
-    public readonly bool Clockwise;
-    public bool Move => Mode != TurnAroundMode.LookAround;
-
-    private TurnAround(TurnAroundMode mode, bool clockwise)
-    {
-        Mode = mode;
-        Clockwise = clockwise;
+        // TODO
+        //throw new System.NotImplementedException();
     }
 
-    public static TurnAround AvoidObstacle(bool clockwise) => new TurnAround(TurnAroundMode.AvoidObstacle, clockwise);
-    public static TurnAround LookAround(bool clockwise) => new TurnAround(TurnAroundMode.LookAround, clockwise);
-}
+    public void SetTurnAround()
+    {
+        // TODO set the target to move towards to behind the ant, or, ideally to the location of the last point left before changing state.
+        //throw new System.NotImplementedException();
+    }
 
-public enum TurnAroundMode
-{
-    LookAround,
-    AvoidObstacle
+    internal void AvoidObstacle(Collision collision)
+    {
+        var contact = collision.GetContact(0);
+        var contactPointInAntSpace = transform.InverseTransformPoint(contact.point);
+        // TODO set the target location to somewhere that avoids the obstacle
+        // possible chose randomly with a strong chance of tangential to the obstacle if it's a wall, may need differet behaviour if hitting an ant.
+        //throw new System.NotImplementedException();
+    }
 }
