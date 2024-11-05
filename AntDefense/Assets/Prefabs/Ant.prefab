@@ -230,7 +230,6 @@ GameObject:
   - component: {fileID: 8542657810488951160}
   - component: {fileID: 9190200353074072473}
   - component: {fileID: 2951773968300769007}
-  - component: {fileID: -3196181228672205010}
   - component: {fileID: 6078784432672750216}
   - component: {fileID: 1089436927646635733}
   - component: {fileID: 1150062627286218138}
@@ -299,21 +298,6 @@ MonoBehaviour:
   ForwardsBias: 0.5
   TargetMultiplier: 10
   RandomBias: 20
---- !u!114 &-3196181228672205010
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1180791391076224223}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42426562d79cebb43b98f3407f22c874, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ForwardsBias: 0.2
-  RandomBias: 0.4
-  AntStateMachine: {fileID: 9190200353074072473}
 --- !u!114 &6078784432672750216
 MonoBehaviour:
   m_ObjectHideFlags: 0
