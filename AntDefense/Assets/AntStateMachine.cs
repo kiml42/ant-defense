@@ -46,6 +46,8 @@ public class AntStateMachine : MonoBehaviour
 
     public const int GroundLayer = 3;
 
+    public AntTrailController TrailController;
+
     public Smell TrailSmell
     {
         get
@@ -189,7 +191,6 @@ public class AntStateMachine : MonoBehaviour
                 // either there is no hit (no rigidbody int he way) or the hit is the thing we're trying to move towards.
                 _currentTarget = smellable;
                 PositionProvider.SetTarget(CurrentTarget);
-                PositionProvider.ClearTurnAround();
                 _timeSinceTargetAquisition = 0;
             }
         }
@@ -233,15 +234,17 @@ public class AntStateMachine : MonoBehaviour
                     case AntState.SeekingFood:
                         State = AntState.ReportingFood;
                         _maxTargetTime = null;
-                        PositionProvider.SetTurnAround();
                         ClearTarget();
+                        Debug.Log("Setting target to last point " + TrailController.LastTrailPoint);
+                        UpdateTarget(TrailController.LastTrailPoint);
                         ResetLifetime();
                         return;
                     case AntState.ReturningToFood:
                         State = AntState.ReportingFood; // Temporary tuntil they can pick up the food.
                         _maxTargetTime = null;
-                        PositionProvider.SetTurnAround();
                         ClearTarget();
+                        Debug.Log("Setting target to last point " + TrailController.LastTrailPoint);
+                        UpdateTarget(TrailController.LastTrailPoint);
                         ResetLifetime();
                         return;
 
@@ -256,9 +259,10 @@ public class AntStateMachine : MonoBehaviour
                     case AntState.ReportingFood:
                     case AntState.CarryingFood:
                         State = AntState.ReturningToFood;
-                        PositionProvider.SetTurnAround();
                         _maxTargetTime = null;
                         ClearTarget();
+                        Debug.Log("Setting target to last point " + TrailController.LastTrailPoint);
+                        UpdateTarget(TrailController.LastTrailPoint);
                         ResetLifetime();
                         return;
                 }

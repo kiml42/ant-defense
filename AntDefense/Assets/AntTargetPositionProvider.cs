@@ -84,18 +84,6 @@ public class AntTargetPositionProvider : MonoBehaviour
         _target = target;
     }
 
-    public void ClearTurnAround()
-    {
-        // TODO
-        //throw new System.NotImplementedException();
-    }
-
-    public void SetTurnAround()
-    {
-        // TODO set the target to move towards to behind the ant, or, ideally to the location of the last point left before changing state.
-        //throw new System.NotImplementedException();
-    }
-
     internal void AvoidObstacle(Collision collision)
     {
         var contact = collision.GetContact(0);

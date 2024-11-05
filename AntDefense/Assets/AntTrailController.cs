@@ -6,11 +6,12 @@ public class AntTrailController : MonoBehaviour
     public GameObject TrailParent;
     private AntStateMachine AntStateMachine;
 
-    public Transform TrailPoint;
+    public Smellable TrailPoint;
     public float TrailPointSpawnDistance = 1;
 
     private Smell? _lastSmell = null;
     private Vector3? _lastTrailPointLocation;
+    public Smellable LastTrailPoint { get; private set; }
     private float _timeSinceTarget = 0;
 
     void Start()
@@ -53,6 +54,7 @@ public class AntTrailController : MonoBehaviour
             newPoint.gameObject.layer = 2;
             //Debug.Log("Leaving trail with smell: " + newPoint.GetComponent<TrailPointController>().Smell);
             _lastTrailPointLocation = this.transform.position;
+            LastTrailPoint = newPoint;
         }
     }
 }

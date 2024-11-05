@@ -284,6 +284,7 @@ MonoBehaviour:
   MaxTimeGoingForTrailPoint: 2
   GiveUpPenalty: 0.8
   GiveUpRecoveryMultiplier: 1.5
+  TrailController: {fileID: 1089436927646635733}
 --- !u!114 &2951773968300769007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -326,7 +327,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TrailParent: {fileID: 0}
-  TrailPoint: {fileID: 4304061794554422484, guid: 1eb302f6bf4fbbf498a0c8b0ba6e0f99, type: 3}
+  TrailPoint: {fileID: 4054594821476032866, guid: 1eb302f6bf4fbbf498a0c8b0ba6e0f99, type: 3}
   TrailPointSpawnDistance: 1
 --- !u!54 &1150062627286218138
 Rigidbody:
