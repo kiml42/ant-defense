@@ -10,13 +10,15 @@ public class AntStateMachine : MonoBehaviour
     public AntState State = AntState.SeekingFood;
 
     private float? TurnAroundDuration = null;
-    public TurnAround? TurnAroundState = null;
+    private TurnAround? TurnAroundState = null;
 
     public LifetimeController LifetimeController;
 
     public Transform ViewPoint;
 
     public readonly List<GameObject> Obstacles = new List<GameObject>();
+
+    public AntTargetPositionProvider PositionProvider;
 
     public Smellable CurrentTarget
     {
@@ -141,18 +143,6 @@ public class AntStateMachine : MonoBehaviour
         AvoidObstacle(turnAroundClockwise: contactPointInAntSpace.x < 0);
     }
 
-    //private void OnCollisionExit(Collision collision)
-    //{
-    //    if (Obstacles.Contains(collision.gameObject))
-    //    {
-    //        Obstacles.Remove(collision.gameObject);
-    //        if (!Obstacles.Any())
-    //        {
-    //            ClearObstacleAvoidance();
-    //        }
-    //    }
-    //}
-
     public void ProcessSmell(Smellable smellable)
     {
         switch (smellable.Smell)
@@ -189,6 +179,7 @@ public class AntStateMachine : MonoBehaviour
     private void ClearTarget()
     {
         _currentTarget = null;
+        PositionProvider.SetTarget(CurrentTarget);
     }
 
     private void UpdateTarget(Smellable smellable)
@@ -212,6 +203,7 @@ public class AntStateMachine : MonoBehaviour
             {
                 // either there is no hit (no rigidbody int he way) or the hit is the thing we're trying to move towards.
                 _currentTarget = smellable;
+                PositionProvider.SetTarget(CurrentTarget);
                 ClearLookAround();
                 _timeSinceTargetAquisition = 0;
             }
@@ -289,19 +281,11 @@ public class AntStateMachine : MonoBehaviour
         }
     }
 
-    private void ClearObstacleAvoidance()
-    {
-        if (TurnAroundState?.Mode != TurnAroundMode.LookAround)
-        {
-            TurnAroundDuration = null;
-            TurnAroundState = null;
-        }
-    }
-
     private void ClearLookAround()
     {
         TurnAroundDuration = null;
         TurnAroundState = null;
+        PositionProvider.SetTurnAround(TurnAroundState);
     }
 
     private void AvoidObstacle(bool turnAroundClockwise = true, float duration = 0.1f)
@@ -310,6 +294,7 @@ public class AntStateMachine : MonoBehaviour
         {
             TurnAroundDuration = duration;
             TurnAroundState = TurnAround.AvoidObstacle(turnAroundClockwise);
+            PositionProvider.SetTurnAround(TurnAroundState);
         }
     }
 
@@ -317,6 +302,7 @@ public class AntStateMachine : MonoBehaviour
     {
         TurnAroundDuration = duration;
         TurnAroundState = TurnAround.LookAround(turnAroundClockwise);
+        PositionProvider.SetTurnAround(TurnAroundState);
     }
 
     private void ResetLifetime()

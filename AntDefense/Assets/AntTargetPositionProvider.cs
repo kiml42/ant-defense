@@ -39,13 +39,12 @@ public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
     /// </summary>
     private Vector3 _eventualTargetDirection = Vector3.zero;
 
-    public TurnAround? TurnAround => AntStateMachine.TurnAroundState;
+    public TurnAround? TurnAround { get; private set; }
 
-    private AntStateMachine AntStateMachine;
+    private Smellable _target;
 
     void Start()
     {
-        AntStateMachine = GetComponentInChildren<AntStateMachine>();
         _eventualTargetDirection = transform.forward; // default to walking forwards.
         var randomPosition = Random.insideUnitCircle.normalized;
         TargetDirection = new Vector3(randomPosition.x, 0, randomPosition.y);    // Start with the current target position in a random direction.
@@ -53,7 +52,7 @@ public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
 
     void FixedUpdate()
     {
-        var targetObject = AntStateMachine.CurrentTarget?.TargetPoint;
+        var targetObject = _target?.TargetPoint;
         var forwardsBias = ForwardsBias * Time.fixedDeltaTime;
 
         if (targetObject != null)
@@ -81,12 +80,26 @@ public class AntTargetPositionProvider : MonoBehaviour, ITargetPositionProvider
         Debug.DrawRay(transform.position, _eventualTargetDirection, Color.black);
         Debug.DrawRay(transform.position, TargetDirection, Color.green);
     }
+
+    public void SetTarget(Smellable target)
+    {
+        _target = target;
+    }
+
+    public void SetTurnAround(TurnAround? turnAround)
+    {
+        TurnAround = turnAround;
+    }
 }
 public interface ITargetPositionProvider
 {
     Vector3 TargetPosition { get; }
 
     TurnAround? TurnAround { get; }
+
+    void SetTarget(Smellable target);
+
+    void SetTurnAround(TurnAround? turnAround);
 }
 
 public readonly struct TurnAround
