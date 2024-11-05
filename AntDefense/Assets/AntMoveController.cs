@@ -23,23 +23,25 @@ public class AntMoveController : MonoBehaviour
 
     private void Turn()
     {
-        var direction = _positionProvider.TargetPosition - _rigidbody.position;
-        //Debug.DrawRay(transform.position, direction, Color.blue);
-
-        var GetUprightTorque = Vector3.Cross(transform.forward, direction) * 0;
-        var headingError = GetUprightTorque;
+        // always apply torque to get upright.
+        Vector3 headingError = Vector3.Cross(transform.up, Vector3.up) * 10;
 
         if (IsUpright)
         {
-            var TurnTowardsTargetTorque = Vector3.Cross(transform.up, Vector3.up) * 10;
-            headingError += TurnTowardsTargetTorque;
+            // only turn towards teh target if upright
+            var direction = _positionProvider.TargetPosition - _rigidbody.position;
+            //Debug.DrawRay(transform.position, direction, Color.blue);
+
+            headingError = Vector3.Cross(transform.forward, direction);
         }
+
 
         if (headingError.magnitude > 1)
         {
             headingError.Normalize();
         }
         //Debug.DrawRay(transform.position, headingError, Color.green);
+
 
         //_rigidbody.rotation = targetRotation;
         _rigidbody.AddTorque(headingError * TorqueMultiplier);
