@@ -31,7 +31,7 @@ public class AntMoveController : MonoBehaviour
             // only turn towards teh target if upright
             var direction = _positionProvider.TargetPosition - _rigidbody.position;
 
-            var angle = Vector3.Angle(transform.forward, direction);
+            var angle = Vector3.SignedAngle(transform.forward, direction, transform.up);
 
             if(angle >= 90)
             {
@@ -39,7 +39,6 @@ public class AntMoveController : MonoBehaviour
             }
             else if(angle <= -90)
             {
-            // TODO check this works
                 headingError -= transform.up;
             }
             else

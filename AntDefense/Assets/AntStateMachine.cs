@@ -198,6 +198,10 @@ public class AntStateMachine : MonoBehaviour
 
     private bool HasLineOfSight(Smellable smellable)
     {
+        if (smellable?.gameObject == null)
+        {
+            return false;
+        }
         var direction = smellable?.TargetPoint?.position - ViewPoint?.position;
 
         if (!direction.HasValue)
@@ -205,8 +209,8 @@ public class AntStateMachine : MonoBehaviour
             Debug.Log("No direction between " + smellable + " & " + ViewPoint);
             return false;
         }
-
         return true;
+
         // TODO this still doesn't work!!!
         Debug.DrawRay(ViewPoint.position, direction.Value, Color.magenta);
 
@@ -235,7 +239,6 @@ public class AntStateMachine : MonoBehaviour
                         State = AntState.ReportingFood;
                         _maxTargetTime = null;
                         ClearTarget();
-                        Debug.Log("Setting target to last point " + TrailController.LastTrailPoint);
                         UpdateTarget(TrailController.LastTrailPoint);
                         ResetLifetime();
                         return;
@@ -243,7 +246,6 @@ public class AntStateMachine : MonoBehaviour
                         State = AntState.ReportingFood; // Temporary tuntil they can pick up the food.
                         _maxTargetTime = null;
                         ClearTarget();
-                        Debug.Log("Setting target to last point " + TrailController.LastTrailPoint);
                         UpdateTarget(TrailController.LastTrailPoint);
                         ResetLifetime();
                         return;
@@ -261,7 +263,6 @@ public class AntStateMachine : MonoBehaviour
                         State = AntState.ReturningToFood;
                         _maxTargetTime = null;
                         ClearTarget();
-                        Debug.Log("Setting target to last point " + TrailController.LastTrailPoint);
                         UpdateTarget(TrailController.LastTrailPoint);
                         ResetLifetime();
                         return;
