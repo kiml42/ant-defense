@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
@@ -239,14 +240,14 @@ public class AntStateMachine : MonoBehaviour
                         State = AntState.ReportingFood;
                         _maxTargetTime = null;
                         ClearTarget();
-                        UpdateTarget(TrailController.LastTrailPoint);
+                        this.UpdateTarget(LastTrailPoint);
                         ResetLifetime();
                         return;
                     case AntState.ReturningToFood:
                         State = AntState.ReportingFood; // Temporary tuntil they can pick up the food.
                         _maxTargetTime = null;
                         ClearTarget();
-                        UpdateTarget(TrailController.LastTrailPoint);
+                        UpdateTarget(LastTrailPoint);
                         ResetLifetime();
                         return;
 
@@ -263,11 +264,21 @@ public class AntStateMachine : MonoBehaviour
                         State = AntState.ReturningToFood;
                         _maxTargetTime = null;
                         ClearTarget();
-                        UpdateTarget(TrailController.LastTrailPoint);
+                        UpdateTarget(LastTrailPoint);
                         ResetLifetime();
                         return;
                 }
                 return;
+        }
+    }
+
+    private Smellable LastTrailPoint
+    {
+        get
+        {
+            if (TrailController?.gameObject == null)
+                return null;
+            return TrailController.LastTrailPoint;
         }
     }
 
