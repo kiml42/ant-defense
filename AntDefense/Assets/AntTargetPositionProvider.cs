@@ -66,13 +66,12 @@ public class AntTargetPositionProvider : MonoBehaviour
         {
             _obstacleAvoidenceTime -= Time.deltaTime;
             weightedObstacleAvoidence = _obstacleAvoidenceVector.Value * ObstacleAvoidenceWeight;
+            Debug.DrawRay(transform.position, weightedObstacleAvoidence, Color.yellow);
         }
 
         if (targetObject != null)
         {
             this.DirectionToMove = targetObject.position - transform.position;
-            // TODO don't set it to the target immediately after a recent collision, let it move back gradually for some time,
-            // only return to jumping straight to the target after some time without a collision.
         }
         else
         {
@@ -109,7 +108,7 @@ public class AntTargetPositionProvider : MonoBehaviour
         var wallNormal = contact.normal;
         var facingDirection = transform.forward;
 
-        var tangent1 = Vector3.Cross(wallNormal, Vector3.up).normalized;
+        var tangent1 = Vector3.Cross(wallNormal, transform.up).normalized;
         var tangent2 = -tangent1; // Opposite direction
 
         // Determine which tangent is closest to the facing direction
@@ -117,12 +116,9 @@ public class AntTargetPositionProvider : MonoBehaviour
             ? tangent1
             : tangent2;
 
-        _obstacleAvoidenceVector = chosenTangent;
-        Debug.DrawRay(transform.position, _obstacleAvoidenceVector.Value, Color.yellow);
-        _obstacleAvoidenceTime = Mathf.Max(ObstacleAvoidenceTime, _obstacleAvoidenceTime + ObstacleAvoidenceTime);
+        var tangentWeighting = Mathf.Max(0, Random.Range(-0.25f, 1));
 
-        // TODO set the target location to somewhere that avoids the obstacle
-        // possible chose randomly with a strong chance of tangential to the obstacle if it's a wall, may need differet behaviour if hitting an ant.
-        //throw new System.NotImplementedException();
+        _obstacleAvoidenceVector = chosenTangent + (contact.normal * tangentWeighting);
+        _obstacleAvoidenceTime = Mathf.Max(ObstacleAvoidenceTime, _obstacleAvoidenceTime + ObstacleAvoidenceTime);
     }
 }
