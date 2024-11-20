@@ -39,7 +39,7 @@ public class AntTargetPositionProvider : MonoBehaviour
     private Smellable _target;
 
     /// <summary>
-    /// Direction to move in to avoid an obstacle.
+    /// Direction to move in to avoid an obstacle in world space
     /// </summary>
     private Vector3? _obstacleAvoidenceVector;
 
@@ -105,10 +105,20 @@ public class AntTargetPositionProvider : MonoBehaviour
     internal void AvoidObstacle(Collision collision)
     {
         var contact = collision.GetContact(0);
-        var contactPointInAntSpace = transform.InverseTransformPoint(contact.point);
 
-        // TODO ste teh target to something sensible based on the collision.
-        _obstacleAvoidenceVector = transform.right;
+        var wallNormal = contact.normal;
+        var facingDirection = transform.forward;
+
+        var tangent1 = Vector3.Cross(wallNormal, Vector3.up).normalized;
+        var tangent2 = -tangent1; // Opposite direction
+
+        // Determine which tangent is closest to the facing direction
+        var chosenTangent = Vector3.Dot(facingDirection, tangent1) > Vector3.Dot(facingDirection, tangent2)
+            ? tangent1
+            : tangent2;
+
+        _obstacleAvoidenceVector = chosenTangent;
+        Debug.DrawRay(transform.position, _obstacleAvoidenceVector.Value, Color.yellow);
         _obstacleAvoidenceTime = Mathf.Max(ObstacleAvoidenceTime, _obstacleAvoidenceTime + ObstacleAvoidenceTime);
 
         // TODO set the target location to somewhere that avoids the obstacle
