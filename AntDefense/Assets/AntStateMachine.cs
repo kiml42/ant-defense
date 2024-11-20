@@ -104,6 +104,11 @@ public class AntStateMachine : MonoBehaviour
         }
     }
 
+    private void OnCollisionExit(Collision collision)
+    {
+        PositionProvider.NoLongerTouching(collision.transform);
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         var @object = collision.gameObject;

@@ -58,6 +58,7 @@ public class TrailPointController : Smellable
 
     private bool CheckOverlaps()
     {
+        // TODO find a better strategy that doesn't leave loose ends.
         return true;
         //TODO check overlaps before instanciating the trail point instead
         Collider[] overlaps = Physics.OverlapSphere(transform.position, OverlapRadius);
