@@ -38,6 +38,7 @@ public class TrailPointController : Smellable
             _lifetimeController.RemainingTime = newLifetime;
         }
 
+        // TODO this doesn't seem to be adjusting trails correctly, leading to lots of loose ends.
         var IsStillValid = CheckOverlaps();
         if (IsStillValid)
         {
@@ -57,6 +58,7 @@ public class TrailPointController : Smellable
 
     private bool CheckOverlaps()
     {
+        return true;
         //TODO check overlaps before instanciating the trail point instead
         Collider[] overlaps = Physics.OverlapSphere(transform.position, OverlapRadius);
 

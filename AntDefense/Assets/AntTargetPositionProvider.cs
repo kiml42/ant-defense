@@ -48,37 +48,71 @@ public class AntTargetPositionProvider : MonoBehaviour
     /// <summary>
     /// The time to increase the obstacle avoidence time by each time there is a collision.
     /// </summary>
-    public float ObstacleAvoidenceTime = 0.5f;
+    public float ObstacleAvoidenceTime = 0.25f;
+
+    /// <summary>
+    /// The maximum value to let the obstacle avoidance time get up to after repeated collisions.
+    /// </summary>
+    public float MaxObstacleAvoidenceTime = 2f;
+
+    private Rigidbody _rigidbody;
 
     void Start()
     {
         var randomPosition = Random.insideUnitCircle.normalized;
         DirectionToMove = new Vector3(randomPosition.x, 0, randomPosition.y);    // Start with the current target position in a random direction.
+        _rigidbody = GetComponent<Rigidbody>();
     }
 
-    float ObstacleAvoidenceWeight => _obstacleAvoidenceTime / ObstacleAvoidenceTime;
+    float ObstacleAvoidenceWeight => Mathf.Max(0, _obstacleAvoidenceTime) / ObstacleAvoidenceTime;
     void FixedUpdate()
     {
         var targetObject = _target?.TargetPoint;
-        var weightedObstacleAvoidence = Vector3.zero;
 
-        if(_obstacleAvoidenceTime > 0)
+        if(_obstacleAvoidenceTime <= 0)
         {
-            _obstacleAvoidenceTime -= Time.deltaTime;
-            weightedObstacleAvoidence = _obstacleAvoidenceVector.Value * ObstacleAvoidenceWeight;
-            Debug.DrawRay(transform.position, weightedObstacleAvoidence, Color.yellow);
+            _obstacleAvoidenceVector = null;
+            _obstacleAvoidenceTime = 0;
         }
 
         if (targetObject != null)
         {
-            this.DirectionToMove = targetObject.position - transform.position;
+            this.DirectionToMove = (targetObject.position - transform.position);
+            if(_obstacleAvoidenceVector.HasValue)
+            {
+                // TODO don't decrease the time if this ant is still colliding with the obstacle.
+                // Add the weighted obstacle avoidence vector to the current direction to move.
+                _obstacleAvoidenceTime -= Time.deltaTime;
+
+                // TODO fix or remove this. the ObstacleAvoidenceWeight is often rather high (e.g 23) so working out the point at which this should have a weighting of 0 is quite hard.
+                // It's possible that the fact that the weighting gets so high means that this isn't nessesary anyway.
+                var currentTargetDirectionWeight = Mathf.Max(0, 1 - ObstacleAvoidenceWeight);
+                var weightedCurrentDirection = DirectionToMove * currentTargetDirectionWeight;
+                var weightedAvodanceVector = this._obstacleAvoidenceVector.Value * this.ObstacleAvoidenceWeight;
+                this.DirectionToMove = weightedCurrentDirection + weightedAvodanceVector;
+                Debug.DrawRay(transform.position, weightedCurrentDirection, Color.blue);
+                Debug.DrawRay(transform.position + weightedCurrentDirection, weightedAvodanceVector, Color.yellow);
+                Debug.DrawRay(transform.position, DirectionToMove, Color.green);
+            }
+            return;
         }
         else
         {
-            var randomChangeMagnitude = RandomDirectionChangePerSecond * Time.fixedDeltaTime;
-            var randomComponent = Random.insideUnitSphere * randomChangeMagnitude;
-            _randomDirection += randomComponent;
-            _randomDirection = new Vector3(_randomDirection.x, _randomDirection.y * 0.2f, _randomDirection.z);
+            if (_obstacleAvoidenceVector.HasValue)
+            {
+                // set the random direction to the obstacle avoidence direction.
+                _randomDirection = _obstacleAvoidenceVector.Value.normalized * MaxRandomMagnitude;
+                Debug.DrawRay(transform.position, _obstacleAvoidenceVector.Value, Color.yellow);
+                _obstacleAvoidenceVector = null;
+                _obstacleAvoidenceTime = 0;
+            }
+            else
+            {
+                var randomChangeMagnitude = RandomDirectionChangePerSecond * Time.fixedDeltaTime;
+                var randomComponent = Random.insideUnitSphere * randomChangeMagnitude;
+                _randomDirection += randomComponent;
+                _randomDirection = new Vector3(_randomDirection.x, _randomDirection.y * 0.2f, _randomDirection.z);
+            }
             if(_randomDirection.magnitude > MaxRandomMagnitude)
             {
                 _randomDirection = _randomDirection.normalized * MaxRandomMagnitude;
@@ -89,11 +123,12 @@ public class AntTargetPositionProvider : MonoBehaviour
 
             this.DirectionToMove = _randomDirection + forwardsComponent;
 
-            Debug.DrawRay(transform.position, _randomDirection, Color.grey);
-            Debug.DrawRay(transform.position + _randomDirection, forwardsComponent, Color.grey);
+            Debug.DrawRay(transform.position, _randomDirection, Color.blue);
+            Debug.DrawRay(transform.position + _randomDirection, forwardsComponent, Color.yellow);
+
+            Debug.DrawRay(transform.position, DirectionToMove, Color.green);
         }
-        this.DirectionToMove += weightedObstacleAvoidence;
-        Debug.DrawRay(transform.position, DirectionToMove, Color.green);
+
     }
 
     public void SetTarget(Smellable target)
@@ -103,6 +138,7 @@ public class AntTargetPositionProvider : MonoBehaviour
 
     internal void AvoidObstacle(Collision collision)
     {
+        var relativeObstacleMass = collision.rigidbody.mass / this._rigidbody.mass;
         var contact = collision.GetContact(0);
 
         var wallNormal = contact.normal;
@@ -119,6 +155,8 @@ public class AntTargetPositionProvider : MonoBehaviour
         var tangentWeighting = Mathf.Max(0, Random.Range(-0.25f, 1));
 
         _obstacleAvoidenceVector = chosenTangent + (contact.normal * tangentWeighting);
-        _obstacleAvoidenceTime = Mathf.Max(ObstacleAvoidenceTime, _obstacleAvoidenceTime + ObstacleAvoidenceTime);
+        var timeIncrament = ObstacleAvoidenceTime * (relativeObstacleMass / 10);
+        var unboundTime = this._obstacleAvoidenceTime + timeIncrament;
+        this._obstacleAvoidenceTime = Mathf.Min(this.MaxObstacleAvoidenceTime, Mathf.Max(this.ObstacleAvoidenceTime, unboundTime));
     }
 }

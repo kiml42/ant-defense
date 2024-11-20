@@ -199,7 +199,11 @@ public class AntStateMachine : MonoBehaviour
 
     private bool HasLineOfSight(Smellable smellable)
     {
-        if (smellable?.gameObject == null)
+        if (smellable == null)
+        {
+            return false;
+        }
+        if (smellable.gameObject == null)
         {
             return false;
         }

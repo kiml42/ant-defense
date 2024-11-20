@@ -300,6 +300,8 @@ MonoBehaviour:
   ForwardsWeightingWithoutTarget: 0
   RandomDirectionChangePerSecond: 2
   MaxRandomMagnitude: 1
+  ObstacleAvoidenceTime: 0.25
+  MaxObstacleAvoidenceTime: 2
 --- !u!114 &6078784432672750216
 MonoBehaviour:
   m_ObjectHideFlags: 0
