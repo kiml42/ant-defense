@@ -62,7 +62,7 @@ public class TrailPointController : Smellable
 
         if (!_smellComponents.Any())
         {
-            Debug.Log("Destroyin because No remaining smells");
+            //Debug.Log("Destroyin because No remaining smells");
             DestroyThis();
             return;
         }
@@ -91,7 +91,7 @@ public class TrailPointController : Smellable
         var newLifetime = DefaultLifetime - timeFromTarget * LifetimePenalty;
         if (newLifetime <= 0)
         {
-            Debug.Log("Destroyin because less than 0 lifetime on set smell");
+            //Debug.Log("Destroyin because less than 0 lifetime on set smell");
             DestroyThis();
             return;
         }
@@ -102,6 +102,7 @@ public class TrailPointController : Smellable
         if (IsStillValid)
         {
             AddSmellComponent(component);
+            //Debug.Log("Added smell component to self: " + this);
 
             if (Material != null)
             {
@@ -124,31 +125,30 @@ public class TrailPointController : Smellable
     /// <returns>true if this object should be retained</returns>
     private bool CheckOverlaps(SmellComponent component)
     {
-        // TODO find a better strategy that doesn't leave loose ends.
         //TODO check overlaps before instanciating the trail point instead
         Collider[] overlaps = Physics.OverlapSphere(transform.position, OverlapRadius);
 
-        foreach (Collider overlap in overlaps)
-        {
-            if (overlap.TryGetComponent<TrailPointController>(out var otherTrailPoint))
-            {
-                if (otherTrailPoint == null || otherTrailPoint.IsDestroyed() || otherTrailPoint.Smell != Smell)
-                {
-                    // different smell, or destroyed, ignore.
-                    continue;
-                }
+        var relevantOverlaps = overlaps
+            .Where(overlap => !overlap.IsDestroyed())
+            .Select(overlap => overlap.GetComponent<TrailPointController>())
+            .Where(otherTrailPoint => otherTrailPoint != null && !otherTrailPoint.IsDestroyed() && otherTrailPoint != this && otherTrailPoint.Smell == Smell);
 
-                otherTrailPoint.AddSmellComponent(component);
-                return false;
-            }
+        if (relevantOverlaps.Any())
+        {
+            var best = relevantOverlaps.OrderBy(o => (o.transform.position - transform.position).magnitude).First();
+
+            best.AddSmellComponent(component);
+            //Debug.Log("Added smell component to other: " + best + ". distance = " + (best.transform.position - transform.position).magnitude);
+            return false;
         }
+
         return true;
     }
 
     private void AddSmellComponent(SmellComponent component)
     {
         _smellComponents.Add(component);
-        Debug.Log("Added smell. Smells: " + string.Join(", ", _smellComponents));
+        //Debug.Log("Added smell. Smells: " + string.Join(", ", _smellComponents));
     }
 
     public override string ToString()
