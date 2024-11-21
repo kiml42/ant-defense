@@ -7,7 +7,7 @@ public class AntTrailController : MonoBehaviour
     private AntStateMachine AntStateMachine;
 
     public Smellable TrailPoint;
-    public float TrailPointSpawnDistance = 1;
+    public float TrailPointSpawnDistance = 1.25f;
 
     private Smell? _lastSmell = null;
     private Vector3? _lastTrailPointLocation;

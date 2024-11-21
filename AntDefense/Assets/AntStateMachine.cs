@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
 {
-    // TODO Make ants turn sideways if they bump into something.
     private Smellable _currentTarget;
 
     public AntState State = AntState.SeekingFood;
