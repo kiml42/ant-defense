@@ -41,6 +41,12 @@ public class AntStateMachine : MonoBehaviour
     /// </summary>
     public float GiveUpPenalty = 0.5f;
 
+    /// <summary>
+    /// Extra time to be allowed to go for a given target if the ant collides with an obstacle.
+    /// Intended to allow it to keep going for the same target for longer while bouncing round the obstacle.
+    /// </summary>
+    public float CollisionTargetBonus = 0.5f;
+
     public float GiveUpRecoveryMultiplier = 2f;
 
     public const int GroundLayer = 3;
@@ -84,7 +90,6 @@ public class AntStateMachine : MonoBehaviour
             Debug.DrawLine(transform.position, CurrentTarget.TargetPoint.position, Color.cyan);
             if(!CurrentTarget.IsActual && _timeSinceTargetAquisition > MaxTimeGoingForTrailPoint)
             {
-                //TODO Test this method of making it not go straight back to the target, but let it go to similar targets later.
                 //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget);
                 _maxTargetTime = CurrentTarget.TimeFromTarget - GiveUpPenalty;
                 ClearTarget();
@@ -131,6 +136,13 @@ public class AntStateMachine : MonoBehaviour
 
         //Debug.Log($"Collided With obstacle {@object}");
 
+        // TODO test this more.
+        // This sort of works, but it often leaves ants stuck on a wall when there are too many of them for them to move freely round it with their obstacle avoidance.
+        // Possibly try considering the distance travelled, or the moving average speed, or something like that to detect when the ant is actually stuck and hasn't moved much in the last couple of seconds.
+        // allow more time going for the same target as the obstacle avoidence will hopefully be helping the ant work towards this target.
+        _timeSinceTargetAquisition -= CollisionTargetBonus;
+
+        // TODO consider only detecting collisions at the front of the ant for this so it doesn't try to avoid things hitting it from behind.
         PositionProvider.AvoidObstacle(collision);
     }
 
