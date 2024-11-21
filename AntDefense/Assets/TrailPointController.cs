@@ -35,7 +35,7 @@ public class TrailPointController : Smellable
 
     public override Smell Smell => _trailSmell;
 
-    public override float TimeFromTarget => _smellComponents.Min(s => s.TimeFromTarget);
+    public override float TimeFromTarget => _smellComponents.Any() ? _smellComponents.Min(s => s.TimeFromTarget) : float.MaxValue;
 
     public override bool IsActual => false;
 

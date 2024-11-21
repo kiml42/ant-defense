@@ -57,6 +57,7 @@ public class AntTrailController : MonoBehaviour
             : 0;
         if (!this._lastTrailPointLocation.HasValue || distanceToLastPoint > this.TrailPointSpawnDistance)
         {
+            // TODO consider if there is a lighter method for this just seeing the location of the center Possibly by keeping an octree index for the locations of all trail points
             Collider[] overlaps = Physics.OverlapSphere(transform.position, OverlapRadius);
 
             var relevantOverlaps = overlaps
