@@ -1,22 +1,43 @@
-using System;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TrailPointController : Smellable
 {
+    private class SmellComponent
+    {
+        public readonly float TimeFromTarget;
+        public float RemainingTime { get; private set; }
+        public SmellComponent(float timeFromTarget, float remainingTime)
+        {
+            TimeFromTarget = timeFromTarget;
+            RemainingTime = remainingTime;
+        }
+
+        internal void DecrementTime()
+        {
+            RemainingTime -= Time.fixedDeltaTime;
+        }
+
+        public override string ToString()
+        {
+            return TimeFromTarget + ":" + RemainingTime;
+        }
+    }
+
     public MeshRenderer Material;
 
     private Smell _trailSmell;
-    private float _timeFromTarget;
+    private List<SmellComponent> _smellComponents = new List<SmellComponent>();
 
     public Transform Transform => this.transform;
 
     public override Smell Smell => _trailSmell;
 
-    public override float TimeFromTarget => _timeFromTarget;
+    public override float TimeFromTarget => _smellComponents.Min(s => s.TimeFromTarget);
 
     public override bool IsActual => false;
-
-    public LifetimeController _lifetimeController;
 
     /// <summary>
     /// The initial lifetime of this trail point will be reduced by <see cref="LifetimePenalty"/> * <see cref="TimeFromTarget"/>
@@ -25,24 +46,64 @@ public class TrailPointController : Smellable
 
     public float OverlapRadius = 0.2f;
 
-    internal void SetSmell(Smell trailSmell, float timeFromTarget)
+    public float ScaleDownTime = 4;
+    public float DefaultLifetime = 80;
+
+    private void FixedUpdate()
     {
-        _trailSmell = trailSmell;
-        _timeFromTarget = timeFromTarget;
-
-        if(_lifetimeController != null)
+        foreach (var component in _smellComponents.ToArray())
         {
-            var newLifetime = _lifetimeController.RemainingTime - _timeFromTarget * LifetimePenalty;
-            //Debug.Log($"Lifetime reduced from {_lifetimeController.RemainingTime} to {newLifetime}");
-
-            _lifetimeController.RemainingTime = newLifetime;
+            component.DecrementTime();
+            if(component.RemainingTime <= 0)
+            {
+                _smellComponents.Remove(component);
+            }
         }
 
+        if (!_smellComponents.Any())
+        {
+            Debug.Log("Destroyin because No remaining smells");
+            DestroyThis();
+            return;
+        }
+
+        var remainingTime = _smellComponents.Max(c => c.RemainingTime);
+        if (ScaleDownTime > 0 && remainingTime < ScaleDownTime)
+        {
+            this.transform.localScale = Vector3.one * remainingTime / ScaleDownTime;
+        }
+    }
+
+    private void DestroyThis()
+    {
+        Destroy(this);
+        Destroy(this.gameObject);
+    }
+
+    internal void SetSmell(Smell trailSmell, float timeFromTarget)
+    {
+        if (this.IsDestroyed())
+        {
+            Debug.Log("Already destroyed!!!");
+        }
+        _trailSmell = trailSmell;
+
+        var newLifetime = DefaultLifetime - timeFromTarget * LifetimePenalty;
+        if (newLifetime <= 0)
+        {
+            Debug.Log("Destroyin because less than 0 lifetime on set smell");
+            DestroyThis();
+            return;
+        }
+        var component = new SmellComponent(timeFromTarget, newLifetime);
+
         // TODO this doesn't seem to be adjusting trails correctly, leading to lots of loose ends.
-        var IsStillValid = CheckOverlaps();
+        var IsStillValid = CheckOverlaps(component);
         if (IsStillValid)
         {
-            if(Material != null)
+            AddSmellComponent(component);
+
+            if (Material != null)
             {
                 var a = Material.material.color.a;
                 switch (_trailSmell)
@@ -56,10 +117,14 @@ public class TrailPointController : Smellable
         }
     }
 
-    private bool CheckOverlaps()
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="component"></param>
+    /// <returns>true if this object should be retained</returns>
+    private bool CheckOverlaps(SmellComponent component)
     {
         // TODO find a better strategy that doesn't leave loose ends.
-        return true;
         //TODO check overlaps before instanciating the trail point instead
         Collider[] overlaps = Physics.OverlapSphere(transform.position, OverlapRadius);
 
@@ -67,35 +132,27 @@ public class TrailPointController : Smellable
         {
             if (overlap.TryGetComponent<TrailPointController>(out var otherTrailPoint))
             {
-                if (otherTrailPoint.Smell != Smell)
+                if (otherTrailPoint == null || otherTrailPoint.IsDestroyed() || otherTrailPoint.Smell != Smell)
                 {
-                    // different smell, ignore.
+                    // different smell, or destroyed, ignore.
                     continue;
                 }
 
-                var bestLifetime = Math.Max(otherTrailPoint._lifetimeController.RemainingTime, _lifetimeController.RemainingTime);
-                if (otherTrailPoint.TimeFromTarget > TimeFromTarget)
-                {
-                    // this one is better, use the best lifetime, and destroy the other.
-                    _lifetimeController.RemainingTime = bestLifetime;
-                    //Debug.Log($"Destroying other {otherTrailPoint} in favor of {this}");
-                    Destroy(otherTrailPoint.gameObject);
-                }
-                else if(otherTrailPoint.TimeFromTarget < TimeFromTarget)
-                {
-                    // other is better, reset its lifetime and destroy this one
-                    otherTrailPoint._lifetimeController.RemainingTime = bestLifetime;
-                    //Debug.Log($"Destroying this {this} in favor of {otherTrailPoint}");
-                    Destroy(gameObject);
-                    return false;
-                }
+                otherTrailPoint.AddSmellComponent(component);
+                return false;
             }
         }
         return true;
     }
 
+    private void AddSmellComponent(SmellComponent component)
+    {
+        _smellComponents.Add(component);
+        Debug.Log("Added smell. Smells: " + string.Join(", ", _smellComponents));
+    }
+
     public override string ToString()
     {
-        return $"TrailPoint smell={Smell}, lifetime={_lifetimeController.RemainingTime}, TimeFromTarget={TimeFromTarget}";
+        return $"TrailPoint smell={Smell}, components: {string.Join(", ", _smellComponents)}";
     }
 }
