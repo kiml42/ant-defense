@@ -88,61 +88,41 @@ public class TrailPointController : Smellable
         }
         _trailSmell = trailSmell;
 
-        var newLifetime = DefaultLifetime - timeFromTarget * LifetimePenalty;
-        if (newLifetime <= 0)
+        var component = CreateSmellComponent(timeFromTarget);
+
+        if (component.RemainingTime <= 0)
         {
             //Debug.Log("Destroyin because less than 0 lifetime on set smell");
             DestroyThis();
             return;
         }
-        var component = new SmellComponent(timeFromTarget, newLifetime);
 
-        // TODO this doesn't seem to be adjusting trails correctly, leading to lots of loose ends.
-        var IsStillValid = CheckOverlaps(component);
-        if (IsStillValid)
+        AddSmellComponent(component);
+        //Debug.Log("Added smell component to self: " + this);
+
+        if (Material != null)
         {
-            AddSmellComponent(component);
-            //Debug.Log("Added smell component to self: " + this);
-
-            if (Material != null)
+            var a = Material.material.color.a;
+            switch (_trailSmell)
             {
-                var a = Material.material.color.a;
-                switch (_trailSmell)
-                {
-                    case Smell.Home:
-                        Material.material.color = new Color(Color.white.r, Color.white.g, Color.white.b, a); break;
-                    case Smell.Food:
-                        Material.material.color = new Color(Color.red.r, Color.red.g, Color.red.b, a); break;
-                }
+                case Smell.Home:
+                    Material.material.color = new Color(Color.white.r, Color.white.g, Color.white.b, a); break;
+                case Smell.Food:
+                    Material.material.color = new Color(Color.red.r, Color.red.g, Color.red.b, a); break;
             }
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="component"></param>
-    /// <returns>true if this object should be retained</returns>
-    private bool CheckOverlaps(SmellComponent component)
+    private SmellComponent CreateSmellComponent(float timeFromTarget)
     {
-        //TODO check overlaps before instanciating the trail point instead
-        Collider[] overlaps = Physics.OverlapSphere(transform.position, OverlapRadius);
+        var newLifetime = DefaultLifetime - timeFromTarget * LifetimePenalty;
+        var component = new SmellComponent(timeFromTarget, newLifetime);
+        return component;
+    }
 
-        var relevantOverlaps = overlaps
-            .Where(overlap => !overlap.IsDestroyed())
-            .Select(overlap => overlap.GetComponent<TrailPointController>())
-            .Where(otherTrailPoint => otherTrailPoint != null && !otherTrailPoint.IsDestroyed() && otherTrailPoint != this && otherTrailPoint.Smell == Smell);
-
-        if (relevantOverlaps.Any())
-        {
-            var best = relevantOverlaps.OrderBy(o => (o.transform.position - transform.position).magnitude).First();
-
-            best.AddSmellComponent(component);
-            //Debug.Log("Added smell component to other: " + best + ". distance = " + (best.transform.position - transform.position).magnitude);
-            return false;
-        }
-
-        return true;
+    public void AddSmellComponent(float timeFromTarget)
+    {
+        AddSmellComponent(CreateSmellComponent(timeFromTarget));
     }
 
     private void AddSmellComponent(SmellComponent component)
