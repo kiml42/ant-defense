@@ -114,7 +114,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9217438795446165722}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: ViewPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -147,7 +147,7 @@ GameObject:
   - component: {fileID: 780378595748188340}
   - component: {fileID: 4126208973712792715}
   - component: {fileID: 1901250470239128818}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Leg (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -234,7 +234,7 @@ GameObject:
   - component: {fileID: 1089436927646635733}
   - component: {fileID: 1150062627286218138}
   - component: {fileID: 3583501033866052853}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Ant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -283,6 +283,7 @@ MonoBehaviour:
   PositionProvider: {fileID: 2951773968300769007}
   MaxTimeGoingForTrailPoint: 3
   GiveUpPenalty: 0.8
+  CollisionTargetBonus: 0.5
   GiveUpRecoveryMultiplier: 1.5
   TrailController: {fileID: 1089436927646635733}
 --- !u!114 &2951773968300769007
@@ -382,7 +383,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8606164866640813380}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: SmellSense
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -418,7 +419,7 @@ GameObject:
   - component: {fileID: 8597659022468326361}
   - component: {fileID: 3090121912319777539}
   - component: {fileID: 3457744156033910576}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Leg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -503,7 +504,7 @@ GameObject:
   - component: {fileID: 1418058941283682140}
   - component: {fileID: 5268538316710182799}
   - component: {fileID: 1833601679241026134}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Capsule (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -620,7 +621,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8038495499183126423}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Legs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -657,7 +658,7 @@ GameObject:
   - component: {fileID: 7261486764860900}
   - component: {fileID: 1154551350630234889}
   - component: {fileID: 6338482109050181370}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Capsule (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -765,7 +766,7 @@ GameObject:
   - component: {fileID: 8395559401249154884}
   - component: {fileID: 9150368369138914502}
   - component: {fileID: 7113203195546941451}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -885,7 +886,7 @@ GameObject:
   - component: {fileID: 3864657626103899253}
   - component: {fileID: 5162451579312728730}
   - component: {fileID: 3331662409865618993}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -991,7 +992,7 @@ GameObject:
   - component: {fileID: 1970654738825245020}
   - component: {fileID: 2881422908057007368}
   - component: {fileID: 688546367666167}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Leg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1074,7 +1075,7 @@ GameObject:
   - component: {fileID: 4128789955540192585}
   - component: {fileID: 2866811670584293600}
   - component: {fileID: 2687566291945037928}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Leg (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1159,7 +1160,7 @@ GameObject:
   - component: {fileID: 2520917739198948726}
   - component: {fileID: 162052623004768994}
   - component: {fileID: 5182022026814514317}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Capsule (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1279,7 +1280,7 @@ GameObject:
   - component: {fileID: 65957437109713277}
   - component: {fileID: 4911650173807535049}
   - component: {fileID: 895950466378382610}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: LegCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1383,7 +1384,7 @@ GameObject:
   - component: {fileID: 8662185347739818771}
   - component: {fileID: 6985960059614734995}
   - component: {fileID: 8252332952668129497}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Leg (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1467,7 +1468,7 @@ GameObject:
   - component: {fileID: 3408374246648038583}
   - component: {fileID: 7346739294271771502}
   - component: {fileID: 7831737495937524892}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1569,7 +1570,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8014449987794317420}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Legs (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1605,7 +1606,7 @@ GameObject:
   - component: {fileID: 4499387810582450248}
   - component: {fileID: 8360545407015581701}
   - component: {fileID: 6891140328897370930}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Leg (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
