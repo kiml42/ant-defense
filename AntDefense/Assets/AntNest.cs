@@ -9,12 +9,15 @@ public class AntNest : MonoBehaviour
     public float MinRespawnTime = 1;
     public float MaxRespawnTime = 5;
 
-    public Transform AntPrefab;
+    public FoodCost AntPrefab;
 
-    private float _timeUntilSpawn;
+    public int AntsPerSpawn = 5;
+    public float SpawnRadius = 1;
 
-    public int AntsPerSpawn = 5; 
-    public float SpawnRadius = 1; 
+    public float CurrentFood = 100;
+    public float FoodGeneration = 0.1f;
+
+    private float costEachSpawn => AntPrefab.Cost * AntsPerSpawn; 
 
     void Start()
     {
@@ -26,18 +29,18 @@ public class AntNest : MonoBehaviour
 
     void FixedUpdate()
     {
-        _timeUntilSpawn -= Time.fixedDeltaTime;
-        if(_timeUntilSpawn < 0)
+        CurrentFood += FoodGeneration * Time.fixedDeltaTime;
+        if(CurrentFood >= costEachSpawn)
         {
             for (int i = 0; i < AntsPerSpawn; i++)
             {
                 var position = (SpawnPoint?.position ?? this.transform.position) + Random.insideUnitSphere * SpawnRadius;
                 var randomLookTarget = Random.insideUnitCircle;
                 var rotation = Quaternion.LookRotation(new Vector3(randomLookTarget.x, 0, randomLookTarget.y), Vector3.up);
-                var instance = Instantiate(this.AntPrefab, position, rotation, this.AntParent.transform);
+                var instance = Instantiate(this.AntPrefab.transform, position, rotation, this.AntParent.transform);
+                CurrentFood -= this.AntPrefab.Cost;
                 instance.GetComponent<Rigidbody>().velocity = SpawnVelocity;
             }
-            _timeUntilSpawn = Random.Range(MinRespawnTime,MaxRespawnTime);
         }
     }
 }

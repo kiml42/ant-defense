@@ -173,9 +173,10 @@ MonoBehaviour:
   SpawnVelocity: {x: 0, y: 0, z: 0}
   MinRespawnTime: 30
   MaxRespawnTime: 60
-  AntPrefab: {fileID: 8542657810488951160, guid: 9e8129882c77e4f48886462d12346fd0, type: 3}
-  AntsPerSpawn: 10
+  AntPrefab: {fileID: 5063671103237078366, guid: 9e8129882c77e4f48886462d12346fd0, type: 3}
+  AntsPerSpawn: 5
   SpawnRadius: 2
+  CurrentFood: 200
 --- !u!1 &4469306870535474989
 GameObject:
   m_ObjectHideFlags: 0

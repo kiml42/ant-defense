@@ -234,6 +234,7 @@ GameObject:
   - component: {fileID: 1089436927646635733}
   - component: {fileID: 1150062627286218138}
   - component: {fileID: 3583501033866052853}
+  - component: {fileID: 5063671103237078366}
   m_Layer: 2
   m_Name: Ant
   m_TagString: Untagged
@@ -372,8 +373,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cad28941dcdecce49b3926ef7775b49b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RemainingTime: 90
+  RemainingTime: 120
   ScaleDownTime: 0
+--- !u!114 &5063671103237078366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180791391076224223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3407b182e0be4548a75a68af41b0a29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Cost: 10
 --- !u!1 &1309134283868194372
 GameObject:
   m_ObjectHideFlags: 0
