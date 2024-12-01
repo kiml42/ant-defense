@@ -15,7 +15,7 @@ public class AntNest : MonoBehaviour
     public float SpawnRadius = 1;
 
     public float CurrentFood = 100;
-    public float FoodGeneration = 0.1f;
+    public float FoodGeneration = 1f;
 
     private float costEachSpawn => AntPrefab.Cost * AntsPerSpawn; 
 

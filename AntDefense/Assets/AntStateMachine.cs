@@ -93,14 +93,14 @@ public class AntStateMachine : MonoBehaviour
             var end = ViewPoint.position;
             var start = CurrentTarget.transform.position;
 
-            Debug.DrawRay(start, end - start, Color.magenta);
+            //Debug.DrawRay(start, end - start, Color.magenta);
             var isHit = Physics.Raycast(start, end - start, out var hit, (end - start).magnitude);
             if (isHit)
             {
-                Debug.Log("1. Test ray Hit " + hit.transform);
+                //Debug.Log("1. Test ray Hit " + hit.transform);
                 if (hit.transform != this.transform)
                 {
-                    Debug.Log("1. It's an obstacle!");
+                    //Debug.Log("1. It's an obstacle!");
                 }
             }
         }
@@ -126,15 +126,15 @@ public class AntStateMachine : MonoBehaviour
                     // Offset to avoid self-collision
                     Vector3 startOffset = start - direction * 0.1f;
 
-                    Debug.DrawRay(startOffset, direction * distance, Color.magenta);
+                    //Debug.DrawRay(startOffset, direction * distance, Color.magenta);
                     int layerMask = ~LayerMask.GetMask(LayerMask.LayerToName(2));
                     if (Physics.Raycast(startOffset, direction, out RaycastHit hit, distance, layerMask))
                     {
-                        Debug.Log("Test ray hit: " + hit.transform.name);
+                        //Debug.Log("Test ray hit: " + hit.transform.name);
 
                         if (hit.transform != this.transform)
                         {
-                            Debug.Log("It's an obstacle!");
+                            //Debug.Log("It's an obstacle!");
                             hasLineOfSight = false;
                         }
                         else
@@ -360,7 +360,7 @@ public class AntStateMachine : MonoBehaviour
 
 
 
-        Debug.DrawRay(rayStart, direction.Value, Color.magenta);
+        //Debug.DrawRay(rayStart, direction.Value, Color.magenta);
 
         {
             var isHit = Physics.Raycast(rayStart, direction.Value, out var hit, direction.Value.magnitude * 100);

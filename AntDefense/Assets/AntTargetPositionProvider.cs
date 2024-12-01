@@ -101,9 +101,9 @@ public class AntTargetPositionProvider : MonoBehaviour
             var weightedCurrentDirection = DirectionToMove * currentTargetDirectionWeight;
             var weightedAvodanceVector = this._obstacleAvoidenceVector.Value * this.ObstacleAvoidenceWeight;
             this.DirectionToMove = weightedCurrentDirection + weightedAvodanceVector;
-            Debug.DrawRay(transform.position, weightedCurrentDirection, Color.blue);
-            Debug.DrawRay(transform.position + weightedCurrentDirection, weightedAvodanceVector, Color.yellow);
-            Debug.DrawRay(transform.position, DirectionToMove, Color.green);
+            //Debug.DrawRay(transform.position, weightedCurrentDirection, Color.blue);
+            //Debug.DrawRay(transform.position + weightedCurrentDirection, weightedAvodanceVector, Color.yellow);
+            //Debug.DrawRay(transform.position, DirectionToMove, Color.green);
         }
     }
 
@@ -113,7 +113,7 @@ public class AntTargetPositionProvider : MonoBehaviour
         {
             // set the random direction to the obstacle avoidence direction.
             _randomDirection = _obstacleAvoidenceVector.Value.normalized * MaxRandomMagnitude;
-            Debug.DrawRay(transform.position, _obstacleAvoidenceVector.Value, Color.yellow);
+            //Debug.DrawRay(transform.position, _obstacleAvoidenceVector.Value, Color.yellow);
             _obstacleAvoidenceVector = null;
             _obstacleAvoidenceTime = 0;
         }
@@ -130,14 +130,14 @@ public class AntTargetPositionProvider : MonoBehaviour
         }
 
         var forwardsComponent = transform.forward * ForwardsWeightingWithoutTarget;
-        Debug.DrawRay(transform.position, DirectionToMove, Color.red);
+        //Debug.DrawRay(transform.position, DirectionToMove, Color.red);
 
         this.DirectionToMove = _randomDirection + forwardsComponent;
 
-        Debug.DrawRay(transform.position, _randomDirection, Color.blue);
-        Debug.DrawRay(transform.position + _randomDirection, forwardsComponent, Color.yellow);
+        //Debug.DrawRay(transform.position, _randomDirection, Color.blue);
+        //Debug.DrawRay(transform.position + _randomDirection, forwardsComponent, Color.yellow);
 
-        Debug.DrawRay(transform.position, DirectionToMove, Color.green);
+        //Debug.DrawRay(transform.position, DirectionToMove, Color.green);
     }
 
     public void SetTarget(Smellable target)
