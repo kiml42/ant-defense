@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class FoodSmell : Smellable
 {
     public override Smell Smell => Smell.Food;

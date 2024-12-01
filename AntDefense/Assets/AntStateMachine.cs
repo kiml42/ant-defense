@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
 {
-    private Smellable _currentTarget;
+    public Smellable _currentTarget;
     private GameObject _carriedFood;
     public AntState State = AntState.SeekingFood;
 
@@ -94,6 +94,10 @@ public class AntStateMachine : MonoBehaviour
         }
 
         // TODO account for berry being destroyed while being carried.
+        if (_currentTarget.IsDestroyed())
+        {
+            ClearTarget();
+        }
 
         //test ray -This is successfully detecting obstacles between the ant and the current target!
         if (CurrentTarget != null && ViewPoint != null)
@@ -237,6 +241,8 @@ public class AntStateMachine : MonoBehaviour
 
     public void ProcessSmell(Smellable smellable)
     {
+        if (smellable?.IsDestroyed() == true)
+            return;
         switch (smellable.Smell)
         {
             case Smell.Food:
@@ -472,16 +478,21 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
+        var food = smellable.GetComponentInParent<Food>();
+
         // TODO Cancell this as a target for any that are already targetting it.
-        smellable.transform.position = CarryPoint.position;
+        food.transform.position = CarryPoint.position;
 
-        smellable.transform.parent = this.transform;
-        _carriedFood = smellable.gameObject;
+        food.transform.parent = this.transform;
+        _carriedFood = food.gameObject;
 
-        smellable.enabled = false;
-        Destroy(smellable);
+        foreach (var smell in food.Smells)
+        {
+            smell.enabled = false;
+            Destroy(smell);
+        }
 
-        _jointToFood = smellable.AddComponent<SpringJoint>();
+        _jointToFood = food.AddComponent<SpringJoint>();
 
         _jointToFood.connectedBody = _rigidbody;
 

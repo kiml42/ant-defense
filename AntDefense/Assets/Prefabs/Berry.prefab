@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3562446625101866731}
   - component: {fileID: 2751621473447891186}
-  - component: {fileID: 7331697325458553305}
   - component: {fileID: 87658727744314253}
   - component: {fileID: -5242577999973307007}
+  - component: {fileID: 6989572555626245398}
   m_Layer: 0
   m_Name: Berry
   m_TagString: Untagged
@@ -64,19 +64,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &7331697325458553305
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2451422094013383525}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2295d608de08f5c44b21df5d8c557d58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TargetPoint: {fileID: 0}
 --- !u!114 &87658727744314253
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104,6 +91,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FoodValue: 20
+  Smells:
+  - {fileID: 6989572555626245398}
+  - {fileID: 3504052167037740725}
+--- !u!114 &6989572555626245398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2451422094013383525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2295d608de08f5c44b21df5d8c557d58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TargetPoint: {fileID: 3562446625101866731}
+  FoodObject: {fileID: 2451422094013383525}
 --- !u!1 &6652936135346501748
 GameObject:
   m_ObjectHideFlags: 0
@@ -257,6 +261,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TargetPoint: {fileID: 3562446625101866731}
+  FoodObject: {fileID: 2451422094013383525}
 --- !u!33 &2379487973679845947
 MeshFilter:
   m_ObjectHideFlags: 0
