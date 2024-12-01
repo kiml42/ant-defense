@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
@@ -53,6 +54,8 @@ public class AntStateMachine : MonoBehaviour
 
     public AntTrailController TrailController;
 
+    public Transform CarryPoint;
+
     public Smell TrailSmell
     {
         get
@@ -73,9 +76,12 @@ public class AntStateMachine : MonoBehaviour
 
     private List<Smellable> _newBetterTargets = new List<Smellable>();
 
+    private Rigidbody _rigidbody;
+
     private void Start()
     {
         ViewPoint = ViewPoint ?? transform;
+        _rigidbody = this.GetComponent<Rigidbody>();
     }
 
     private void FixedUpdate()
@@ -412,15 +418,11 @@ public class AntStateMachine : MonoBehaviour
                         ResetLifetime();
                         return;
                     case AntState.ReturningToFood:
-                        State = AntState.ReportingFood; // Temporary tuntil they can pick up the food.
                         _maxTargetTime = null;
                         ClearTarget();
                         UpdateTarget(LastTrailPoint);
                         ResetLifetime();
-                        return;
-
-                        //TODO actually pick up the food!!!!!!
-                        State = AntState.CarryingFood;
+                        PickUpFood(smellable);
                         return;
                 }
                 return;
@@ -438,6 +440,25 @@ public class AntStateMachine : MonoBehaviour
                 }
                 return;
         }
+    }
+
+    private void PickUpFood(Smellable smellable)
+    {
+        if (CarryPoint == null)
+        {
+            State = AntState.ReportingFood;
+            return;
+        }
+
+        smellable.transform.position = CarryPoint.position;
+
+        //smellable.transform.parent = this.transform;
+
+        var joint = smellable.AddComponent<SpringJoint>();
+
+        joint.connectedBody = _rigidbody;
+
+        State = AntState.CarryingFood;
     }
 
     private Smellable LastTrailPoint

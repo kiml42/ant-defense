@@ -264,6 +264,7 @@ Transform:
   - {fileID: 6665938562661228412}
   - {fileID: 8038495499183126423}
   - {fileID: 8014449987794317420}
+  - {fileID: 4482761779144621289}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9190200353074072473
@@ -287,6 +288,7 @@ MonoBehaviour:
   CollisionTargetBonus: 0.5
   GiveUpRecoveryMultiplier: 1.5
   TrailController: {fileID: 1089436927646635733}
+  CarryPoint: {fileID: 4482761779144621289}
 --- !u!114 &2951773968300769007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -543,6 +545,37 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &2187523920665683408
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4482761779144621289}
+  m_Layer: 2
+  m_Name: CarryPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4482761779144621289
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2187523920665683408}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.345, z: 0.024}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8542657810488951160}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2342610207804176353
 GameObject:
   m_ObjectHideFlags: 0
