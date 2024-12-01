@@ -177,7 +177,7 @@ MonoBehaviour:
   AntsPerSpawn: 5
   SpawnRadius: 2
   CurrentFood: 200
-  FoodGeneration: 1
+  FoodGeneration: 0
 --- !u!1 &4469306870535474989
 GameObject:
   m_ObjectHideFlags: 0
