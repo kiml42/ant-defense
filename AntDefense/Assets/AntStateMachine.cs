@@ -6,7 +6,7 @@ using UnityEngine;
 public class AntStateMachine : MonoBehaviour
 {
     private Smellable _currentTarget;
-    private Smellable _carriedFood;
+    private GameObject _carriedFood;
     public AntState State = AntState.SeekingFood;
 
     public LifetimeController LifetimeController;
@@ -454,12 +454,12 @@ public class AntStateMachine : MonoBehaviour
 
     private void DropOffFood(Smellable smellable)
     {
-        var food = _carriedFood.GetComponent<FoodSmell>();
+        var food = _carriedFood.GetComponent<Food>();
         var home = smellable.GetComponentInParent<AntNest>();
 
         home.CurrentFood += food.FoodValue;
 
-        Destroy(_carriedFood.gameObject);
+        Destroy(_carriedFood);
         _jointToFood = null;
         _carriedFood = null;
     }
@@ -472,16 +472,19 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
-        // TODO Disable the smell of the food to stop others from going for it.
+        // TODO Cancell this as a target for any that are already targetting it.
         smellable.transform.position = CarryPoint.position;
 
         smellable.transform.parent = this.transform;
+        _carriedFood = smellable.gameObject;
+
+        smellable.enabled = false;
+        Destroy(smellable);
 
         _jointToFood = smellable.AddComponent<SpringJoint>();
 
         _jointToFood.connectedBody = _rigidbody;
 
-        _carriedFood = smellable;
 
         State = AntState.CarryingFood;
     }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2751621473447891186}
   - component: {fileID: 7331697325458553305}
   - component: {fileID: 87658727744314253}
+  - component: {fileID: -5242577999973307007}
   m_Layer: 0
   m_Name: Berry
   m_TagString: Untagged
@@ -90,6 +91,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RemainingTime: 90
   ScaleDownTime: 5
+--- !u!114 &-5242577999973307007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2451422094013383525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee37680faae180746ac19018f72a5cf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FoodValue: 100
 --- !u!1 &6652936135346501748
 GameObject:
   m_ObjectHideFlags: 0
