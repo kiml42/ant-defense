@@ -6,7 +6,7 @@ using UnityEngine;
 public class AntStateMachine : MonoBehaviour
 {
     private Smellable _currentTarget;
-
+    private Smellable _carriedFood;
     public AntState State = AntState.SeekingFood;
 
     public LifetimeController LifetimeController;
@@ -77,6 +77,7 @@ public class AntStateMachine : MonoBehaviour
     private List<Smellable> _newBetterTargets = new List<Smellable>();
 
     private Rigidbody _rigidbody;
+    private SpringJoint _jointToFood;
 
     private void Start()
     {
@@ -91,6 +92,8 @@ public class AntStateMachine : MonoBehaviour
             Destroy(this.gameObject);
             return;
         }
+
+        // TODO account for berry being destroyed while being carried.
 
         //test ray -This is successfully detecting obstacles between the ant and the current target!
         if (CurrentTarget != null && ViewPoint != null)
@@ -430,16 +433,35 @@ public class AntStateMachine : MonoBehaviour
                 switch (State)
                 {
                     case AntState.ReportingFood:
-                    case AntState.CarryingFood:
                         State = AntState.ReturningToFood;
                         _maxTargetTime = null;
                         ClearTarget();
                         UpdateTarget(LastTrailPoint);
                         ResetLifetime();
                         return;
+                    case AntState.CarryingFood:
+                        State = AntState.ReturningToFood;
+                        _maxTargetTime = null;
+                        ClearTarget();
+                        UpdateTarget(LastTrailPoint);
+                        ResetLifetime();
+                        DropOffFood(smellable);
+                        return;
                 }
                 return;
         }
+    }
+
+    private void DropOffFood(Smellable smellable)
+    {
+        var food = _carriedFood.GetComponent<FoodSmell>();
+        var home = smellable.GetComponentInParent<AntNest>();
+
+        home.CurrentFood += food.FoodValue;
+
+        Destroy(_carriedFood.gameObject);
+        _jointToFood = null;
+        _carriedFood = null;
     }
 
     private void PickUpFood(Smellable smellable)
@@ -450,13 +472,16 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
+        // TODO Disable the smell of the food to stop others from going for it.
         smellable.transform.position = CarryPoint.position;
 
-        //smellable.transform.parent = this.transform;
+        smellable.transform.parent = this.transform;
 
-        var joint = smellable.AddComponent<SpringJoint>();
+        _jointToFood = smellable.AddComponent<SpringJoint>();
 
-        joint.connectedBody = _rigidbody;
+        _jointToFood.connectedBody = _rigidbody;
+
+        _carriedFood = smellable;
 
         State = AntState.CarryingFood;
     }
