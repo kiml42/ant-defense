@@ -8,7 +8,8 @@ public class ProgressBar : MonoBehaviour
     }
     public void AdjustProgress(float progress)
     {
-        this.transform.localScale = new Vector3(this.transform.localScale.x, this.transform.localScale.y, progress);
-        Debug.Log("Bar scale = " + this.transform.localScale);
+        this.transform.localScale = progress > 0
+            ? new Vector3(this.transform.localScale.x, this.transform.localScale.y, progress)   // has some volume
+            : Vector3.zero; // zero volume so hide it completely.
     }
 }

@@ -14,10 +14,16 @@ public class AntNest : MonoBehaviour
     public int AntsPerSpawn = 5;
     public float SpawnRadius = 1;
 
-    public float CurrentFood = 100;
-    public float FoodGeneration = 1f;
+    public float CurrentFood { get { return Digestion.CurrentFood; } }
 
-    private float costEachSpawn => AntPrefab.Cost * AntsPerSpawn; 
+    private float costEachSpawn => AntPrefab.Cost * AntsPerSpawn;
+
+    public Digestion Digestion;
+
+    /// <summary>
+    /// Amount of food to hold on to so the nest doesn't starve.
+    /// </summary>
+    public float ReserveFood = 20f;
 
     void Start()
     {
@@ -29,8 +35,8 @@ public class AntNest : MonoBehaviour
 
     void FixedUpdate()
     {
-        CurrentFood += FoodGeneration * Time.fixedDeltaTime;
-        if(CurrentFood >= costEachSpawn)
+        var availableFood = CurrentFood - ReserveFood;
+        if(availableFood >= costEachSpawn)
         {
             for (int i = 0; i < AntsPerSpawn; i++)
             {
@@ -38,9 +44,20 @@ public class AntNest : MonoBehaviour
                 var randomLookTarget = Random.insideUnitCircle;
                 var rotation = Quaternion.LookRotation(new Vector3(randomLookTarget.x, 0, randomLookTarget.y), Vector3.up);
                 var instance = Instantiate(this.AntPrefab.transform, position, rotation, this.AntParent.transform);
-                CurrentFood -= this.AntPrefab.Cost;
+                Digestion.UseFood(this.AntPrefab.Cost);
+                
                 instance.GetComponent<Rigidbody>().velocity = SpawnVelocity;
             }
         }
+    }
+
+    internal void UseFood(float foodToEat)
+    {
+        Digestion.UseFood(foodToEat);
+    }
+
+    internal void AddFood(float foodValue)
+    {
+        Digestion.AddFood(foodValue);
     }
 }

@@ -434,7 +434,7 @@ public class AntStateMachine : MonoBehaviour
                 }
                 return;
             case Smell.Home:
-                EatFoodAtHome();
+                EatFoodAtHome(smellable);
                 switch (State)
                 {
                     case AntState.ReportingFood:
@@ -455,9 +455,14 @@ public class AntStateMachine : MonoBehaviour
         }
     }
 
-    private void EatFoodAtHome()
+    public Digestion Digestion;
+
+    private void EatFoodAtHome(Smellable smellable)
     {
-        // TODO move some food from the home to the ant
+        if (Digestion == null) return;
+        var home = smellable.GetComponentInParent<AntNest>();
+
+        Digestion.EatFoodFrom(home);
     }
 
     private void DropOffFood(Smellable smellable)
@@ -470,7 +475,7 @@ public class AntStateMachine : MonoBehaviour
         var food = _carriedFood.GetComponent<Food>();
         var home = smellable.GetComponentInParent<AntNest>();
 
-        home.CurrentFood += food.FoodValue;
+        home.AddFood(food.FoodValue);
 
         Destroy(_carriedFood);
         _jointToFood = null;

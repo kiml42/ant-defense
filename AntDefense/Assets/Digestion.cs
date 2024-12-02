@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,8 @@ public class Digestion : MonoBehaviour
     /// </summary>
     public float MaxFood = 10f;
 
+    public float StartFood = 10f;
+
     /// <summary>
     /// The maximum amount of food this can turn into health per second
     /// </summary>
@@ -21,37 +24,55 @@ public class Digestion : MonoBehaviour
     /// </summary>
     public float Expenditure = 0.1f;
 
-    private float _currentFood;
+    public float CurrentFood { get; private set; }
 
     public ProgressBar FoodBar;
 
+    private float _requiredFood => MaxFood - CurrentFood;
+
     void Start()
     {
-        _currentFood = MaxFood;
+        CurrentFood = StartFood;
     }
 
     void FixedUpdate()
     {
         var foodUse = Expenditure * Time.fixedDeltaTime;
-        _currentFood -= foodUse;
+        UseFood(foodUse);
 
-        if (_currentFood <= 0)
+        if (CurrentFood <= 0)
         {
             // take damage instead
-            HealthController.Injure(-_currentFood);
-            _currentFood = 0;
+            HealthController.Injure(-CurrentFood);
+            CurrentFood = 0;
         }
         else if(HealthController.Damage > 0)
         {
             // heal
             var maxHealing = HealRate * Time.fixedDeltaTime;
             var requiredHealing = HealthController.Damage;
-            var actualHealing = Mathf.Min(requiredHealing, maxHealing, _currentFood);
+            var actualHealing = Mathf.Min(requiredHealing, maxHealing, CurrentFood);
 
             HealthController.Heal(actualHealing);
-            _currentFood -= actualHealing;
+            UseFood(actualHealing);
         }
-        Debug.Log("CurrentFood = " + _currentFood);
-        FoodBar?.AdjustProgress(_currentFood, MaxFood);
+        FoodBar?.AdjustProgress(CurrentFood, MaxFood);
+    }
+
+    internal void EatFoodFrom(AntNest home)
+    {
+        var foodToEat = MathF.Min(_requiredFood, home.CurrentFood);
+        home.UseFood(foodToEat);
+        AddFood(foodToEat);
+    }
+
+    internal void AddFood(float additionalFood)
+    {
+        CurrentFood += additionalFood;
+    }
+
+    internal void UseFood(float cost)
+    {
+        CurrentFood -= cost;
     }
 }
