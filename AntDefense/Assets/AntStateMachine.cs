@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class AntStateMachine : MonoBehaviour
 {
+    // TODO improve detection of trails that no longer lead to food (e.g. single berry in the world that has been removed)
     public Smellable _currentTarget;
     private GameObject _carriedFood;
     public AntState State = AntState.SeekingFood;
@@ -498,7 +499,9 @@ public class AntStateMachine : MonoBehaviour
         }
 
         _jointToFood = food.AddComponent<SpringJoint>();
-
+        //_jointToFood.spring *= 5;
+        //_jointToFood.damper *= 5;
+        //_jointToFood.enableCollision = true;
         _jointToFood.connectedBody = _rigidbody;
 
 
