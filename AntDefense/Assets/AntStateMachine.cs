@@ -460,6 +460,11 @@ public class AntStateMachine : MonoBehaviour
 
     private void DropOffFood(Smellable smellable)
     {
+        if(_carriedFood?.IsDestroyed() != false)
+        {
+            _carriedFood = null;
+            return;
+        }
         var food = _carriedFood.GetComponent<Food>();
         var home = smellable.GetComponentInParent<AntNest>();
 
