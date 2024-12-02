@@ -11,8 +11,6 @@ public class AntStateMachine : MonoBehaviour
     private GameObject _carriedFood;
     public AntState State = AntState.SeekingFood;
 
-    public LifetimeController LifetimeController;
-
     public Transform ViewPoint;
 
     public readonly List<GameObject> Obstacles = new List<GameObject>();
@@ -426,18 +424,17 @@ public class AntStateMachine : MonoBehaviour
                         _maxTargetTime = null;
                         ClearTarget();
                         this.UpdateTarget(LastTrailPoint);
-                        ResetLifetime();
                         return;
                     case AntState.ReturningToFood:
                         _maxTargetTime = null;
                         ClearTarget();
                         UpdateTarget(LastTrailPoint);
-                        ResetLifetime();
                         PickUpFood(smellable);
                         return;
                 }
                 return;
             case Smell.Home:
+                EatFoodAtHome();
                 switch (State)
                 {
                     case AntState.ReportingFood:
@@ -445,19 +442,22 @@ public class AntStateMachine : MonoBehaviour
                         _maxTargetTime = null;
                         ClearTarget();
                         UpdateTarget(LastTrailPoint);
-                        ResetLifetime();
                         return;
                     case AntState.CarryingFood:
                         State = AntState.ReturningToFood;
                         _maxTargetTime = null;
                         ClearTarget();
                         UpdateTarget(LastTrailPoint);
-                        ResetLifetime();
                         DropOffFood(smellable);
                         return;
                 }
                 return;
         }
+    }
+
+    private void EatFoodAtHome()
+    {
+        // TODO move some food from the home to the ant
     }
 
     private void DropOffFood(Smellable smellable)
@@ -516,14 +516,6 @@ public class AntStateMachine : MonoBehaviour
             if (TrailController?.gameObject == null)
                 return null;
             return TrailController.LastTrailPoint;
-        }
-    }
-
-    private void ResetLifetime()
-    {
-        if(LifetimeController != null)
-        {
-            LifetimeController.Reset();
         }
     }
 }
