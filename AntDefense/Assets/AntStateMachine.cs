@@ -56,7 +56,7 @@ public class AntStateMachine : MonoBehaviour
 
     public Transform CarryPoint;
 
-    public Smell TrailSmell
+    public Smell? TrailSmell
     {
         get
         {
@@ -68,6 +68,8 @@ public class AntStateMachine : MonoBehaviour
                 case AntState.ReportingFood:
                 case AntState.CarryingFood:
                     return Smell.Food;
+                case AntState.ReturningHome:
+                    return null;
                 default:
                     throw new Exception("Unknown state " + State);
             }
@@ -203,6 +205,18 @@ public class AntStateMachine : MonoBehaviour
         PositionProvider.NoLongerTouching(collision.transform);
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        var world = other.GetComponent<WorldZone>();
+        if(world != null && State == AntState.SeekingFood)
+        {
+            // TODO go home
+            Debug.Log("Left the world!");
+            State = AntState.ReturningHome;
+            SetTarget(LastTrailPoint);
+        }
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         var @object = collision.gameObject;
@@ -264,6 +278,7 @@ public class AntStateMachine : MonoBehaviour
             case Smell.Home:
                 switch (State)
                 {
+                    case AntState.ReturningHome:
                     case AntState.ReportingFood:
                     case AntState.CarryingFood:
                         UpdateTarget(smellable);
@@ -450,6 +465,11 @@ public class AntStateMachine : MonoBehaviour
                         UpdateTarget(LastTrailPoint);
                         DropOffFood(smellable);
                         return;
+                    case AntState.ReturningHome:
+                        State = AntState.SeekingFood;
+                        _maxTargetTime = null;
+                        ClearTarget();
+                        return;
                 }
                 return;
         }
@@ -545,5 +565,6 @@ public enum AntState
     /// <summary>
     /// Carrying food home to the nest.
     /// </summary>
-    CarryingFood
+    CarryingFood,
+    ReturningHome
 }

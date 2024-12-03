@@ -52,6 +52,7 @@ public class AntTrailController : MonoBehaviour
 
     private void LeaveTrail()
     {
+        if (!AntStateMachine.TrailSmell.HasValue) return;
         var distanceToLastPoint = this._lastTrailPointLocation.HasValue
             ? (_lastTrailPointLocation.Value - this.transform.position).magnitude
             : 0;
@@ -79,7 +80,7 @@ public class AntTrailController : MonoBehaviour
                 // none are close enough, so create a new one.
                 var newPoint = Instantiate(TrailPoint, this.transform.position, Quaternion.identity, TrailParent.transform);
                 newPoint.GetComponent<TrailPointController>()
-                    .SetSmell(AntStateMachine.TrailSmell, _timeSinceTarget);
+                    .SetSmell(AntStateMachine.TrailSmell.Value, _timeSinceTarget);
                 newPoint.gameObject.layer = 2;
                 //Debug.Log("Leaving trail with smell: " + newPoint.GetComponent<TrailPointController>().Smell);
                 LastTrailPoint = newPoint;
