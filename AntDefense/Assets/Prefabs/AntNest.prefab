@@ -241,7 +241,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HealthController: {fileID: 4516045000154646161}
   MaxFood: 2000
-  StartFood: 200
+  StartFood: 400
   HealRate: 0.1
   Expenditure: 0.05
   FoodBar: {fileID: 520866147428757756}

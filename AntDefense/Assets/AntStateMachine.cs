@@ -210,8 +210,6 @@ public class AntStateMachine : MonoBehaviour
         var world = other.GetComponent<WorldZone>();
         if(world != null && State == AntState.SeekingFood)
         {
-            // TODO go home
-            Debug.Log("Left the world!");
             State = AntState.ReturningHome;
             SetTarget(LastTrailPoint);
         }
@@ -513,9 +511,21 @@ public class AntStateMachine : MonoBehaviour
         var food = smellable.GetComponentInParent<Food>();
 
         // TODO Cancell this as a target for any that are already targetting it.
-        food.transform.position = CarryPoint.position;
+        //food.transform.position = CarryPoint.position;
 
-        food.transform.parent = this.transform;
+        var lifetime = food.GetComponent<LifetimeController>();
+        lifetime.Reset();
+
+        // TODO get the joint to work right
+        //var rb = food.GetComponent<Rigidbody>();
+        //Destroy(rb);
+        //var colliders = rb.GetComponentsInChildren<Collider>();
+        //foreach (var collider in colliders)
+        //{
+        //    collider.enabled = false;
+        //}
+        //food.transform.parent = this.transform;
+
         _carriedFood = food.gameObject;
 
         foreach (var smell in food.Smells)
@@ -527,7 +537,7 @@ public class AntStateMachine : MonoBehaviour
         _jointToFood = food.AddComponent<SpringJoint>();
         //_jointToFood.spring *= 5;
         //_jointToFood.damper *= 5;
-        //_jointToFood.enableCollision = true;
+        _jointToFood.enableCollision = false;
         _jointToFood.connectedBody = _rigidbody;
 
 
