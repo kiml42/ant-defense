@@ -1204,10 +1204,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CameraZoomSpeed: 10
   CameraPanSpeed: 0.07
-  CameraSidewaysSpeed: 0.5
+  MinCameraSpeed: 0.08
+  MaxCameraSpeed: 0.5
   Camera: {fileID: 4444865113396807919}
   MinY: 10
   MaxY: 200
+  MinAngle: -50
+  MaxAngleHeight: 100
+  MaxAngle: 0
 --- !u!4 &891036136
 Transform:
   m_ObjectHideFlags: 0
