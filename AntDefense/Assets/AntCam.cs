@@ -44,23 +44,35 @@ public class AntCam : MonoBehaviour
 
     private float _targetXRotation = 0;
     public float MinY = 10;
+    public float MaxY = 200;
+    public float MinAngle = -60;
+    public float MaxAngleHeight = 100;
+    public float MaxAngle = 0;
 
     private void HandleZoom()
     {
         if (Input.mouseScrollDelta.y != 0)
         {
             float currentY = transform.InverseTransformPoint(Camera.transform.position).y;
-            var newY = currentY - Input.mouseScrollDelta.y * Time.deltaTime * CameraZoomSpeed;
+            var speedMultiplyer = currentY / 100;
+            var newY = currentY - Input.mouseScrollDelta.y * CameraZoomSpeed * speedMultiplyer;
             
-            var actualNewY = Mathf.Max(currentY, MinY);
+            var actualNewY = Mathf.Clamp(newY, MinY, MaxY);
             if(currentY <= MinY && newY <= MinY)
             {
                 // already as low as it can go.
                 return;
             }
 
-            _targetXRotation = _targetXRotation - Input.mouseScrollDelta.y * Time.deltaTime * CameraPanSpeed;
-            var newRotationX = Mathf.Min(0, _targetXRotation);
+            var newYProportion = (newY - MinY) / (MaxAngleHeight - MinY);
+
+            // TODO check the maths for this so that it sets the angle to the same proportion through its range as the height is.
+            var newAngle = MinAngle + (MaxAngle - MinAngle) * newYProportion;
+
+            _targetXRotation = _targetXRotation - Input.mouseScrollDelta.y * CameraPanSpeed * speedMultiplyer;
+            var newRotationX = Mathf.Clamp(_targetXRotation, MinAngle, MaxAngle);
+
+            //newRotationX = newAngle;
             //Debug.Log($"Target: {_targetXRotation}, actual: {newRotationX}");
             transform.rotation = new Quaternion((float)newRotationX, transform.rotation.y, transform.rotation.z, transform.rotation.w);
             //Debug.Log($"Rotation {transform.rotation}");
