@@ -134,7 +134,7 @@ MonoBehaviour:
   LifetimePenalty: 1.3
   OverlapRadius: 0.5
   ScaleDownTime: 4
-  DefaultLifetime: 80
+  DefaultLifetime: 100
 --- !u!135 &2858440292616079122
 SphereCollider:
   m_ObjectHideFlags: 0

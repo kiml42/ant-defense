@@ -210,6 +210,7 @@ public class AntStateMachine : MonoBehaviour
         var world = other.GetComponent<WorldZone>();
         if(world != null && State == AntState.SeekingFood)
         {
+            Debug.Log($"State {State} -> ReturningHome");
             State = AntState.ReturningHome;
             SetTarget(LastTrailPoint);
         }
@@ -251,6 +252,11 @@ public class AntStateMachine : MonoBehaviour
         PositionProvider.AvoidObstacle(collision);
     }
 
+    /// <summary>
+    /// Scouts only look for new food and leave trails to show where it is, they never actually carry it themselves.
+    /// </summary>
+    public bool IsScout = false;
+
     public void ProcessSmell(Smellable smellable)
     {
         if (smellable?.IsDestroyed() == true)
@@ -262,7 +268,12 @@ public class AntStateMachine : MonoBehaviour
                 {
                     case AntState.SeekingFood:
                         // has smelled a food or a food trail, follow the trail, or move towards the food!
-                        State = AntState.ReturningToFood;
+                        if(!IsScout && !smellable.IsActual)
+                        {
+                            Debug.Log($"State {State} -> ReturningToFood");
+                            // has found an existing trail, so retrn to the food and pick it up.
+                            State = AntState.ReturningToFood;
+                        }
                         _maxTargetTime = null;
                         ClearTarget();
                         UpdateTarget(smellable);
@@ -433,6 +444,7 @@ public class AntStateMachine : MonoBehaviour
                 switch (State)
                 {
                     case AntState.SeekingFood:
+                        Debug.Log($"State Seeking -> Reporting");
                         State = AntState.ReportingFood;
                         _maxTargetTime = null;
                         ClearTarget();
@@ -448,15 +460,25 @@ public class AntStateMachine : MonoBehaviour
                 return;
             case Smell.Home:
                 EatFoodAtHome(smellable);
+                if (IsScout)
+                {
+                    Debug.Log($"State {State} -> Seeking");
+                    State = AntState.SeekingFood;
+                    ClearTarget();
+                    _maxTargetTime = null;
+                    return;
+                }
                 switch (State)
                 {
                     case AntState.ReportingFood:
-                        State = AntState.ReturningToFood;
                         _maxTargetTime = null;
                         ClearTarget();
+                        Debug.Log($"State {State} -> ReturningToFood");
+                        State = AntState.ReturningToFood;
                         UpdateTarget(LastTrailPoint);
                         return;
                     case AntState.CarryingFood:
+                        Debug.Log($"State {State} -> ReturningToFood");
                         State = AntState.ReturningToFood;
                         _maxTargetTime = null;
                         ClearTarget();
@@ -464,6 +486,7 @@ public class AntStateMachine : MonoBehaviour
                         DropOffFood(smellable);
                         return;
                     case AntState.ReturningHome:
+                        Debug.Log($"State {State} -> Seeking");
                         State = AntState.SeekingFood;
                         _maxTargetTime = null;
                         ClearTarget();
@@ -504,6 +527,7 @@ public class AntStateMachine : MonoBehaviour
     {
         if (CarryPoint == null)
         {
+            Debug.Log($"State {State} -> Reporting");
             State = AntState.ReportingFood;
             return;
         }
@@ -541,6 +565,7 @@ public class AntStateMachine : MonoBehaviour
         _jointToFood.connectedBody = _rigidbody;
 
 
+        Debug.Log($"State {State} -> Carrying");
         State = AntState.CarryingFood;
     }
 
