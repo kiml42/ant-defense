@@ -280,7 +280,6 @@ public class AntStateMachine : MonoBehaviour
                                 // Scouts always ignore food smells except actual food.
                                 return;
                             }
-                            Debug.Log($"State {State} -> ReturningToFood");
                             // has found an existing trail, so retrn to the food and pick it up.
                             State = AntState.ReturningToFood;
                         }
