@@ -224,6 +224,8 @@ MonoBehaviour:
   MaxRespawnTime: 60
   AntPrefabs:
   - {fileID: 5063671103237078366, guid: 2f94dd8cb5a7140448003958f61127ec, type: 3}
+  - {fileID: 5063671103237078366, guid: 9e8129882c77e4f48886462d12346fd0, type: 3}
+  - {fileID: 5063671103237078366, guid: 9e8129882c77e4f48886462d12346fd0, type: 3}
   AntsPerSpawn: 5
   SpawnRadius: 2
   Digestion: {fileID: 32434936974746235}

@@ -172,10 +172,14 @@ public class AntStateMachine : MonoBehaviour
                 {
                     SetTarget(potentialTarget);
                 }
-
             }
         }
         _newBetterTargets.Clear();
+
+        if(State == AntState.ReportingFood && CurrentTarget.Smell == Smell.Food)
+        {
+            throw new Exception($"State is {State} so the currnet target should not be food, but it is {CurrentTarget}");
+        }
 
         _timeSinceTargetAquisition += Time.fixedDeltaTime;
         if(CurrentTarget != null)
@@ -208,9 +212,10 @@ public class AntStateMachine : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         var world = other.GetComponent<WorldZone>();
-        if(world != null && State == AntState.SeekingFood)
+        if(world != null /*&& State == AntState.SeekingFood*/)
         {
-            Debug.Log($"State {State} -> ReturningHome");
+            // TODO work out how well this works from all states. (particularly when not leaving a trail from home)
+            //Debug.Log($"State {State} -> ReturningHome");
             State = AntState.ReturningHome;
             SetTarget(LastTrailPoint);
         }
@@ -305,12 +310,18 @@ public class AntStateMachine : MonoBehaviour
 
     private void ClearTarget()
     {
+        _newBetterTargets.Clear();
         _currentTarget = null;
         PositionProvider.SetTarget(CurrentTarget);
     }
 
     private void UpdateTarget(Smellable smellable)
     {
+        if (State == AntState.ReportingFood && smellable.Smell == Smell.Food)
+        {
+            throw new Exception($"State is {State} so {smellable} should not be being considered as a possible target.");
+        }
+
         if (CurrentTarget?.IsActual == true)
         {
             // Always stick with an actual smell
@@ -329,7 +340,6 @@ public class AntStateMachine : MonoBehaviour
             {
                 throw new Exception("Scouts should never go for food smells!");
             }
-            Debug.Log($"Adding potential target: {smellable}");
             _newBetterTargets.Add(smellable);
             //// TODO thoroughly test this and refactor it to be neater if it works.
             //bool hasLineOfSight;
@@ -454,13 +464,11 @@ public class AntStateMachine : MonoBehaviour
                 switch (State)
                 {
                     case AntState.SeekingFood:
-                        Debug.Log($"State Seeking -> Reporting");
+                        //Debug.Log($"State Seeking -> Reporting");
                         State = AntState.ReportingFood;
                         _maxTargetTime = null;
                         ClearTarget();
-                        Debug.Log($"LastTrailPoint: {LastTrailPoint}");
                         this.UpdateTarget(LastTrailPoint);
-                        Debug.Log($"New Target: {CurrentTarget}");
                         return;
                     case AntState.ReturningToFood:
                         _maxTargetTime = null;
@@ -469,12 +477,15 @@ public class AntStateMachine : MonoBehaviour
                         PickUpFood(smellable);
                         return;
                 }
+                if(IsScout && State != AntState.ReportingFood)
+                {
+                    throw new Exception($"Scout collided with food, so should now be reporting it but is {State}");
+                }
                 return;
             case Smell.Home:
                 EatFoodAtHome(smellable);
                 if (IsScout)
                 {
-                    Debug.Log($"Scout: State {State} -> Seeking");
                     State = AntState.SeekingFood;
                     ClearTarget();
                     _maxTargetTime = null;
@@ -485,12 +496,10 @@ public class AntStateMachine : MonoBehaviour
                     case AntState.ReportingFood:
                         _maxTargetTime = null;
                         ClearTarget();
-                        Debug.Log($"State {State} -> ReturningToFood");
                         State = AntState.ReturningToFood;
                         UpdateTarget(LastTrailPoint);
                         return;
                     case AntState.CarryingFood:
-                        Debug.Log($"State {State} -> ReturningToFood");
                         State = AntState.ReturningToFood;
                         _maxTargetTime = null;
                         ClearTarget();
@@ -498,7 +507,6 @@ public class AntStateMachine : MonoBehaviour
                         DropOffFood(smellable);
                         return;
                     case AntState.ReturningHome:
-                        Debug.Log($"State {State} -> Seeking");
                         State = AntState.SeekingFood;
                         _maxTargetTime = null;
                         ClearTarget();
@@ -539,9 +547,7 @@ public class AntStateMachine : MonoBehaviour
     {
         if (CarryPoint == null)
         {
-            Debug.Log($"State {State} -> Reporting");
-            State = AntState.ReportingFood;
-            return;
+            throw new Exception("Cannot carry food with no carry point");
         }
 
         var food = smellable.GetComponentInParent<Food>();
@@ -577,7 +583,6 @@ public class AntStateMachine : MonoBehaviour
         _jointToFood.connectedBody = _rigidbody;
 
 
-        Debug.Log($"State {State} -> Carrying");
         State = AntState.CarryingFood;
     }
 
