@@ -176,7 +176,7 @@ public class AntStateMachine : MonoBehaviour
         }
         _newBetterTargets.Clear();
 
-        if(State == AntState.ReportingFood && CurrentTarget.Smell == Smell.Food)
+        if(State == AntState.ReportingFood && CurrentTarget?.Smell == Smell.Food)
         {
             throw new Exception($"State is {State} so the currnet target should not be food, but it is {CurrentTarget}");
         }
