@@ -76,7 +76,7 @@ public class AntStateMachine : MonoBehaviour
         }
     }
 
-    private List<Smellable> _newBetterTargets = new List<Smellable>();
+    private HashSet<Smellable> _newBetterTargets = new HashSet<Smellable>();
 
     private Rigidbody _rigidbody;
     private SpringJoint _jointToFood;
@@ -268,8 +268,13 @@ public class AntStateMachine : MonoBehaviour
                 {
                     case AntState.SeekingFood:
                         // has smelled a food or a food trail, follow the trail, or move towards the food!
-                        if(!IsScout && !smellable.IsActual)
+                        if (!smellable.IsActual)
                         {
+                            if (IsScout)
+                            {
+                                // Scouts always ignore food smells except actual food.
+                                return;
+                            }
                             Debug.Log($"State {State} -> ReturningToFood");
                             // has found an existing trail, so retrn to the food and pick it up.
                             State = AntState.ReturningToFood;
@@ -320,6 +325,11 @@ public class AntStateMachine : MonoBehaviour
 
         if (CurrentTarget == null || smellable.IsActual || smellable.TimeFromTarget < CurrentTarget.TimeFromTarget)
         {
+            if(IsScout && !smellable.IsActual && smellable.Smell == Smell.Food)
+            {
+                throw new Exception("Scouts should never go for food smells!");
+            }
+            Debug.Log($"Adding potential target: {smellable}");
             _newBetterTargets.Add(smellable);
             //// TODO thoroughly test this and refactor it to be neater if it works.
             //bool hasLineOfSight;
@@ -464,7 +474,7 @@ public class AntStateMachine : MonoBehaviour
                 EatFoodAtHome(smellable);
                 if (IsScout)
                 {
-                    Debug.Log($"State {State} -> Seeking");
+                    Debug.Log($"Scout: State {State} -> Seeking");
                     State = AntState.SeekingFood;
                     ClearTarget();
                     _maxTargetTime = null;
