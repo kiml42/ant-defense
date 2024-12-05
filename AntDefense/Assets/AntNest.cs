@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class AntNest : MonoBehaviour
@@ -9,14 +11,15 @@ public class AntNest : MonoBehaviour
     public float MinRespawnTime = 1;
     public float MaxRespawnTime = 5;
 
-    public FoodCost AntPrefab;
+    public List<FoodCost> AntPrefabs;
 
     public int AntsPerSpawn = 5;
     public float SpawnRadius = 1;
 
     public float CurrentFood { get { return Digestion.CurrentFood; } }
 
-    private float costEachSpawn => AntPrefab.Cost * AntsPerSpawn;
+    // TODO consider multiple ants
+    private float costEachSpawn => AntPrefabs.First().Cost * AntsPerSpawn;
 
     public Digestion Digestion;
 
@@ -43,8 +46,10 @@ public class AntNest : MonoBehaviour
                 var position = (SpawnPoint?.position ?? this.transform.position) + Random.insideUnitSphere * SpawnRadius;
                 var randomLookTarget = Random.insideUnitCircle;
                 var rotation = Quaternion.LookRotation(new Vector3(randomLookTarget.x, 0, randomLookTarget.y), Vector3.up);
-                var instance = Instantiate(this.AntPrefab.transform, position, rotation, this.AntParent.transform);
-                Digestion.UseFood(this.AntPrefab.Cost);
+
+                var prefab = AntPrefabs[i % AntPrefabs.Count];
+                var instance = Instantiate(prefab.transform, position, rotation, this.AntParent.transform);
+                Digestion.UseFood(prefab.Cost);
                 
                 instance.GetComponent<Rigidbody>().velocity = SpawnVelocity;
             }

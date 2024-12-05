@@ -194,11 +194,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6078784432672750216, guid: 9e8129882c77e4f48886462d12346fd0, type: 3}
       propertyPath: TorqueMultiplier
-      value: 0
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8542657810488951160, guid: 9e8129882c77e4f48886462d12346fd0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.54
+      value: -11.82
       objectReference: {fileID: 0}
     - target: {fileID: 8542657810488951160, guid: 9e8129882c77e4f48886462d12346fd0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -551,7 +551,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6647136980466131039, guid: a3ee0852285ae39498a98184e22ddb3d, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

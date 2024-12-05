@@ -448,7 +448,9 @@ public class AntStateMachine : MonoBehaviour
                         State = AntState.ReportingFood;
                         _maxTargetTime = null;
                         ClearTarget();
+                        Debug.Log($"LastTrailPoint: {LastTrailPoint}");
                         this.UpdateTarget(LastTrailPoint);
+                        Debug.Log($"New Target: {CurrentTarget}");
                         return;
                     case AntState.ReturningToFood:
                         _maxTargetTime = null;

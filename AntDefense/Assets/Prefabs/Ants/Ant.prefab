@@ -334,7 +334,7 @@ MonoBehaviour:
   GiveUpRecoveryMultiplier: 1.5
   TrailController: {fileID: 1089436927646635733}
   CarryPoint: {fileID: 4482761779144621289}
-  IsScout: 1
+  IsScout: 0
   Digestion: {fileID: 1805795825312131026}
 --- !u!114 &2951773968300769007
 MonoBehaviour:

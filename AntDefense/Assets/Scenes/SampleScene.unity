@@ -2478,6 +2478,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 474380196}
     - target: {fileID: 2876280674228867775, guid: 98c4698d565f2884b9b31b30eaf8f856, type: 3}
+      propertyPath: AntPrefab
+      value: 
+      objectReference: {fileID: 5063671103237078366, guid: 9e8129882c77e4f48886462d12346fd0, type: 3}
+    - target: {fileID: 2876280674228867775, guid: 98c4698d565f2884b9b31b30eaf8f856, type: 3}
       propertyPath: AntsPerSpawn
       value: 6
       objectReference: {fileID: 0}
