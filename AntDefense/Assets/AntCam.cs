@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class AntCam : MonoBehaviour
 {
-    private const int MouseButton = 2;
+    private const int MouseButton = 1;
     public float CameraZoomSpeed = 150;
     public float CameraPanSpeed = 0.8f;
     public float MinCameraSpeed = 0.1f;
