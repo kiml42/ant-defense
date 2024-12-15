@@ -460,25 +460,19 @@ public class AntStateMachine : MonoBehaviour
         switch (smellable.Smell)
         {
             case Smell.Food:
+                if (IsScout)
+                {
+                    FoundNewFood();
+                    return;
+                }
                 switch (State)
                 {
                     case AntState.SeekingFood:
-                        //Debug.Log($"State Seeking -> Reporting");
-                        State = AntState.ReportingFood;
-                        _maxTargetTime = null;
-                        ClearTarget();
-                        this.UpdateTarget(LastTrailPoint);
+                        FoundNewFood();
                         return;
                     case AntState.ReturningToFood:
-                        _maxTargetTime = null;
-                        ClearTarget();
-                        UpdateTarget(LastTrailPoint);
-                        PickUpFood(smellable);
+                        CollectKnownFood(smellable);
                         return;
-                }
-                if(IsScout && State != AntState.ReportingFood)
-                {
-                    throw new Exception($"Scout collided with food, so should now be reporting it but is {State}");
                 }
                 return;
             case Smell.Home:
@@ -513,6 +507,23 @@ public class AntStateMachine : MonoBehaviour
                 }
                 return;
         }
+    }
+
+    private void CollectKnownFood(Smellable smellable)
+    {
+        _maxTargetTime = null;
+        ClearTarget();
+        UpdateTarget(LastTrailPoint);
+        PickUpFood(smellable);
+    }
+
+    private void FoundNewFood()
+    {
+        //Debug.Log($"State Seeking -> Reporting");
+        State = AntState.ReportingFood;
+        _maxTargetTime = null;
+        ClearTarget();
+        this.UpdateTarget(LastTrailPoint);
     }
 
     public Digestion Digestion;
@@ -567,22 +578,16 @@ public class AntStateMachine : MonoBehaviour
         //}
         //food.transform.parent = this.transform;
 
-        _carriedFood = food.gameObject;
-
-        foreach (var smell in food.Smells)
-        {
-            smell.enabled = false;
-            Destroy(smell);
-        }
-
-        _jointToFood = food.AddComponent<SpringJoint>();
-        //_jointToFood.spring *= 5;
-        //_jointToFood.damper *= 5;
-        _jointToFood.enableCollision = false;
-        _jointToFood.connectedBody = _rigidbody;
-
+        PickUpFood(food);
 
         State = AntState.CarryingFood;
+    }
+
+    private void PickUpFood(Food food)
+    {
+        _carriedFood = food.gameObject;
+        food.transform.position = CarryPoint.position;
+        food.Attach(_rigidbody);
     }
 
     private Smellable LastTrailPoint
