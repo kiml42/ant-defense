@@ -7,11 +7,11 @@ public class TrailPointController : Smellable
 {
     private class SmellComponent
     {
-        public readonly float TimeFromTarget;
+        public readonly float DistanceFromTarget;
         public float RemainingTime { get; private set; }
-        public SmellComponent(float timeFromTarget, float remainingTime)
+        public SmellComponent(float distanceFromTarget, float remainingTime)
         {
-            TimeFromTarget = timeFromTarget;
+            DistanceFromTarget = distanceFromTarget;
             RemainingTime = remainingTime;
         }
 
@@ -22,7 +22,7 @@ public class TrailPointController : Smellable
 
         public override string ToString()
         {
-            return TimeFromTarget + ":" + RemainingTime;
+            return DistanceFromTarget + ":" + RemainingTime;
         }
     }
 
@@ -35,12 +35,12 @@ public class TrailPointController : Smellable
 
     public override Smell Smell => _trailSmell;
 
-    public override float TimeFromTarget => _smellComponents.Any() ? _smellComponents.Min(s => s.TimeFromTarget) : float.MaxValue;
+    public override float DistanceFromTarget => _smellComponents.Any() ? _smellComponents.Min(s => s.DistanceFromTarget) : float.MaxValue;
 
     public override bool IsActual => false;
 
     /// <summary>
-    /// The initial lifetime of this trail point will be reduced by <see cref="LifetimePenalty"/> * <see cref="TimeFromTarget"/>
+    /// The initial lifetime of this trail point will be reduced by <see cref="LifetimePenalty"/> * <see cref="DistanceFromTarget"/>
     /// </summary>
     public float LifetimePenalty = 1;
 
@@ -80,7 +80,7 @@ public class TrailPointController : Smellable
         Destroy(this.gameObject);
     }
 
-    internal void SetSmell(Smell trailSmell, float timeFromTarget)
+    internal void SetSmell(Smell trailSmell, float distanceFromTarget)
     {
         if (this.IsDestroyed())
         {
@@ -88,7 +88,7 @@ public class TrailPointController : Smellable
         }
         _trailSmell = trailSmell;
 
-        var component = CreateSmellComponent(timeFromTarget);
+        var component = CreateSmellComponent(distanceFromTarget);
 
         if (component.RemainingTime <= 0)
         {
@@ -113,16 +113,16 @@ public class TrailPointController : Smellable
         }
     }
 
-    private SmellComponent CreateSmellComponent(float timeFromTarget)
+    private SmellComponent CreateSmellComponent(float distanceFromTarget)
     {
-        var newLifetime = DefaultLifetime - timeFromTarget * LifetimePenalty;
-        var component = new SmellComponent(timeFromTarget, newLifetime);
+        var newLifetime = DefaultLifetime - distanceFromTarget * LifetimePenalty;
+        var component = new SmellComponent(distanceFromTarget, newLifetime);
         return component;
     }
 
-    public void AddSmellComponent(float timeFromTarget)
+    public void AddSmellComponent(float distanceFromTarget)
     {
-        AddSmellComponent(CreateSmellComponent(timeFromTarget));
+        AddSmellComponent(CreateSmellComponent(distanceFromTarget));
     }
 
     private void AddSmellComponent(SmellComponent component)

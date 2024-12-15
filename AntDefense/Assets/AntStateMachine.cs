@@ -127,7 +127,7 @@ public class AntStateMachine : MonoBehaviour
         foreach (var potentialTarget in _newBetterTargets)
         {
             // TODO This is working!!!! make it neat.
-            if (CurrentTarget == null || potentialTarget.IsActual || potentialTarget.TimeFromTarget < CurrentTarget.TimeFromTarget)
+            if (CurrentTarget == null || potentialTarget.IsActual || potentialTarget.DistanceFromTarget < CurrentTarget.DistanceFromTarget)
             {
                 bool hasLineOfSight = false;
                 if (potentialTarget != null && ViewPoint != null)
@@ -188,7 +188,7 @@ public class AntStateMachine : MonoBehaviour
             if(!CurrentTarget.IsActual && _timeSinceTargetAquisition > MaxTimeGoingForTrailPoint)
             {
                 //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget);
-                _maxTargetTime = CurrentTarget.TimeFromTarget - GiveUpPenalty;
+                _maxTargetTime = CurrentTarget.DistanceFromTarget - GiveUpPenalty;
                 ClearTarget();
             }
             else if(!HasLineOfSight(CurrentTarget))
@@ -327,13 +327,13 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
-        if(_maxTargetTime.HasValue && smellable.TimeFromTarget > _maxTargetTime)
+        if(_maxTargetTime.HasValue && smellable.DistanceFromTarget > _maxTargetTime)
         {
             //Debug.Log("Ignoring " + smellable + " because it's more than " + _maxTargetTime + " from the target.");
             return;
         }
 
-        if (CurrentTarget == null || smellable.IsActual || smellable.TimeFromTarget < CurrentTarget.TimeFromTarget)
+        if (CurrentTarget == null || smellable.IsActual || smellable.DistanceFromTarget < CurrentTarget.DistanceFromTarget)
         {
             if(IsScout && !smellable.IsActual && smellable.Smell == Smell.Food)
             {

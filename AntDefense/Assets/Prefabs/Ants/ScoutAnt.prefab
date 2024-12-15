@@ -353,6 +353,7 @@ MonoBehaviour:
   MaxRandomMagnitude: 1
   ObstacleAvoidenceTime: 0.25
   MaxObstacleAvoidenceTime: 2
+  TrailOffset: 0
 --- !u!114 &6078784432672750216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -381,7 +382,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TrailParent: {fileID: 0}
   TrailPoint: {fileID: 4054594821476032866, guid: 1eb302f6bf4fbbf498a0c8b0ba6e0f99, type: 3}
-  TrailPointSpawnDistance: 1.25
+  TrailPointSpawnDistance: 2
   OverlapRadius: 0.5
 --- !u!54 &1150062627286218138
 Rigidbody:
