@@ -56,6 +56,11 @@ public class AntTargetPositionProvider : MonoBehaviour
 
     private Transform _currentObstacle;
 
+    /// <summary>
+    /// Distance to the left of the trail to go when following one.
+    /// </summary>
+    public float TrailOffset;
+
     void Start()
     {
         var randomPosition = Random.insideUnitCircle.normalized;
@@ -66,17 +71,15 @@ public class AntTargetPositionProvider : MonoBehaviour
     float ObstacleAvoidenceWeight => Mathf.Max(0, _obstacleAvoidenceTime) / ObstacleAvoidenceTime;
     void FixedUpdate()
     {
-        var targetObject = _target?.TargetPoint;
-
         if(_obstacleAvoidenceTime <= 0)
         {
             _obstacleAvoidenceVector = null;
             _obstacleAvoidenceTime = 0;
         }
 
-        if (targetObject != null)
+        if (_target?.TargetPoint != null)
         {
-            SetDirectionToMoveWithTarget(targetObject);
+            SetDirectionToMoveWithTarget();
         }
         else
         {
@@ -85,9 +88,13 @@ public class AntTargetPositionProvider : MonoBehaviour
 
     }
 
-    private void SetDirectionToMoveWithTarget(Transform targetObject)
+    private void SetDirectionToMoveWithTarget()
     {
-        this.DirectionToMove = (targetObject.position - transform.position);
+        DirectionToMove = _target.TargetPoint.position - transform.position;
+        if(!_target.IsActual)
+        {
+            DirectionToMove -= (transform.right * TrailOffset);
+        }
         if (_obstacleAvoidenceVector.HasValue)
         {
             // Add the weighted obstacle avoidence vector to the current direction to move.

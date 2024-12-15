@@ -353,6 +353,7 @@ MonoBehaviour:
   MaxRandomMagnitude: 1
   ObstacleAvoidenceTime: 0.25
   MaxObstacleAvoidenceTime: 2
+  TrailOffset: 1
 --- !u!114 &6078784432672750216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -403,7 +404,7 @@ Rigidbody:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_ImplicitCom: 1
+  m_ImplicitCom: 0
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0

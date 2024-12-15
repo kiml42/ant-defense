@@ -462,6 +462,7 @@ public class AntStateMachine : MonoBehaviour
             case Smell.Food:
                 if (IsScout)
                 {
+                    if (State == AntState.ReportingFood) return;
                     FoundNewFood();
                     return;
                 }
