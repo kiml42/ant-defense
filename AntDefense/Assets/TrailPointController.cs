@@ -48,6 +48,7 @@ public class TrailPointController : Smellable
 
     public float ScaleDownTime = 4;
     public float DefaultLifetime = 80;
+    public override bool IsPermanentSource => true;
 
     private void FixedUpdate()
     {

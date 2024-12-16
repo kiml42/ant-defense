@@ -60,6 +60,7 @@ public class AntStateMachine : MonoBehaviour
     {
         get
         {
+            if (_disableTrail) return null;
             switch (State)
             {
                 case AntState.SeekingFood:
@@ -461,8 +462,15 @@ public class AntStateMachine : MonoBehaviour
             case Smell.Food:
                 if (IsScout)
                 {
-                    if (State == AntState.ReportingFood) return;
+                    if (!smellable.IsPermanentSource || State == AntState.ReportingFood) return;
                     FoundNewFood();
+                    return;
+                }
+                if (!smellable.IsPermanentSource)
+                {
+                    // it's a one-off, so just take it home.
+                    CollectKnownFood(smellable);
+                    _disableTrail = true;
                     return;
                 }
                 switch (State)
@@ -472,6 +480,7 @@ public class AntStateMachine : MonoBehaviour
                         return;
                     case AntState.ReturningToFood:
                         CollectKnownFood(smellable);
+                        _disableTrail = false;
                         return;
                 }
                 return;
@@ -482,17 +491,20 @@ public class AntStateMachine : MonoBehaviour
                     State = AntState.SeekingFood;
                     ClearTarget();
                     _maxTargetTime = null;
+                    _disableTrail = false;
                     return;
                 }
                 switch (State)
                 {
                     case AntState.ReportingFood:
+                        _disableTrail = false;
                         _maxTargetTime = null;
                         ClearTarget();
                         State = AntState.ReturningToFood;
                         UpdateTarget(LastTrailPoint);
                         return;
                     case AntState.CarryingFood:
+                        _disableTrail = false;
                         State = AntState.ReturningToFood;
                         _maxTargetTime = null;
                         ClearTarget();
@@ -500,6 +512,7 @@ public class AntStateMachine : MonoBehaviour
                         DropOffFood(smellable);
                         return;
                     case AntState.ReturningHome:
+                        _disableTrail = false;
                         State = AntState.SeekingFood;
                         _maxTargetTime = null;
                         ClearTarget();
@@ -522,11 +535,13 @@ public class AntStateMachine : MonoBehaviour
         //Debug.Log($"State Seeking -> Reporting");
         State = AntState.ReportingFood;
         _maxTargetTime = null;
+        _disableTrail = false;
         ClearTarget();
         this.UpdateTarget(LastTrailPoint);
     }
 
     public Digestion Digestion;
+    private bool _disableTrail;
 
     private void EatFoodAtHome(Smellable smellable)
     {

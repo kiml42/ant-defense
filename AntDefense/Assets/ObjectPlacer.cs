@@ -44,5 +44,11 @@ public class ObjectPlacer : MonoBehaviour
         if (QuickBarObjects.Count <= i) return;
         var prefab = QuickBarObjects[i];
         var newObject = Instantiate(prefab, this.transform.position, Quaternion.identity);
+        
+        var foodSmell = newObject.GetComponent<FoodSmell>();
+        if(foodSmell != null)
+        {
+            foodSmell.MarkAsPermanant(false);
+        }
     }
 }

@@ -6,6 +6,7 @@ public class Food : Carryable
 {
     public float FoodValue = 100;
     public List<FoodSmell> Smells;
+
     public override void Attach(Rigidbody other)
     {
         base.Attach(other);
