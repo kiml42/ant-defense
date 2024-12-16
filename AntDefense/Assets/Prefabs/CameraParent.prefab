@@ -139,6 +139,7 @@ MonoBehaviour:
   QuickBarObjects:
   - {fileID: 2451422094013383525, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
   - {fileID: 6647136980466131039, guid: a3ee0852285ae39498a98184e22ddb3d, type: 3}
+  Camera: {fileID: 8137990677537509276}
 --- !u!1 &8619060628631676251
 GameObject:
   m_ObjectHideFlags: 0

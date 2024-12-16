@@ -467,7 +467,7 @@ public class AntStateMachine : MonoBehaviour
                     FoundNewFood();
                     return;
                 }
-                if (!smellable.IsPermanentSource)
+                if (!smellable.IsPermanentSource && (State == AntState.SeekingFood || State == AntState.ReturningToFood || State == AntState.ReturningHome))
                 {
                     // it's a one-off, so just take it home.
                     CollectKnownFood(smellable);
