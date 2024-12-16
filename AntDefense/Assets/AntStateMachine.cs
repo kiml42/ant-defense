@@ -538,7 +538,7 @@ public class AntStateMachine : MonoBehaviour
 
     private void DropOffFood(Smellable smellable)
     {
-        if(_carriedFood?.gameObject?.IsDestroyed() != false)
+        if(_carriedFood == null || _carriedFood.gameObject?.IsDestroyed() != false)
         {
             _carriedFood = null;
             return;
