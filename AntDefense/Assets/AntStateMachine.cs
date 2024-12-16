@@ -8,7 +8,7 @@ public class AntStateMachine : MonoBehaviour
     // TODO improve detection of trails that no longer lead to food (e.g. single berry in the world that has been removed)
     // TODO make ants consume food to make it easier to get more ants when there are fewer ants. This could replace teh simpl,e lifetime mechanism.
     public Smellable _currentTarget;
-    private GameObject _carriedFood;
+    private Food _carriedFood;
     public AntState State = AntState.SeekingFood;
 
     public Transform ViewPoint;
@@ -79,7 +79,6 @@ public class AntStateMachine : MonoBehaviour
     private HashSet<Smellable> _newBetterTargets = new HashSet<Smellable>();
 
     private Rigidbody _rigidbody;
-    private SpringJoint _jointToFood;
 
     private void Start()
     {
@@ -539,18 +538,16 @@ public class AntStateMachine : MonoBehaviour
 
     private void DropOffFood(Smellable smellable)
     {
-        if(_carriedFood?.IsDestroyed() != false)
+        if(_carriedFood?.gameObject?.IsDestroyed() != false)
         {
             _carriedFood = null;
             return;
         }
-        var food = _carriedFood.GetComponent<Food>();
         var home = smellable.GetComponentInParent<AntNest>();
 
-        home.AddFood(food.FoodValue);
+        home.AddFood(_carriedFood.FoodValue);
 
-        Destroy(_carriedFood);
-        _jointToFood = null;
+        _carriedFood.Destroy();
         _carriedFood = null;
     }
 
@@ -586,7 +583,7 @@ public class AntStateMachine : MonoBehaviour
 
     private void PickUpFood(Food food)
     {
-        _carriedFood = food.gameObject;
+        _carriedFood = food;
         food.transform.position = CarryPoint.position;
         food.Attach(_rigidbody);
     }
