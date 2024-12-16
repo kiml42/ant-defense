@@ -460,6 +460,7 @@ public class AntStateMachine : MonoBehaviour
         switch (smellable.Smell)
         {
             case Smell.Food:
+                if (_carriedFood != null) return;   // ignore all other food if already carrying
                 if (IsScout)
                 {
                     if (!smellable.IsPermanentSource || State == AntState.ReportingFood) return;
