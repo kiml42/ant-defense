@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class AntCam : MonoBehaviour
@@ -9,7 +11,25 @@ public class AntCam : MonoBehaviour
     public float MaxCameraSpeed = 0.5f;
     private Vector3 lastMousePosition;
 
+    private KeyCode[] _upKeyCodes = new[] { KeyCode.W, KeyCode.UpArrow };
+    private KeyCode[] _leftKeyCodes = new[] { KeyCode.A, KeyCode.LeftArrow };
+    private KeyCode[] _downKeyCodes = new[] { KeyCode.S, KeyCode.DownArrow };
+    private KeyCode[] _rightKeyCodes = new[] { KeyCode.D, KeyCode.RightArrow };
+    private KeyCode[] _directionKeys
+    {
+        get
+        {
+            var all = _upKeyCodes.ToList();
+            all.AddRange(_leftKeyCodes);
+            all.AddRange(_downKeyCodes);
+            all.AddRange(_rightKeyCodes);
+            return all.ToArray();
+        }
+    }
+
     public Camera Camera;
+
+    public float KeyScrollSpeed = 1;
 
     private void Start()
     {
@@ -28,10 +48,10 @@ public class AntCam : MonoBehaviour
         {
             lastMousePosition = Input.mousePosition;
         }
+        var zoomProportion = GetZoomProportion(CurrentY);
+        var speed = GetProportionOfRange(zoomProportion, MinCameraSpeed, MaxCameraSpeed);
         if (Input.GetMouseButton(MouseButton))
         {
-            var zoomProportion = GetZoomProportion(CurrentY);
-            var speed = GetProportionOfRange(zoomProportion, MinCameraSpeed, MaxCameraSpeed);
             var change = Input.mousePosition - lastMousePosition;
             lastMousePosition = Input.mousePosition;
             if (change.magnitude > 0)
@@ -42,7 +62,39 @@ public class AntCam : MonoBehaviour
                 newZ -= change.y * speed;
             }
         }
+        else
+        {
+            ProcessKeys(speed, ref newX, ref newZ);
+        }
+
+
         transform.position = new Vector3(newX, transform.position.y, newZ);
+    }
+
+    private void ProcessKeys(float speed, ref float newX, ref float newZ)
+    {
+        foreach (var key in _directionKeys)
+        {
+            if (Input.GetKey(key))
+            {
+                if (_upKeyCodes.Contains(key))
+                {
+                    newZ += KeyScrollSpeed * speed;
+                }
+                if (_downKeyCodes.Contains(key))
+                {
+                    newZ -= KeyScrollSpeed * speed;
+                }
+                if (_rightKeyCodes.Contains(key))
+                {
+                    newX += KeyScrollSpeed * speed;
+                }
+                if (_leftKeyCodes.Contains(key))
+                {
+                    newX -= KeyScrollSpeed * speed;
+                }
+            }
+        }
     }
 
     private float _targetXRotation = 0;
