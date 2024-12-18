@@ -3,11 +3,14 @@ using UnityEngine;
 
 public class ObjectPlacer : MonoBehaviour
 {
+    private const int MouseButton = 0;
+
     public List<PlaceableGhost> QuickBarObjects;
 
     private Vector3 _spawnLocation;
 
-    public Vector3 SpawnOffset;
+    private PlaceableGhost _objectBeingPlaced;
+
 
     private KeyCode[] _quickBarKeys = {
         KeyCode.Alpha1,
@@ -31,7 +34,12 @@ public class ObjectPlacer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateSpawnPoint();
+        if(_objectBeingPlaced != null)
+        {
+            UpdateSpawnPoint();
+            ProcessClick();
+        }
+
         ProcessQuickKeys();
     }
 
@@ -44,6 +52,8 @@ public class ObjectPlacer : MonoBehaviour
             Debug.Log($"hit {hit.transform.name} @ {hit.point}");
             _spawnLocation = hit.point;
         }
+
+        _objectBeingPlaced.transform.position = _spawnLocation - _objectBeingPlaced.transform.InverseTransformPoint(_objectBeingPlaced.FloorPoint.position);
     }
 
     private void ProcessQuickKeys()
@@ -59,9 +69,29 @@ public class ObjectPlacer : MonoBehaviour
 
     private void SpawnQuickObject(int i)
     {
+        if(_objectBeingPlaced != null)
+        {
+            Destroy(_objectBeingPlaced.gameObject);
+            _objectBeingPlaced = null;
+        }
+
         if (QuickBarObjects.Count <= i) return;
         var prefab = QuickBarObjects[i];
         
-        Instantiate(prefab, _spawnLocation - prefab.FloorPoint.position, Quaternion.identity);
+        _objectBeingPlaced = Instantiate(prefab, _spawnLocation - prefab.FloorPoint.position, Quaternion.identity);
+        //_objectBeingPlaced.transform.parent = transform;
+        UpdateSpawnPoint();
+    }
+
+    private void ProcessClick()
+    {
+        // TODO allow rotation
+        // TODO allow placing multiple
+        if(Input.GetMouseButtonDown(MouseButton))
+        {
+            _objectBeingPlaced.Place();
+            _objectBeingPlaced.transform.parent = null;
+            _objectBeingPlaced = null;
+        }
     }
 }

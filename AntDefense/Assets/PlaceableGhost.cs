@@ -8,19 +8,29 @@ public class PlaceableGhost : MonoBehaviour
 
     public float TimeOut = 3;
 
+    private bool _isPlaced = false;
+
     // Start is called before the first frame update
     void Start()
     {
         
     }
 
+    public void Place()
+    {
+        _isPlaced = true;
+    }
+
     // Update is called once per frame
     void Update()
     {
-        TimeOut -= Time.deltaTime;
-        if(TimeOut < 0)
+        if (_isPlaced)
         {
-            SpawnRealObject();
+            TimeOut -= Time.deltaTime;
+            if(TimeOut < 0)
+            {
+                SpawnRealObject();
+            }
         }
     }
 
