@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class ObjectPlacer : MonoBehaviour
 {
+    // TODO implement cost to place objects
     private const int MouseButton = 0;
 
     public List<PlaceableGhost> QuickBarObjects;
