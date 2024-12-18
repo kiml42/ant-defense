@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -9,7 +8,7 @@ public class AntCam : MonoBehaviour
     public float CameraPanSpeed = 0.8f;
     public float MinCameraSpeed = 0.1f;
     public float MaxCameraSpeed = 0.5f;
-    private Vector3 lastMousePosition;
+    private Vector3 _lastMousePosition;
 
     private KeyCode[] _upKeyCodes = new[] { KeyCode.W, KeyCode.UpArrow };
     private KeyCode[] _leftKeyCodes = new[] { KeyCode.A, KeyCode.LeftArrow };
@@ -46,14 +45,14 @@ public class AntCam : MonoBehaviour
 
         if (Input.GetMouseButtonDown(MouseButton))
         {
-            lastMousePosition = Input.mousePosition;
+            _lastMousePosition = Input.mousePosition;
         }
         var zoomProportion = GetZoomProportion(CurrentY);
         var speed = GetProportionOfRange(zoomProportion, MinCameraSpeed, MaxCameraSpeed);
         if (Input.GetMouseButton(MouseButton))
         {
-            var change = Input.mousePosition - lastMousePosition;
-            lastMousePosition = Input.mousePosition;
+            var change = Input.mousePosition - _lastMousePosition;
+            _lastMousePosition = Input.mousePosition;
             if (change.magnitude > 0)
             {
                 //Debug.Log("Mouse Move " + change);

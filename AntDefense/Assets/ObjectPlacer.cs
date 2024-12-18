@@ -7,6 +7,8 @@ public class ObjectPlacer : MonoBehaviour
 
     public List<PlaceableGhost> QuickBarObjects;
 
+    public float RotateSpeed = 1;
+
     private Vector3 _spawnLocation;
 
     private PlaceableGhost _objectBeingPlaced;
@@ -31,12 +33,18 @@ public class ObjectPlacer : MonoBehaviour
         _spawnLocation = transform.position;
     }
 
+    bool _isRotating = false;
+    private Vector3 _lastMousePosition;
+
     // Update is called once per frame
     void Update()
     {
         if(_objectBeingPlaced != null)
         {
-            UpdateSpawnPoint();
+            if (!_isRotating)
+            {
+                UpdateSpawnPoint();
+            }
             ProcessClick();
         }
 
@@ -85,10 +93,30 @@ public class ObjectPlacer : MonoBehaviour
 
     private void ProcessClick()
     {
-        // TODO allow rotation
         // TODO allow placing multiple
         if(Input.GetMouseButtonDown(MouseButton))
         {
+            _isRotating = true;
+            _lastMousePosition = Input.mousePosition;
+        }
+
+        if(_isRotating)
+        {
+            var mousePosition = Input.mousePosition;
+
+            var positionChange = mousePosition - _lastMousePosition;
+
+            var angle = positionChange.x * RotateSpeed;
+
+            _objectBeingPlaced.transform.Rotate(Vector3.up, angle);
+
+            _lastMousePosition = mousePosition;
+
+        }
+
+        if (Input.GetMouseButtonUp(MouseButton))
+        {
+            _isRotating = false;
             _objectBeingPlaced.Place();
             _objectBeingPlaced.transform.parent = null;
             _objectBeingPlaced = null;
