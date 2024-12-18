@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ObjectPlacer : MonoBehaviour
 {
-    public List<GameObject> QuickBarObjects;
+    public List<PlaceableGhost> QuickBarObjects;
 
     private Vector3 _spawnLocation;
 
@@ -25,7 +25,7 @@ public class ObjectPlacer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _spawnLocation = transform.position + SpawnOffset;
+        _spawnLocation = transform.position;
     }
 
     // Update is called once per frame
@@ -42,7 +42,7 @@ public class ObjectPlacer : MonoBehaviour
         {
             Debug.Log(hit.transform.name);
             Debug.Log($"hit {hit.transform.name} @ {hit.point}");
-            _spawnLocation = hit.point + SpawnOffset;
+            _spawnLocation = hit.point;
         }
     }
 
@@ -61,12 +61,7 @@ public class ObjectPlacer : MonoBehaviour
     {
         if (QuickBarObjects.Count <= i) return;
         var prefab = QuickBarObjects[i];
-        var newObject = Instantiate(prefab, _spawnLocation, Quaternion.identity);
         
-        var foodSmell = newObject.GetComponent<FoodSmell>();
-        if(foodSmell != null)
-        {
-            foodSmell.MarkAsPermanant(false);
-        }
+        Instantiate(prefab, _spawnLocation - prefab.FloorPoint.position, Quaternion.identity);
     }
 }

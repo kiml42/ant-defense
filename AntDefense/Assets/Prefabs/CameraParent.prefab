@@ -144,6 +144,7 @@ MonoBehaviour:
   MinCameraSpeed: 0.08
   MaxCameraSpeed: 0.5
   Camera: {fileID: 5620213517466043452}
+  KeyScrollSpeed: 1
   MinY: 10
   MaxY: 200
   MinAngle: -50
@@ -162,8 +163,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   QuickBarObjects:
-  - {fileID: 2451422094013383525, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
-  - {fileID: 6647136980466131039, guid: a3ee0852285ae39498a98184e22ddb3d, type: 3}
+  - {fileID: 2451422094013383525, guid: c0a466cc90269134e8159dd6b9b972f3, type: 3}
+  - {fileID: 6647136980466131039, guid: d3b2484fa637a30438fdb3202b4a3761, type: 3}
   SpawnOffset: {x: 0, y: 5, z: 0}
 --- !u!1 &9169468475242597711
 GameObject:
