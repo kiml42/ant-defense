@@ -38,7 +38,7 @@ public class PlaceableGhost : MonoBehaviour
 
     private void SpawnRealObject()
     {
-        var newObject = Instantiate(RealObject, transform.position, Quaternion.identity);
+        var newObject = Instantiate(RealObject, transform.position, transform.rotation);
 
         var foodSmell = newObject.GetComponent<FoodSmell>();
         if (foodSmell != null)

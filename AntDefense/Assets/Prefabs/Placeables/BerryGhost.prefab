@@ -51,6 +51,7 @@ MonoBehaviour:
   RealObject: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
   FloorPoint: {fileID: 374015092026775150}
   TimeOut: 3
+  Rotatable: 0
 --- !u!1 &6652936135346501748
 GameObject:
   m_ObjectHideFlags: 0

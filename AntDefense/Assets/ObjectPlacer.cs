@@ -8,6 +8,7 @@ public class ObjectPlacer : MonoBehaviour
     public List<PlaceableGhost> QuickBarObjects;
 
     public float RotateSpeed = 1;
+    public float QuickClickTime = 0.5f;
 
     private Vector3 _spawnLocation;
 
@@ -77,49 +78,76 @@ public class ObjectPlacer : MonoBehaviour
 
     private void SpawnQuickObject(int i)
     {
-        if(_objectBeingPlaced != null)
-        {
-            Destroy(_objectBeingPlaced.gameObject);
-            _objectBeingPlaced = null;
-        }
+        CancelPlacingObject();
 
         if (QuickBarObjects.Count <= i) return;
         var prefab = QuickBarObjects[i];
-        
+
         _objectBeingPlaced = Instantiate(prefab, _spawnLocation - prefab.FloorPoint.position, Quaternion.identity);
         //_objectBeingPlaced.transform.parent = transform;
         UpdateSpawnPoint();
     }
 
+    private void CancelPlacingObject()
+    {
+        if (_objectBeingPlaced != null)
+        {
+            Destroy(_objectBeingPlaced.gameObject);
+            _objectBeingPlaced = null;
+        }
+    }
+
+    float _clickTime;
     private void ProcessClick()
     {
         // TODO allow placing multiple
-        if(Input.GetMouseButtonDown(MouseButton))
+        if (_objectBeingPlaced.Rotatable)
         {
-            _isRotating = true;
-            _lastMousePosition = Input.mousePosition;
+            if(!_isRotating && Input.GetMouseButtonDown(MouseButton))
+            {
+                _isRotating = true;
+                _lastMousePosition = Input.mousePosition;
+                _clickTime = Time.timeSinceLevelLoad;
+            }
+
+            if(_isRotating)
+            {
+                var mousePosition = Input.mousePosition;
+
+                var positionChange = mousePosition - _lastMousePosition;
+
+                var angle = positionChange.x * RotateSpeed;
+
+                _objectBeingPlaced.transform.Rotate(Vector3.up, angle);
+
+                _lastMousePosition = mousePosition;
+            }
         }
 
-        if(_isRotating)
+        if (Input.GetMouseButtonUp(1))
         {
-            var mousePosition = Input.mousePosition;
-
-            var positionChange = mousePosition - _lastMousePosition;
-
-            var angle = positionChange.x * RotateSpeed;
-
-            _objectBeingPlaced.transform.Rotate(Vector3.up, angle);
-
-            _lastMousePosition = mousePosition;
-
+            if(_isRotating )
+            {
+                _isRotating = false;
+            }
+            else
+            {
+                CancelPlacingObject();
+                return;
+            }
         }
 
         if (Input.GetMouseButtonUp(MouseButton))
         {
-            _isRotating = false;
-            _objectBeingPlaced.Place();
-            _objectBeingPlaced.transform.parent = null;
-            _objectBeingPlaced = null;
+            var timeSinceClick = Time.timeSinceLevelLoad - _clickTime;
+            if (!_objectBeingPlaced.Rotatable || timeSinceClick > QuickClickTime)
+            {
+                // Only process the mouse up if it's been a reasonable time since it was clicked.
+                _isRotating = false;
+                _objectBeingPlaced.Place();
+                _objectBeingPlaced.transform.parent = null;
+                _objectBeingPlaced = null;
+            }
         }
     }
 }
