@@ -2412,6 +2412,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7225336197934446203, guid: 671a2805116037f4aadc102530200391, type: 3}
+      propertyPath: QuickBarObjects.Array.data[0]
+      value: 
+      objectReference: {fileID: 1482762059953385253, guid: c0a466cc90269134e8159dd6b9b972f3, type: 3}
+    - target: {fileID: 7225336197934446203, guid: 671a2805116037f4aadc102530200391, type: 3}
+      propertyPath: QuickBarObjects.Array.data[1]
+      value: 
+      objectReference: {fileID: 1674430744356087993, guid: d3b2484fa637a30438fdb3202b4a3761, type: 3}
     - target: {fileID: 8619060628631676251, guid: 671a2805116037f4aadc102530200391, type: 3}
       propertyPath: m_Name
       value: CameraParent
