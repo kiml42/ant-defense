@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +15,10 @@ public class ObjectPlacer : MonoBehaviour
     private Vector3 _spawnLocation;
 
     private PlaceableGhost _objectBeingPlaced;
+
+    public Transform TranslateModeIndicator;
+    public Transform RotateModeIndicator;
+    private Transform _modeIndicator;
 
 
     private KeyCode[] _quickBarKeys = {
@@ -63,7 +68,9 @@ public class ObjectPlacer : MonoBehaviour
             _spawnLocation = hit.point;
         }
 
-        _objectBeingPlaced.transform.position = _spawnLocation - _objectBeingPlaced.transform.InverseTransformPoint(_objectBeingPlaced.FloorPoint.position);
+        _objectBeingPlaced.transform.position = 
+            //_modeIndicator.transform.position =
+            _spawnLocation - _objectBeingPlaced.transform.InverseTransformPoint(_objectBeingPlaced.FloorPoint.position);
     }
 
     private void ProcessQuickKeys()
@@ -85,7 +92,7 @@ public class ObjectPlacer : MonoBehaviour
         var prefab = QuickBarObjects[i];
 
         _objectBeingPlaced = Instantiate(prefab, _spawnLocation - prefab.FloorPoint.position, Quaternion.identity);
-        //_objectBeingPlaced.transform.parent = transform;
+        RefreshModeIndicator();
         UpdateSpawnPoint();
     }
 
@@ -95,6 +102,7 @@ public class ObjectPlacer : MonoBehaviour
         {
             Destroy(_objectBeingPlaced.gameObject);
             _objectBeingPlaced = null;
+            RefreshModeIndicator();
         }
     }
 
@@ -107,6 +115,7 @@ public class ObjectPlacer : MonoBehaviour
             if(!_isRotating && Input.GetMouseButtonDown(MouseButton))
             {
                 _isRotating = true;
+                RefreshModeIndicator();
                 _lastMousePosition = Input.mousePosition;
                 _clickTime = Time.timeSinceLevelLoad;
             }
@@ -130,6 +139,7 @@ public class ObjectPlacer : MonoBehaviour
             if(_isRotating )
             {
                 _isRotating = false;
+                RefreshModeIndicator();
             }
             else
             {
@@ -148,7 +158,24 @@ public class ObjectPlacer : MonoBehaviour
                 _objectBeingPlaced.Place();
                 _objectBeingPlaced.transform.parent = null;
                 _objectBeingPlaced = null;
+                RefreshModeIndicator();
+
             }
         }
+    }
+
+    private void RefreshModeIndicator()
+    {
+        if(_modeIndicator != null)
+        {
+            Destroy(_modeIndicator.gameObject);
+        }
+        if(_objectBeingPlaced == null)
+        {
+            return;
+        }
+        var prefab = _isRotating ? RotateModeIndicator : TranslateModeIndicator;
+        _modeIndicator = Instantiate(prefab, _objectBeingPlaced.transform.position, _objectBeingPlaced.transform.rotation);
+        _modeIndicator.parent = _objectBeingPlaced.transform;
     }
 }

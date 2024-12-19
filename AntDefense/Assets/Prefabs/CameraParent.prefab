@@ -165,7 +165,10 @@ MonoBehaviour:
   QuickBarObjects:
   - {fileID: 2451422094013383525, guid: c0a466cc90269134e8159dd6b9b972f3, type: 3}
   - {fileID: 6647136980466131039, guid: d3b2484fa637a30438fdb3202b4a3761, type: 3}
-  SpawnOffset: {x: 0, y: 5, z: 0}
+  RotateSpeed: 1
+  QuickClickTime: 0.5
+  TranslateModeIndicator: {fileID: 1388316768231289819, guid: e8cf8aef334aea146a360117238b17a8, type: 3}
+  RotateModeIndicator: {fileID: 1388316768231289819, guid: 11b2318da4876db43869ef63eb122204, type: 3}
 --- !u!1 &9169468475242597711
 GameObject:
   m_ObjectHideFlags: 0
