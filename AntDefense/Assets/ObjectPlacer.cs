@@ -56,10 +56,10 @@ public class ObjectPlacer : MonoBehaviour
     private void UpdateSpawnPoint()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit, 100, -1, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
         {
-            Debug.Log(hit.transform.name);
-            Debug.Log($"hit {hit.transform.name} @ {hit.point}");
+            //Debug.Log(hit.transform.name);
+            //Debug.Log($"hit {hit.transform.name} @ {hit.point}");
             _spawnLocation = hit.point;
         }
 

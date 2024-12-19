@@ -162,3 +162,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RealObject: {fileID: 1388316768231289819, guid: a3ee0852285ae39498a98184e22ddb3d, type: 3}
   FloorPoint: {fileID: 3044614506823656388}
+  TimeOut: 0
+  Rotatable: 1
