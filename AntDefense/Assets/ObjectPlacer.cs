@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ObjectPlacer : MonoBehaviour
 {
+    // TODO Drop objects into place
+    // TODO orient walls like the cursor is holding one end of teh wall.
     // TODO implement cost to place objects
     private const int MouseButton = 0;
 
