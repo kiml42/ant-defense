@@ -6,6 +6,7 @@ public class TranslateHandle : MonoBehaviour
     /// The point on this object that was hit with the mouse down
     /// </summary>
     private Vector3? _localHit = null;
+    private bool _rotateMode;
 
     // Start is called before the first frame update
     void Start()
@@ -16,32 +17,44 @@ public class TranslateHandle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButtonDown(0))
+        int layerMask = LayerMask.GetMask("UI");
+        if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             //TODO get teh layer mask right to just interact with UI(5) elements
-            if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Collide))
+            if (Physics.Raycast(ray, out var hit, 500, layerMask, QueryTriggerInteraction.Collide))
             {
                 //Debug.Log(hit.transform.name);
                 //Debug.Log($"hit {hit.transform.name} @ {hit.point}");
-                var handle = hit.transform.GetComponentInParent<TranslateHandle>();
-                if (handle == this)
+                var translateHandle = hit.transform.GetComponentInParent<TranslateHandle>();
+                if (translateHandle == this)
                 {
-                    Debug.Log("Clicked on this handle!");
-                    _localHit = transform.InverseTransformPoint(hit.point);
+                    var rotateHandle = hit.transform.GetComponentInParent<RotateHandle>();
+                    if (rotateHandle != null)
+                    {
+                        Debug.Log("Clicked on rotate handle!");
+                        _localHit = transform.InverseTransformPoint(hit.point);
+                        _rotateMode = true;
+                    }
+                    else
+                    {
+                        Debug.Log("Clicked on translate handle!");
+                        _localHit = transform.InverseTransformPoint(hit.point);
+                        _rotateMode = false;
+                    }
                 }
-                //_spawnLocation = hit.point;
             }
             else
             {
-                Debug.Log("Miss");
+                //Debug.Log("Miss");
             }
         }
 
         if(Input.GetMouseButtonUp(0))
         {
-            Debug.Log("Mouse up");
+            //Debug.Log("Mouse up");
             _localHit = null;
+            _rotateMode = false;
         }
 
         if (_localHit.HasValue)
@@ -49,8 +62,15 @@ public class TranslateHandle : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
             {
-                Debug.Log("Mouse is down, pointing at " + hit.point);
-                transform.position = hit.point - new Vector3(_localHit.Value.x, 0, _localHit.Value.z);
+                Debug.Log((_rotateMode ? "Rotating " : "Translating ") + hit.point);
+                if (_rotateMode)
+                {
+                    transform.rotation.SetLookRotation(hit.point);
+                }
+                else
+                {
+                    transform.position = hit.point - new Vector3(_localHit.Value.x, 0, _localHit.Value.z);
+                }
             }
             else
             {
