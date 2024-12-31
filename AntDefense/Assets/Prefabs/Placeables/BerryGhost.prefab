@@ -52,6 +52,7 @@ MonoBehaviour:
   FloorPoint: {fileID: 374015092026775150}
   TimeOut: 0
   Rotatable: 0
+  SpawnOffset: {x: 0, y: 2, z: 0}
 --- !u!1 &6652936135346501748
 GameObject:
   m_ObjectHideFlags: 0

@@ -100,6 +100,7 @@ MonoBehaviour:
   FloorPoint: {fileID: 0}
   TimeOut: 1
   Rotatable: 1
+  SpawnOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &2727870561293265979
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,5 +212,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RealObject: {fileID: 1388316768231289819, guid: a3ee0852285ae39498a98184e22ddb3d, type: 3}
   FloorPoint: {fileID: 3044614506823656388}
-  TimeOut: 1
+  TimeOut: 0.1
   Rotatable: 1
+  SpawnOffset: {x: 0, y: 4, z: 0}

@@ -12,6 +12,8 @@ public class PlaceableGhost : MonoBehaviour
 
     public bool Rotatable = true;
 
+    public Vector3 SpawnOffset = Vector3.zero;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -38,7 +40,7 @@ public class PlaceableGhost : MonoBehaviour
 
     private void SpawnRealObject()
     {
-        var newObject = Instantiate(RealObject, transform.position, transform.rotation);
+        var newObject = Instantiate(RealObject, transform.position + SpawnOffset, transform.rotation);
 
         var foodSmells = newObject.GetComponentsInChildren<FoodSmell>();
         foreach (var foodSmell in foodSmells)

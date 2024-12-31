@@ -329,7 +329,7 @@ MonoBehaviour:
   ViewPoint: {fileID: 9217438795446165722}
   PositionProvider: {fileID: 2951773968300769007}
   MaxTimeGoingForTrailPoint: 3
-  GiveUpPenalty: 0.8
+  GiveUpPenalty: 0.2
   CollisionTargetBonus: 0.5
   GiveUpRecoveryMultiplier: 1.5
   TrailController: {fileID: 1089436927646635733}

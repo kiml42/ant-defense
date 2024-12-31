@@ -49,7 +49,7 @@ public abstract class Carryable : MonoBehaviour
     {
         this.transform.parent = null;
         _carrier.mass -= Mass;
-        Debug.Log($"Decreasing {_carrier.name}'s mass by {Mass} to {_carrier.mass}");
+        //Debug.Log($"Decreasing {_carrier.name}'s mass by {Mass} to {_carrier.mass}");
         Destroy(this.gameObject);
     }
 
@@ -58,7 +58,7 @@ public abstract class Carryable : MonoBehaviour
         transform.parent = other.transform;
         other.mass += Mass;
         _carrier = other;
-        Debug.Log($"Increasing {_carrier.name}'s mass by {Mass} to {_carrier.mass}");
+        //Debug.Log($"Increasing {_carrier.name}'s mass by {Mass} to {_carrier.mass}");
         Destroy(_rigidbody);
     }
 }

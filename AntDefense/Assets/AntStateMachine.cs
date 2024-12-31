@@ -40,7 +40,7 @@ public class AntStateMachine : MonoBehaviour
     /// <summary>
     /// Amount to decrace the max target time by if no better target has been found in <see cref="MaxTimeGoingForTrailPoint"/> seconds.
     /// </summary>
-    public float GiveUpPenalty = 0.5f;
+    public float GiveUpPenalty = 0.1f;
 
     /// <summary>
     /// Extra time to be allowed to go for a given target if the ant collides with an obstacle.
@@ -186,7 +186,8 @@ public class AntStateMachine : MonoBehaviour
             Debug.DrawLine(transform.position, CurrentTarget.TargetPoint.position, Color.cyan);
             if(!CurrentTarget.IsActual && _timeSinceTargetAquisition > MaxTimeGoingForTrailPoint)
             {
-                //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget);
+                Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget);
+
                 _maxTargetTime = CurrentTarget.DistanceFromTarget - GiveUpPenalty;
                 ClearTarget();
             }
