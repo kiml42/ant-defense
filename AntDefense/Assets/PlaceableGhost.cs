@@ -40,8 +40,8 @@ public class PlaceableGhost : MonoBehaviour
     {
         var newObject = Instantiate(RealObject, transform.position, transform.rotation);
 
-        var foodSmell = newObject.GetComponent<FoodSmell>();
-        if (foodSmell != null)
+        var foodSmells = newObject.GetComponentsInChildren<FoodSmell>();
+        foreach (var foodSmell in foodSmells)
         {
             foodSmell.MarkAsPermanant(false);
         }

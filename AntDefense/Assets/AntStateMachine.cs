@@ -95,7 +95,6 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
-        // TODO account for berry being destroyed while being carried.
         if (_currentTarget.IsDestroyed())
         {
             ClearTarget();
@@ -282,6 +281,11 @@ public class AntStateMachine : MonoBehaviour
                             }
                             // has found an existing trail, so retrn to the food and pick it up.
                             State = AntState.ReturningToFood;
+                        }
+                        if(IsScout && !smellable.IsPermanentSource)
+                        {
+                            // Scouts only care about permanent sources of food.
+                            return;
                         }
                         _maxTargetTime = null;
                         ClearTarget();
