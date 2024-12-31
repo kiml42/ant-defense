@@ -8,30 +8,42 @@ public class TranslateHandle : MonoBehaviour
     private Vector3? _localHit = null;
     private bool _rotateMode;
     public Transform Indicator;
+    private int _layerMask;
+
+    private void Start()
+    {
+        _layerMask = LayerMask.GetMask("UI");
+    }
 
     // Update is called once per frame
     void Update()
     {
-        int layerMask = LayerMask.GetMask("UI");
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 500, layerMask, QueryTriggerInteraction.Collide))
+            if (Physics.Raycast(ray, out var hit, 500, _layerMask, QueryTriggerInteraction.Collide))
             {
                 _localHit = transform.InverseTransformPoint(hit.point);
                 var translateHandle = hit.transform.GetComponentInParent<TranslateHandle>();
                 if (translateHandle == this)
                 {
                     // It's part of this object in some way.
-
-                    var rotateHandle = hit.transform.GetComponentInParent<RotateHandle>();
-                    if (rotateHandle != null)
+                    var tick = hit.transform.GetComponentInParent<TickButton>();
+                    if (tick != null)
                     {
-                        _rotateMode = true;
+                        _localHit = null;
                     }
                     else
                     {
-                        _rotateMode = false;
+                        var rotateHandle = hit.transform.GetComponentInParent<RotateHandle>();
+                        if (rotateHandle != null)
+                        {
+                            _rotateMode = true;
+                        }
+                        else
+                        {
+                            _rotateMode = false;
+                        }
                     }
                 }
             }
@@ -41,6 +53,22 @@ public class TranslateHandle : MonoBehaviour
         {
             _localHit = null;
             _rotateMode = false;
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, 500, _layerMask, QueryTriggerInteraction.Collide))
+            {
+                var translateHandle = hit.transform.GetComponentInParent<TranslateHandle>();
+                if (translateHandle == this)
+                {
+                    // It's part of this object in some way.
+                    var tick = hit.transform.GetComponentInParent<TickButton>();
+                    if (tick != null)
+                    {
+                        Debug.Log("Mouse up on tick");
+                        return;
+                    }
+                }
+            }
         }
 
         if (_localHit.HasValue)
