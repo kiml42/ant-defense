@@ -83,9 +83,9 @@ public class TranslateHandle : MonoBehaviour
                     var angle = Vector3.SignedAngle(_localHit.Value, Vector3.forward, Vector3.up);
 
                     var offsetRotation = Quaternion.AngleAxis(angle, Vector3.up);
-                    var lookRotation = Quaternion.LookRotation(vectorToHit);
+                    var lookRotation = Quaternion.LookRotation(vectorToHit, Vector3.up);
 
-                    transform.rotation = lookRotation * offsetRotation;
+                    transform.rotation = AdjustYUp(lookRotation * offsetRotation);
                 }
                 else
                 {
@@ -94,5 +94,22 @@ public class TranslateHandle : MonoBehaviour
                 }
             }
         }
+
+    }
+
+    private Quaternion AdjustYUp(Quaternion originalRotation)
+    {
+        // Thanks Chat GPT.
+        // Extract the forward direction from the original rotation
+        Vector3 forward = originalRotation * Vector3.forward;
+
+        // Calculate the right direction based on the forward direction
+        Vector3 right = Vector3.Cross(Vector3.up, forward).normalized;
+
+        // Recalculate the forward direction to ensure orthogonality
+        forward = Vector3.Cross(right, Vector3.up).normalized;
+
+        // Construct a new rotation with Y pointing up and the adjusted forward direction
+        return Quaternion.LookRotation(forward, Vector3.up);
     }
 }
