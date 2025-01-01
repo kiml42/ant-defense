@@ -36,6 +36,21 @@ public class TranslateHandle : MonoBehaviour
         }
 
         MoveOnTop();
+        ScaleForDistanceToCamera();
+    }
+
+    public Transform UiObjectsToScale;
+    public float DefaultCameraDistance = 30f;
+
+    private void ScaleForDistanceToCamera()
+    {
+        var distance = Mathf.Abs((Camera.main.transform.position - this.transform.position).y);
+
+        var excessDistance = distance - DefaultCameraDistance;
+
+        var scale = ((excessDistance / DefaultCameraDistance)/1.3f) + 1;
+
+        UiObjectsToScale.localScale = Vector3.one * scale;
     }
 
     private void MoveOnTop()
