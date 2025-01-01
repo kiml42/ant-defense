@@ -49,8 +49,7 @@ public class ObjectPlacer : MonoBehaviour
         if (QuickBarObjects.Count <= i) return;
         var prefab = QuickBarObjects[i];
 
-        _objectBeingPlaced = Instantiate(prefab, Handle.transform.position - prefab.FloorPoint.position, Quaternion.identity);
-        _objectBeingPlaced.transform.rotation = Handle.transform.rotation;
+        _objectBeingPlaced = Instantiate(prefab, Handle.transform.position - prefab.FloorPoint.position, Handle.transform.rotation);
         _objectBeingPlaced.transform.parent = Handle.transform;
     }
 
@@ -67,9 +66,8 @@ public class ObjectPlacer : MonoBehaviour
     {
         if(_objectBeingPlaced != null)
         {
-            _objectBeingPlaced.Place();
-            _objectBeingPlaced.transform.parent = null;
-            _objectBeingPlaced = null;
+            var newObject = Instantiate(_objectBeingPlaced, _objectBeingPlaced.transform.position, _objectBeingPlaced.transform.rotation);
+            newObject.Place();
         }
     }
 }
