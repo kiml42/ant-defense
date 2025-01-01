@@ -82,6 +82,14 @@ public class TranslateHandle : MonoBehaviour
                         return;
                     }
                 }
+
+                var quickBarButton = hit.transform.GetComponentInParent<QuickBarButton>();
+                if (quickBarButton != null)
+                {
+                    Debug.Log("Click on quick bar button " + quickBarButton);
+                    ObjectPlacer.Instance.StartPlacingGhost(quickBarButton.Ghost);
+                    return;
+                }
             }
         }
 

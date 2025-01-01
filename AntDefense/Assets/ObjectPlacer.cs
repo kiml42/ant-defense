@@ -54,10 +54,14 @@ public class ObjectPlacer : MonoBehaviour
 
     private void SpawnQuickObject(int i)
     {
-        CancelPlacingObject();
-
         if (QuickBarObjects.Count <= i) return;
         var prefab = QuickBarObjects[i];
+        StartPlacingGhost(prefab);
+    }
+
+    public void StartPlacingGhost(PlaceableGhost prefab)
+    {
+        CancelPlacingObject();
 
         _objectBeingPlaced = Instantiate(prefab, Handle.transform.position - prefab.FloorPoint.position, Handle.transform.rotation);
         _objectBeingPlaced.transform.parent = Handle.transform;

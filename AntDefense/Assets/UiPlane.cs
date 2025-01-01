@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class UiPlane : MonoBehaviour
 {
-    public ClickableButton QuickBarButton;
+    public QuickBarButton QuickBarButton;
     public Transform QuickBarCenter;
     public float QuickBarSpacing = 0.1f;
-    private List<ClickableButton> _buttons = null;
+    private List<QuickBarButton> _buttons = null;
 
     float _height;
     float _width;
@@ -30,7 +30,7 @@ public class UiPlane : MonoBehaviour
 
         transform.localScale = new Vector3(min, min, min);
 
-        _buttons = new List<ClickableButton>();
+        _buttons = new List<QuickBarButton>();
         var quickBarObjects = ObjectPlacer.Instance.QuickBarObjects;
 
         var leftOffset = -QuickBarSpacing * (quickBarObjects.Count - 1) / 2;
@@ -38,18 +38,19 @@ public class UiPlane : MonoBehaviour
         for (int i = 0; i < quickBarObjects.Count; i++)
         {
             var offset = leftOffset + i * QuickBarSpacing;
-            var @object = quickBarObjects[i];
+            var ghost = quickBarObjects[i];
             var newButton = Instantiate(QuickBarButton, QuickBarCenter.transform.position + new Vector3(offset, 0, 0), QuickBarCenter.transform.rotation);
             newButton.transform.parent = this.transform;
-            CreateDummy(@object, newButton);
+            newButton.Ghost = ghost;
+            CreateDummy(ghost, newButton);
 
             _buttons.Add(newButton);
         }
     }
 
-    private static void CreateDummy(PlaceableGhost @object, ClickableButton newButton)
+    private static void CreateDummy(PlaceableGhost ghost, QuickBarButton newButton)
     {
-        var dummy = Instantiate(@object.RealObject, newButton.transform.position, newButton.transform.rotation);
+        var dummy = Instantiate(ghost.RealObject, newButton.transform.position, newButton.transform.rotation);
         dummy.localScale = dummy.localScale.normalized * newButton.transform.localScale.magnitude;
         dummy.parent = newButton.transform;
 

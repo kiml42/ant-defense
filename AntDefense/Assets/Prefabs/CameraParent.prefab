@@ -222,7 +222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ff5edaa009d15844b3470e42fbe9b9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  QuickBarButton: {fileID: 6100750079858564982, guid: 17a317a56335ede4c89d25befc72f144, type: 3}
+  QuickBarButton: {fileID: 2654668823554787933, guid: 17a317a56335ede4c89d25befc72f144, type: 3}
   QuickBarCenter: {fileID: 6136064740950091038}
   QuickBarSpacing: 0.2
 --- !u!1 &7456297363724634827
