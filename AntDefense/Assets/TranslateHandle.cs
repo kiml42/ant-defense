@@ -2,12 +2,15 @@ using UnityEngine;
 
 public class TranslateHandle : MonoBehaviour
 {
+    public Transform Indicator;
+    public ClickableButton TickButton;
+    public ClickableButton CrossButton;
+
     /// <summary>
     /// The point on this object that was hit with the mouse down
     /// </summary>
     private Vector3? _localHit = null;
     private bool _rotateMode;
-    public Transform Indicator;
     private int _layerMask;
 
     private void Start()
@@ -28,8 +31,8 @@ public class TranslateHandle : MonoBehaviour
                 if (translateHandle == this)
                 {
                     // It's part of this object in some way.
-                    var tick = hit.transform.GetComponentInParent<TickButton>();
-                    if (tick != null)
+                    var button = hit.transform.GetComponentInParent<ClickableButton>();
+                    if (button != null)
                     {
                         _localHit = null;
                     }
@@ -61,10 +64,19 @@ public class TranslateHandle : MonoBehaviour
                 if (translateHandle == this)
                 {
                     // It's part of this object in some way.
-                    var tick = hit.transform.GetComponentInParent<TickButton>();
-                    if (tick != null)
+                    var button = hit.transform.GetComponentInParent<ClickableButton>();
+                    if (button != null)
                     {
-                        Debug.Log("Mouse up on tick");
+                        if (button == this.TickButton)
+                        {
+                            Debug.Log("Tick Clicked");
+                            return;
+                        }
+                        else if (button == this.CrossButton)
+                        {
+                            Debug.Log("Cross Clicked");
+                            return;
+                        }
                         return;
                     }
                 }
