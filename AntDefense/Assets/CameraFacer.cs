@@ -1,8 +1,7 @@
 using UnityEngine;
 
-public class TickButton : MonoBehaviour
+public class CameraFacer : MonoBehaviour
 {
-    // Update is called once per frame
     void Update()
     {
         transform.LookAt(Camera.main.transform.position, Vector3.up);
