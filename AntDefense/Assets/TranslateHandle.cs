@@ -27,10 +27,11 @@ public class TranslateHandle : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 500, _layerMask, QueryTriggerInteraction.Collide))
             {
-                _localHit = transform.InverseTransformPoint(hit.point);
                 var translateHandle = hit.transform.GetComponentInParent<TranslateHandle>();
                 if (translateHandle == this)
                 {
+                    _localHit = transform.InverseTransformPoint(hit.point);
+
                     // It's part of this object in some way.
                     var button = hit.transform.GetComponentInParent<ClickableButton>();
                     if (button != null)
