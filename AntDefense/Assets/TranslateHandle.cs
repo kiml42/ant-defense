@@ -2,10 +2,8 @@ using UnityEngine;
 
 public class TranslateHandle : MonoBehaviour
 {
-    public Transform Indicator;
     public ClickableButton TickButton;
     public ClickableButton CrossButton;
-    public ObjectPlacer Placer;
 
     /// <summary>
     /// The point on this object that was hit with the mouse down
@@ -71,12 +69,12 @@ public class TranslateHandle : MonoBehaviour
                     {
                         if (button == this.TickButton)
                         {
-                            Placer.PlaceObject();
+                            ObjectPlacer.Instance.PlaceObject();
                             return;
                         }
                         else if (button == this.CrossButton)
                         {
-                            Placer.CancelPlacingObject();
+                            ObjectPlacer.Instance.CancelPlacingObject();
                             return;
                         }
                         return;
@@ -98,7 +96,6 @@ public class TranslateHandle : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
             {
-                Indicator.position = hit.point;
                 if (_rotateMode)
                 {
                     var vectorToHit = hit.point - transform.position;
