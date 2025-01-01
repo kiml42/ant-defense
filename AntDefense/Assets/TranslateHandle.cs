@@ -22,98 +22,127 @@ public class TranslateHandle : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 500, _layerMask, QueryTriggerInteraction.Collide))
-            {
-                var translateHandle = hit.transform.GetComponentInParent<TranslateHandle>();
-                if (translateHandle == this)
-                {
-                    _localHit = transform.InverseTransformPoint(hit.point);
-
-                    // It's part of this object in some way.
-                    var button = hit.transform.GetComponentInParent<ClickableButton>();
-                    if (button != null)
-                    {
-                        _localHit = null;
-                    }
-                    else
-                    {
-                        var rotateHandle = hit.transform.GetComponentInParent<RotateHandle>();
-                        if (rotateHandle != null)
-                        {
-                            _rotateMode = true;
-                        }
-                        else
-                        {
-                            _rotateMode = false;
-                        }
-                    }
-                }
-            }
+            HandleMouseDown();
         }
 
-        if(Input.GetMouseButtonUp(0))
+        else if(Input.GetMouseButtonUp(0))
         {
-            _localHit = null;
-            _rotateMode = false;
-
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 500, _layerMask, QueryTriggerInteraction.Collide))
-            {
-                var translateHandle = hit.transform.GetComponentInParent<TranslateHandle>();
-                if (translateHandle == this)
-                {
-                    // It's part of this object in some way.
-                    var button = hit.transform.GetComponentInParent<ClickableButton>();
-                    if (button != null)
-                    {
-                        if (button == this.TickButton)
-                        {
-                            ObjectPlacer.Instance.PlaceObject();
-                            return;
-                        }
-                        else if (button == this.CrossButton)
-                        {
-                            ObjectPlacer.Instance.CancelPlacingObject();
-                            return;
-                        }
-                        return;
-                    }
-                }
-
-                var quickBarButton = hit.transform.GetComponentInParent<QuickBarButton>();
-                if (quickBarButton != null)
-                {
-                    Debug.Log("Click on quick bar button " + quickBarButton);
-                    ObjectPlacer.Instance.StartPlacingGhost(quickBarButton.Ghost);
-                    return;
-                }
-            }
+            HandleMouseUp();
         }
 
         if (_localHit.HasValue)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
+            HandleDrag();
+        }
+
+        MoveOnTop();
+    }
+
+    private void MoveOnTop()
+    {
+        var lookDownOffset = Vector3.up * 5;
+        Ray ray = new Ray(transform.position + lookDownOffset, -lookDownOffset);
+        if (Physics.Raycast(ray, out var hit, lookDownOffset.magnitude * 2, -1, QueryTriggerInteraction.Ignore))
+        {
+            if(hit.rigidbody == null || hit.rigidbody.IsSleeping())
             {
-                if (_rotateMode)
+                transform.position = hit.point;
+            }
+        }
+    }
+
+    private void HandleDrag()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
+        {
+            if (_rotateMode)
+            {
+                var vectorToHit = hit.point - transform.position;
+                var angle = Vector3.SignedAngle(_localHit.Value, Vector3.forward, Vector3.up);
+
+                var offsetRotation = Quaternion.AngleAxis(angle, Vector3.up);
+                var lookRotation = Quaternion.LookRotation(vectorToHit, Vector3.up);
+
+                transform.rotation = AdjustYUp(lookRotation * offsetRotation);
+            }
+            else
+            {
+                var rotatedAgle = transform.rotation * _localHit.Value;
+                transform.position = hit.point - new Vector3(rotatedAgle.x, 0, rotatedAgle.z);
+            }
+        }
+    }
+
+    private void HandleMouseUp()
+    {
+        _localHit = null;
+        _rotateMode = false;
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out var hit, 500, _layerMask, QueryTriggerInteraction.Collide))
+        {
+            var translateHandle = hit.transform.GetComponentInParent<TranslateHandle>();
+            if (translateHandle == this)
+            {
+                // It's part of this object in some way.
+                var button = hit.transform.GetComponentInParent<ClickableButton>();
+                if (button != null)
                 {
-                    var vectorToHit = hit.point - transform.position;
-                    var angle = Vector3.SignedAngle(_localHit.Value, Vector3.forward, Vector3.up);
+                    if (button == this.TickButton)
+                    {
+                        ObjectPlacer.Instance.PlaceObject();
+                        return;
+                    }
+                    else if (button == this.CrossButton)
+                    {
+                        ObjectPlacer.Instance.CancelPlacingObject();
+                        return;
+                    }
+                    return;
+                }
+            }
 
-                    var offsetRotation = Quaternion.AngleAxis(angle, Vector3.up);
-                    var lookRotation = Quaternion.LookRotation(vectorToHit, Vector3.up);
+            var quickBarButton = hit.transform.GetComponentInParent<QuickBarButton>();
+            if (quickBarButton != null)
+            {
+                Debug.Log("Click on quick bar button " + quickBarButton);
+                ObjectPlacer.Instance.StartPlacingGhost(quickBarButton.Ghost);
+                return;
+            }
+        }
+    }
 
-                    transform.rotation = AdjustYUp(lookRotation * offsetRotation);
+    private void HandleMouseDown()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out var hit, 500, _layerMask, QueryTriggerInteraction.Collide))
+        {
+            var translateHandle = hit.transform.GetComponentInParent<TranslateHandle>();
+            if (translateHandle == this)
+            {
+                _localHit = transform.InverseTransformPoint(hit.point);
+
+                // It's part of this object in some way.
+                var button = hit.transform.GetComponentInParent<ClickableButton>();
+                if (button != null)
+                {
+                    _localHit = null;
                 }
                 else
                 {
-                    var rotatedAgle = transform.rotation * _localHit.Value;
-                    transform.position = hit.point - new Vector3(rotatedAgle.x, 0, rotatedAgle.z);
+                    var rotateHandle = hit.transform.GetComponentInParent<RotateHandle>();
+                    if (rotateHandle != null)
+                    {
+                        _rotateMode = true;
+                    }
+                    else
+                    {
+                        _rotateMode = false;
+                    }
                 }
             }
         }
-
     }
 
     private Quaternion AdjustYUp(Quaternion originalRotation)
