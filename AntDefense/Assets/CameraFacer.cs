@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class CameraFacer : MonoBehaviour
 {
-    void Update()
+    void LateUpdate()
     {
-        transform.LookAt(Camera.main.transform.position, Vector3.up);
+        transform.LookAt(Camera.main.transform.position, Camera.main.transform.up);
     }
 }
