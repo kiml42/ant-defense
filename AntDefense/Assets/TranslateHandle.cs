@@ -1,6 +1,5 @@
 using UnityEngine;
 
-//TODO Find the collider that's not a trigger and fix it.
 public class TranslateHandle : MonoBehaviour
 {
     public Transform Indicator;
