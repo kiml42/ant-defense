@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 public class TranslateHandle : MonoBehaviour
@@ -130,34 +131,31 @@ public class TranslateHandle : MonoBehaviour
 
     private void HandleMouseDown()
     {
+        // TODO propogate ray through to the ground to get the actual ground point the mouse is pointing at regardless of the height of the handle.
+        // This would let us have any collider geometry and it'll work pretty well.
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit, 500, _layerMask, QueryTriggerInteraction.Collide))
-        {
-            var translateHandle = hit.transform.GetComponentInParent<TranslateHandle>();
-            if (translateHandle == this)
-            {
-                _localHit = transform.InverseTransformPoint(hit.point);
+        var hits = Physics.RaycastAll(ray, 500, _layerMask, QueryTriggerInteraction.Collide);
 
-                // It's part of this object in some way.
-                var button = hit.transform.GetComponentInParent<ClickableButton>();
-                if (button != null)
-                {
-                    _localHit = null;
-                }
-                else
-                {
-                    var rotateHandle = hit.transform.GetComponentInParent<RotateHandle>();
-                    if (rotateHandle != null)
-                    {
-                        _rotateMode = true;
-                    }
-                    else
-                    {
-                        _rotateMode = false;
-                    }
-                }
-            }
+        var hasHitThisHandle = hits.Any(h => h.transform.GetComponentInParent<TranslateHandle>() == this);
+        var hasHitAButton = hits.Any(h => h.transform.GetComponentInParent<ClickableButton>() != null);
+        if (!hasHitThisHandle || hasHitAButton)
+        {
+            _localHit = null;
+            return;
         }
+
+        var bestHit = hits.First();
+
+        _rotateMode = hits.Any(h => h.transform.GetComponentInParent<RotateHandle>());
+        if (_rotateMode)
+        {
+            bestHit = hits.First(h => h.transform.GetComponentInParent<RotateHandle>());
+        }
+        else if(hits.Any(h => h.transform.GetComponentInParent<TranslateHandleCollider>()))
+        {
+            bestHit = hits.First(h => h.transform.GetComponentInParent<TranslateHandleCollider>());
+        }
+        _localHit = transform.InverseTransformPoint(bestHit.point);
     }
 
     private Quaternion AdjustYUp(Quaternion originalRotation)
