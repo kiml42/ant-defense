@@ -1,15 +1,26 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class UiPlane : MonoBehaviour
 {
-    public List<Transform> QuickBarButtons;
+    public ClickableButton QuickBarButton;
+    public Transform QuickBarCenter;
+    public float QuickBarSpacing = 0.1f;
+    private List<ClickableButton> _buttons = null;
 
     float _height;
     float _width;
 
     private void Start()
     {
+        Initialise();
+    }
+
+    private void Initialise()
+    {
+        if (_buttons != null) return;
+
         Camera cam = Camera.main;
         var distance = (cam.transform.position - transform.position).magnitude;
         _height = Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * distance * 2f;
@@ -18,9 +29,43 @@ public class UiPlane : MonoBehaviour
         transform.position = cam.transform.position + cam.transform.forward * distance;
 
         transform.localScale = new Vector3(min, min, min);
+
+        _buttons = new List<ClickableButton>();
+        var quickBarObjects = ObjectPlacer.Instance.QuickBarObjects;
+
+        var leftOffset = -QuickBarSpacing * (quickBarObjects.Count - 1) / 2;
+
+        for (int i = 0; i < quickBarObjects.Count; i++)
+        {
+            var offset = leftOffset + i * QuickBarSpacing;
+            var @object = quickBarObjects[i];
+            var newButton = Instantiate(QuickBarButton, QuickBarCenter.transform.position + new Vector3(offset, 0, 0), QuickBarCenter.transform.rotation);
+            newButton.transform.parent = this.transform;
+            CreateDummy(@object, newButton);
+
+            _buttons.Add(newButton);
+        }
     }
 
-    void Update()
+    private static void CreateDummy(PlaceableGhost @object, ClickableButton newButton)
     {
+        var dummy = Instantiate(@object.RealObject, newButton.transform.position, newButton.transform.rotation);
+        dummy.localScale = dummy.localScale.normalized * newButton.transform.localScale.magnitude;
+        dummy.parent = newButton.transform;
+
+        var componentsToDestroy = dummy.GetComponentsInChildren<Rigidbody>().Cast<Component>().ToList();
+        componentsToDestroy.AddRange(dummy.GetComponentsInChildren<Collider>());
+
+        foreach (var component in componentsToDestroy)
+        {
+            Destroy(component);
+        }
+
+        var renderers = dummy.GetComponentsInChildren<MeshRenderer>();
+
+        foreach (var renderer in renderers)
+        {
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
     }
 }

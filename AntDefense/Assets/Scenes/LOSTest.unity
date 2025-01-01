@@ -171,6 +171,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8325540124463243235, guid: 671a2805116037f4aadc102530200391, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8325540124463243235, guid: 671a2805116037f4aadc102530200391, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8325540124463243235, guid: 671a2805116037f4aadc102530200391, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 90
+      objectReference: {fileID: 0}
     - target: {fileID: 8619060628631676251, guid: 671a2805116037f4aadc102530200391, type: 3}
       propertyPath: m_Name
       value: CameraParent

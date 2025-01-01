@@ -3,9 +3,10 @@ using UnityEngine;
 
 public class ObjectPlacer : MonoBehaviour
 {
+    public static ObjectPlacer Instance { get; private set; }
+    public static List<PlaceableGhost> StaticQuickBarObjects;
     // TODO implement cost to place objects
 
-    // TODO allow placing multiple
     public TranslateHandle Handle;
 
     public List<PlaceableGhost> QuickBarObjects;
@@ -25,7 +26,16 @@ public class ObjectPlacer : MonoBehaviour
         KeyCode.Alpha0,
     };
 
-    // Update is called once per frame
+    private void Awake()
+    {
+        if(Instance != null && Instance != this)
+        {
+            throw new System.Exception("There should not be multiple Object Placers!");
+        }
+        Instance = this;
+        StaticQuickBarObjects = this.QuickBarObjects;
+    }
+
     void Update()
     {
         ProcessQuickKeys();
