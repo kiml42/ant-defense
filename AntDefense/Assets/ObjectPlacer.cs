@@ -1,27 +1,16 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectPlacer : MonoBehaviour
 {
-    // TODO Drop objects into place
-    // TODO orient walls like the cursor is holding one end of teh wall.
     // TODO implement cost to place objects
-    private const int MouseButton = 0;
+
+    // TODO allow placing multiple
+    public TranslateHandle Handle;
 
     public List<PlaceableGhost> QuickBarObjects;
 
-    public float RotateSpeed = 1;
-    public float QuickClickTime = 0.5f;
-
-    private Vector3 _spawnLocation;
-
     private PlaceableGhost _objectBeingPlaced;
-
-    public Transform TranslateModeIndicator;
-    public Transform RotateModeIndicator;
-    private Transform _modeIndicator;
-
 
     private KeyCode[] _quickBarKeys = {
         KeyCode.Alpha1,
@@ -36,43 +25,10 @@ public class ObjectPlacer : MonoBehaviour
         KeyCode.Alpha0,
     };
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        _spawnLocation = transform.position;
-    }
-
-    bool _isRotating = false;
-    private Vector3 _lastMousePosition;
-
     // Update is called once per frame
     void Update()
     {
-        if(_objectBeingPlaced != null)
-        {
-            if (!_isRotating)
-            {
-                UpdateSpawnPoint();
-            }
-            ProcessClick();
-        }
-
         ProcessQuickKeys();
-    }
-
-    private void UpdateSpawnPoint()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
-        {
-            //Debug.Log(hit.transform.name);
-            //Debug.Log($"hit {hit.transform.name} @ {hit.point}");
-            _spawnLocation = hit.point;
-        }
-
-        _objectBeingPlaced.transform.position = 
-            //_modeIndicator.transform.position =
-            _spawnLocation - _objectBeingPlaced.transform.InverseTransformPoint(_objectBeingPlaced.FloorPoint.position);
     }
 
     private void ProcessQuickKeys()
@@ -93,91 +49,27 @@ public class ObjectPlacer : MonoBehaviour
         if (QuickBarObjects.Count <= i) return;
         var prefab = QuickBarObjects[i];
 
-        _objectBeingPlaced = Instantiate(prefab, _spawnLocation - prefab.FloorPoint.position, Quaternion.identity);
-        RefreshModeIndicator();
-        UpdateSpawnPoint();
+        _objectBeingPlaced = Instantiate(prefab, Handle.transform.position - prefab.FloorPoint.position, Quaternion.identity);
+        _objectBeingPlaced.transform.rotation = Handle.transform.rotation;
+        _objectBeingPlaced.transform.parent = Handle.transform;
     }
 
-    private void CancelPlacingObject()
+    public void CancelPlacingObject()
     {
         if (_objectBeingPlaced != null)
         {
             Destroy(_objectBeingPlaced.gameObject);
             _objectBeingPlaced = null;
-            RefreshModeIndicator();
         }
     }
 
-    float _clickTime;
-    private void ProcessClick()
+    public void PlaceObject()
     {
-        // TODO allow placing multiple
-        if (_objectBeingPlaced.Rotatable)
+        if(_objectBeingPlaced != null)
         {
-            if(!_isRotating && Input.GetMouseButtonDown(MouseButton))
-            {
-                _isRotating = true;
-                RefreshModeIndicator();
-                _lastMousePosition = Input.mousePosition;
-                _clickTime = Time.timeSinceLevelLoad;
-            }
-
-            if(_isRotating)
-            {
-                var mousePosition = Input.mousePosition;
-
-                var positionChange = mousePosition - _lastMousePosition;
-
-                var angle = positionChange.x * RotateSpeed;
-
-                _objectBeingPlaced.transform.Rotate(Vector3.up, angle);
-
-                _lastMousePosition = mousePosition;
-            }
+            _objectBeingPlaced.Place();
+            _objectBeingPlaced.transform.parent = null;
+            _objectBeingPlaced = null;
         }
-
-        if (Input.GetMouseButtonUp(1))
-        {
-            if(_isRotating )
-            {
-                _isRotating = false;
-                RefreshModeIndicator();
-            }
-            else
-            {
-                CancelPlacingObject();
-                return;
-            }
-        }
-
-        if (Input.GetMouseButtonUp(MouseButton))
-        {
-            var timeSinceClick = Time.timeSinceLevelLoad - _clickTime;
-            if (!_objectBeingPlaced.Rotatable || timeSinceClick > QuickClickTime)
-            {
-                // Only process the mouse up if it's been a reasonable time since it was clicked.
-                _isRotating = false;
-                _objectBeingPlaced.Place();
-                _objectBeingPlaced.transform.parent = null;
-                _objectBeingPlaced = null;
-                RefreshModeIndicator();
-
-            }
-        }
-    }
-
-    private void RefreshModeIndicator()
-    {
-        if(_modeIndicator != null)
-        {
-            Destroy(_modeIndicator.gameObject);
-        }
-        if(_objectBeingPlaced == null)
-        {
-            return;
-        }
-        var prefab = _isRotating ? RotateModeIndicator : TranslateModeIndicator;
-        _modeIndicator = Instantiate(prefab, _objectBeingPlaced.transform.position, _objectBeingPlaced.transform.rotation);
-        _modeIndicator.parent = _objectBeingPlaced.transform;
     }
 }

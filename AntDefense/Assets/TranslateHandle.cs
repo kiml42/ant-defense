@@ -1,10 +1,12 @@
 using UnityEngine;
 
+//TODO Find the collider that's not a trigger and fix it.
 public class TranslateHandle : MonoBehaviour
 {
     public Transform Indicator;
     public ClickableButton TickButton;
     public ClickableButton CrossButton;
+    public ObjectPlacer Placer;
 
     /// <summary>
     /// The point on this object that was hit with the mouse down
@@ -69,12 +71,12 @@ public class TranslateHandle : MonoBehaviour
                     {
                         if (button == this.TickButton)
                         {
-                            Debug.Log("Tick Clicked");
+                            Placer.PlaceObject();
                             return;
                         }
                         else if (button == this.CrossButton)
                         {
-                            Debug.Log("Cross Clicked");
+                            Placer.CancelPlacingObject();
                             return;
                         }
                         return;
