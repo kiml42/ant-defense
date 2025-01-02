@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -60,7 +61,7 @@ public class TranslateHandle : MonoBehaviour
         Ray ray = new Ray(transform.position + lookDownOffset, -lookDownOffset);
         if (Physics.Raycast(ray, out var hit, lookDownOffset.magnitude * 2, -1, QueryTriggerInteraction.Ignore))
         {
-            if(hit.rigidbody == null || hit.rigidbody.IsSleeping())
+            if(IsSolidObject(hit))
             {
                 transform.position = hit.point;
             }
@@ -144,9 +145,9 @@ public class TranslateHandle : MonoBehaviour
             return;
         }
 
-        var bestHit = hits.First();
-
         _rotateMode = hits.Any(h => h.transform.GetComponentInParent<RotateHandle>());
+
+        var bestHit = hits.First();
         if (_rotateMode)
         {
             bestHit = hits.First(h => h.transform.GetComponentInParent<RotateHandle>());
@@ -156,6 +157,19 @@ public class TranslateHandle : MonoBehaviour
             bestHit = hits.First(h => h.transform.GetComponentInParent<TranslateHandleCollider>());
         }
         _localHit = transform.InverseTransformPoint(bestHit.point);
+    }
+
+    private bool IsSolidObject(RaycastHit hit)
+    {
+        if (hit.collider.isTrigger)
+        {
+            return false;
+        }
+        if(hit.rigidbody != null)
+        {
+            return hit.rigidbody.IsSleeping();
+        }
+        return true;
     }
 
     private Quaternion AdjustYUp(Quaternion originalRotation)
