@@ -46,11 +46,11 @@ public class TranslateHandle : MonoBehaviour
 
     private void ScaleForDistanceToCamera()
     {
-        var distance = Mathf.Abs((Camera.main.transform.position - this.transform.position).y);
+        var distance = Camera.main.transform.position.y;
 
         var excessDistance = distance - DefaultCameraDistance;
 
-        var scale = ((excessDistance / DefaultCameraDistance)/1.3f) + 1;
+        var scale = ((excessDistance / DefaultCameraDistance)/1.5f) + 1;
 
         UiObjectsToScale.localScale = Vector3.one * scale;
     }
@@ -134,6 +134,7 @@ public class TranslateHandle : MonoBehaviour
     {
         // TODO propogate ray through to the ground to get the actual ground point the mouse is pointing at regardless of the height of the handle.
         // This would let us have any collider geometry and it'll work pretty well.
+        // That didn't work as intended when the mouse goes over any object at a different height when dragging.
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         var hits = Physics.RaycastAll(ray, 500, _layerMask, QueryTriggerInteraction.Collide);
 
