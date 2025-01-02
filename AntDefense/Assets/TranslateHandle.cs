@@ -61,7 +61,7 @@ public class TranslateHandle : MonoBehaviour
         Ray ray = new Ray(transform.position + lookDownOffset, -lookDownOffset);
         if (Physics.Raycast(ray, out var hit, lookDownOffset.magnitude * 2, -1, QueryTriggerInteraction.Ignore))
         {
-            if(IsSolidObject(hit))
+            if(IsStaticObject(hit))
             {
                 transform.position = hit.point;
             }
@@ -159,7 +159,7 @@ public class TranslateHandle : MonoBehaviour
         _localHit = transform.InverseTransformPoint(bestHit.point);
     }
 
-    private bool IsSolidObject(RaycastHit hit)
+    private bool IsStaticObject(RaycastHit hit)
     {
         if (hit.collider.isTrigger)
         {
