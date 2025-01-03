@@ -388,7 +388,7 @@ MonoBehaviour:
   FloorPoint: {fileID: 3718810060759407500}
   TimeOut: 0.1
   Rotatable: 1
-  SpawnOffset: {x: 0, y: 1, z: 0}
+  SpawnOffset: {x: 0, y: 0, z: 0}
   ScaleForButton: 0.3
   OffsetForButton: {x: 0, y: 0, z: 0}
   RotationForButton: {x: 0.2830882, y: 0.14199114, z: 0.076293215, w: 0.94545174}
