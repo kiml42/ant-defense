@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4172224755073132051}
   - component: {fileID: 8836248391108223498}
   - component: {fileID: 8014026784855207981}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Flipper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -404,7 +404,7 @@ GameObject:
   - component: {fileID: 3828497888560199286}
   - component: {fileID: 7726893458256431373}
   - component: {fileID: 7874122585425370653}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Trigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -509,7 +509,7 @@ GameObject:
   - component: {fileID: 5239231611357303643}
   - component: {fileID: 1462252132534613644}
   - component: {fileID: 5833696214928251714}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
