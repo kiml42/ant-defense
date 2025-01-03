@@ -2998,6 +2998,7 @@ MonoBehaviour:
   QuickBarObjects:
   - {fileID: 1482762059953385253, guid: c0a466cc90269134e8159dd6b9b972f3, type: 3}
   - {fileID: 1674430744356087993, guid: d3b2484fa637a30438fdb3202b4a3761, type: 3}
+  - {fileID: 321340684212379770, guid: 5ef93af25e7cded429832fbbd5c790c9, type: 3}
 --- !u!1 &6755601486118159676
 GameObject:
   m_ObjectHideFlags: 0

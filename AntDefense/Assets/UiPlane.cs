@@ -50,11 +50,13 @@ public class UiPlane : MonoBehaviour
 
     private static void CreateDummy(PlaceableGhost ghost, QuickBarButton newButton)
     {
-        var dummy = Instantiate(ghost.RealObject, newButton.transform.position, newButton.transform.rotation);
-        dummy.localScale = dummy.localScale.normalized * newButton.transform.localScale.magnitude;
+        var dummy = Instantiate(ghost.RealObject, newButton.transform.position + ghost.OffsetForButton, newButton.transform.rotation * ghost.RotationForButton);
+        dummy.localScale = dummy.localScale.normalized * newButton.transform.localScale.magnitude * ghost.ScaleForButton;
         dummy.parent = newButton.transform;
 
-        var componentsToDestroy = dummy.GetComponentsInChildren<Rigidbody>().Cast<Component>().ToList();
+        var componentsToDestroy = dummy.GetComponentsInChildren<MonoBehaviour>().Cast<Component>().ToList();
+        componentsToDestroy.AddRange(dummy.GetComponentsInChildren<HingeJoint>().Cast<Component>());
+        componentsToDestroy.AddRange(dummy.GetComponentsInChildren<Rigidbody>().Cast<Component>());
         componentsToDestroy.AddRange(dummy.GetComponentsInChildren<Collider>());
 
         foreach (var component in componentsToDestroy)

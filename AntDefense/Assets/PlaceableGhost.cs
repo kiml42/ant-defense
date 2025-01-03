@@ -14,6 +14,10 @@ public class PlaceableGhost : MonoBehaviour
 
     public Vector3 SpawnOffset = Vector3.zero;
 
+    public float ScaleForButton = 1;
+    public Vector3 OffsetForButton = Vector3.zero;
+    public Quaternion RotationForButton = Quaternion.identity;
+
     // Start is called before the first frame update
     void Start()
     {
