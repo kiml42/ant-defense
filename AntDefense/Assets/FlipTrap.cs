@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class FlipTrap : MonoBehaviour
+public class FlipTrap : Triggerable
 {
     public HingeJoint Hinge;
 
@@ -47,8 +45,11 @@ public class FlipTrap : MonoBehaviour
             motor.targetVelocity = ResetSpeed;
             Hinge.motor = motor;
         }
+    }
 
-        if(_rearmCountdown <= 0)
+    public override void Trigger()
+    {
+        if (_rearmCountdown <= 0)
         {
             _rearmCountdown = ReArmDelay;
             _resetCountdown = ResetDelay;
@@ -57,11 +58,5 @@ public class FlipTrap : MonoBehaviour
             motor.targetVelocity = FireSpeed;
             Hinge.motor = motor;
         }
-    }
-
-    enum State
-    {
-        Rearming,
-        Firing,
     }
 }
