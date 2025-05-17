@@ -198,7 +198,7 @@ MonoBehaviour:
   Projectile: {fileID: 1648208231890218872, guid: 8b0362ac82dc89c4097c7c23374620d0, type: 3}
   Emitter: {fileID: 8379223971173571568}
   ReloadTime: 1
-  ProjectileSpeed: 10
+  ProjectileSpeed: 100
 --- !u!1 &438672682959622494
 GameObject:
   m_ObjectHideFlags: 0
@@ -501,13 +501,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5438856199470397677}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.7071064, y: -0, z: -0, w: 0.7071072}
   m_LocalPosition: {x: 0, y: 1.3866662, z: -0.00000029802322}
   m_LocalScale: {x: 5, y: 3.333333, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2767953946911589321}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!1 &5634726112598461944
 GameObject:
   m_ObjectHideFlags: 0
