@@ -230,7 +230,7 @@ MonoBehaviour:
   AntsPerSpawn: 5
   SpawnRadius: 2
   Digestion: {fileID: 32434936974746235}
-  ReserveFood: 20
+  ReserveFood: 100
 --- !u!114 &32434936974746235
 MonoBehaviour:
   m_ObjectHideFlags: 0

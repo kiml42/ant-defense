@@ -7,6 +7,7 @@ public class LifetimeController : MonoBehaviour
     public float ScaleDownTime = 0;
 
     private float _initialLifetime;
+    Vector3 _initialScale;
 
     public void Reset()
     {
@@ -16,6 +17,7 @@ public class LifetimeController : MonoBehaviour
     private void Start()
     {
         _initialLifetime = RemainingTime;
+        _initialScale = this.transform.localScale;
     }
 
     private void FixedUpdate()
@@ -27,7 +29,7 @@ public class LifetimeController : MonoBehaviour
         }
         if (ScaleDownTime > 0 && RemainingTime < ScaleDownTime)
         {
-            this.transform.localScale = Vector3.one * RemainingTime / ScaleDownTime;
+            this.transform.localScale = _initialScale * RemainingTime / ScaleDownTime;
         }
     }
 }
