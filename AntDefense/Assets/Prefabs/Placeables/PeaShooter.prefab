@@ -114,9 +114,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6497488116770141391}
-  - component: {fileID: 3445009105103396585}
-  - component: {fileID: 6855659515666794068}
-  - component: {fileID: 4022232723812064959}
+  - component: {fileID: 5561282523204595056}
   m_Layer: 0
   m_Name: Turret
   m_TagString: Untagged
@@ -141,49 +139,7 @@ Transform:
   - {fileID: 2767953946911589321}
   m_Father: {fileID: 1489239274791151828}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &3445009105103396585
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 311975485554740549}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!138 &6855659515666794068
-FixedJoint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 311975485554740549}
-  m_ConnectedBody: {fileID: 5694815791354200327}
-  m_ConnectedArticulationBody: {fileID: 0}
-  m_BreakForce: Infinity
-  m_BreakTorque: Infinity
-  m_EnableCollision: 0
-  m_EnablePreprocessing: 1
-  m_MassScale: 1
-  m_ConnectedMassScale: 1
---- !u!114 &4022232723812064959
+--- !u!114 &5561282523204595056
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -192,13 +148,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 311975485554740549}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9fee47b101875534cbaf01e6b6951445, type: 3}
+  m_Script: {fileID: 11500000, guid: f22edaf574aa89d40b6d1213b6d44ccc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Projectile: {fileID: 1648208231890218872, guid: 8b0362ac82dc89c4097c7c23374620d0, type: 3}
-  Emitter: {fileID: 8379223971173571568}
-  ReloadTime: 1
-  ProjectileSpeed: 100
 --- !u!1 &438672682959622494
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,6 +163,7 @@ GameObject:
   - component: {fileID: 2973903788661320426}
   - component: {fileID: 403763536952821636}
   - component: {fileID: 3746621701093543929}
+  - component: {fileID: 2084688008637537271}
   m_Layer: 0
   m_Name: Trigger
   m_TagString: Untagged
@@ -306,6 +259,19 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!114 &2084688008637537271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 438672682959622494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d57728ba065dca646999245994f87aee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TurretController: {fileID: 3631510004101697051}
 --- !u!1 &1834373357261692949
 GameObject:
   m_ObjectHideFlags: 0
@@ -316,6 +282,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1489239274791151828}
   - component: {fileID: 5694815791354200327}
+  - component: {fileID: 3631510004101697051}
   m_Layer: 0
   m_Name: PeaShooter
   m_TagString: Untagged
@@ -369,6 +336,23 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &3631510004101697051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1834373357261692949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fee47b101875534cbaf01e6b6951445, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Projectile: {fileID: 1648208231890218872, guid: 8b0362ac82dc89c4097c7c23374620d0, type: 3}
+  Emitter: {fileID: 8379223971173571568}
+  Turner: {fileID: 5561282523204595056}
+  ReloadTime: 1
+  ProjectileSpeed: 100
 --- !u!1 &4797715489487285133
 GameObject:
   m_ObjectHideFlags: 0
