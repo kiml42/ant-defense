@@ -72,6 +72,9 @@ public class AntCam : MonoBehaviour
 
     private void ProcessKeys(float speed, ref float newX, ref float newZ)
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
+
         foreach (var key in _directionKeys)
         {
             if (Input.GetKey(key))
