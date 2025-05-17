@@ -333,6 +333,7 @@ GameObject:
   - component: {fileID: 3718810060759407500}
   - component: {fileID: 3020751992899231465}
   - component: {fileID: 3431233296077628871}
+  - component: {fileID: 8334475775790778835}
   m_Layer: 0
   m_Name: FlipTrap
   m_TagString: Untagged
@@ -402,6 +403,19 @@ MonoBehaviour:
   ResetSpeed: 10
   ResetDelay: 1
   ReArmDelay: 10
+--- !u!114 &8334475775790778835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5461121633522301066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1053cdca6e14ff84583a3c14a6383bc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TorqueMultiplier: 100
 --- !u!1 &6226794207982078964
 GameObject:
   m_ObjectHideFlags: 0
@@ -535,7 +549,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8079819013140023947}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
