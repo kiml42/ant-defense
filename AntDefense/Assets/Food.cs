@@ -48,7 +48,10 @@ public abstract class Carryable : MonoBehaviour
     public virtual void Destroy()
     {
         this.transform.parent = null;
-        _carrier.mass -= Mass;
+        if (_carrier != null)
+        {
+            _carrier.mass -= Mass;
+        }
         //Debug.Log($"Decreasing {_carrier.name}'s mass by {Mass} to {_carrier.mass}");
         Destroy(this.gameObject);
     }
