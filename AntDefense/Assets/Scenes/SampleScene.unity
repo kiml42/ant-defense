@@ -2477,6 +2477,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PeaShooter
       objectReference: {fileID: 0}
+    - target: {fileID: 9101113215857977662, guid: e5e3fc3a01291f9499780177f539e9f5, type: 3}
+      propertyPath: TorqueMultiplier
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6855659515666794068, guid: e5e3fc3a01291f9499780177f539e9f5, type: 3}
     - {fileID: 3445009105103396585, guid: e5e3fc3a01291f9499780177f539e9f5, type: 3}

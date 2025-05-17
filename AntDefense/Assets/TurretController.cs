@@ -21,7 +21,7 @@ public class TurretController : MonoBehaviour
         _reloadTimer -= Time.fixedDeltaTime;
         if (_targetsInRange.Any())
         {
-            Debug.Log("Targets: " + _targetsInRange);
+            // TODO work out a better way to pick the target.
             var bestTarget = _targetsInRange.First();
 
             var direction = bestTarget.transform.position - Turner.transform.position;
@@ -45,6 +45,7 @@ public class TurretController : MonoBehaviour
 
     internal void RegisterTarget(Collider collision)
     {
+        if (collision.isTrigger) { return; }
         var healthController = collision.gameObject.GetComponentInParent<HealthController>();
         if(healthController != null)
         {
@@ -54,6 +55,7 @@ public class TurretController : MonoBehaviour
 
     internal void DeregisterTarget(Collider collision)
     {
+        if (collision.isTrigger) { return; }
         var healthController = collision.gameObject.GetComponentInParent<HealthController>();
         if (healthController != null)
         {
