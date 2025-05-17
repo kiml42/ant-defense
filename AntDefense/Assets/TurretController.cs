@@ -14,7 +14,7 @@ public class TurretController : MonoBehaviour
 
     private float _reloadTimer = 0;
 
-    private readonly List<HealthController> _targetsInRange = new List<HealthController>();
+    private List<HealthController> _targetsInRange = new List<HealthController>();
 
     void FixedUpdate()
     {
@@ -24,6 +24,11 @@ public class TurretController : MonoBehaviour
             // TODO work out a better way to pick the target.
             var bestTarget = _targetsInRange.First();
 
+            if(bestTarget == null || bestTarget.transform == null)
+            {
+                _targetsInRange.Remove(bestTarget);
+                return;
+            }
             var direction = bestTarget.transform.position - Turner.transform.position;
             Debug.DrawRay(Turner.transform.position, direction);
 
@@ -51,6 +56,12 @@ public class TurretController : MonoBehaviour
         {
             _targetsInRange.Add(healthController);
         }
+        CleanTargets();
+    }
+
+    private void CleanTargets()
+    {
+        _targetsInRange = _targetsInRange.Where(t => t != null && t.transform != null).ToList();
     }
 
     internal void DeregisterTarget(Collider collision)
@@ -61,5 +72,6 @@ public class TurretController : MonoBehaviour
         {
             _targetsInRange.Remove(healthController);
         }
+        CleanTargets();
     }
 }
