@@ -29,6 +29,7 @@ public class HealthController : MonoBehaviour
         _currentHealth -= lostHealth;
         if (_currentHealth <= 0)
         {
+            Debug.Log(this.transform + " has died");
             Destroy(gameObject);
             return;
         }
