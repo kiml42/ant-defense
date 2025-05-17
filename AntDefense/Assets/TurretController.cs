@@ -48,6 +48,14 @@ public class TurretController : MonoBehaviour
         projectile.velocity = Emitter.forward * ProjectileSpeed;
 
         projectile.transform.parent = this.transform;
+
+
+        // TODO deduplicate with placeable ghost
+        var foodSmells = projectile.GetComponentsInChildren<FoodSmell>();
+        foreach (var foodSmell in foodSmells)
+        {
+            foodSmell.MarkAsPermanant(false);
+        }
     }
 
     internal void RegisterTarget(Collider collision)

@@ -55,6 +55,7 @@ public abstract class Carryable : MonoBehaviour
 
     public virtual void Attach(Rigidbody other)
     {
+        if (other == null || other.transform == null) return;
         transform.parent = other.transform;
         other.mass += Mass;
         _carrier = other;
