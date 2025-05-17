@@ -247,7 +247,7 @@ MonoBehaviour:
   MaxFood: 400
   StartFood: 400
   HealRate: 0.1
-  Expenditure: 0.05
+  Expenditure: 0.01
   FoodBar: {fileID: 520866147428757756}
 --- !u!114 &4516045000154646161
 MonoBehaviour:
