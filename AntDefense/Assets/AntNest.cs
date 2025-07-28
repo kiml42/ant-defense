@@ -51,7 +51,7 @@ public class AntNest : MonoBehaviour
                 var instance = Instantiate(prefab.transform, position, rotation, this.AntParent.transform);
                 Digestion.UseFood(prefab.Cost);
                 
-                instance.GetComponent<Rigidbody>().velocity = SpawnVelocity;
+                instance.GetComponent<Rigidbody>().linearVelocity = SpawnVelocity;
             }
         }
     }

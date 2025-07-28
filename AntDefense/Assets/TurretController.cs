@@ -45,7 +45,7 @@ public class TurretController : MonoBehaviour
     private void Fire()
     {
         var projectile = Instantiate(Projectile, Emitter.position, Emitter.rotation);
-        projectile.velocity = Emitter.forward * ProjectileSpeed;
+        projectile.linearVelocity = Emitter.forward * ProjectileSpeed;
 
         projectile.transform.parent = this.transform;
 
