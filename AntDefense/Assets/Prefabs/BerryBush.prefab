@@ -275,7 +275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ParentForSpawnedObjects: {fileID: 6860792739033770158}
-  Berry: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+  PrefabToSpawn: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
   DefaultSpawnPoint: {fileID: 6303223381367621148}
   SpawnRadius: 5
   MinRespawnTime: 3

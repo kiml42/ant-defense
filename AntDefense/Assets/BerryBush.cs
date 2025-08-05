@@ -3,15 +3,17 @@ using UnityEngine;
 public class BerryBush : MonoBehaviour
 {
     public GameObject ParentForSpawnedObjects;
-    public Transform Berry;
+    public Transform PrefabToSpawn;
     public Transform DefaultSpawnPoint;
 
     public float SpawnRadius;
 
+    public float CountPerSpawn = 1;
+
     public float MinRespawnTime = 1;
     public float MaxRespawnTime = 5;
 
-    private float _timeUntilSpawn;
+    private float _timeUntilSpawn = 0;
 
     void Start()
     {
@@ -26,9 +28,12 @@ public class BerryBush : MonoBehaviour
         _timeUntilSpawn -= Time.fixedDeltaTime;
         if (_timeUntilSpawn < 0)
         {
-            var randomisation = Random.insideUnitCircle * SpawnRadius;
-            var position = (DefaultSpawnPoint?.position ?? this.transform.position) + new Vector3(randomisation.x, 0, randomisation.y);
-            Instantiate(Berry, position, Quaternion.identity, ParentForSpawnedObjects.transform);
+            for (int i = 0; i < CountPerSpawn; i++)
+            {
+                var randomisation = Random.insideUnitCircle * SpawnRadius;
+                var position = (DefaultSpawnPoint?.position ?? this.transform.position) + new Vector3(randomisation.x, 0, randomisation.y);
+                Instantiate(PrefabToSpawn, position, Quaternion.identity, ParentForSpawnedObjects.transform);
+            }
             _timeUntilSpawn = Random.Range(MinRespawnTime, MaxRespawnTime);
         }
     }
