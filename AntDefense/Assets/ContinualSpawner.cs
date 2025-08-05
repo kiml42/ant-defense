@@ -34,7 +34,10 @@ public class ContinualSpawner : MonoBehaviour
                 randomisation.Scale(SpawnPositionRandomisation);
 
                 var position = (DefaultSpawnPoint?.position ?? this.transform.position) + new Vector3(randomisation.x, randomisation.y, randomisation.z);
-                Instantiate(PrefabToSpawn, position, Quaternion.identity, ParentForSpawnedObjects.transform);
+
+                var orientation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
+
+                Instantiate(PrefabToSpawn, position, orientation, ParentForSpawnedObjects.transform);
             }
             _timeUntilSpawn = Random.Range(MinRespawnTime, MaxRespawnTime);
         }
