@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BerryBush : MonoBehaviour
 {
-    public GameObject BerryParent;
+    public GameObject ParentForSpawnedObjects;
     public Transform Berry;
     public Transform DefaultSpawnPoint;
 
@@ -15,9 +15,9 @@ public class BerryBush : MonoBehaviour
 
     void Start()
     {
-        if (BerryParent == null)
+        if (ParentForSpawnedObjects == null)
         {
-            BerryParent = this.gameObject;
+            ParentForSpawnedObjects = this.gameObject;
         }
     }
 
@@ -28,7 +28,7 @@ public class BerryBush : MonoBehaviour
         {
             var randomisation = Random.insideUnitCircle * SpawnRadius;
             var position = (DefaultSpawnPoint?.position ?? this.transform.position) + new Vector3(randomisation.x, 0, randomisation.y);
-            Instantiate(Berry, position, Quaternion.identity, BerryParent.transform);
+            Instantiate(Berry, position, Quaternion.identity, ParentForSpawnedObjects.transform);
             _timeUntilSpawn = Random.Range(MinRespawnTime, MaxRespawnTime);
         }
     }
