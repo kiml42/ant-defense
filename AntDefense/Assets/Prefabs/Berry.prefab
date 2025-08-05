@@ -45,10 +45,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2451422094013383525}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 0.4
-  m_Drag: 0.6
-  m_AngularDrag: 0.3
+  m_LinearDamping: 0.6
+  m_AngularDamping: 0.3
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -94,7 +94,7 @@ MonoBehaviour:
   FoodValue: 20
   Smells:
   - {fileID: 6989572555626245398}
-  - {fileID: 3504052167037740725}
+  - {fileID: 0}
 --- !u!114 &6989572555626245398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -108,6 +108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TargetPoint: {fileID: 3562446625101866731}
+  IsSmellable: 1
 --- !u!1 &6652936135346501748
 GameObject:
   m_ObjectHideFlags: 0
@@ -167,6 +168,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -222,7 +226,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4234925670691479942}
-  - component: {fileID: 3504052167037740725}
   - component: {fileID: 2379487973679845947}
   - component: {fileID: 7712301991266002619}
   - component: {fileID: 2406796534827923247}
@@ -248,19 +251,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3562446625101866731}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3504052167037740725
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7137983243265383188}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2295d608de08f5c44b21df5d8c557d58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TargetPoint: {fileID: 3562446625101866731}
 --- !u!33 &2379487973679845947
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -286,6 +276,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -391,6 +384,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

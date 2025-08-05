@@ -18,6 +18,11 @@ public abstract class Smellable : MonoBehaviour
     public abstract bool IsPermanentSource { get; }
 
     public Transform TargetPoint;
+
+    /// <summary>
+    /// Allows disabling this from being smelt, without removing the component.
+    /// </summary>
+    public bool IsSmellable = true;
 }
 
 public enum Smell

@@ -25,6 +25,12 @@ public class AntStateMachine : MonoBehaviour
             {
                 _currentTarget = null;
             }
+
+            // TODO merge with Above If
+            if(_currentTarget?.IsSmellable == false)
+            {
+                _currentTarget = null;
+            }
             return _currentTarget;
         }
     }
@@ -264,7 +270,7 @@ public class AntStateMachine : MonoBehaviour
 
     public void ProcessSmell(Smellable smellable)
     {
-        if (smellable?.IsDestroyed() == true)
+        if (smellable?.IsDestroyed() == true || !smellable.IsSmellable)
             return;
         switch (smellable.Smell)
         {
@@ -534,6 +540,7 @@ public class AntStateMachine : MonoBehaviour
         ClearTarget();
         UpdateTarget(LastTrailPoint);
         PickUpFood(smellable);
+        smellable.IsSmellable = false;  // TODO consider when/if to turn this back on. (e.g. if the ant dies while carrying the food, or drops the food)
     }
 
     private void FoundNewFood()
@@ -585,7 +592,10 @@ public class AntStateMachine : MonoBehaviour
         //food.transform.position = CarryPoint.position;
 
         var lifetime = food.GetComponent<LifetimeController>();
-        lifetime.Reset();
+        if(lifetime != null)
+        {
+            lifetime.Reset();
+        }
 
         // TODO get the joint to work right
         //var rb = food.GetComponent<Rigidbody>();

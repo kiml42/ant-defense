@@ -53,9 +53,12 @@ public class ScentDetector : MonoBehaviour
 
     private void ProcessSmell(GameObject @object)
     {
-        if (@object.TryGetComponent<Smellable>(out var smellable))
+        var smellable = @object.GetComponentInParent<Smellable>();
+
+        if (smellable != null)
         {
             AntStateMachine.ProcessSmell(smellable);
         }
+
     }
 }
