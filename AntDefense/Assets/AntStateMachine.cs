@@ -25,11 +25,9 @@ public class AntStateMachine : MonoBehaviour
             {
                 _currentTarget = null;
             }
-
-            // TODO merge with Above If
-            if(_currentTarget?.IsSmellable == false)
+            else if (!_currentTarget.IsSmellable)
             {
-                _currentTarget = null;
+                ClearTarget();
             }
             return _currentTarget;
         }
