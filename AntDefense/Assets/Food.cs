@@ -12,15 +12,21 @@ public class Food : Carryable
         base.Attach(other);
         foreach (var smell in Smells)
         {
+            if(smell == null)
+                continue;   // TODO - this shouldn't happen.
             smell.enabled = false;
-            Destroy(smell);
+            smell.IsSmellable = false;
         }
     }
 
     public override void Detach()
     {
         base.Detach();
-        // TODO reinstate smells if this ends up being useful
+        foreach (var smell in Smells)
+        {
+            smell.enabled = true;
+            smell.IsSmellable = true;
+        }
     }
 }
 

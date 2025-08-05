@@ -28,7 +28,7 @@ public class AntTargetPositionProvider : MonoBehaviour
     /// <summary>
     /// The random direction this ant wants to move in.
     /// </summary>
-    private Vector3 _randomDirection = Vector3.zero;
+    private Vector3 _randomDirection;
 
     /// <summary>
     /// Current target this ant should move towards
@@ -63,9 +63,20 @@ public class AntTargetPositionProvider : MonoBehaviour
 
     void Start()
     {
-        var randomPosition = Random.insideUnitCircle.normalized;
-        DirectionToMove = new Vector3(randomPosition.x, 0, randomPosition.y);    // Start with the current target position in a random direction.
         _rigidbody = GetComponent<Rigidbody>();
+
+        this.RandomiseVector();
+    }
+
+    /// <summary>
+    /// Resets teh randomisation to a completely random vector.
+    /// </summary>
+    public void RandomiseVector()
+    {
+        // Start with the current target position in a random direction.
+        var randomPosition = Random.insideUnitCircle.normalized;
+        _randomDirection = new Vector3(randomPosition.x, 0, randomPosition.y);
+        DirectionToMove = _randomDirection;
     }
 
     float ObstacleAvoidenceWeight => Mathf.Max(0, _obstacleAvoidenceTime) / ObstacleAvoidenceTime;

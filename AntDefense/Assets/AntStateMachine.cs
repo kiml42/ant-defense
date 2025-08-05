@@ -25,10 +25,6 @@ public class AntStateMachine : MonoBehaviour
             {
                 _currentTarget = null;
             }
-            else if (!_currentTarget.IsSmellable)
-            {
-                ClearTarget();
-            }
             return _currentTarget;
         }
     }
@@ -99,7 +95,7 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
-        if (_currentTarget.IsDestroyed())
+        if (_currentTarget.IsDestroyed() || CurrentTarget?.IsSmellable == false)
         {
             ClearTarget();
         }
@@ -498,10 +494,7 @@ public class AntStateMachine : MonoBehaviour
                 EatFoodAtHome(smellable);
                 if (IsScout)
                 {
-                    State = AntState.SeekingFood;
-                    ClearTarget();
-                    _maxTargetTime = null;
-                    _disableTrail = false;
+                    this.GoBackToSeekingFood();
                     return;
                 }
                 switch (State)
@@ -522,14 +515,20 @@ public class AntStateMachine : MonoBehaviour
                         DropOffFood(smellable);
                         return;
                     case AntState.ReturningHome:
-                        _disableTrail = false;
-                        State = AntState.SeekingFood;
-                        _maxTargetTime = null;
-                        ClearTarget();
+                        this.GoBackToSeekingFood();
                         return;
                 }
                 return;
         }
+    }
+
+    private void GoBackToSeekingFood()
+    {
+        this.PositionProvider.RandomiseVector();
+        _disableTrail = false;
+        State = AntState.SeekingFood;
+        _maxTargetTime = null;
+        ClearTarget();
     }
 
     private void CollectKnownFood(Smellable smellable)
@@ -586,24 +585,11 @@ public class AntStateMachine : MonoBehaviour
 
         var food = smellable.GetComponentInParent<Food>();
 
-        // TODO Cancell this as a target for any that are already targetting it.
-        //food.transform.position = CarryPoint.position;
-
         var lifetime = food.GetComponent<LifetimeController>();
         if(lifetime != null)
         {
             lifetime.Reset();
         }
-
-        // TODO get the joint to work right
-        //var rb = food.GetComponent<Rigidbody>();
-        //Destroy(rb);
-        //var colliders = rb.GetComponentsInChildren<Collider>();
-        //foreach (var collider in colliders)
-        //{
-        //    collider.enabled = false;
-        //}
-        //food.transform.parent = this.transform;
 
         PickUpFood(food);
 

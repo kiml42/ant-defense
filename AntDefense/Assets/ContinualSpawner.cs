@@ -30,7 +30,7 @@ public class ContinualSpawner : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (_spawnCount >= MaxSpawns)
+        if (MaxSpawns >= 0 && _spawnCount >= MaxSpawns)
         {
             this.enabled = false;
             return;
