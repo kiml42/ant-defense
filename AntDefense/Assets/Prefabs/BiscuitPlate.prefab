@@ -49,7 +49,7 @@ MonoBehaviour:
   ParentForSpawnedObjects: {fileID: 951220445679315551}
   PrefabToSpawn: {fileID: 2126504342883037136, guid: c974411328434f049856f014ce4fd702, type: 3}
   DefaultSpawnPoint: {fileID: 2028862254355491445}
-  SpawnPositionRandomisation: {x: 5, y: 5, z: 3}
+  SpawnPositionRandomisation: {x: 5, y: 1.5, z: 5}
   CountPerSpawn: 20
   MinRespawnTime: 60
   MaxRespawnTime: 60
@@ -82,7 +82,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 0.2, z: 10}
+  m_LocalScale: {x: 10, y: 0.1, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1452187009045395935}
@@ -177,7 +177,7 @@ Transform:
   m_GameObject: {fileID: 7408319195289694326}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.37, z: 0}
+  m_LocalPosition: {x: 0, y: 1.57, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

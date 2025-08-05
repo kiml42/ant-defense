@@ -33,7 +33,7 @@ public class ContinualSpawner : MonoBehaviour
                 var randomisation = Random.insideUnitSphere;
                 randomisation.Scale(SpawnPositionRandomisation);
 
-                var position = (DefaultSpawnPoint?.position ?? this.transform.position) + new Vector3(randomisation.x, 0, randomisation.y);
+                var position = (DefaultSpawnPoint?.position ?? this.transform.position) + new Vector3(randomisation.x, randomisation.y, randomisation.z);
                 Instantiate(PrefabToSpawn, position, Quaternion.identity, ParentForSpawnedObjects.transform);
             }
             _timeUntilSpawn = Random.Range(MinRespawnTime, MaxRespawnTime);
