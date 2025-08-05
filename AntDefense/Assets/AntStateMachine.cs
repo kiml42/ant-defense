@@ -65,6 +65,7 @@ public class AntStateMachine : MonoBehaviour
             {
                 case AntState.SeekingFood:
                 case AntState.ReturningToFood:
+                    TrailTargetValue = null; // no target value for trails to home.
                     return Smell.Home;
                 case AntState.ReportingFood:
                 case AntState.CarryingFood:
@@ -76,6 +77,8 @@ public class AntStateMachine : MonoBehaviour
             }
         }
     }
+
+    public float? TrailTargetValue { get; private set; }
 
     private HashSet<Smellable> _newBetterTargets = new HashSet<Smellable>();
 
@@ -126,8 +129,13 @@ public class AntStateMachine : MonoBehaviour
         foreach (var potentialTarget in _newBetterTargets)
         {
             // TODO This is working!!!! make it neat.
-            if (CurrentTarget == null || potentialTarget.IsActual || potentialTarget.DistanceFromTarget < CurrentTarget.DistanceFromTarget)
+            // TODO check that Priority is working.
+            if (CurrentTarget == null || potentialTarget.IsActual || potentialTarget.Priority < CurrentTarget.Priority)
             {
+                if(!potentialTarget.IsActual && CurrentTarget != null && potentialTarget.DistanceFromTarget > CurrentTarget.DistanceFromTarget)
+                {
+                    Console.WriteLine($"considering {potentialTarget} even though it has a greater distance than {CurrentTarget} because it has a higher priority.");
+                }
                 bool hasLineOfSight = false;
                 if (potentialTarget != null && ViewPoint != null)
                 {
@@ -338,9 +346,14 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
-        if (CurrentTarget == null || smellable.IsActual || smellable.DistanceFromTarget < CurrentTarget.DistanceFromTarget)
+        if (CurrentTarget == null || smellable.IsActual || smellable.Priority < CurrentTarget.Priority)
         {
-            if(IsScout && !smellable.IsActual && smellable.Smell == Smell.Food)
+            if (!smellable.IsActual && CurrentTarget != null && smellable.DistanceFromTarget > CurrentTarget.DistanceFromTarget)
+            {
+                Console.WriteLine($"considering {smellable} even though it has a greater distance than {CurrentTarget} because it has a higher priority.");
+            }
+
+            if (IsScout && !smellable.IsActual && smellable.Smell == Smell.Food)
             {
                 throw new Exception("Scouts should never go for food smells!");
             }
@@ -469,7 +482,7 @@ public class AntStateMachine : MonoBehaviour
                 if (IsScout)
                 {
                     if (!smellable.IsPermanentSource || State == AntState.ReportingFood) return;
-                    FoundNewFood();
+                    FoundNewFood(smellable);
                     return;
                 }
                 if (!smellable.IsPermanentSource && (State == AntState.SeekingFood || State == AntState.ReturningToFood || State == AntState.ReturningHome))
@@ -482,7 +495,7 @@ public class AntStateMachine : MonoBehaviour
                 switch (State)
                 {
                     case AntState.SeekingFood:
-                        FoundNewFood();
+                        FoundNewFood(smellable);
                         return;
                     case AntState.ReturningToFood:
                         CollectKnownFood(smellable);
@@ -540,8 +553,11 @@ public class AntStateMachine : MonoBehaviour
         smellable.IsSmellable = false;  // TODO consider when/if to turn this back on. (e.g. if the ant dies while carrying the food, or drops the food)
     }
 
-    private void FoundNewFood()
+    private void FoundNewFood(Smellable smellable)
     {
+        var food = smellable.GetComponentInParent<Food>();
+        this.TrailTargetValue = food?.FoodValue;    // TODO add values from other nearby food.
+
         //Debug.Log($"State Seeking -> Reporting");
         State = AntState.ReportingFood;
         _maxTargetTime = null;
