@@ -51,6 +51,7 @@ MonoBehaviour:
   DefaultSpawnPoint: {fileID: 2028862254355491445}
   SpawnPositionRandomisation: {x: 5, y: 1.5, z: 5}
   CountPerSpawn: 20
+  MaxSpawns: 1
   MinRespawnTime: 60
   MaxRespawnTime: 60
 --- !u!1 &3266894871365811628

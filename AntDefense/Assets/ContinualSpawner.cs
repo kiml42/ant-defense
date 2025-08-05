@@ -10,6 +10,11 @@ public class ContinualSpawner : MonoBehaviour
 
     public float CountPerSpawn = 1;
 
+    /// <summary>
+    /// If negative, no limit on the number of spawns
+    /// </summary>
+    public float MaxSpawns = -1;
+    private float _spawnCount = 0;
     public float MinRespawnTime = 1;
     public float MaxRespawnTime = 5;
 
@@ -25,6 +30,11 @@ public class ContinualSpawner : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (_spawnCount >= MaxSpawns)
+        {
+            this.enabled = false;
+            return;
+        }
         _timeUntilSpawn -= Time.fixedDeltaTime;
         if (_timeUntilSpawn < 0)
         {
@@ -40,6 +50,7 @@ public class ContinualSpawner : MonoBehaviour
                 Instantiate(PrefabToSpawn, position, orientation, ParentForSpawnedObjects.transform);
             }
             _timeUntilSpawn = Random.Range(MinRespawnTime, MaxRespawnTime);
+            _spawnCount++;
         }
     }
 }
