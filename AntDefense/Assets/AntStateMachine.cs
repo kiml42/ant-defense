@@ -269,9 +269,9 @@ public class AntStateMachine : MonoBehaviour
     /// <summary>
     /// Scouts only look for new food and leave trails to show where it is, they never actually carry it themselves.
     /// </summary>
-    public bool IsScout = false;
+    public bool IsScout = false;    // TODO check that scouts turn towards food when they smell it.
 
-    private HashSet<Food> _knownNearbyFood = new HashSet<Food>();
+    private readonly HashSet<Food> _knownNearbyFood = new HashSet<Food>();
 
     public void ProcessSmell(Smellable smellable)
     {
