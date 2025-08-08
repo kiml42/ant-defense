@@ -5,9 +5,11 @@ using UnityEngine;
 
 public class TrailPointController : Smellable
 {
+    // TODO make the trail points bigger/bolder when zoomed out to keep trails visible.
     public static float CalculatePriority(float distanceFromTarget, float? targetValue)
     {
         // TODO work out what function works best for this.
+        // this seems to be working pretty well as is, but it may not be optimal.
         return distanceFromTarget - (targetValue ?? 0);
     }
 
@@ -20,7 +22,6 @@ public class TrailPointController : Smellable
         /// Estimation of how much food is available at the target.
         /// </summary>
         public readonly float? TargetValue;
-        // TODO consider this when picking a trail to follow.
 
         public float RemainingTime { get; private set; }
         public SmellComponent(float distanceFromTarget, float remainingTime, float? targetValue)

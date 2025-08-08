@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
+// TODO split this up into multiple classes, it's getting a bit too big and complicated.
 public class AntStateMachine : MonoBehaviour
 {
     // TODO improve detection of trails that no longer lead to food (e.g. single berry in the world that has been removed)
