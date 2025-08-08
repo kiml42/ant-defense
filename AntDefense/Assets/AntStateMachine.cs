@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -270,13 +271,21 @@ public class AntStateMachine : MonoBehaviour
     /// </summary>
     public bool IsScout = false;
 
+    private HashSet<Food> _knownNearbyFood = new HashSet<Food>();
+
     public void ProcessSmell(Smellable smellable)
     {
         if (smellable?.IsDestroyed() == true || !smellable.IsSmellable)
             return;
+
         switch (smellable.Smell)
         {
             case Smell.Food:
+                if (smellable.IsActual && State == AntState.SeekingFood || State == AntState.ReturningToFood)
+                {
+                    // When seeking or returning to food, rember smelled foods to know how much is in the area when setting the trail back home.
+                    _knownNearbyFood.Add(smellable.GetComponent<Food>());
+                }
                 switch (State)
                 {
                     case AntState.SeekingFood:
@@ -478,11 +487,12 @@ public class AntStateMachine : MonoBehaviour
         switch (smellable.Smell)
         {
             case Smell.Food:
+                
                 if (_carriedFood != null) return;   // ignore all other food if already carrying
                 if (IsScout)
                 {
                     if (!smellable.IsPermanentSource || State == AntState.ReportingFood) return;
-                    FoundNewFood(smellable);
+                    ReportFoodWithoutCarryingIt(smellable);
                     return;
                 }
                 if (!smellable.IsPermanentSource && (State == AntState.SeekingFood || State == AntState.ReturningToFood || State == AntState.ReturningHome))
@@ -495,7 +505,7 @@ public class AntStateMachine : MonoBehaviour
                 switch (State)
                 {
                     case AntState.SeekingFood:
-                        FoundNewFood(smellable);
+                        ReportFoodWithoutCarryingIt(smellable);
                         return;
                     case AntState.ReturningToFood:
                         CollectKnownFood(smellable);
@@ -549,14 +559,16 @@ public class AntStateMachine : MonoBehaviour
         _maxTargetTime = null;
         ClearTarget();
         UpdateTarget(LastTrailPoint);
+        this.UpdateTrailValueForKnownFood();
         PickUpFood(smellable);
         smellable.IsSmellable = false;  // TODO consider when/if to turn this back on. (e.g. if the ant dies while carrying the food, or drops the food)
     }
 
-    private void FoundNewFood(Smellable smellable)
+    private void ReportFoodWithoutCarryingIt(Smellable smellable)
     {
         var food = smellable.GetComponentInParent<Food>();
-        this.TrailTargetValue = food?.FoodValue;    // TODO add values from other nearby food.
+
+        this.UpdateTrailValueForKnownFood();
 
         //Debug.Log($"State Seeking -> Reporting");
         State = AntState.ReportingFood;
@@ -564,6 +576,14 @@ public class AntStateMachine : MonoBehaviour
         _disableTrail = false;
         ClearTarget();
         this.UpdateTarget(LastTrailPoint);
+    }
+
+    private void UpdateTrailValueForKnownFood()
+    {
+        // Leave a trail indicating how much food has been found at this location.
+        var remainingFoodValue = _knownNearbyFood.Sum(f => f?.FoodValue ?? 0);
+        this.TrailTargetValue = remainingFoodValue;
+        _knownNearbyFood.Clear();   // Forget about all the food now it knows what value to use for the trail.
     }
 
     public Digestion Digestion;
@@ -600,6 +620,9 @@ public class AntStateMachine : MonoBehaviour
         }
 
         var food = smellable.GetComponentInParent<Food>();
+
+        // adjust the rail target value to account for this food being removed.
+        this.TrailTargetValue -= food.FoodValue;
 
         var lifetime = food.GetComponent<LifetimeController>();
         if(lifetime != null)
