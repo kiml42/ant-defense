@@ -281,5 +281,5 @@ MonoBehaviour:
   FirstSpawnCount: 5
   CountPerSpawn: 1
   MaxSpawns: -1
-  MinRespawnTime: 6
-  MaxRespawnTime: 8
+  MinRespawnTime: 9
+  MaxRespawnTime: 15
