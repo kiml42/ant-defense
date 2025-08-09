@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 94bf86dfcaed5934e80bce68951bbf71, type: 2}
+  - {fileID: 2100000, guid: b446089111703e74d86037eb791b647f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -279,5 +279,6 @@ MonoBehaviour:
   DefaultSpawnPoint: {fileID: 6303223381367621148}
   SpawnPositionRandomisation: {x: 5, y: 2, z: 5}
   CountPerSpawn: 1
+  MaxSpawns: -1
   MinRespawnTime: 3
   MaxRespawnTime: 5
