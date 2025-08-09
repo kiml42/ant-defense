@@ -129,13 +129,13 @@ public class AntStateMachine : MonoBehaviour
 
         foreach (var potentialTarget in _newBetterTargets)
         {
-            // TODO This is working!!!! make it neat.
+            // TODO consider making each ant have a variable to choose how it computes priority, so that some prefer close food, and some prefer higher value food.
             if (CurrentTarget == null || potentialTarget.IsActual || potentialTarget.Priority < CurrentTarget.Priority)
             {
-                if (!potentialTarget.IsActual && CurrentTarget != null && potentialTarget.DistanceFromTarget > CurrentTarget.DistanceFromTarget)
-                {
-                    Console.WriteLine($"considering {potentialTarget} even though it has a greater distance than {CurrentTarget} because it has a higher priority.");
-                }
+                //if (!potentialTarget.IsActual && CurrentTarget != null && potentialTarget.DistanceFromTarget > CurrentTarget.DistanceFromTarget)
+                //{
+                //    Console.WriteLine($"considering {potentialTarget} even though it has a greater distance than {CurrentTarget} because it has a higher priority.");
+                //}
                 var hasLineOfSight = this.CheckLineOfSight(potentialTarget);
 
                 if (hasLineOfSight)
@@ -178,6 +178,7 @@ public class AntStateMachine : MonoBehaviour
 
     private bool CheckLineOfSight(Smellable potentialTarget)
     {
+        // TODO This is working!!!! make it neat.
         bool hasLineOfSight = false;
         if (potentialTarget != null && ViewPoint != null)
         {

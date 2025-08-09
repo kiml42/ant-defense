@@ -50,7 +50,8 @@ MonoBehaviour:
   PrefabToSpawn: {fileID: 2126504342883037136, guid: c974411328434f049856f014ce4fd702, type: 3}
   DefaultSpawnPoint: {fileID: 2028862254355491445}
   SpawnPositionRandomisation: {x: 5, y: 1.5, z: 5}
-  CountPerSpawn: 20
+  FirstSpawnCount: 20
+  CountPerSpawn: 0
   MaxSpawns: 1
   MinRespawnTime: 60
   MaxRespawnTime: 60
