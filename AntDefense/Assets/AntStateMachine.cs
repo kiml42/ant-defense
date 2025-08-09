@@ -108,7 +108,6 @@ public class AntStateMachine : MonoBehaviour
         //test ray -This is successfully detecting obstacles between the ant and the current target!
         if (CurrentTarget != null && ViewPoint != null)
         {
-
             var end = ViewPoint.position;
             var start = CurrentTarget.transform.position;
 
@@ -131,51 +130,13 @@ public class AntStateMachine : MonoBehaviour
         foreach (var potentialTarget in _newBetterTargets)
         {
             // TODO This is working!!!! make it neat.
-            // TODO check that Priority is working.
             if (CurrentTarget == null || potentialTarget.IsActual || potentialTarget.Priority < CurrentTarget.Priority)
             {
-                if(!potentialTarget.IsActual && CurrentTarget != null && potentialTarget.DistanceFromTarget > CurrentTarget.DistanceFromTarget)
+                if (!potentialTarget.IsActual && CurrentTarget != null && potentialTarget.DistanceFromTarget > CurrentTarget.DistanceFromTarget)
                 {
                     Console.WriteLine($"considering {potentialTarget} even though it has a greater distance than {CurrentTarget} because it has a higher priority.");
                 }
-                bool hasLineOfSight = false;
-                if (potentialTarget != null && ViewPoint != null)
-                {
-                    Vector3 start = potentialTarget.transform.position;
-                    Vector3 end = ViewPoint.position;
-                    Vector3 direction = (end - start).normalized;
-                    float distance = Vector3.Distance(start, end);
-
-
-                    // Offset to avoid self-collision
-                    Vector3 startOffset = start - direction * 0.1f;
-
-                    //Debug.DrawRay(startOffset, direction * distance, Color.magenta);
-                    int layerMask = ~LayerMask.GetMask(LayerMask.LayerToName(2));
-                    if (Physics.Raycast(startOffset, direction, out RaycastHit hit, distance, layerMask))
-                    {
-                        //Debug.Log("Test ray hit: " + hit.transform.name);
-
-                        if (hit.transform != this.transform)
-                        {
-                            //Debug.Log("It's an obstacle!");
-                            hasLineOfSight = false;
-                        }
-                        else
-                        {
-                            hasLineOfSight = true;
-                        }
-                    }
-                    else
-                    {
-                        hasLineOfSight = true; // No obstacle in the way
-                    }
-                }
-                else
-                {
-                    Debug.Log("Not checking for barriers. Missing target or viewpoint.");
-                    hasLineOfSight = false;
-                }
+                var hasLineOfSight = this.CheckLineOfSight(potentialTarget);
 
                 if (hasLineOfSight)
                 {
@@ -201,7 +162,7 @@ public class AntStateMachine : MonoBehaviour
                 _maxTargetTime = CurrentTarget.DistanceFromTarget - GiveUpPenalty;
                 ClearTarget();
             }
-            else if(!HasLineOfSight(CurrentTarget))
+            else if(!HasLineOfSightOld(CurrentTarget))
             {
                 Console.WriteLine("Lost sight of target!");
                 ClearTarget();
@@ -212,6 +173,111 @@ public class AntStateMachine : MonoBehaviour
             //Debug.Log($"MaxTargetTime {_maxTargetTime}");
             _maxTargetTime += Time.fixedDeltaTime * GiveUpRecoveryMultiplier;
         }
+    }
+
+    private bool CheckLineOfSight(Smellable potentialTarget)
+    {
+        bool hasLineOfSight = false;
+        if (potentialTarget != null && ViewPoint != null)
+        {
+            Vector3 start = potentialTarget.transform.position;
+            Vector3 end = ViewPoint.position;
+            Vector3 direction = (end - start).normalized;
+            float distance = Vector3.Distance(start, end);
+
+            // Offset to avoid self-collision
+            Vector3 startOffset = start - direction * 0.1f;
+
+            //Debug.DrawRay(startOffset, direction * distance, Color.magenta);
+            int layerMask = ~LayerMask.GetMask(LayerMask.LayerToName(2));
+            if (Physics.Raycast(startOffset, direction, out RaycastHit hit, distance, layerMask))
+            {
+                //Debug.Log("Test ray hit: " + hit.transform.name);
+
+                if (hit.transform != this.transform)
+                {
+                    //Debug.Log("It's an obstacle!");
+                    hasLineOfSight = false;
+                }
+                else
+                {
+                    hasLineOfSight = true;
+                }
+            }
+            else
+            {
+                hasLineOfSight = true; // No obstacle in the way
+            }
+        }
+        else
+        {
+            Debug.Log("Not checking for barriers. Missing target or viewpoint.");
+            hasLineOfSight = false;
+        }
+
+        return hasLineOfSight;
+    }
+
+    private bool HasLineOfSightOld(Smellable smellable)
+    {
+        if (smellable == null)
+        {
+            return false;
+        }
+        if (smellable.gameObject == null)
+        {
+            return false;
+        }
+        var direction = smellable?.TargetPoint?.position - ViewPoint?.position;
+
+        if (!direction.HasValue)
+        {
+            Debug.Log("No direction between " + smellable + " & " + ViewPoint);
+            return false;
+        }
+        return true;
+
+        // TODO this still doesn't work!!!
+        var rayStart = ViewPoint.position;
+        var rayTarget = smellable.transform.position;
+
+
+
+        //Debug.DrawRay(rayStart, direction.Value, Color.magenta);
+
+        {
+            var isHit = Physics.Raycast(rayStart, direction.Value, out var hit, direction.Value.magnitude * 100);
+            var hasLineOfSight = !(isHit && hit.transform != smellable.transform);
+            if (isHit)
+            {
+                Debug.Log("forwards ray Hit " + hit.transform);
+                if (!hasLineOfSight)
+                {
+                    Debug.Log("hit " + hit.transform + " when looking for " + smellable);
+                    //return false;
+                }
+            }
+        }
+        //reverse ray
+        {
+            var isHit = Physics.Raycast(rayTarget, -direction.Value, out var hit, direction.Value.magnitude * 100);
+            var hasLineOfSight = !(isHit && hit.transform != smellable.transform);
+            if (isHit)
+            {
+                Debug.Log("Reverse ray Hit " + hit.transform);
+                if (!hasLineOfSight)
+                {
+                    Debug.Log("hit " + hit.transform + " when looking for " + smellable);
+                    //return false;
+                }
+            }
+        }
+
+
+
+
+
+        return true;
     }
 
     private void OnCollisionExit(Collision collision)
@@ -419,68 +485,6 @@ public class AntStateMachine : MonoBehaviour
         _currentTarget = smellable;
         PositionProvider.SetTarget(CurrentTarget);
         _timeSinceTargetAquisition = 0;
-    }
-
-    private bool HasLineOfSight(Smellable smellable)
-    {
-        if (smellable == null)
-        {
-            return false;
-        }
-        if (smellable.gameObject == null)
-        {
-            return false;
-        }
-        var direction = smellable?.TargetPoint?.position - ViewPoint?.position;
-
-        if (!direction.HasValue)
-        {
-            Debug.Log("No direction between " + smellable + " & " + ViewPoint);
-            return false;
-        }
-        return true;
-
-        // TODO this still doesn't work!!!
-        var rayStart = ViewPoint.position;
-        var rayTarget = smellable.transform.position;
-
-
-
-        //Debug.DrawRay(rayStart, direction.Value, Color.magenta);
-
-        {
-            var isHit = Physics.Raycast(rayStart, direction.Value, out var hit, direction.Value.magnitude * 100);
-            var hasLineOfSight = !(isHit && hit.transform != smellable.transform);
-            if (isHit)
-            {
-                Debug.Log("forwards ray Hit " + hit.transform);
-                if (!hasLineOfSight)
-                {
-                    Debug.Log("hit " + hit.transform + " when looking for " + smellable);
-                    //return false;
-                }
-            }
-        }
-        //reverse ray
-        {
-            var isHit = Physics.Raycast(rayTarget, -direction.Value, out var hit, direction.Value.magnitude* 100);
-            var hasLineOfSight = !(isHit && hit.transform != smellable.transform);
-            if (isHit)
-            {
-                Debug.Log("Reverse ray Hit " + hit.transform);
-                if (!hasLineOfSight)
-                {
-                    Debug.Log("hit " + hit.transform + " when looking for " + smellable);
-                    //return false;
-                }
-            }
-        }
-        
-        
-
-
-
-        return true;
     }
 
     private void ProcessCollisionWithSmell(Smellable smellable)
