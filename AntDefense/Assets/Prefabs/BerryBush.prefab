@@ -237,6 +237,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1505896113966760640}
   - component: {fileID: 1543189977692353980}
+  - component: {fileID: -1886755272213413794}
   m_Layer: 0
   m_Name: BerryBush
   m_TagString: Untagged
@@ -275,11 +276,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ParentForSpawnedObjects: {fileID: 6860792739033770158}
-  PrefabToSpawn: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+  PrefabToSpawn: {fileID: 3562446625101866731, guid: 6d12b7698beedad44a6fba765d716947, type: 3}
   DefaultSpawnPoint: {fileID: 6303223381367621148}
   SpawnPositionRandomisation: {x: 5, y: 2, z: 5}
-  FirstSpawnCount: 5
+  FirstSpawnCount: 3
   CountPerSpawn: 1
   MaxSpawns: -1
   MinRespawnTime: 9
   MaxRespawnTime: 15
+--- !u!114 &-1886755272213413794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6860792739033770158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48808236609e2b548a85ac5ff1666fb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ParentForSpawnedObjects: {fileID: 6860792739033770158}
+  PrefabToSpawn: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+  DefaultSpawnPoint: {fileID: 6303223381367621148}
+  SpawnPositionRandomisation: {x: 5, y: 2, z: 5}
+  FirstSpawnCount: 3
+  CountPerSpawn: 0
+  MaxSpawns: 1
+  MinRespawnTime: 1000
+  MaxRespawnTime: 1000

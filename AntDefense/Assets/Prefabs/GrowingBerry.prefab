@@ -47,8 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InitialScale: 0
-  GrowTime: 5
-  SpawnTime: 6
+  GrowTime: 16
+  SpawnTime: 20
   PrefabToSpawn: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
 --- !u!1 &7137983243265383188
 GameObject:
