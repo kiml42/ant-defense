@@ -23,7 +23,7 @@ public class AntStateMachine : MonoBehaviour
     {
         get
         {
-            if(_currentTarget == null || _currentTarget.gameObject == null || _currentTarget.transform == null)
+            if (_currentTarget == null || _currentTarget.gameObject == null || _currentTarget.transform == null)
             {
                 _currentTarget = null;
             }
@@ -35,7 +35,22 @@ public class AntStateMachine : MonoBehaviour
     /// The maximum time an ant is allowed to try to move towards a single trail point.
     /// If it takes longer than this it'll give up and look for a better trail point.
     /// </summary>
-    public float MaxTimeGoingForTrailPoint = 4;
+    public float MaxTimeGoingForTrailPoint
+    {
+        get
+        {
+            //TODO test this, or add adifferent fix for the issue with ants not finding the home smell quick enough after grabbing food
+            switch (this.State)
+            {
+                case AntState.ReportingFood:
+                case AntState.CarryingFood:
+                case AntState.ReturningHome:
+                    return 20;  // Any state that's looking for home smells gets a longer timeout because home is never removed, so the smell should be valid longer.
+                default:
+                    return 4;
+            }
+        }
+    }
     private float _timeSinceTargetAquisition;
     private float? _maxTargetTime;
 
@@ -50,7 +65,7 @@ public class AntStateMachine : MonoBehaviour
     /// </summary>
     public float CollisionTargetBonus = 0.5f;
 
-    public float GiveUpRecoveryMultiplier = 2f;
+    public float GiveUpRecoveryMultiplier = 4f;
 
     public const int GroundLayer = 3;
 
@@ -146,25 +161,24 @@ public class AntStateMachine : MonoBehaviour
         }
         _newBetterTargets.Clear();
 
-        if(State == AntState.ReportingFood && CurrentTarget?.Smell == Smell.Food)
+        if (State == AntState.ReportingFood && CurrentTarget?.Smell == Smell.Food)
         {
             throw new Exception($"State is {State} so the currnet target should not be food, but it is {CurrentTarget}");
         }
 
         _timeSinceTargetAquisition += Time.fixedDeltaTime;
-        if(CurrentTarget != null)
+        if (CurrentTarget != null)
         {
             Debug.DrawLine(transform.position, CurrentTarget.TargetPoint.position, Color.cyan);
-            if(!CurrentTarget.IsActual && _timeSinceTargetAquisition > MaxTimeGoingForTrailPoint)
+            if (!CurrentTarget.IsActual && _timeSinceTargetAquisition > MaxTimeGoingForTrailPoint)
             {
-                Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget);
-
                 _maxTargetTime = CurrentTarget.DistanceFromTarget - GiveUpPenalty;
+                Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
                 ClearTarget();
             }
-            else if(!HasLineOfSightOld(CurrentTarget))
+            else if (!CheckLineOfSight(CurrentTarget))
             {
-                Console.WriteLine("Lost sight of target!");
+                Console.WriteLine("Lost sight of current target!");
                 ClearTarget();
             }
         }
@@ -218,68 +232,6 @@ public class AntStateMachine : MonoBehaviour
         return hasLineOfSight;
     }
 
-    private bool HasLineOfSightOld(Smellable smellable)
-    {
-        if (smellable == null)
-        {
-            return false;
-        }
-        if (smellable.gameObject == null)
-        {
-            return false;
-        }
-        var direction = smellable?.TargetPoint?.position - ViewPoint?.position;
-
-        if (!direction.HasValue)
-        {
-            Debug.Log("No direction between " + smellable + " & " + ViewPoint);
-            return false;
-        }
-        return true;
-
-        // TODO this still doesn't work!!!
-        var rayStart = ViewPoint.position;
-        var rayTarget = smellable.transform.position;
-
-
-
-        //Debug.DrawRay(rayStart, direction.Value, Color.magenta);
-
-        {
-            var isHit = Physics.Raycast(rayStart, direction.Value, out var hit, direction.Value.magnitude * 100);
-            var hasLineOfSight = !(isHit && hit.transform != smellable.transform);
-            if (isHit)
-            {
-                Debug.Log("forwards ray Hit " + hit.transform);
-                if (!hasLineOfSight)
-                {
-                    Debug.Log("hit " + hit.transform + " when looking for " + smellable);
-                    //return false;
-                }
-            }
-        }
-        //reverse ray
-        {
-            var isHit = Physics.Raycast(rayTarget, -direction.Value, out var hit, direction.Value.magnitude * 100);
-            var hasLineOfSight = !(isHit && hit.transform != smellable.transform);
-            if (isHit)
-            {
-                Debug.Log("Reverse ray Hit " + hit.transform);
-                if (!hasLineOfSight)
-                {
-                    Debug.Log("hit " + hit.transform + " when looking for " + smellable);
-                    //return false;
-                }
-            }
-        }
-
-
-
-
-
-        return true;
-    }
-
     private void OnCollisionExit(Collision collision)
     {
         PositionProvider.NoLongerTouching(collision.transform);
@@ -288,7 +240,7 @@ public class AntStateMachine : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         var world = other.GetComponent<WorldZone>();
-        if(world != null /*&& State == AntState.SeekingFood*/)
+        if (world != null /*&& State == AntState.SeekingFood*/)
         {
             // TODO work out how well this works from all states. (particularly when not leaving a trail from home)
             //Debug.Log($"State {State} -> ReturningHome");
@@ -305,7 +257,7 @@ public class AntStateMachine : MonoBehaviour
         {
             //Debug.Log($"Collided With {@object} smellable: {smellable}");
             ProcessCollisionWithSmell(smellable);
-            if(CurrentTarget == smellable)
+            if (CurrentTarget == smellable)
             {
                 // this is now the target, and therefore is not an obstacle.
                 return;
@@ -350,6 +302,7 @@ public class AntStateMachine : MonoBehaviour
             case Smell.Food:
                 if (smellable.IsActual && State == AntState.SeekingFood || State == AntState.ReturningToFood)
                 {
+                    _maxTargetTime = null;
                     // When seeking or returning to food, rember smelled foods to know how much is in the area when setting the trail back home.
                     _knownNearbyFood.Add(smellable.GetComponent<Food>());
                 }
@@ -367,7 +320,7 @@ public class AntStateMachine : MonoBehaviour
                             // has found an existing trail, so retrn to the food and pick it up.
                             State = AntState.ReturningToFood;
                         }
-                        if(IsScout && !smellable.IsPermanentSource)
+                        if (IsScout && !smellable.IsPermanentSource)
                         {
                             // Scouts only care about permanent sources of food.
                             return;
@@ -416,9 +369,9 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
-        if(_maxTargetTime.HasValue && smellable.DistanceFromTarget > _maxTargetTime)
+        if (_maxTargetTime.HasValue && smellable.DistanceFromTarget > _maxTargetTime)
         {
-            //Debug.Log("Ignoring " + smellable + " because it's more than " + _maxTargetTime + " from the target.");
+            Debug.Log("Ignoring " + smellable + " because it's more than " + _maxTargetTime + " from the target.");
             return;
         }
 
@@ -492,7 +445,7 @@ public class AntStateMachine : MonoBehaviour
         switch (smellable.Smell)
         {
             case Smell.Food:
-                
+
                 if (_carriedFood != null) return;   // ignore all other food if already carrying
                 if (IsScout)
                 {
@@ -604,7 +557,7 @@ public class AntStateMachine : MonoBehaviour
 
     private void DropOffFood(Smellable smellable)
     {
-        if(_carriedFood == null || _carriedFood.gameObject?.IsDestroyed() != false)
+        if (_carriedFood == null || _carriedFood.gameObject?.IsDestroyed() != false)
         {
             _carriedFood = null;
             return;
@@ -630,7 +583,7 @@ public class AntStateMachine : MonoBehaviour
         this.TrailTargetValue -= food.FoodValue;
 
         var lifetime = food.GetComponent<LifetimeController>();
-        if(lifetime != null)
+        if (lifetime != null)
         {
             lifetime.Reset();
         }
