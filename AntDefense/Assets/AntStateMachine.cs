@@ -35,22 +35,7 @@ public class AntStateMachine : MonoBehaviour
     /// The maximum time an ant is allowed to try to move towards a single trail point.
     /// If it takes longer than this it'll give up and look for a better trail point.
     /// </summary>
-    public float MaxTimeGoingForTrailPoint
-    {
-        get
-        {
-            //TODO test this, or add adifferent fix for the issue with ants not finding the home smell quick enough after grabbing food
-            switch (this.State)
-            {
-                case AntState.ReportingFood:
-                case AntState.CarryingFood:
-                case AntState.ReturningHome:
-                    return 20;  // Any state that's looking for home smells gets a longer timeout because home is never removed, so the smell should be valid longer.
-                default:
-                    return 4;
-            }
-        }
-    }
+    public float MaxTimeGoingForTrailPoint = 4;
     private float _timeSinceTargetAquisition;
     private float? _maxTargetTime;
 
@@ -172,7 +157,9 @@ public class AntStateMachine : MonoBehaviour
             Debug.DrawLine(transform.position, CurrentTarget.TargetPoint.position, Color.cyan);
             if (!CurrentTarget.IsActual && _timeSinceTargetAquisition > MaxTimeGoingForTrailPoint)
             {
-                _maxTargetTime = CurrentTarget.DistanceFromTarget - GiveUpPenalty;
+                _maxTargetTime = CurrentTarget.Smell == Smell.Home
+                    ? null  // Continue to accept any home smell after forgetting this one.
+                    : CurrentTarget.DistanceFromTarget - GiveUpPenalty; // Only accept better food smells after forgetting this one.
                 Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
                 ClearTarget();
             }
@@ -371,7 +358,7 @@ public class AntStateMachine : MonoBehaviour
 
         if (_maxTargetTime.HasValue && smellable.DistanceFromTarget > _maxTargetTime)
         {
-            Debug.Log("Ignoring " + smellable + " because it's more than " + _maxTargetTime + " from the target.");
+            //Debug.Log("Ignoring " + smellable + " because it's more than " + _maxTargetTime + " from the target.");
             return;
         }
 
