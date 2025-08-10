@@ -28,7 +28,7 @@ public class AntCam : MonoBehaviour
 
     public Camera Camera;
 
-    public float KeyScrollSpeed = 1;
+    public float KeyScrollSpeed = 100;
 
     private void Start()
     {
@@ -48,7 +48,7 @@ public class AntCam : MonoBehaviour
             _lastMousePosition = Input.mousePosition;
         }
         var zoomProportion = GetZoomProportion(CurrentY);
-        var speed = GetProportionOfRange(zoomProportion, MinCameraSpeed, MaxCameraSpeed);
+        var speed = GetProportionOfRange(zoomProportion, MinCameraSpeed, MaxCameraSpeed) * Time.deltaTime;
         if (Input.GetMouseButton(MouseButton))
         {
             var change = Input.mousePosition - _lastMousePosition;
