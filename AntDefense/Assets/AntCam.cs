@@ -30,6 +30,8 @@ public class AntCam : MonoBehaviour
 
     public float KeyScrollSpeed = 1.5f;
 
+    public float KeyZoomSpeed = 0.5f;
+
     private void Start()
     {
         _targetXRotation = transform.rotation.x;
@@ -114,12 +116,26 @@ public class AntCam : MonoBehaviour
 
     private void HandleZoom()
     {
-        if (Input.mouseScrollDelta.y != 0)
+        var ctrlPushed = Input.GetKey(KeyCode.LeftControl);
+        var shiftPushed = Input.GetKey(KeyCode.LeftShift);
+        if (Input.mouseScrollDelta.y != 0 || ctrlPushed || shiftPushed)
         {
             // TODO consider make this work on the proportion first, and get both angle and distance from that.
             float currentY = CurrentY;
             var speedMultiplyer = currentY / 100;
             var newY = currentY - Input.mouseScrollDelta.y * CameraZoomSpeed * speedMultiplyer;
+
+            if (shiftPushed)
+            {
+                // Zoom in
+                newY -= KeyZoomSpeed * CameraZoomSpeed * speedMultiplyer;
+            }
+            if(ctrlPushed)
+            {
+                // Zoom out
+                newY += KeyZoomSpeed * CameraZoomSpeed * speedMultiplyer;
+            }
+
 
             var actualNewY = Mathf.Clamp(newY, MinY, MaxY);
             if (currentY == actualNewY)

@@ -310,7 +310,8 @@ MonoBehaviour:
   MinCameraSpeed: 8
   MaxCameraSpeed: 50
   Camera: {fileID: 5620213517466043452}
-  KeyScrollSpeed: 1.5
+  KeyScrollSpeed: 1.7
+  KeyZoomSpeed: 0.2
   MinY: 10
   MaxY: 200
   MinAngle: -50

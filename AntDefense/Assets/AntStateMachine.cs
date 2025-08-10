@@ -160,7 +160,7 @@ public class AntStateMachine : MonoBehaviour
                 _maxTargetTime = CurrentTarget.Smell == Smell.Home
                     ? null  // Continue to accept any home smell after forgetting this one.
                     : CurrentTarget.DistanceFromTarget - GiveUpPenalty; // Only accept better food smells after forgetting this one.
-                Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
+                //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
                 ClearTarget();
             }
             else if (!CheckLineOfSight(CurrentTarget))
