@@ -307,10 +307,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CameraZoomSpeed: 10
   CameraPanSpeed: 0.07
-  MinCameraSpeed: 0.08
-  MaxCameraSpeed: 0.5
+  MinCameraSpeed: 8
+  MaxCameraSpeed: 50
   Camera: {fileID: 5620213517466043452}
-  KeyScrollSpeed: 100
+  KeyScrollSpeed: 1.5
   MinY: 10
   MaxY: 200
   MinAngle: -50

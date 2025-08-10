@@ -6,8 +6,8 @@ public class AntCam : MonoBehaviour
     private const int MouseButton = 1;
     public float CameraZoomSpeed = 150;
     public float CameraPanSpeed = 0.8f;
-    public float MinCameraSpeed = 0.1f;
-    public float MaxCameraSpeed = 0.5f;
+    public float MinCameraSpeed = 10f;
+    public float MaxCameraSpeed = 50f;
     private Vector3 _lastMousePosition;
 
     private KeyCode[] _upKeyCodes = new[] { KeyCode.W, KeyCode.UpArrow };
@@ -28,7 +28,7 @@ public class AntCam : MonoBehaviour
 
     public Camera Camera;
 
-    public float KeyScrollSpeed = 100;
+    public float KeyScrollSpeed = 1.5f;
 
     private void Start()
     {
