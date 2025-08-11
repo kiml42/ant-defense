@@ -9,6 +9,8 @@ public class UiPlane : MonoBehaviour
     public float QuickBarSpacing = 0.1f;
     private List<QuickBarButton> _buttons = null;
 
+    public Transform ProtectMesCenter;
+
     float _height;
     float _width;
 
