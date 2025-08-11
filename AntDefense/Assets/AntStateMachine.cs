@@ -8,7 +8,6 @@ using UnityEngine;
 public class AntStateMachine : MonoBehaviour
 {
     // TODO improve detection of trails that no longer lead to food (e.g. single berry in the world that has been removed)
-    // TODO make ants consume food to make it easier to get more ants when there are fewer ants. This could replace teh simpl,e lifetime mechanism.
     public Smellable _currentTarget;
     private Food _carriedFood;
     public AntState State = AntState.SeekingFood;
@@ -129,7 +128,6 @@ public class AntStateMachine : MonoBehaviour
 
         foreach (var potentialTarget in _newBetterTargets)
         {
-            // TODO consider making each ant have a variable to choose how it computes priority, so that some prefer close food, and some prefer higher value food.
             if (CurrentTarget == null || potentialTarget.IsActual || potentialTarget.Priority < CurrentTarget.Priority)
             {
                 //if (!potentialTarget.IsActual && CurrentTarget != null && potentialTarget.DistanceFromTarget > CurrentTarget.DistanceFromTarget)
@@ -276,7 +274,7 @@ public class AntStateMachine : MonoBehaviour
     /// <summary>
     /// Scouts only look for new food and leave trails to show where it is, they never actually carry it themselves.
     /// </summary>
-    public bool IsScout = false;    // TODO check that scouts turn towards food when they smell it.
+    public bool IsScout = false;
 
     private readonly HashSet<Food> _knownNearbyFood = new HashSet<Food>();
 
