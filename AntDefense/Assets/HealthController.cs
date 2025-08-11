@@ -23,7 +23,7 @@ public class HealthController : MonoBehaviour
         if (CurrentHealth <= 0)
         {
             Debug.Log(this.transform + " has died");
-            // TODO drop food when killed (and reactivate it's smell
+            // TODO drop food when killed (and reactivate it's smell)
             // TODO create dead ant when killed.
             Destroy(gameObject);
             return;
