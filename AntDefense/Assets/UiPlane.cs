@@ -8,6 +8,7 @@ public class UiPlane : MonoBehaviour
     public QuickBarButton QuickBarButton;
     public Transform QuickBarCenter;
     public float QuickBarSpacing = 0.1f;
+    public float ProtectMesSpacing = 0.1f;
     private List<QuickBarButton> _buttons = null;
 
     public Transform ProtectMesCenter;
@@ -23,7 +24,7 @@ public class UiPlane : MonoBehaviour
 
     private void Start()
     {
-        if(Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             throw new Exception("There should not be multiple UI planes!");
         }
@@ -45,14 +46,14 @@ public class UiPlane : MonoBehaviour
         // TODO : calculate spacing based on available space.
         // TODO : Indicate when a protected object gets destroyed (grey it out or remove it from the UI)
         // TODO : improve positioning & rotation of the objects
-        var leftOffset = -QuickBarSpacing * (ProtectMes.Count - 1) / 2;
+        var leftOffset = -ProtectMesSpacing * (ProtectMes.Count - 1) / 2;
 
         // foreach with index
 
         var i = 0;
         foreach (var p in ProtectMes)
         {
-            var offset = leftOffset + i * QuickBarSpacing;
+            var offset = leftOffset + i * ProtectMesSpacing;
             if (p.UiObject == null)
             {
                 p.UiObject = Instantiate(p.ProtectMe.transform, ProtectMesCenter.position + new Vector3(offset, 0, 0), Quaternion.Euler(this.ProtectMeRotation));

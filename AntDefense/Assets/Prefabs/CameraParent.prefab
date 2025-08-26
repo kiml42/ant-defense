@@ -118,7 +118,7 @@ Transform:
   m_GameObject: {fileID: 1513083525263343442}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.3, z: 0}
+  m_LocalPosition: {x: 0, y: 0.45, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -153,8 +153,8 @@ Transform:
   m_GameObject: {fileID: 2606841239211566564}
   serializedVersion: 2
   m_LocalRotation: {x: 0.37767118, y: 0.010379775, z: 0.31748465, w: 0.8697473}
-  m_LocalPosition: {x: 0.0000000016095658, y: 0.000000059604645, z: 0.00000011920929}
-  m_LocalScale: {x: 0.3, y: 0.1, z: 0.1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2214808390194161454}
@@ -369,8 +369,9 @@ MonoBehaviour:
   QuickBarButton: {fileID: 2654668823554787933, guid: 17a317a56335ede4c89d25befc72f144, type: 3}
   QuickBarCenter: {fileID: 6136064740950091038}
   QuickBarSpacing: 0.2
+  ProtectMesSpacing: 0.08
   ProtectMesCenter: {fileID: 2214808390194161454}
-  ProtectMeScale: 0.1
+  ProtectMeScale: 0.04
   ProtectMeRotation: {x: 315.59634, y: 302.6238, z: 80.566826}
 --- !u!1 &7456297363724634827
 GameObject:
