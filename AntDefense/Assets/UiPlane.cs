@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,17 +8,78 @@ public class UiPlane : MonoBehaviour
     public QuickBarButton QuickBarButton;
     public Transform QuickBarCenter;
     public float QuickBarSpacing = 0.1f;
+    public float ProtectMesSpacing = 0.1f;
     private List<QuickBarButton> _buttons = null;
+
+    public Transform ProtectMesCenter;
+    public float ProtectMeScale = 0.1f;
+    public Vector3 ProtectMeRotation;
 
     float _height;
     float _width;
 
+    private static readonly List<ProtectMeBarObject> ProtectMes = new List<ProtectMeBarObject>();
+
+    public static UiPlane Instance { get; private set; }
+
     private void Start()
     {
-        Initialise();
+        if (Instance != null && Instance != this)
+        {
+            throw new Exception("There should not be multiple UI planes!");
+        }
+        Instance = this;
+        InitialiseQuickBar();
     }
 
-    private void Initialise()
+    private void Update()
+    {
+        if (ProtectMes.Any(p => p.UiObject == null))
+        {
+            InitialiseProtectMes();
+        }
+
+        foreach (var p in ProtectMes.Where(p => p.ProtectMe == null && p.UiObject != null).ToArray())
+        {
+            Destroy(p.UiObject.gameObject);
+            ProtectMes.Remove(p);
+        }
+        if(ProtectMes.Count == 0)
+        { 
+            Debug.Log("All protectMes are gone!");
+
+            Debug.Log("GAME OVER");
+            Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
+        }
+    }
+
+    private void InitialiseProtectMes()
+    {
+        // TODO : calculate spacing based on available space.
+        // TODO : improve positioning & rotation of the objects
+        var leftOffset = -ProtectMesSpacing * (ProtectMes.Count - 1) / 2;
+
+        // foreach with index
+
+        var i = 0;
+        foreach (var p in ProtectMes)
+        {
+            var offset = leftOffset + i * ProtectMesSpacing;
+            if (p.UiObject == null)
+            {
+                p.UiObject = Instantiate(p.ProtectMe.transform, ProtectMesCenter.position + new Vector3(offset, 0, 0), Quaternion.Euler(this.ProtectMeRotation));
+                p.UiObject.parent = this.transform;
+                p.UiObject.localScale *= this.ProtectMeScale;
+                Dummyise(p.UiObject);
+            }
+            i++;
+        }
+    }
+
+    private void InitialiseQuickBar()
     {
         if (_buttons != null) return;
 
@@ -54,6 +116,11 @@ public class UiPlane : MonoBehaviour
         dummy.localScale = dummy.localScale.normalized * newButton.transform.localScale.magnitude * ghost.ScaleForButton;
         dummy.parent = newButton.transform;
 
+        Dummyise(dummy);
+    }
+
+    private static void Dummyise(Transform dummy)
+    {
         var componentsToDestroy = dummy.GetComponentsInChildren<MonoBehaviour>().Cast<Component>().ToList();
         componentsToDestroy.AddRange(dummy.GetComponentsInChildren<HingeJoint>().Cast<Component>());
         componentsToDestroy.AddRange(dummy.GetComponentsInChildren<Rigidbody>().Cast<Component>());
@@ -69,6 +136,24 @@ public class UiPlane : MonoBehaviour
         foreach (var renderer in renderers)
         {
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+    }
+
+    internal static void RegisterProtectMe(ProtectMe protectMe)
+    {
+        if (!ProtectMes.Any(p => p.ProtectMe == protectMe))
+        {
+            ProtectMes.Add(new ProtectMeBarObject(protectMe));
+        }
+    }
+
+    private class ProtectMeBarObject
+    {
+        public Transform UiObject;
+        public ProtectMe ProtectMe;
+        public ProtectMeBarObject(ProtectMe protectMe)
+        {
+            ProtectMe = protectMe;
         }
     }
 }
