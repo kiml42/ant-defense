@@ -58,9 +58,7 @@ public class UiPlane : MonoBehaviour
 
     private void InitialiseProtectMes()
     {
-        // TODO : deduplicate code.
         // TODO : calculate spacing based on available space.
-        // TODO : Indicate when a protected object gets destroyed (grey it out or remove it from the UI)
         // TODO : improve positioning & rotation of the objects
         var leftOffset = -ProtectMesSpacing * (ProtectMes.Count - 1) / 2;
 
