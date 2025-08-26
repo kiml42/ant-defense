@@ -36,11 +36,27 @@ public class UiPlane : MonoBehaviour
     {
         if (ProtectMes.Any(p => p.UiObject == null))
         {
-            UpdateProtectMes();
+            InitialiseProtectMes();
+        }
+
+        foreach (var p in ProtectMes.Where(p => p.ProtectMe == null && p.UiObject != null).ToArray())
+        {
+            Destroy(p.UiObject.gameObject);
+            ProtectMes.Remove(p);
+        }
+        if(ProtectMes.Count == 0)
+        { 
+            Debug.Log("All protectMes are gone!");
+
+            Debug.Log("GAME OVER");
+            Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
         }
     }
 
-    private void UpdateProtectMes()
+    private void InitialiseProtectMes()
     {
         // TODO : deduplicate code.
         // TODO : calculate spacing based on available space.
