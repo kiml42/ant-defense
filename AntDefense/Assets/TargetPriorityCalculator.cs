@@ -28,6 +28,7 @@ public class TargetPriorityCalculator : MonoBehaviour, ITargetPriorityCalculator
     private void Start()
     {
         _actualValueWeighting = ValueWeighting + Random.Range(-ValueWeightingRandomisation, ValueWeightingRandomisation);
+        _actualValueWeighting = Mathf.Clamp01(_actualValueWeighting);   // ensure it's still between 0 and 1, below 0 will actually prefer lower value targets, and above 1 will prefer more distant targets.
     }
 
     /// <summary>
