@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -6,16 +7,9 @@ using UnityEngine;
 public class TrailPointController : Smellable
 {
     // TODO make the trail points bigger/bolder when zoomed out to keep trails visible.
-    public static float CalculatePriority(float distanceFromTarget, float? targetValue)
-    {
-        // TODO work out what function works best for this.
-        // this seems to be working pretty well as is, but it may not be optimal.
-        return distanceFromTarget - (targetValue ?? 0);
-    }
 
     private class SmellComponent
     {
-        public readonly float Priority;
         public readonly float DistanceFromTarget;
 
         /// <summary>
@@ -29,7 +23,6 @@ public class TrailPointController : Smellable
             DistanceFromTarget = distanceFromTarget;
             RemainingTime = remainingTime;
             TargetValue = targetValue;
-            Priority = CalculatePriority(DistanceFromTarget, TargetValue);
         }
 
         internal void DecrementTime()
@@ -46,19 +39,16 @@ public class TrailPointController : Smellable
     public MeshRenderer Material;
 
     private Smell _trailSmell;
-    private List<SmellComponent> _smellComponents = new List<SmellComponent>();
+    private readonly List<SmellComponent> _smellComponents = new();
 
     public Transform Transform => this.transform;
 
     public override Smell Smell => _trailSmell;
 
-    public override float Priority => _smellComponents.Any() ? _smellComponents.Min(s => s.Priority) : float.MaxValue;
-    public override float DistanceFromTarget => _smellComponents.Any() ? _smellComponents.Min(s => s.DistanceFromTarget) : float.MaxValue;
-
     public override bool IsActual => false;
 
     /// <summary>
-    /// The initial lifetime of this trail point will be reduced by <see cref="LifetimePenalty"/> * <see cref="DistanceFromTarget"/>
+    /// The initial lifetime of this trail point will be reduced by <see cref="LifetimePenalty"/> * distanceFromTarget
     /// </summary>
     public float LifetimePenalty = 1;
 
@@ -67,6 +57,14 @@ public class TrailPointController : Smellable
     public float ScaleDownTime = 4;
     public float DefaultLifetime = 80;
     public override bool IsPermanentSource => true;
+
+    public override float GetPriority(ITargetPriorityCalculator priorityCalculator)
+    {
+        // return the component with the best priotity, if priorityCalculator is null, just return the closest.
+        return _smellComponents.Any()
+            ? _smellComponents.Min(s => priorityCalculator?.CalculatePriority(s.DistanceFromTarget, s.TargetValue) ?? s.DistanceFromTarget)
+            : float.MaxValue;
+    }
 
     private void FixedUpdate()
     {

@@ -1,10 +1,15 @@
-﻿public class AntNestSmell : Smellable
+﻿using System;
+
+public class AntNestSmell : Smellable
 {
     public override Smell Smell => Smell.Home;
 
-    public override float Priority => 0;    // Nests are interchangeable, so they have the same priority.
-    public override float DistanceFromTarget => 0;
     public override bool IsActual => true;
 
     public override bool IsPermanentSource => true;
+
+    public override float GetPriority(ITargetPriorityCalculator _)
+    {
+        return 0;   // Ant nest doesn't need prioritization, It'll always win by being Actual.
+    }
 }
