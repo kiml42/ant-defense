@@ -35,7 +35,7 @@ public class AntStateMachine : MonoBehaviour
     /// </summary>
     public float MaxTimeGoingForTrailPoint = 4;
     private float _timeSinceTargetAquisition;
-    private float? _maxTargetTime;
+    private float? _maxTargetPriority;
 
     /// <summary>
     /// Amount to decrace the max target time by if no better target has been found in <see cref="MaxTimeGoingForTrailPoint"/> seconds.
@@ -127,7 +127,7 @@ public class AntStateMachine : MonoBehaviour
 
         foreach (var potentialTarget in _newBetterTargets)
         {
-            if (CurrentTarget == null || potentialTarget.IsActual || potentialTarget.Priority < CurrentTarget.Priority)
+            if (this.IsBetterThanCurrent(potentialTarget))
             {
                 //if (!potentialTarget.IsActual && CurrentTarget != null && potentialTarget.DistanceFromTarget > CurrentTarget.DistanceFromTarget)
                 //{
@@ -154,9 +154,9 @@ public class AntStateMachine : MonoBehaviour
             Debug.DrawLine(transform.position, CurrentTarget.TargetPoint.position, Color.cyan);
             if (!CurrentTarget.IsActual && _timeSinceTargetAquisition > MaxTimeGoingForTrailPoint)
             {
-                _maxTargetTime = CurrentTarget.Smell == Smell.Home
+                _maxTargetPriority = CurrentTarget.Smell == Smell.Home
                     ? null  // Continue to accept any home smell after forgetting this one.
-                    : CurrentTarget.DistanceFromTarget - GiveUpPenalty; // Only accept better food smells after forgetting this one.
+                    : CurrentTarget.GetPriority(CalculatePriority) - GiveUpPenalty; // Only accept better food smells after forgetting this one.
                 //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
                 ClearTarget();
             }
@@ -166,10 +166,10 @@ public class AntStateMachine : MonoBehaviour
                 ClearTarget();
             }
         }
-        if (_maxTargetTime.HasValue)
+        if (_maxTargetPriority.HasValue)
         {
             //Debug.Log($"MaxTargetTime {_maxTargetTime}");
-            _maxTargetTime += Time.fixedDeltaTime * GiveUpRecoveryMultiplier;
+            _maxTargetPriority += Time.fixedDeltaTime * GiveUpRecoveryMultiplier;
         }
     }
 
@@ -287,7 +287,7 @@ public class AntStateMachine : MonoBehaviour
             case Smell.Food:
                 if (smellable.IsActual && State == AntState.SeekingFood || State == AntState.ReturningToFood)
                 {
-                    _maxTargetTime = null;
+                    _maxTargetPriority = null;
                     // When seeking or returning to food, rember smelled foods to know how much is in the area when setting the trail back home.
                     _knownNearbyFood.Add(smellable.GetComponent<Food>());
                 }
@@ -310,12 +310,12 @@ public class AntStateMachine : MonoBehaviour
                             // Scouts only care about permanent sources of food.
                             return;
                         }
-                        _maxTargetTime = null;
+                        _maxTargetPriority = null;
                         ClearTarget();
-                        UpdateTarget(smellable);
+                        RegisterPotentialTarget(smellable);
                         return;
                     case AntState.ReturningToFood:
-                        UpdateTarget(smellable);
+                        RegisterPotentialTarget(smellable);
                         // in the Returning to food state, maintain the state until the food is actually collided with.
                         return;
                 }
@@ -326,7 +326,7 @@ public class AntStateMachine : MonoBehaviour
                     case AntState.ReturningHome:
                     case AntState.ReportingFood:
                     case AntState.CarryingFood:
-                        UpdateTarget(smellable);
+                        RegisterPotentialTarget(smellable);
 
                         return;
                 }
@@ -341,7 +341,18 @@ public class AntStateMachine : MonoBehaviour
         PositionProvider.SetTarget(CurrentTarget);
     }
 
-    private void UpdateTarget(Smellable smellable)
+    /// <summary>
+    /// Returns the priority of the smellable for this ant.
+    /// Lower values are more important.
+    /// </summary>
+    /// <param name="smellable"></param>
+    /// <returns></returns>
+    private float CalculatePriority(float distanceFromTarget, float? targetValue)
+    {
+        return distanceFromTarget - (targetValue ?? 0);
+    }
+
+    private void RegisterPotentialTarget(Smellable smellable)
     {
         if (State == AntState.ReportingFood && smellable.Smell == Smell.Food)
         {
@@ -354,19 +365,14 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
-        if (_maxTargetTime.HasValue && smellable.DistanceFromTarget > _maxTargetTime)
+        if (_maxTargetPriority.HasValue && smellable.GetPriority(CalculatePriority) > _maxTargetPriority)
         {
             //Debug.Log("Ignoring " + smellable + " because it's more than " + _maxTargetTime + " from the target.");
             return;
         }
 
-        if (CurrentTarget == null || smellable.IsActual || smellable.Priority < CurrentTarget.Priority)
+        if (this.IsBetterThanCurrent(smellable))
         {
-            if (!smellable.IsActual && CurrentTarget != null && smellable.DistanceFromTarget > CurrentTarget.DistanceFromTarget)
-            {
-                Console.WriteLine($"considering {smellable} even though it has a greater distance than {CurrentTarget} because it has a higher priority.");
-            }
-
             if (IsScout && !smellable.IsActual && smellable.Smell == Smell.Food)
             {
                 throw new Exception("Scouts should never go for food smells!");
@@ -418,6 +424,13 @@ public class AntStateMachine : MonoBehaviour
         }
     }
 
+    private bool IsBetterThanCurrent(Smellable smellable)
+    {
+        return CurrentTarget == null    // there is no current target
+            || (smellable.IsActual && !CurrentTarget.IsActual)  // the new one is actual and the current one isn't
+            || smellable.GetPriority(CalculatePriority) < CurrentTarget.GetPriority(CalculatePriority); // the new one has a better priority than the current one
+    }
+
     private void SetTarget(Smellable smellable)
     {
         _currentTarget = smellable;
@@ -467,17 +480,17 @@ public class AntStateMachine : MonoBehaviour
                 {
                     case AntState.ReportingFood:
                         _disableTrail = false;
-                        _maxTargetTime = null;
+                        _maxTargetPriority = null;
                         ClearTarget();
                         State = AntState.ReturningToFood;
-                        UpdateTarget(LastTrailPoint);
+                        RegisterPotentialTarget(LastTrailPoint);
                         return;
                     case AntState.CarryingFood:
                         _disableTrail = false;
                         State = AntState.ReturningToFood;
-                        _maxTargetTime = null;
+                        _maxTargetPriority = null;
                         ClearTarget();
-                        UpdateTarget(LastTrailPoint);
+                        RegisterPotentialTarget(LastTrailPoint);
                         DropOffFood(smellable);
                         return;
                     case AntState.ReturningHome:
@@ -493,15 +506,15 @@ public class AntStateMachine : MonoBehaviour
         this.PositionProvider.RandomiseVector();
         _disableTrail = false;
         State = AntState.SeekingFood;
-        _maxTargetTime = null;
+        _maxTargetPriority = null;
         ClearTarget();
     }
 
     private void CollectKnownFood(Smellable smellable)
     {
-        _maxTargetTime = null;
+        _maxTargetPriority = null;
         ClearTarget();
-        UpdateTarget(LastTrailPoint);
+        RegisterPotentialTarget(LastTrailPoint);
         this.UpdateTrailValueForKnownFood();
         PickUpFood(smellable);
         smellable.IsSmellable = false;  // TODO consider when/if to turn this back on. (e.g. if the ant dies while carrying the food, or drops the food)
@@ -515,10 +528,10 @@ public class AntStateMachine : MonoBehaviour
 
         //Debug.Log($"State Seeking -> Reporting");
         State = AntState.ReportingFood;
-        _maxTargetTime = null;
+        _maxTargetPriority = null;
         _disableTrail = false;
         ClearTarget();
-        this.UpdateTarget(LastTrailPoint);
+        this.RegisterPotentialTarget(LastTrailPoint);
     }
 
     private void UpdateTrailValueForKnownFood()

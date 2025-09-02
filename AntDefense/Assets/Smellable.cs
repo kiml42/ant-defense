@@ -1,16 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public abstract class Smellable : MonoBehaviour
 {
     public abstract Smell Smell { get; }
-
-    /// <summary>
-    /// Used to determine which smellable objects are more important than others.
-    /// The lower the value, the more important it is.
-    /// </summary>
-    public abstract float Priority { get; }
-
-    public abstract float DistanceFromTarget { get; }
 
     /// <summary>
     /// true for objects that are teh actual thing, rather than a trail point leading to the thing.
@@ -29,6 +22,8 @@ public abstract class Smellable : MonoBehaviour
     /// Allows disabling this from being smelt, without removing the component.
     /// </summary>
     public bool IsSmellable = true;
+
+    public abstract float GetPriority(Func<float, float?, float> priorityCalculator);
 }
 
 public enum Smell
