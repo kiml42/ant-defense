@@ -506,8 +506,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1e558f8d3e844e4ab3d8e5b49e7b0ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ValueWeighting: 0.5
-  ValueWeightingRandomisation: 0.45
+  ValueWeighting: 0.49
+  ValueWeightingRandomisation: 0.49
 --- !u!1 &1309134283868194372
 GameObject:
   m_ObjectHideFlags: 0
