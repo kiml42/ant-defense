@@ -83,11 +83,13 @@ public class AntStateMachine : MonoBehaviour
     private readonly HashSet<Smellable> _newBetterTargets = new();
 
     private Rigidbody _rigidbody;
+    private ITargetPriorityCalculator _priorityCalculator;
 
     private void Start()
     {
         ViewPoint = ViewPoint ?? transform;
         _rigidbody = this.GetComponent<Rigidbody>();
+        _priorityCalculator = this.GetComponent<ITargetPriorityCalculator>();
     }
 
     private void FixedUpdate()
@@ -156,7 +158,7 @@ public class AntStateMachine : MonoBehaviour
             {
                 _maxTargetPriority = CurrentTarget.Smell == Smell.Home
                     ? null  // Continue to accept any home smell after forgetting this one.
-                    : CurrentTarget.GetPriority(CalculatePriority) - GiveUpPenalty; // Only accept better food smells after forgetting this one.
+                    : CurrentTarget.GetPriority(_priorityCalculator) - GiveUpPenalty; // Only accept better food smells after forgetting this one.
                 //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
                 ClearTarget();
             }
@@ -341,17 +343,6 @@ public class AntStateMachine : MonoBehaviour
         PositionProvider.SetTarget(CurrentTarget);
     }
 
-    /// <summary>
-    /// Returns the priority of the smellable for this ant.
-    /// Lower values are more important.
-    /// </summary>
-    /// <param name="smellable"></param>
-    /// <returns></returns>
-    private float CalculatePriority(float distanceFromTarget, float? targetValue)
-    {
-        return distanceFromTarget - (targetValue ?? 0);
-    }
-
     private void RegisterPotentialTarget(Smellable smellable)
     {
         if (State == AntState.ReportingFood && smellable.Smell == Smell.Food)
@@ -365,7 +356,7 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
-        if (_maxTargetPriority.HasValue && smellable.GetPriority(CalculatePriority) > _maxTargetPriority)
+        if (_maxTargetPriority.HasValue && smellable.GetPriority(_priorityCalculator) > _maxTargetPriority)
         {
             //Debug.Log("Ignoring " + smellable + " because it's more than " + _maxTargetTime + " from the target.");
             return;
@@ -428,7 +419,7 @@ public class AntStateMachine : MonoBehaviour
     {
         return CurrentTarget == null    // there is no current target
             || (smellable.IsActual && !CurrentTarget.IsActual)  // the new one is actual and the current one isn't
-            || smellable.GetPriority(CalculatePriority) < CurrentTarget.GetPriority(CalculatePriority); // the new one has a better priority than the current one
+            || smellable.GetPriority(_priorityCalculator) < CurrentTarget.GetPriority(_priorityCalculator); // the new one has a better priority than the current one
     }
 
     private void SetTarget(Smellable smellable)

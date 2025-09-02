@@ -23,7 +23,7 @@ public abstract class Smellable : MonoBehaviour
     /// </summary>
     public bool IsSmellable = true;
 
-    public abstract float GetPriority(Func<float, float?, float> priorityCalculator);
+    public abstract float GetPriority(ITargetPriorityCalculator targetPriorityCalculator);
 }
 
 public enum Smell

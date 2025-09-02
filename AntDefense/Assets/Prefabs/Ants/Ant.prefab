@@ -289,6 +289,7 @@ GameObject:
   - component: {fileID: 1805795825312131026}
   - component: {fileID: 4623527012709452741}
   - component: {fileID: -8912878286020707997}
+  - component: {fileID: -5949395364792859796}
   m_Layer: 2
   m_Name: Ant
   m_TagString: Untagged
@@ -493,6 +494,20 @@ MonoBehaviour:
   ResistanceImpulse: 10
   DamagePerUnitImpulse: 0.2
   HealthController: {fileID: 5783434083664333321}
+--- !u!114 &-5949395364792859796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180791391076224223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1e558f8d3e844e4ab3d8e5b49e7b0ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ValueWeighting: 0.5
+  ValueWeightingRandomisation: 0.1
 --- !u!1 &1309134283868194372
 GameObject:
   m_ObjectHideFlags: 0

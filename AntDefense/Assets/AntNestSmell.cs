@@ -8,7 +8,7 @@ public class AntNestSmell : Smellable
 
     public override bool IsPermanentSource => true;
 
-    public override float GetPriority(Func<float, float?, float> _)
+    public override float GetPriority(ITargetPriorityCalculator _)
     {
         return 0;   // Ant nest doesn't need prioritization, It'll always win by being Actual.
     }

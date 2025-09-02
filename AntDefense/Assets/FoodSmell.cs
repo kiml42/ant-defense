@@ -29,8 +29,8 @@ public class FoodSmell : Smellable
         _isPermanentSource = isPermanentSource;
     }
 
-    public override float GetPriority(Func<float, float?, float> priorityCalculator)
+    public override float GetPriority(ITargetPriorityCalculator priorityCalculator)
     {
-        return priorityCalculator(0, _foodValue);
+        return priorityCalculator.CalculatePriority(0, _foodValue);
     }
 }

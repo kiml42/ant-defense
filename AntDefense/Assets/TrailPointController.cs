@@ -58,10 +58,10 @@ public class TrailPointController : Smellable
     public float DefaultLifetime = 80;
     public override bool IsPermanentSource => true;
 
-    public override float GetPriority(Func<float, float?, float> priorityCalculator)
+    public override float GetPriority(ITargetPriorityCalculator priorityCalculator)
     {
         return _smellComponents.Any()
-            ? _smellComponents.Min(s => priorityCalculator(s.DistanceFromTarget, s.TargetValue))
+            ? _smellComponents.Min(s => priorityCalculator.CalculatePriority(s.DistanceFromTarget, s.TargetValue))
             : float.MaxValue;
     }
 
