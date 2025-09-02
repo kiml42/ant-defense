@@ -31,6 +31,7 @@ public class FoodSmell : Smellable
 
     public override float GetPriority(ITargetPriorityCalculator priorityCalculator)
     {
-        return priorityCalculator.CalculatePriority(0, _foodValue);
+        return priorityCalculator?.CalculatePriority(0, _foodValue)
+            ?? -_foodValue; // fall back to prioritising higher valued food.
     }
 }

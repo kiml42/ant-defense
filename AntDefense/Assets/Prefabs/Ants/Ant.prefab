@@ -507,7 +507,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ValueWeighting: 0.5
-  ValueWeightingRandomisation: 0.1
+  ValueWeightingRandomisation: 0.45
 --- !u!1 &1309134283868194372
 GameObject:
   m_ObjectHideFlags: 0

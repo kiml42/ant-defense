@@ -60,8 +60,9 @@ public class TrailPointController : Smellable
 
     public override float GetPriority(ITargetPriorityCalculator priorityCalculator)
     {
+        // return the component with the best priotity, if priorityCalculator is null, just return the closest.
         return _smellComponents.Any()
-            ? _smellComponents.Min(s => priorityCalculator.CalculatePriority(s.DistanceFromTarget, s.TargetValue))
+            ? _smellComponents.Min(s => priorityCalculator?.CalculatePriority(s.DistanceFromTarget, s.TargetValue) ?? s.DistanceFromTarget)
             : float.MaxValue;
     }
 
