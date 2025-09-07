@@ -1,17 +1,12 @@
 using System;
-using System.Linq;
 using UnityEngine;
 
+// TODO add a way to cancel
+// TODO rotate while holding mouse down
 public class TranslateHandle : MonoBehaviour
 {
-    public ClickableButton TickButton;
-    public ClickableButton CrossButton;
-
-    /// <summary>
-    /// The point on this object that was hit with the mouse down
-    /// </summary>
-    private Vector3? _localHit = null;
-    private bool _rotateMode;
+    public int MouseButton = 0;
+    public float MinRotateMouseDistance = 0.1f;
     private int _layerMask;
 
     private void Start()
@@ -22,12 +17,11 @@ public class TranslateHandle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    HandleMouseDown();
-        //}
+        if (Input.GetMouseButtonDown(this.MouseButton))
+        {
 
-        if(Input.GetMouseButtonUp(0))
+        }
+        if(Input.GetMouseButtonUp(this.MouseButton))
         {
             HandleMouseUp();
         }
@@ -43,13 +37,19 @@ public class TranslateHandle : MonoBehaviour
 
     private void ScaleForDistanceToCamera()
     {
+        var scale = this.GetDistanceToCameraScaleFactor();
+
+        UiObjectsToScale.localScale = Vector3.one * scale;
+    }
+
+    private float GetDistanceToCameraScaleFactor()
+    {
         var distance = Camera.main.transform.position.y;
 
         var excessDistance = distance - DefaultCameraDistance;
 
-        var scale = ((excessDistance / DefaultCameraDistance)/1.5f) + 1;
-
-        UiObjectsToScale.localScale = Vector3.one * scale;
+        var scale = ((excessDistance / DefaultCameraDistance) / 1.5f) + 1;
+        return scale;
     }
 
     private void MoveOnTop()
@@ -70,9 +70,14 @@ public class TranslateHandle : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
         {
-            if (_rotateMode)
+            if (Input.GetMouseButton(this.MouseButton) && ObjectPlacer.Instance.CanRotateCurrentObject())
             {
                 var vectorToHit = hit.point - transform.position;
+
+                if (vectorToHit.magnitude < MinRotateMouseDistance * GetDistanceToCameraScaleFactor())
+                {
+                    return;
+                }
 
                 var lookRotation = Quaternion.LookRotation(vectorToHit, Vector3.up);
 
@@ -80,7 +85,7 @@ public class TranslateHandle : MonoBehaviour
             }
             else
             {
-                var rotatedAgle = transform.rotation * _localHit ?? Vector3.zero;
+                var rotatedAgle = transform.rotation;
                 transform.position = hit.point - new Vector3(rotatedAgle.x, 0, rotatedAgle.z);
             }
         }
@@ -100,16 +105,23 @@ public class TranslateHandle : MonoBehaviour
             }
         }
 
-        if(!_rotateMode && ObjectPlacer.Instance.CanRotateCurrentObject())
-        {
-            Console.WriteLine("Entering rotate mode");
-            _rotateMode = true;
-            return;
-        }
+        //if(!_rotateMode && ObjectPlacer.Instance.CanRotateCurrentObject())
+        //{
+        //    Console.WriteLine("Entering rotate mode");
+        //    //_rotateMode = true;
+        //    return;
+        //}
 
         Console.WriteLine("Placing object");
         ObjectPlacer.Instance.PlaceObject();
-        _rotateMode = false;
+
+        //_rotateMode = false;
+        if(Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+        {
+            Console.WriteLine("Starting new object");
+            return;
+        }
+        this.transform.rotation = Quaternion.identity;
 
         ObjectPlacer.Instance.CancelPlacingObject();
     }
