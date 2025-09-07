@@ -22,22 +22,19 @@ public class TranslateHandle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            HandleMouseDown();
-        }
+        //if (Input.GetMouseButtonDown(0))
+        //{
+        //    HandleMouseDown();
+        //}
 
-        else if(Input.GetMouseButtonUp(0))
+        if(Input.GetMouseButtonUp(0))
         {
             HandleMouseUp();
         }
 
-        if (_localHit.HasValue)
-        {
-            HandleDrag();
-        }
-
+        HandleDrag();
         MoveOnTop();
+
         ScaleForDistanceToCamera();
     }
 
@@ -76,16 +73,14 @@ public class TranslateHandle : MonoBehaviour
             if (_rotateMode)
             {
                 var vectorToHit = hit.point - transform.position;
-                var angle = Vector3.SignedAngle(_localHit.Value, Vector3.forward, Vector3.up);
 
-                var offsetRotation = Quaternion.AngleAxis(angle, Vector3.up);
                 var lookRotation = Quaternion.LookRotation(vectorToHit, Vector3.up);
 
-                transform.rotation = AdjustYUp(lookRotation * offsetRotation);
+                transform.rotation = AdjustYUp(lookRotation);
             }
             else
             {
-                var rotatedAgle = transform.rotation * _localHit.Value;
+                var rotatedAgle = transform.rotation * _localHit ?? Vector3.zero;
                 transform.position = hit.point - new Vector3(rotatedAgle.x, 0, rotatedAgle.z);
             }
         }
@@ -93,33 +88,9 @@ public class TranslateHandle : MonoBehaviour
 
     private void HandleMouseUp()
     {
-        _localHit = null;
-        _rotateMode = false;
-
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit, 500, _layerMask, QueryTriggerInteraction.Collide))
         {
-            var translateHandle = hit.transform.GetComponentInParent<TranslateHandle>();
-            if (translateHandle == this)
-            {
-                // It's part of this object in some way.
-                var button = hit.transform.GetComponentInParent<ClickableButton>();
-                if (button != null)
-                {
-                    if (button == this.TickButton)
-                    {
-                        ObjectPlacer.Instance.PlaceObject();
-                        return;
-                    }
-                    else if (button == this.CrossButton)
-                    {
-                        ObjectPlacer.Instance.CancelPlacingObject();
-                        return;
-                    }
-                    return;
-                }
-            }
-
             var quickBarButton = hit.transform.GetComponentInParent<QuickBarButton>();
             if (quickBarButton != null)
             {
@@ -128,36 +99,19 @@ public class TranslateHandle : MonoBehaviour
                 return;
             }
         }
-    }
 
-    private void HandleMouseDown()
-    {
-        // TODO propogate ray through to the ground to get the actual ground point the mouse is pointing at regardless of the height of the handle.
-        // This would let us have any collider geometry and it'll work pretty well.
-        // That didn't work as intended when the mouse goes over any object at a different height when dragging.
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        var hits = Physics.RaycastAll(ray, 500, _layerMask, QueryTriggerInteraction.Collide);
-
-        var hasHitThisHandle = hits.Any(h => h.transform.GetComponentInParent<TranslateHandle>() == this);
-        var hasHitAButton = hits.Any(h => h.transform.GetComponentInParent<ClickableButton>() != null);
-        if (!hasHitThisHandle || hasHitAButton)
+        if(!_rotateMode && ObjectPlacer.Instance.CanRotateCurrentObject())
         {
-            _localHit = null;
+            Console.WriteLine("Entering rotate mode");
+            _rotateMode = true;
             return;
         }
 
-        _rotateMode = hits.Any(h => h.transform.GetComponentInParent<RotateHandle>());
+        Console.WriteLine("Placing object");
+        ObjectPlacer.Instance.PlaceObject();
+        _rotateMode = false;
 
-        var bestHit = hits.First();
-        if (_rotateMode)
-        {
-            bestHit = hits.First(h => h.transform.GetComponentInParent<RotateHandle>());
-        }
-        else if(hits.Any(h => h.transform.GetComponentInParent<TranslateHandleCollider>()))
-        {
-            bestHit = hits.First(h => h.transform.GetComponentInParent<TranslateHandleCollider>());
-        }
-        _localHit = transform.InverseTransformPoint(bestHit.point);
+        ObjectPlacer.Instance.CancelPlacingObject();
     }
 
     private bool IsStaticObject(RaycastHit hit)
