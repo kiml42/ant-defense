@@ -1,17 +1,10 @@
-using System;
-using System.Linq;
 using UnityEngine;
 
 public class TranslateHandle : MonoBehaviour
 {
-    public ClickableButton TickButton;
-    public ClickableButton CrossButton;
-
-    /// <summary>
-    /// The point on this object that was hit with the mouse down
-    /// </summary>
-    private Vector3? _localHit = null;
-    private bool _rotateMode;
+    public int PlaceMouseButton = 0;
+    public int CancelMouseButton = 1;
+    public float MinRotateMouseDistance = 1f;
     private int _layerMask;
 
     private void Start()
@@ -19,26 +12,56 @@ public class TranslateHandle : MonoBehaviour
         _layerMask = LayerMask.GetMask("UI");
     }
 
+    private Vector3? _lastMousePosition;
+    private float _distanceSinceClick;
+    public float CancelThreshold = 0.1f;
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        this.HandleCancelButton();
+
+        if (Input.GetMouseButtonUp(this.PlaceMouseButton))
         {
-            HandleMouseDown();
+            HandleMainMouseUp();
         }
 
-        else if(Input.GetMouseButtonUp(0))
-        {
-            HandleMouseUp();
-        }
-
-        if (_localHit.HasValue)
-        {
-            HandleDrag();
-        }
-
+        HandleDrag();
         MoveOnTop();
+
         ScaleForDistanceToCamera();
+
+        if (ObjectPlacer.Instance.CanRotateCurrentObject() == false)
+        {
+            this.transform.rotation = Quaternion.identity;
+        }
+    }
+
+    private void HandleCancelButton()
+    {
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            ObjectPlacer.Instance.CancelPlacingObject();
+            _distanceSinceClick = 0;
+            _lastMousePosition = null;
+            return;
+        }
+        if (Input.GetMouseButtonDown(this.CancelMouseButton))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
+            {
+                _lastMousePosition = hit.point;
+            }
+        }
+        if (Input.GetMouseButtonUp(this.CancelMouseButton))
+        {
+            if (_distanceSinceClick < CancelThreshold)
+            {
+                ObjectPlacer.Instance.CancelPlacingObject();
+            }
+            _distanceSinceClick = 0;
+            _lastMousePosition = null;
+        }
     }
 
     public Transform UiObjectsToScale;
@@ -46,13 +69,19 @@ public class TranslateHandle : MonoBehaviour
 
     private void ScaleForDistanceToCamera()
     {
+        var scale = this.GetDistanceToCameraScaleFactor();
+
+        UiObjectsToScale.localScale = Vector3.one * scale;
+    }
+
+    private float GetDistanceToCameraScaleFactor()
+    {
         var distance = Camera.main.transform.position.y;
 
         var excessDistance = distance - DefaultCameraDistance;
 
-        var scale = ((excessDistance / DefaultCameraDistance)/1.5f) + 1;
-
-        UiObjectsToScale.localScale = Vector3.one * scale;
+        var scale = ((excessDistance / DefaultCameraDistance) / 1.5f) + 1;
+        return scale;
     }
 
     private void MoveOnTop()
@@ -61,7 +90,7 @@ public class TranslateHandle : MonoBehaviour
         Ray ray = new Ray(transform.position + lookDownOffset, -lookDownOffset);
         if (Physics.Raycast(ray, out var hit, lookDownOffset.magnitude * 2, -1, QueryTriggerInteraction.Ignore))
         {
-            if(IsStaticObject(hit))
+            if (IsStaticObject(hit))
             {
                 transform.position = hit.point;
             }
@@ -73,91 +102,54 @@ public class TranslateHandle : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
         {
-            if (_rotateMode)
+            if (Input.GetMouseButton(this.PlaceMouseButton) && (ObjectPlacer.Instance.CanRotateCurrentObject() == true))
             {
                 var vectorToHit = hit.point - transform.position;
-                var angle = Vector3.SignedAngle(_localHit.Value, Vector3.forward, Vector3.up);
 
-                var offsetRotation = Quaternion.AngleAxis(angle, Vector3.up);
+                if (vectorToHit.magnitude < MinRotateMouseDistance * GetDistanceToCameraScaleFactor())
+                {
+                    return;
+                }
+
                 var lookRotation = Quaternion.LookRotation(vectorToHit, Vector3.up);
 
-                transform.rotation = AdjustYUp(lookRotation * offsetRotation);
+                transform.rotation = AdjustYUp(lookRotation);
             }
             else
             {
-                var rotatedAgle = transform.rotation * _localHit.Value;
+                var rotatedAgle = transform.rotation;
                 transform.position = hit.point - new Vector3(rotatedAgle.x, 0, rotatedAgle.z);
+            }
+
+            if (_lastMousePosition.HasValue)
+            {
+                _distanceSinceClick += Vector3.Distance(_lastMousePosition.Value, hit.point);
+                _lastMousePosition = hit.point;
             }
         }
     }
 
-    private void HandleMouseUp()
+    private void HandleMainMouseUp()
     {
-        _localHit = null;
-        _rotateMode = false;
-
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit, 500, _layerMask, QueryTriggerInteraction.Collide))
         {
-            var translateHandle = hit.transform.GetComponentInParent<TranslateHandle>();
-            if (translateHandle == this)
-            {
-                // It's part of this object in some way.
-                var button = hit.transform.GetComponentInParent<ClickableButton>();
-                if (button != null)
-                {
-                    if (button == this.TickButton)
-                    {
-                        ObjectPlacer.Instance.PlaceObject();
-                        return;
-                    }
-                    else if (button == this.CrossButton)
-                    {
-                        ObjectPlacer.Instance.CancelPlacingObject();
-                        return;
-                    }
-                    return;
-                }
-            }
-
             var quickBarButton = hit.transform.GetComponentInParent<QuickBarButton>();
             if (quickBarButton != null)
             {
-                Debug.Log("Click on quick bar button " + quickBarButton);
                 ObjectPlacer.Instance.StartPlacingGhost(quickBarButton.Ghost);
                 return;
             }
         }
-    }
 
-    private void HandleMouseDown()
-    {
-        // TODO propogate ray through to the ground to get the actual ground point the mouse is pointing at regardless of the height of the handle.
-        // This would let us have any collider geometry and it'll work pretty well.
-        // That didn't work as intended when the mouse goes over any object at a different height when dragging.
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        var hits = Physics.RaycastAll(ray, 500, _layerMask, QueryTriggerInteraction.Collide);
+        ObjectPlacer.Instance.PlaceObject();
 
-        var hasHitThisHandle = hits.Any(h => h.transform.GetComponentInParent<TranslateHandle>() == this);
-        var hasHitAButton = hits.Any(h => h.transform.GetComponentInParent<ClickableButton>() != null);
-        if (!hasHitThisHandle || hasHitAButton)
+        if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
         {
-            _localHit = null;
             return;
         }
 
-        _rotateMode = hits.Any(h => h.transform.GetComponentInParent<RotateHandle>());
-
-        var bestHit = hits.First();
-        if (_rotateMode)
-        {
-            bestHit = hits.First(h => h.transform.GetComponentInParent<RotateHandle>());
-        }
-        else if(hits.Any(h => h.transform.GetComponentInParent<TranslateHandleCollider>()))
-        {
-            bestHit = hits.First(h => h.transform.GetComponentInParent<TranslateHandleCollider>());
-        }
-        _localHit = transform.InverseTransformPoint(bestHit.point);
+        ObjectPlacer.Instance.CancelPlacingObject();
     }
 
     private bool IsStaticObject(RaycastHit hit)
@@ -166,7 +158,7 @@ public class TranslateHandle : MonoBehaviour
         {
             return false;
         }
-        if(hit.rigidbody != null)
+        if (hit.rigidbody != null)
         {
             return hit.rigidbody.IsSleeping();
         }

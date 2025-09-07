@@ -84,4 +84,9 @@ public class ObjectPlacer : MonoBehaviour
             newObject.Place();
         }
     }
+
+    public bool? CanRotateCurrentObject()
+    {
+        return this._objectBeingPlaced?.Rotatable;
+    }
 }
