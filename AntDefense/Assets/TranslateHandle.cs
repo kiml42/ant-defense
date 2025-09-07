@@ -29,11 +29,16 @@ public class TranslateHandle : MonoBehaviour
         MoveOnTop();
 
         ScaleForDistanceToCamera();
+
+        if (ObjectPlacer.Instance.CanRotateCurrentObject() == false)
+        {
+            this.transform.rotation = Quaternion.identity;
+        }
     }
 
     private void HandleCancelButton()
     {
-        if(Input.GetKeyUp(KeyCode.Escape))
+        if (Input.GetKeyUp(KeyCode.Escape))
         {
             ObjectPlacer.Instance.CancelPlacingObject();
             _distanceSinceClick = 0;
@@ -85,7 +90,7 @@ public class TranslateHandle : MonoBehaviour
         Ray ray = new Ray(transform.position + lookDownOffset, -lookDownOffset);
         if (Physics.Raycast(ray, out var hit, lookDownOffset.magnitude * 2, -1, QueryTriggerInteraction.Ignore))
         {
-            if(IsStaticObject(hit))
+            if (IsStaticObject(hit))
             {
                 transform.position = hit.point;
             }
@@ -97,7 +102,7 @@ public class TranslateHandle : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
         {
-            if (Input.GetMouseButton(this.PlaceMouseButton) && ObjectPlacer.Instance.CanRotateCurrentObject())
+            if (Input.GetMouseButton(this.PlaceMouseButton) && (ObjectPlacer.Instance.CanRotateCurrentObject() == true))
             {
                 var vectorToHit = hit.point - transform.position;
 
@@ -116,7 +121,7 @@ public class TranslateHandle : MonoBehaviour
                 transform.position = hit.point - new Vector3(rotatedAgle.x, 0, rotatedAgle.z);
             }
 
-            if(_lastMousePosition.HasValue)
+            if (_lastMousePosition.HasValue)
             {
                 _distanceSinceClick += Vector3.Distance(_lastMousePosition.Value, hit.point);
                 _lastMousePosition = hit.point;
@@ -139,11 +144,10 @@ public class TranslateHandle : MonoBehaviour
 
         ObjectPlacer.Instance.PlaceObject();
 
-        if(Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+        if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
         {
             return;
         }
-        //this.transform.rotation = Quaternion.identity;
 
         ObjectPlacer.Instance.CancelPlacingObject();
     }
@@ -154,7 +158,7 @@ public class TranslateHandle : MonoBehaviour
         {
             return false;
         }
-        if(hit.rigidbody != null)
+        if (hit.rigidbody != null)
         {
             return hit.rigidbody.IsSleeping();
         }

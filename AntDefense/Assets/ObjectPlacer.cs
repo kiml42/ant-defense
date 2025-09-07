@@ -85,8 +85,8 @@ public class ObjectPlacer : MonoBehaviour
         }
     }
 
-    public bool CanRotateCurrentObject()
+    public bool? CanRotateCurrentObject()
     {
-        return this._objectBeingPlaced != null && this._objectBeingPlaced.Rotatable;
+        return this._objectBeingPlaced?.Rotatable;
     }
 }
