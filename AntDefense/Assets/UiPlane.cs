@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UiPlane : MonoBehaviour
@@ -112,7 +113,8 @@ public class UiPlane : MonoBehaviour
 
     private static void CreateDummy(PlaceableGhost ghost, QuickBarButton newButton)
     {
-        var dummy = Instantiate(ghost.RealObject, newButton.transform.position + ghost.OffsetForButton, newButton.transform.rotation * ghost.RotationForButton);
+        var objectToUse = ghost.Icon == null ? ghost.RealObject : ghost.Icon;
+        var dummy = Instantiate(objectToUse, newButton.transform.position + ghost.OffsetForButton, newButton.transform.rotation * ghost.RotationForButton);
         dummy.localScale = dummy.localScale.normalized * newButton.transform.localScale.magnitude * ghost.ScaleForButton;
         dummy.parent = newButton.transform;
 
