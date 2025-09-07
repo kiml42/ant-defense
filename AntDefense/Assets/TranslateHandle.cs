@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 public class TranslateHandle : MonoBehaviour
@@ -100,8 +101,25 @@ public class TranslateHandle : MonoBehaviour
     private void HandleDrag()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        var hits = Physics.RaycastAll(ray, 500, -1, QueryTriggerInteraction.Collide);
+
+        // TODO work out why this works for the ghost, but not for the real object
+        if(hits.Any(h => h.transform.GetComponent<NoSpawnZone>()?.enabled == true))
+        {
+            Debug.Log("In No Spawn Zone for " + hits.First(h => h.transform.GetComponent<NoSpawnZone>()?.enabled == true).transform);
+            return;
+        }
+
+        //Debug.Log("Hits: " + hits.Length + ": " + string.Join(", ", hits.Select(h => h.transform)));
+
+        // TODO consider that the mouse might already be in the no spawn zone for a newly created object, and the handle should therefore be slid out of it.
+        // TODO don't do a second ray cast.
+        // TODO implement only trying to hit buildable surfaces
         if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
         {
+            Debug.DrawLine(ray.origin, hit.point, Color.red);
+            //Debug.Log("Hit " + hit.transform.name);
             if (Input.GetMouseButton(this.PlaceMouseButton) && (ObjectPlacer.Instance.CanRotateCurrentObject() == true))
             {
                 var vectorToHit = hit.point - transform.position;

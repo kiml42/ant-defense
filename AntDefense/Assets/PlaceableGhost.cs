@@ -19,16 +19,29 @@ public class PlaceableGhost : MonoBehaviour
     public float ScaleForButton = 1;
     public Vector3 OffsetForButton = Vector3.zero;
     public Quaternion RotationForButton = Quaternion.identity;
+    private NoSpawnZone[] _noSpawnZones;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        // TODO see where it's actually useful to set this.
+        this.SetNoSpawnZoneEnabled(false);
+    }
+
+    private void SetNoSpawnZoneEnabled(bool enabled)
+    {
+        _noSpawnZones = _noSpawnZones ?? GetComponentsInChildren<NoSpawnZone>();
+        foreach (var noSpawnZone in _noSpawnZones)
+        {
+            noSpawnZone.enabled = enabled;
+        }
     }
 
     public void Place()
     {
         _isPlaced = true;
+
+        this.SetNoSpawnZoneEnabled(true);
     }
 
     // Update is called once per frame
@@ -41,6 +54,11 @@ public class PlaceableGhost : MonoBehaviour
             {
                 SpawnRealObject();
             }
+            this.SetNoSpawnZoneEnabled(true);
+        }
+        else
+        {
+            this.SetNoSpawnZoneEnabled(false);
         }
     }
 
