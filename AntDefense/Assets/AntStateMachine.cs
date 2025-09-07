@@ -133,7 +133,7 @@ public class AntStateMachine : MonoBehaviour
             {
                 //if (!potentialTarget.IsActual && CurrentTarget != null && potentialTarget.DistanceFromTarget > CurrentTarget.DistanceFromTarget)
                 //{
-                //    Console.WriteLine($"considering {potentialTarget} even though it has a greater distance than {CurrentTarget} because it has a higher priority.");
+                //    Debug.Log($"considering {potentialTarget} even though it has a greater distance than {CurrentTarget} because it has a higher priority.");
                 //}
                 var hasLineOfSight = this.CheckLineOfSight(potentialTarget);
 
@@ -164,7 +164,7 @@ public class AntStateMachine : MonoBehaviour
             }
             else if (!CheckLineOfSight(CurrentTarget))
             {
-                Console.WriteLine("Lost sight of current target!");
+                Debug.Log("Lost sight of current target!");
                 ClearTarget();
             }
         }

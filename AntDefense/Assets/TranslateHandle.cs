@@ -1,12 +1,10 @@
-using System;
 using UnityEngine;
 
-// TODO add a way to cancel
-// TODO rotate while holding mouse down
 public class TranslateHandle : MonoBehaviour
 {
-    public int MouseButton = 0;
-    public float MinRotateMouseDistance = 0.1f;
+    public int PlaceMouseButton = 0;
+    public int CancelMouseButton = 1;
+    public float MinRotateMouseDistance = 1f;
     private int _layerMask;
 
     private void Start()
@@ -14,22 +12,51 @@ public class TranslateHandle : MonoBehaviour
         _layerMask = LayerMask.GetMask("UI");
     }
 
+    private Vector3? _lastMousePosition;
+    private float _distanceSinceClick;
+    public float CancelThreshold = 0.1f;
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(this.MouseButton))
-        {
+        this.HandleCancelButton();
 
-        }
-        if(Input.GetMouseButtonUp(this.MouseButton))
+        if (Input.GetMouseButtonUp(this.PlaceMouseButton))
         {
-            HandleMouseUp();
+            HandleMainMouseUp();
         }
 
         HandleDrag();
         MoveOnTop();
 
         ScaleForDistanceToCamera();
+    }
+
+    private void HandleCancelButton()
+    {
+        if(Input.GetKeyUp(KeyCode.Escape))
+        {
+            ObjectPlacer.Instance.CancelPlacingObject();
+            _distanceSinceClick = 0;
+            _lastMousePosition = null;
+            return;
+        }
+        if (Input.GetMouseButtonDown(this.CancelMouseButton))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
+            {
+                _lastMousePosition = hit.point;
+            }
+        }
+        if (Input.GetMouseButtonUp(this.CancelMouseButton))
+        {
+            if (_distanceSinceClick < CancelThreshold)
+            {
+                ObjectPlacer.Instance.CancelPlacingObject();
+            }
+            _distanceSinceClick = 0;
+            _lastMousePosition = null;
+        }
     }
 
     public Transform UiObjectsToScale;
@@ -70,7 +97,7 @@ public class TranslateHandle : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
         {
-            if (Input.GetMouseButton(this.MouseButton) && ObjectPlacer.Instance.CanRotateCurrentObject())
+            if (Input.GetMouseButton(this.PlaceMouseButton) && ObjectPlacer.Instance.CanRotateCurrentObject())
             {
                 var vectorToHit = hit.point - transform.position;
 
@@ -88,10 +115,16 @@ public class TranslateHandle : MonoBehaviour
                 var rotatedAgle = transform.rotation;
                 transform.position = hit.point - new Vector3(rotatedAgle.x, 0, rotatedAgle.z);
             }
+
+            if(_lastMousePosition.HasValue)
+            {
+                _distanceSinceClick += Vector3.Distance(_lastMousePosition.Value, hit.point);
+                _lastMousePosition = hit.point;
+            }
         }
     }
 
-    private void HandleMouseUp()
+    private void HandleMainMouseUp()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit, 500, _layerMask, QueryTriggerInteraction.Collide))
@@ -99,29 +132,18 @@ public class TranslateHandle : MonoBehaviour
             var quickBarButton = hit.transform.GetComponentInParent<QuickBarButton>();
             if (quickBarButton != null)
             {
-                Debug.Log("Click on quick bar button " + quickBarButton);
                 ObjectPlacer.Instance.StartPlacingGhost(quickBarButton.Ghost);
                 return;
             }
         }
 
-        //if(!_rotateMode && ObjectPlacer.Instance.CanRotateCurrentObject())
-        //{
-        //    Console.WriteLine("Entering rotate mode");
-        //    //_rotateMode = true;
-        //    return;
-        //}
-
-        Console.WriteLine("Placing object");
         ObjectPlacer.Instance.PlaceObject();
 
-        //_rotateMode = false;
         if(Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
         {
-            Console.WriteLine("Starting new object");
             return;
         }
-        this.transform.rotation = Quaternion.identity;
+        //this.transform.rotation = Quaternion.identity;
 
         ObjectPlacer.Instance.CancelPlacingObject();
     }
