@@ -148,6 +148,13 @@ public class TranslateHandle : MonoBehaviour
         if (noSpawnZones.Any())
         {
             Debug.Log("In " + noSpawnZones.Count() + " No Spawn Zones: " + string.Join(", ", noSpawnZones.Select(n => "(" + n.transform.name + "(" + n.transform.parent.name + ")" + ":" + n.transform.position + ":" + n.Radius + ")")));
+            if(noSpawnZones.Count() >= 2)
+            {
+                // TODO handle 3 no spawn zones by moving it to the point where they meet. (make sure it doesn't jump into another no spawn zone)
+                // TODO disable the handle.
+                transform.position += new Vector3(7, 0, 0);
+            }
+
             var noSpawnZone = noSpawnZones.First();
             var vector = this.transform.position - noSpawnZone.transform.position;
             var distanceToMove = noSpawnZone.Radius - vector.magnitude;
@@ -156,8 +163,6 @@ public class TranslateHandle : MonoBehaviour
             transform.position += vectorToMove;
 
             // TODO move the handle down to a buildable surface
-            // TODO account for multiple noSpawnZones
-
         }
     }
 
