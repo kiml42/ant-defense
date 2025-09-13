@@ -102,14 +102,6 @@ public class TranslateHandle : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        var hits = Physics.RaycastAll(ray, 500, -1, QueryTriggerInteraction.Collide);
-
-        // TODO work out why this works for the ghost, but not for the real object
-        if(hits.Any(h => h.transform.GetComponent<NoSpawnZone>()?.enabled == true))
-        {
-            Debug.Log("In No Spawn Zone for " + hits.First(h => h.transform.GetComponent<NoSpawnZone>()?.enabled == true).transform);
-            return;
-        }
 
         //Debug.Log("Hits: " + hits.Length + ": " + string.Join(", ", hits.Select(h => h.transform)));
 
@@ -144,6 +136,28 @@ public class TranslateHandle : MonoBehaviour
                 _distanceSinceClick += Vector3.Distance(_lastMousePosition.Value, hit.point);
                 _lastMousePosition = hit.point;
             }
+        }
+
+        var hits = Physics.RaycastAll(ray, 500, -1, QueryTriggerInteraction.Collide);
+        var noSpawnZones = hits.Select(h => h.transform.GetComponentInChildren<NoSpawnZone>()).Where(n => 
+        n != null 
+        && n.enabled == true
+        && (n.transform.position - transform.position).magnitude < n.Radius
+        ).Distinct();
+        // TODO work out why this works for the ghost, but not for the real object
+        if (noSpawnZones.Any())
+        {
+            Debug.Log("In " + noSpawnZones.Count() + " No Spawn Zones: " + string.Join(", ", noSpawnZones.Select(n => "(" + n.transform.name + "(" + n.transform.parent.name + ")" + ":" + n.transform.position + ":" + n.Radius + ")")));
+            var noSpawnZone = noSpawnZones.First();
+            var vector = this.transform.position - noSpawnZone.transform.position;
+            var distanceToMove = noSpawnZone.Radius - vector.magnitude;
+            var vectorToMove = vector.normalized * distanceToMove;
+            vectorToMove = new Vector3(vectorToMove.x, 0, vectorToMove.z);
+            transform.position += vectorToMove;
+
+            // TODO move the handle down to a buildable surface
+            // TODO account for multiple noSpawnZones
+
         }
     }
 

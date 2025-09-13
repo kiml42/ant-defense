@@ -30,7 +30,7 @@ public class PlaceableGhost : MonoBehaviour
 
     private void SetNoSpawnZoneEnabled(bool enabled)
     {
-        _noSpawnZones = _noSpawnZones ?? GetComponentsInChildren<NoSpawnZone>();
+        _noSpawnZones ??= GetComponentsInChildren<NoSpawnZone>();
         foreach (var noSpawnZone in _noSpawnZones)
         {
             noSpawnZone.enabled = enabled;

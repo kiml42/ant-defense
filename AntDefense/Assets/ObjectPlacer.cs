@@ -13,7 +13,7 @@ public class ObjectPlacer : MonoBehaviour
 
     private PlaceableGhost _objectBeingPlaced;
 
-    private KeyCode[] _quickBarKeys = {
+    private readonly KeyCode[] _quickBarKeys = {
         KeyCode.Alpha1,
         KeyCode.Alpha2,
         KeyCode.Alpha3,
@@ -87,6 +87,6 @@ public class ObjectPlacer : MonoBehaviour
 
     public bool? CanRotateCurrentObject()
     {
-        return this._objectBeingPlaced?.Rotatable;
+        return this._objectBeingPlaced == null ? null : this._objectBeingPlaced.Rotatable;
     }
 }
