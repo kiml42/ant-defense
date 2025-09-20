@@ -151,6 +151,14 @@ public class TranslateHandle : MonoBehaviour
             if(noSpawnZones.Count() == 2)
             {
                 var hasIntersects = CircleCircleIntersection(noSpawnZones.First(), noSpawnZones.Last(), out var i1, out var i2);
+                if (hasIntersects)
+                {
+
+                }
+                else
+                {
+
+                }
                 // TODO work out which is the closest intersect without another no spawn zone.
             }
             if(noSpawnZones.Count() > 2)
