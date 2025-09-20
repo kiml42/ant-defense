@@ -28,11 +28,16 @@ public class NoSpawnZone : MonoBehaviour
 
     private void Update()
     {
-        for (int i = 0; i < 16; i++)
+        var previous = (Vector3?)null;
+        for (int i = 0; i < 33; i++)
         {
-            var target = this.transform.position + new Vector3(Mathf.Cos(i * Mathf.PI / 8), 0, Mathf.Sin(i * Mathf.PI / 8)) * Radius;
+            var target = this.transform.position + new Vector3(Mathf.Cos(i * Mathf.PI / 16), 0, Mathf.Sin(i * Mathf.PI / 16)) * Radius;
             target = new Vector3(target.x, 0, target.z);
-            Debug.DrawLine(this.transform.position, target, Color.aliceBlue);
+            if(previous != null)
+            {
+                Debug.DrawLine(previous.Value, target, Color.aliceBlue);
+            }
+            previous = target;
         }
     }
 
@@ -67,6 +72,7 @@ public class NoSpawnZone : MonoBehaviour
         float dx = this.transform.position.x - other.transform.position.x;
         float dy = this.transform.position.z - other.transform.position.z; // Use z for 2D plane
         float d = Mathf.Sqrt(dx * dx + dy * dy);
+        Debug.Log("dx = " + dx + ", dy = " + dy + ", d = " + d);
         // No solution: circles are separate or one is contained within the other
         if (d > this.Radius + other.Radius || d < Mathf.Abs(this.Radius - other.Radius) || d == 0f)
         {
@@ -76,12 +82,14 @@ public class NoSpawnZone : MonoBehaviour
 
         // TODO: check all the maths makes sense from here (it doesn't seem to work)
         // Find a and h
-        float a = (this.Radius * this.Radius - other.Radius * other.Radius + d * d) / (2 * d);
-        Debug.DrawLine(this.transform.position, new Vector3(
-            this.transform.position.x + a * (dx),
+        float a = ((this.Radius * this.Radius) - (other.Radius * other.Radius) + (d * d)) / (2 * d);
+        Debug.Log("a = " + a);
+        var vectorToA = new Vector3(
+            this.transform.position.x + dx,
             0,
-            this.transform.position.z + a * (dy)
-        ).normalized * a, Color.red, 300);
+            this.transform.position.z + dy
+        ).normalized * a;
+        Debug.DrawLine(this.transform.position, this.transform.position + vectorToA, Color.red, 300);
 
         float h = Mathf.Sqrt(this.Radius * this.Radius - a * a);
         // Find P2
