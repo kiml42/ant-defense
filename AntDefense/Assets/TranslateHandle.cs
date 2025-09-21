@@ -102,8 +102,10 @@ public class TranslateHandle : MonoBehaviour
         var previousPosition = transform.position;
         if (Physics.Raycast(ray, out var hit, 500, _groundLayermask, QueryTriggerInteraction.Ignore))
         {
+            Debug.Log("Pointing at: " + hit.transform + " @ " + hit.point);
             if (Input.GetMouseButton(this.PlaceMouseButton) && (ObjectPlacer.Instance.CanRotateCurrentObject() == true))
             {
+                // mous button is down, and the object is rotatable, so rotate it to face the mouse.
                 var vectorToHit = hit.point - transform.position;
 
                 if (vectorToHit.magnitude < MinRotateMouseDistance * GetDistanceToCameraScaleFactor())
@@ -117,27 +119,27 @@ public class TranslateHandle : MonoBehaviour
             }
             else
             {
-                var rotatedAgle = transform.rotation;
-                transform.position = hit.point - new Vector3(rotatedAgle.x, 0, rotatedAgle.z);
+                // not in rotate mode, so just move to the hit point.
+                transform.position = hit.point;
+
+                // I don't remember what this code was for. Delte it if it's not needed.
+                //var rotatedAgle = transform.rotation;
+                //transform.position = hit.point - new Vector3(rotatedAgle.x, 0, rotatedAgle.z);
             }
 
             if (_lastMousePosition.HasValue)
             {
+                // tracked to support cancelling the placement
+                // TODO: check why.
                 _distanceSinceClick += Vector3.Distance(_lastMousePosition.Value, hit.point);
                 _lastMousePosition = hit.point;
             }
         }
 
-        var hits = Physics.RaycastAll(ray, 500, -1, QueryTriggerInteraction.Collide);
-        var noSpawnZones = hits.Select(h => h.transform.GetComponentInChildren<NoSpawnZone>()).Where(n => 
-        n != null 
-        && n.enabled == true
-        && (n.transform.position - transform.position).magnitude < n.Radius
-        ).Distinct();
-
         var changedPosition = NoSpawnZone.GetBestEdgePosition(transform.position, previousPosition);
         if (changedPosition.HasValue)
         {
+            Debug.Log("Snapping to edge of no spawn zone @ " + changedPosition);
             this.transform.position = changedPosition.Value;
         }
         var isGood = !NoSpawnZone.IsInAnyNoSpawnZone(transform.position);

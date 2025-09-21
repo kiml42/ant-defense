@@ -69,10 +69,18 @@ public class NoSpawnZone : MonoBehaviour
                 continue;
             }
             keepIfBetter(edgePoint);
+            //if(bestPoint == edgePoint)
+            //{
+            //    Debug.Log("found better point on edge of zone " + zone.name + " at " + edgePoint);
+            //}
         }
         foreach (var intersect in _intersectionPoints.Where(p => p.IsOnEdge == true))
         {
             keepIfBetter(intersect.Point);
+            //if (bestPoint == intersect.Point)
+            //{
+            //    Debug.Log("found better point on intersection of zones " + intersect.ZoneA.name + " and " + intersect.ZoneB.name + " at " + intersect.Point);
+            //}
         }
         return bestPoint;
     }
@@ -82,7 +90,9 @@ public class NoSpawnZone : MonoBehaviour
         var direction = (position - zone.transform.position);
         direction = new Vector3(direction.x, 0, direction.z);    // move it down to the plane
         direction.Normalize();
-        var edgePoint = zone.transform.position + direction * zone.Radius;
+        var newX = zone.transform.position.x + direction.x * zone.Radius;
+        var newZ = zone.transform.position.z + direction.z * zone.Radius;
+        var edgePoint = new Vector3(newX, 0, newZ);
         return edgePoint;
     }
 
