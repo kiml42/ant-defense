@@ -1,15 +1,27 @@
+using System.Linq;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class TranslateHandle : MonoBehaviour
 {
     public int PlaceMouseButton = 0;
     public int CancelMouseButton = 1;
     public float MinRotateMouseDistance = 1f;
-    private int _layerMask;
+    private int _uiLayermask;
+    private int _groundLayermask;
+    private bool lastPositionIsGood = false;
+
+    // TODO: handle this with a visually disaleable script on every rendered object.
+    private IEnumerable<Material> _materials;
+    public Color DisabledColour;
+    private Color _originalColour;
 
     private void Start()
     {
-        _layerMask = LayerMask.GetMask("UI");
+        _uiLayermask = LayerMask.GetMask("UI");
+        _groundLayermask = LayerMask.GetMask("Ground");
+        _materials = this.GetComponentsInChildren<Renderer>().SelectMany(r => r.materials);
+        _originalColour = _materials.First().color;
     }
 
     private Vector3? _lastMousePosition;
@@ -25,8 +37,7 @@ public class TranslateHandle : MonoBehaviour
             HandleMainMouseUp();
         }
 
-        HandleDrag();
-        MoveOnTop();
+        HandleMousePosition();
 
         ScaleForDistanceToCamera();
 
@@ -84,26 +95,17 @@ public class TranslateHandle : MonoBehaviour
         return scale;
     }
 
-    private void MoveOnTop()
-    {
-        var lookDownOffset = Vector3.up * 5;
-        Ray ray = new Ray(transform.position + lookDownOffset, -lookDownOffset);
-        if (Physics.Raycast(ray, out var hit, lookDownOffset.magnitude * 2, -1, QueryTriggerInteraction.Ignore))
-        {
-            if (IsStaticObject(hit))
-            {
-                transform.position = hit.point;
-            }
-        }
-    }
-
-    private void HandleDrag()
+    private void HandleMousePosition()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
+
+        var previousPosition = transform.position;
+        if (Physics.Raycast(ray, out var hit, 500, _groundLayermask, QueryTriggerInteraction.Ignore))
         {
+            //Debug.Log("Pointing at: " + hit.transform + " @ " + hit.point);
             if (Input.GetMouseButton(this.PlaceMouseButton) && (ObjectPlacer.Instance.CanRotateCurrentObject() == true))
             {
+                // mous button is down, and the object is rotatable, so rotate it to face the mouse.
                 var vectorToHit = hit.point - transform.position;
 
                 if (vectorToHit.magnitude < MinRotateMouseDistance * GetDistanceToCameraScaleFactor())
@@ -117,14 +119,39 @@ public class TranslateHandle : MonoBehaviour
             }
             else
             {
-                var rotatedAgle = transform.rotation;
-                transform.position = hit.point - new Vector3(rotatedAgle.x, 0, rotatedAgle.z);
+                // not in rotate mode, so just move to the hit point.
+                transform.position = hit.point;
+
+                // I don't remember what this code was for. Delte it if it's not needed.
+                //var rotatedAgle = transform.rotation;
+                //transform.position = hit.point - new Vector3(rotatedAgle.x, 0, rotatedAgle.z);
             }
 
             if (_lastMousePosition.HasValue)
             {
+                // tracked to support cancelling the placement
+                // TODO: check why.
                 _distanceSinceClick += Vector3.Distance(_lastMousePosition.Value, hit.point);
                 _lastMousePosition = hit.point;
+            }
+        }
+
+        var changedPosition = NoSpawnZone.GetBestEdgePosition(transform.position, previousPosition);
+        if (changedPosition.HasValue)
+        {
+            //Debug.Log("Snapping to edge of no spawn zone @ " + changedPosition);
+            this.transform.position = changedPosition.Value;
+        }
+        var isGood = !NoSpawnZone.IsInAnyNoSpawnZone(transform.position);
+        if(isGood != lastPositionIsGood)
+        {
+            // Position state changed.
+            lastPositionIsGood = isGood;
+            foreach (var material in _materials)
+            {
+                material.color = isGood
+                    ? _originalColour
+                    : DisabledColour;
             }
         }
     }
@@ -132,7 +159,7 @@ public class TranslateHandle : MonoBehaviour
     private void HandleMainMouseUp()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit, 500, _layerMask, QueryTriggerInteraction.Collide))
+        if (Physics.Raycast(ray, out var hit, 500, _uiLayermask, QueryTriggerInteraction.Collide))
         {
             var quickBarButton = hit.transform.GetComponentInParent<QuickBarButton>();
             if (quickBarButton != null)
@@ -142,6 +169,11 @@ public class TranslateHandle : MonoBehaviour
             }
         }
 
+        if(NoSpawnZone.IsInAnyNoSpawnZone(transform.position))
+        {
+            // Can't place here.
+            return;
+        }
         ObjectPlacer.Instance.PlaceObject();
 
         if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
@@ -150,19 +182,6 @@ public class TranslateHandle : MonoBehaviour
         }
 
         ObjectPlacer.Instance.CancelPlacingObject();
-    }
-
-    private bool IsStaticObject(RaycastHit hit)
-    {
-        if (hit.collider.isTrigger)
-        {
-            return false;
-        }
-        if (hit.rigidbody != null)
-        {
-            return hit.rigidbody.IsSleeping();
-        }
-        return true;
     }
 
     private Quaternion AdjustYUp(Quaternion originalRotation)

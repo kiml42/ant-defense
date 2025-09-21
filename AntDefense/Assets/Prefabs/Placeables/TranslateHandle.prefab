@@ -1674,8 +1674,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfb520b8cb7c0a84c8d19d92731d01e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MouseButton: 0
+  PlaceMouseButton: 0
+  CancelMouseButton: 1
   MinRotateMouseDistance: 1
+  DisabledColour: {r: 0.7075472, g: 0.07008722, b: 0.07008722, a: 0.46666667}
+  CancelThreshold: 0.1
   UiObjectsToScale: {fileID: 7589486153762582375}
   DefaultCameraDistance: 30
 --- !u!114 &1861382615584135130

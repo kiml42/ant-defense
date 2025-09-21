@@ -87,7 +87,7 @@ public class AntStateMachine : MonoBehaviour
 
     private void Start()
     {
-        ViewPoint = ViewPoint ?? transform;
+        ViewPoint = ViewPoint != null ? ViewPoint : transform;
         _rigidbody = this.GetComponent<Rigidbody>();
         _priorityCalculator = this.GetComponent<ITargetPriorityCalculator>();
     }
@@ -100,7 +100,7 @@ public class AntStateMachine : MonoBehaviour
             return;
         }
 
-        if (_currentTarget.IsDestroyed() || CurrentTarget?.IsSmellable == false)
+        if (_currentTarget.IsDestroyed() || (CurrentTarget != null && CurrentTarget.IsSmellable == false))
         {
             ClearTarget();
         }
@@ -145,7 +145,7 @@ public class AntStateMachine : MonoBehaviour
         }
         _newBetterTargets.Clear();
 
-        if (State == AntState.ReportingFood && CurrentTarget?.Smell == Smell.Food)
+        if (State == AntState.ReportingFood && CurrentTarget != null && CurrentTarget.Smell == Smell.Food)
         {
             throw new Exception($"State is {State} so the currnet target should not be food, but it is {CurrentTarget}");
         }
@@ -164,7 +164,7 @@ public class AntStateMachine : MonoBehaviour
             }
             else if (!CheckLineOfSight(CurrentTarget))
             {
-                Debug.Log("Lost sight of current target!");
+                //Debug.Log("Lost sight of current target!");
                 ClearTarget();
             }
         }
@@ -178,7 +178,7 @@ public class AntStateMachine : MonoBehaviour
     private bool CheckLineOfSight(Smellable potentialTarget)
     {
         // TODO This is working!!!! make it neat.
-        bool hasLineOfSight = false;
+        bool hasLineOfSight;
         if (potentialTarget != null && ViewPoint != null)
         {
             Vector3 start = potentialTarget.transform.position;
@@ -187,7 +187,7 @@ public class AntStateMachine : MonoBehaviour
             float distance = Vector3.Distance(start, end);
 
             // Offset to avoid self-collision
-            Vector3 startOffset = start - direction * 0.1f;
+            Vector3 startOffset = start - (direction * 0.1f);
 
             //Debug.DrawRay(startOffset, direction * distance, Color.magenta);
             int layerMask = ~LayerMask.GetMask(LayerMask.LayerToName(2));
@@ -281,13 +281,13 @@ public class AntStateMachine : MonoBehaviour
 
     public void ProcessSmell(Smellable smellable)
     {
-        if (smellable?.IsDestroyed() == true || !smellable.IsSmellable)
+        if ((smellable != null && smellable.IsDestroyed() == true) || !smellable.IsSmellable)
             return;
 
         switch (smellable.Smell)
         {
             case Smell.Food:
-                if (smellable.IsActual && State == AntState.SeekingFood || State == AntState.ReturningToFood)
+                if ((smellable.IsActual && State == AntState.SeekingFood) || State == AntState.ReturningToFood)
                 {
                     _maxTargetPriority = null;
                     // When seeking or returning to food, rember smelled foods to know how much is in the area when setting the trail back home.
@@ -350,7 +350,7 @@ public class AntStateMachine : MonoBehaviour
             throw new Exception($"State is {State} so {smellable} should not be being considered as a possible target.");
         }
 
-        if (CurrentTarget?.IsActual == true)
+        if (CurrentTarget != null && CurrentTarget.IsActual == true)
         {
             // Always stick with an actual smell
             return;
@@ -513,7 +513,7 @@ public class AntStateMachine : MonoBehaviour
 
     private void ReportFoodWithoutCarryingIt(Smellable smellable)
     {
-        var food = smellable.GetComponentInParent<Food>();
+        //var food = smellable.GetComponentInParent<Food>();
 
         this.UpdateTrailValueForKnownFood();
 
@@ -528,7 +528,7 @@ public class AntStateMachine : MonoBehaviour
     private void UpdateTrailValueForKnownFood()
     {
         // Leave a trail indicating how much food has been found at this location.
-        var remainingFoodValue = _knownNearbyFood.Sum(f => f?.FoodValue ?? 0);
+        var remainingFoodValue = _knownNearbyFood.Sum(f => f != null ? f.FoodValue : 0);
         this.TrailTargetValue = remainingFoodValue;
         _knownNearbyFood.Clear();   // Forget about all the food now it knows what value to use for the trail.
     }
@@ -546,7 +546,7 @@ public class AntStateMachine : MonoBehaviour
 
     private void DropOffFood(Smellable smellable)
     {
-        if (_carriedFood == null || _carriedFood.gameObject?.IsDestroyed() != false)
+        if (_carriedFood == null || _carriedFood.gameObject == null || _carriedFood.gameObject.IsDestroyed())
         {
             _carriedFood = null;
             return;
@@ -593,7 +593,7 @@ public class AntStateMachine : MonoBehaviour
     {
         get
         {
-            if (TrailController?.gameObject == null)
+            if (TrailController == null || TrailController.gameObject == null)
                 return null;
             return TrailController.LastTrailPoint;
         }

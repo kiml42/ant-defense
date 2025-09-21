@@ -34,7 +34,7 @@ public class ImpactDamageHandler : MonoBehaviour
         var damage = excessImpule * DamagePerUnitImpulse;
         if (damage > 0)
         {
-            Debug.Log("Collider = " + collision.collider.gameObject + ", Impulse = " + impulse + ", Damage = " + damage);
+            //Debug.Log("Collider = " + collision.collider.gameObject + ", Impulse = " + impulse + ", Damage = " + damage);
             this.HealthController.Injure(damage);
         }
     }
