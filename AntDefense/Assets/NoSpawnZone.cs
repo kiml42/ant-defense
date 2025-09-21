@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,12 +28,17 @@ public class NoSpawnZone : MonoBehaviour
         AllNoSpawnZones.Remove(this);
     }
 
-    public static Vector3? GetBestEdgePosition(Vector3 position, float leeway = 0.1f)
+    public static Vector3? GetBestEdgePosition(Vector3 position, Vector3? previousGoodPosition = null, float leeway = 0.1f)
     {
         // TODO add some histeresis
         // The best position should be the one with the shortest combined distance between the mouse position and the last good position, and the edge of the no spawn zone.
         var bestPoint = (Vector3?)null;
         var bestDistance = float.MaxValue;
+
+        if (previousGoodPosition != null && NoSpawnZone.IsInAnyNoSpawnZone(previousGoodPosition.Value))
+        {
+            previousGoodPosition = null;    // the position isn't good anymore.
+        }
 
         var transgressedZones = AllNoSpawnZones.Where(z => z.IsInNoSpawnZone(position, leeway));
         if(!transgressedZones.Any())
@@ -40,36 +46,41 @@ public class NoSpawnZone : MonoBehaviour
             // Not in any no spawn zone, so nothing to do.
             return null;
         }
+        Action<Vector3> keepIfBetter = (v) =>
+        {
+            var distance = (v - position).magnitude;
+            if (distance < bestDistance)
+            {
+                bestDistance = distance;
+                bestPoint = v;
+                Debug.DrawLine(v + (Vector3.up * distance), v - (Vector3.up * distance), Color.green, 2);
+            }
+        };
+
         foreach (var zone in transgressedZones)
         {
-            var direction = (position - zone.transform.position);
-            direction = new Vector3(direction.x, 0, direction.z);    // move it down to the plane
-            direction.Normalize();
-            var edgePoint = zone.transform.position + direction * zone.Radius;
-            if(IsInAnyNoSpawnZone(edgePoint))
+            var edgePoint = GetClosestPointOnEdge(position, zone);
+            if (IsInAnyNoSpawnZone(edgePoint))
             {
                 // This edge point is still in a no spawn zone, so ignore it.
                 continue;
             }
-            var distance = (edgePoint - position).magnitude;
-            if (distance < bestDistance)
-            {
-                bestDistance = distance;
-                bestPoint = edgePoint;
-                Debug.DrawLine(edgePoint + (Vector3.up * distance), edgePoint - (Vector3.up * distance), Color.green, 2);
-            }
+            keepIfBetter(edgePoint);
         }
-        foreach(var intersect in _intersectionPoints.Where(p => p.IsOnEdge == true))
+        foreach (var intersect in _intersectionPoints.Where(p => p.IsOnEdge == true))
         {
-            var distance = (intersect.Point - position).magnitude;
-            if (distance < bestDistance)
-            {
-                bestDistance = distance;
-                bestPoint = intersect.Point;
-                Debug.DrawLine(intersect.Point + (Vector3.up * distance), intersect.Point - (Vector3.up * distance), Color.green, 2);
-            }
+            keepIfBetter(intersect.Point);
         }
         return bestPoint;
+    }
+
+    private static Vector3 GetClosestPointOnEdge(Vector3 position, NoSpawnZone zone)
+    {
+        var direction = (position - zone.transform.position);
+        direction = new Vector3(direction.x, 0, direction.z);    // move it down to the plane
+        direction.Normalize();
+        var edgePoint = zone.transform.position + direction * zone.Radius;
+        return edgePoint;
     }
 
     private void Update()

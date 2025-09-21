@@ -105,9 +105,8 @@ public class TranslateHandle : MonoBehaviour
 
         //Debug.Log("Hits: " + hits.Length + ": " + string.Join(", ", hits.Select(h => h.transform)));
 
-        // TODO consider that the mouse might already be in the no spawn zone for a newly created object, and the handle should therefore be slid out of it.
-        // TODO don't do a second ray cast.
         // TODO implement only trying to hit buildable surfaces
+        var previousPosition = transform.position;
         if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
         {
             Debug.DrawLine(ray.origin, hit.point, Color.red);
@@ -145,36 +144,11 @@ public class TranslateHandle : MonoBehaviour
         && (n.transform.position - transform.position).magnitude < n.Radius
         ).Distinct();
 
-        var changedPosition = NoSpawnZone.GetBestEdgePosition(transform.position);
+        var changedPosition = NoSpawnZone.GetBestEdgePosition(transform.position, previousPosition);
         if (changedPosition.HasValue)
         {
             this.transform.position = changedPosition.Value;
         }
-        // TODO work out why this works for the ghost, but not for the real object
-        //if (noSpawnZones.Any())
-        //{
-        //    //Debug.Log("In " + noSpawnZones.Count() + " No Spawn Zones: " + string.Join(", ", noSpawnZones.Select(n => "(" + n.transform.name + "(" + n.transform.parent.name + ")" + ":" + n.transform.position + ":" + n.Radius + ")")));
-        //    if(noSpawnZones.Count() == 2)
-        //    {
-        //        // TODO work out which is the closest intersect without another no spawn zone.
-        //    }
-        //    if(noSpawnZones.Count() > 2)
-        //    {
-        //        // TODO handle 3 no spawn zones by moving it to the point where they meet. (make sure it doesn't jump into another no spawn zone)
-        //        // TODO disable the handle.
-        //        transform.position += new Vector3(7, 0, 0);
-        //    }
-
-        //    var noSpawnZone = noSpawnZones.First();
-        //    var vector = this.transform.position - noSpawnZone.transform.position;
-        //    vector = new Vector3(vector.x, 0, vector.z);    // move it down to the plane
-        //    var distanceToMove = noSpawnZone.Radius - vector.magnitude;
-        //    var vectorToMove = vector.normalized * distanceToMove;
-        //    //vectorToMove = new Vector3(vectorToMove.x, 0, vectorToMove.z);
-        //    transform.position += vectorToMove;
-
-        //    // TODO move the handle down to a buildable surface
-        //}
     }
 
     private void HandleMainMouseUp()
