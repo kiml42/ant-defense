@@ -28,10 +28,8 @@ public class NoSpawnZone : MonoBehaviour
         AllNoSpawnZones.Remove(this);
     }
 
-    public static Vector3? GetBestEdgePosition(Vector3 position, Vector3? previousGoodPosition = null, float leeway = 0.1f)
+    public static Vector3? GetBestEdgePosition(Vector3 position, Vector3? previousGoodPosition = null, float leeway = 0.1f, float previousWeight=0.5f)
     {
-        // TODO add some histeresis
-        // The best position should be the one with the shortest combined distance between the mouse position and the last good position, and the edge of the no spawn zone.
         var bestPoint = (Vector3?)null;
         var bestDistance = float.MaxValue;
 
@@ -49,6 +47,10 @@ public class NoSpawnZone : MonoBehaviour
         Action<Vector3> keepIfBetter = (v) =>
         {
             var distance = (v - position).magnitude;
+            var previousDistance = previousGoodPosition.HasValue
+                ? (v - previousGoodPosition.Value).magnitude
+                : 0;
+            var weightedTotalDistance = distance + (previousDistance * previousWeight);
             if (distance < bestDistance)
             {
                 bestDistance = distance;
