@@ -74,7 +74,11 @@ public class NoSpawnZone : MonoBehaviour
         float d = Mathf.Sqrt(dx * dx + dz * dz);
         Debug.Log("dx = " + dx + ", dy = " + dz + ", d = " + d);
         // No solution: circles are separate or one is contained within the other
-        if (d > this.Radius + other.Radius || d < Mathf.Abs(this.Radius - other.Radius) || d <= 0.01f)
+        if (
+            d > this.Radius + other.Radius // The circles are too far appart and don't touch
+            || d < Mathf.Abs(this.Radius - other.Radius) // One circle is entirely within the other
+            || d <= 0.001f  // the circles have the same center point (with a little fudge factor)
+            )
         {
             return points; // No intersection points
         }
@@ -82,11 +86,9 @@ public class NoSpawnZone : MonoBehaviour
 
         // l is the distance from this to the point between the two intersection points
         float l = ((this.Radius * this.Radius) - (other.Radius * other.Radius) + (d * d)) / (2 * d);
-        Debug.Log("l = " + l);
         var vectorToL = (other.transform.position - this.transform.position) * l/d;
         // lPosition is the position of the point on the line between the centers directly between the two intersects
         var lPosition = new Vector3(this.transform.position.x + vectorToL.x, 0, this.transform.position.z + vectorToL.z);
-        Debug.Log("aPosition = " + lPosition);
         Debug.DrawLine(this.transform.position, lPosition, Color.red, 300);
 
         // see https://math.stackexchange.com/questions/256100/how-can-i-find-the-points-at-which-two-circles-intersect
@@ -95,8 +97,6 @@ public class NoSpawnZone : MonoBehaviour
         // Find P2
         float x2 = lPosition.x;
         float z2 = lPosition.z; // Use z for 2D plane
-        var p2 = new Vector3(x2, 0, z2);
-        Debug.Log("h = " + h + ", P2 = " + p2);
         // Intersection points
         var intersection1 = new Vector3(
             x2 + (h*dz/d),
