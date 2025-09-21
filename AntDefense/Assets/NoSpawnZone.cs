@@ -74,7 +74,7 @@ public class NoSpawnZone : MonoBehaviour
         float d = Mathf.Sqrt(dx * dx + dz * dz);
         Debug.Log("dx = " + dx + ", dy = " + dz + ", d = " + d);
         // No solution: circles are separate or one is contained within the other
-        if (d > this.Radius + other.Radius || d < Mathf.Abs(this.Radius - other.Radius) || d == 0f)
+        if (d > this.Radius + other.Radius || d < Mathf.Abs(this.Radius - other.Radius) || d <= 0.01f)
         {
             return points; // No intersection points
         }
@@ -83,35 +83,36 @@ public class NoSpawnZone : MonoBehaviour
         // l is the distance from this to the point between the two intersection points
         float l = ((this.Radius * this.Radius) - (other.Radius * other.Radius) + (d * d)) / (2 * d);
         Debug.Log("l = " + l);
-        var vectorToA = (other.transform.position - this.transform.position) * l/d;
-        var aPosition = new Vector3(this.transform.position.x + vectorToA.x, 0, this.transform.position.z + vectorToA.z);
-        Debug.Log("aPosition = " + aPosition);
-        Debug.DrawLine(this.transform.position, aPosition, Color.red, 300);
+        var vectorToL = (other.transform.position - this.transform.position) * l/d;
+        // lPosition is the position of the point on the line between the centers directly between the two intersects
+        var lPosition = new Vector3(this.transform.position.x + vectorToL.x, 0, this.transform.position.z + vectorToL.z);
+        Debug.Log("aPosition = " + lPosition);
+        Debug.DrawLine(this.transform.position, lPosition, Color.red, 300);
 
         // see https://math.stackexchange.com/questions/256100/how-can-i-find-the-points-at-which-two-circles-intersect
         // TODO: check all the maths makes sense from here (it doesn't seem to work)
-        float h = Mathf.Sqrt((this.Radius * this.Radius) - (l * l));
+        float h = Mathf.Sqrt((this.Radius * this.Radius) - (l * l));    // the remaining side of the triangle between the center, L and the intersection point.
         // Find P2
-        float x2 = this.transform.position.x + (l * dx / d);
-        float z2 = this.transform.position.z + (l * dz / d); // Use z for 2D plane
+        float x2 = lPosition.x;
+        float z2 = lPosition.z; // Use z for 2D plane
         var p2 = new Vector3(x2, 0, z2);
         Debug.Log("h = " + h + ", P2 = " + p2);
         // Intersection points
         var intersection1 = new Vector3(
-            ((l/d)*dx) + ((h/d)*dz) + this.transform.position.x,
+            x2 + (h*dz/d),
             0,
-            ((l / d) * dz) - ((h / d) * dx) + this.transform.position.y
+            z2 - (h*dx/d)
         );
         var intersection2 = new Vector3(
-            ((l / d) * dx) - ((h / d) * dz) + this.transform.position.x,
+            x2 - (h*dz/d),
             0,
-            ((l / d) * dz) + ((h / d) * dx) + this.transform.position.y
+            z2 + (h*dx/d)
         );
         points.Add(intersection1);
         points.Add(intersection2);
 
         Debug.DrawLine(this.transform.position, intersection1, Color.yellow, 300);
-        Debug.DrawLine(this.transform.position, intersection2, Color.yellow, 300);
+        Debug.DrawLine(this.transform.position, intersection2, Color.green, 300);
         return points;
     }
 
