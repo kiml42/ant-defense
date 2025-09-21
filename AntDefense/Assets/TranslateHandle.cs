@@ -144,75 +144,37 @@ public class TranslateHandle : MonoBehaviour
         && n.enabled == true
         && (n.transform.position - transform.position).magnitude < n.Radius
         ).Distinct();
+
+        var changedPosition = NoSpawnZone.GetBestEdgePosition(transform.position);
+        if (changedPosition.HasValue)
+        {
+            this.transform.position = changedPosition.Value;
+        }
         // TODO work out why this works for the ghost, but not for the real object
-        if (noSpawnZones.Any())
-        {
-            Debug.Log("In " + noSpawnZones.Count() + " No Spawn Zones: " + string.Join(", ", noSpawnZones.Select(n => "(" + n.transform.name + "(" + n.transform.parent.name + ")" + ":" + n.transform.position + ":" + n.Radius + ")")));
-            if(noSpawnZones.Count() == 2)
-            {
-                var hasIntersects = CircleCircleIntersection(noSpawnZones.First(), noSpawnZones.Last(), out var i1, out var i2);
-                if (hasIntersects)
-                {
+        //if (noSpawnZones.Any())
+        //{
+        //    //Debug.Log("In " + noSpawnZones.Count() + " No Spawn Zones: " + string.Join(", ", noSpawnZones.Select(n => "(" + n.transform.name + "(" + n.transform.parent.name + ")" + ":" + n.transform.position + ":" + n.Radius + ")")));
+        //    if(noSpawnZones.Count() == 2)
+        //    {
+        //        // TODO work out which is the closest intersect without another no spawn zone.
+        //    }
+        //    if(noSpawnZones.Count() > 2)
+        //    {
+        //        // TODO handle 3 no spawn zones by moving it to the point where they meet. (make sure it doesn't jump into another no spawn zone)
+        //        // TODO disable the handle.
+        //        transform.position += new Vector3(7, 0, 0);
+        //    }
 
-                }
-                else
-                {
+        //    var noSpawnZone = noSpawnZones.First();
+        //    var vector = this.transform.position - noSpawnZone.transform.position;
+        //    vector = new Vector3(vector.x, 0, vector.z);    // move it down to the plane
+        //    var distanceToMove = noSpawnZone.Radius - vector.magnitude;
+        //    var vectorToMove = vector.normalized * distanceToMove;
+        //    //vectorToMove = new Vector3(vectorToMove.x, 0, vectorToMove.z);
+        //    transform.position += vectorToMove;
 
-                }
-                // TODO work out which is the closest intersect without another no spawn zone.
-            }
-            if(noSpawnZones.Count() > 2)
-            {
-                // TODO handle 3 no spawn zones by moving it to the point where they meet. (make sure it doesn't jump into another no spawn zone)
-                // TODO disable the handle.
-                transform.position += new Vector3(7, 0, 0);
-            }
-
-            var noSpawnZone = noSpawnZones.First();
-            var vector = this.transform.position - noSpawnZone.transform.position;
-            vector = new Vector3(vector.x, 0, vector.z);    // move it down to the plane
-            var distanceToMove = noSpawnZone.Radius - vector.magnitude;
-            var vectorToMove = vector.normalized * distanceToMove;
-            //vectorToMove = new Vector3(vectorToMove.x, 0, vectorToMove.z);
-            transform.position += vectorToMove;
-
-            // TODO move the handle down to a buildable surface
-        }
-    }
-
-    public static bool CircleCircleIntersection(NoSpawnZone nszA,NoSpawnZone nszB,out Vector3? intersection1, out Vector3? intersection2)
-    {
-        float dx = nszA.transform.position.x - nszB.transform.position.x;
-        float dy = nszA.transform.position.y - nszB.transform.position.y;
-        float d = Mathf.Sqrt(dx * dx + dy * dy);
-
-        // No solution: circles are separate or one is contained within the other
-        if (d > nszA.Radius + nszB.Radius || d < Mathf.Abs(nszA.Radius - nszB.Radius))
-        {
-            intersection1 = intersection2 = null;
-            return false;
-        }
-
-        // Find a and h
-        float a = (nszA.Radius * nszA.Radius - nszB.Radius * nszB.Radius + d * d) / (2 * d);
-        float h = Mathf.Sqrt(nszA.Radius * nszA.Radius - a * a);
-
-        // Find P2
-        float x2 = nszA.transform.position.x + a * (dx) / d;
-        float y2 = nszA.transform.position.y + a * (dy) / d;
-
-        // Intersection points
-        intersection1 = new Vector3(
-            x2 + h * (dy) / d,
-            0,
-            y2 - h * (dx) / d
-        );
-        intersection2 = new Vector3(
-            x2 - h * (dy) / d,
-            0,
-            y2 + h * (dx) / d
-        );
-        return true;
+        //    // TODO move the handle down to a buildable surface
+        //}
     }
 
     private void HandleMainMouseUp()
