@@ -1,5 +1,6 @@
 using System.Linq;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class TranslateHandle : MonoBehaviour
 {
@@ -7,10 +8,18 @@ public class TranslateHandle : MonoBehaviour
     public int CancelMouseButton = 1;
     public float MinRotateMouseDistance = 1f;
     private int _layerMask;
+    private bool lastPositionIsGood = false;
+
+    // TODO: handle this with a visually disaleable script on every rendered object.
+    private IEnumerable<Material> _materials;
+    public Color DisabledColour;
+    private Color _originalColour;
 
     private void Start()
     {
         _layerMask = LayerMask.GetMask("UI");
+        _materials = this.GetComponentsInChildren<Renderer>().SelectMany(r => r.materials);
+        _originalColour = _materials.First().color;
     }
 
     private Vector3? _lastMousePosition;
@@ -149,6 +158,18 @@ public class TranslateHandle : MonoBehaviour
         {
             this.transform.position = changedPosition.Value;
         }
+        var isGood = !NoSpawnZone.IsInAnyNoSpawnZone(transform.position);
+        if(isGood != lastPositionIsGood)
+        {
+            // Position state changed.
+            lastPositionIsGood = isGood;
+            foreach (var material in _materials)
+            {
+                material.color = isGood
+                    ? _originalColour
+                    : DisabledColour;
+            }
+        }
     }
 
     private void HandleMainMouseUp()
@@ -164,6 +185,11 @@ public class TranslateHandle : MonoBehaviour
             }
         }
 
+        if(NoSpawnZone.IsInAnyNoSpawnZone(transform.position))
+        {
+            // Can't place here.
+            return;
+        }
         ObjectPlacer.Instance.PlaceObject();
 
         if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))

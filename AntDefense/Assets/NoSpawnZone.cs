@@ -28,10 +28,10 @@ public class NoSpawnZone : MonoBehaviour
         AllNoSpawnZones.Remove(this);
     }
 
-    public static Vector3? GetBestEdgePosition(Vector3 position, Vector3? previousGoodPosition = null, float leeway = 0.1f, float previousWeight=0.5f)
+    public static Vector3? GetBestEdgePosition(Vector3 position, Vector3? previousGoodPosition = null, float leeway = 0.1f, float previousWeight = 0.5f, float maxJump = 20f)
     {
         var bestPoint = (Vector3?)null;
-        var bestDistance = float.MaxValue;
+        var bestDistance = maxJump;
 
         if (previousGoodPosition != null && NoSpawnZone.IsInAnyNoSpawnZone(previousGoodPosition.Value))
         {
@@ -39,7 +39,7 @@ public class NoSpawnZone : MonoBehaviour
         }
 
         var transgressedZones = AllNoSpawnZones.Where(z => z.IsInNoSpawnZone(position, leeway));
-        if(!transgressedZones.Any())
+        if (!transgressedZones.Any())
         {
             // Not in any no spawn zone, so nothing to do.
             return null;
@@ -92,7 +92,7 @@ public class NoSpawnZone : MonoBehaviour
         {
             var target = this.transform.position + new Vector3(Mathf.Cos(i * Mathf.PI / 16), 0, Mathf.Sin(i * Mathf.PI / 16)) * Radius;
             target = new Vector3(target.x, 0, target.z);
-            if(previous != null)
+            if (previous != null)
             {
                 Debug.DrawLine(previous.Value, target, Color.aliceBlue);
             }
@@ -173,7 +173,7 @@ public class NoSpawnZone : MonoBehaviour
 
         // l is the distance from this to the point between the two intersection points
         float l = ((this.Radius * this.Radius) - (other.Radius * other.Radius) + (d * d)) / (2 * d);
-        var vectorToL = (other.transform.position - this.transform.position) * l/d;
+        var vectorToL = (other.transform.position - this.transform.position) * l / d;
         // lPosition is the position of the point on the line between the centers directly between the two intersects
         var lPosition = new Vector3(this.transform.position.x + vectorToL.x, 0, this.transform.position.z + vectorToL.z);
         //Debug.DrawLine(this.transform.position, lPosition, Color.red, 300);
@@ -186,14 +186,14 @@ public class NoSpawnZone : MonoBehaviour
         float z2 = lPosition.z; // Use z for 2D plane
         // Intersection points
         var intersection1 = new Vector3(
-            x2 + (h*dz/d),
+            x2 + (h * dz / d),
             0,
-            z2 - (h*dx/d)
+            z2 - (h * dx / d)
         );
         var intersection2 = new Vector3(
-            x2 - (h*dz/d),
+            x2 - (h * dz / d),
             0,
-            z2 + (h*dx/d)
+            z2 + (h * dx / d)
         );
         points.Add(intersection1);
         points.Add(intersection2);
