@@ -102,7 +102,7 @@ public class TranslateHandle : MonoBehaviour
         var previousPosition = transform.position;
         if (Physics.Raycast(ray, out var hit, 500, _groundLayermask, QueryTriggerInteraction.Ignore))
         {
-            Debug.Log("Pointing at: " + hit.transform + " @ " + hit.point);
+            //Debug.Log("Pointing at: " + hit.transform + " @ " + hit.point);
             if (Input.GetMouseButton(this.PlaceMouseButton) && (ObjectPlacer.Instance.CanRotateCurrentObject() == true))
             {
                 // mous button is down, and the object is rotatable, so rotate it to face the mouse.
@@ -139,7 +139,7 @@ public class TranslateHandle : MonoBehaviour
         var changedPosition = NoSpawnZone.GetBestEdgePosition(transform.position, previousPosition);
         if (changedPosition.HasValue)
         {
-            Debug.Log("Snapping to edge of no spawn zone @ " + changedPosition);
+            //Debug.Log("Snapping to edge of no spawn zone @ " + changedPosition);
             this.transform.position = changedPosition.Value;
         }
         var isGood = !NoSpawnZone.IsInAnyNoSpawnZone(transform.position);
