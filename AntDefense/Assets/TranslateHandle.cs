@@ -7,7 +7,8 @@ public class TranslateHandle : MonoBehaviour
     public int PlaceMouseButton = 0;
     public int CancelMouseButton = 1;
     public float MinRotateMouseDistance = 1f;
-    private int _layerMask;
+    private int _uiLayermask;
+    private int _groundLayermask;
     private bool lastPositionIsGood = false;
 
     // TODO: handle this with a visually disaleable script on every rendered object.
@@ -17,7 +18,8 @@ public class TranslateHandle : MonoBehaviour
 
     private void Start()
     {
-        _layerMask = LayerMask.GetMask("UI");
+        _uiLayermask = LayerMask.GetMask("UI");
+        _groundLayermask = LayerMask.GetMask("Ground");
         _materials = this.GetComponentsInChildren<Renderer>().SelectMany(r => r.materials);
         _originalColour = _materials.First().color;
     }
@@ -35,8 +37,7 @@ public class TranslateHandle : MonoBehaviour
             HandleMainMouseUp();
         }
 
-        HandleDrag();
-        MoveOnTop();
+        HandleMousePosition();
 
         ScaleForDistanceToCamera();
 
@@ -94,32 +95,13 @@ public class TranslateHandle : MonoBehaviour
         return scale;
     }
 
-    private void MoveOnTop()
-    {
-        var lookDownOffset = Vector3.up * 5;
-        Ray ray = new Ray(transform.position + lookDownOffset, -lookDownOffset);
-        if (Physics.Raycast(ray, out var hit, lookDownOffset.magnitude * 2, -1, QueryTriggerInteraction.Ignore))
-        {
-            if (IsStaticObject(hit))
-            {
-                transform.position = hit.point;
-            }
-        }
-    }
-
-    private void HandleDrag()
+    private void HandleMousePosition()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-
-        //Debug.Log("Hits: " + hits.Length + ": " + string.Join(", ", hits.Select(h => h.transform)));
-
-        // TODO implement only trying to hit buildable surfaces
         var previousPosition = transform.position;
-        if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(ray, out var hit, 500, _groundLayermask, QueryTriggerInteraction.Ignore))
         {
-            Debug.DrawLine(ray.origin, hit.point, Color.red);
-            //Debug.Log("Hit " + hit.transform.name);
             if (Input.GetMouseButton(this.PlaceMouseButton) && (ObjectPlacer.Instance.CanRotateCurrentObject() == true))
             {
                 var vectorToHit = hit.point - transform.position;
@@ -175,7 +157,7 @@ public class TranslateHandle : MonoBehaviour
     private void HandleMainMouseUp()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit, 500, _layerMask, QueryTriggerInteraction.Collide))
+        if (Physics.Raycast(ray, out var hit, 500, _uiLayermask, QueryTriggerInteraction.Collide))
         {
             var quickBarButton = hit.transform.GetComponentInParent<QuickBarButton>();
             if (quickBarButton != null)
@@ -198,19 +180,6 @@ public class TranslateHandle : MonoBehaviour
         }
 
         ObjectPlacer.Instance.CancelPlacingObject();
-    }
-
-    private bool IsStaticObject(RaycastHit hit)
-    {
-        if (hit.collider.isTrigger)
-        {
-            return false;
-        }
-        if (hit.rigidbody != null)
-        {
-            return hit.rigidbody.IsSleeping();
-        }
-        return true;
     }
 
     private Quaternion AdjustYUp(Quaternion originalRotation)
