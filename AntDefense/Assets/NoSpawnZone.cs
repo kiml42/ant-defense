@@ -28,6 +28,7 @@ public class NoSpawnZone : MonoBehaviour
         AllNoSpawnZones.Remove(this);
     }
 
+    // TODO: Fix bug where a ghost separated from existing towers hops the no spawn zone over to existing towers.
     public static Vector3? GetBestEdgePosition(Vector3 position, Vector3? previousGoodPosition = null, float leeway = 0.1f, float previousWeight = 0.5f, float maxJump = 20f)
     {
         var bestPoint = (Vector3?)null;
