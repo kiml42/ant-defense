@@ -30,6 +30,8 @@ public class PlaceableGhost : MonoBehaviour
 
     private void SetNoSpawnZoneEnabled(bool enabled)
     {
+        // TODO check if this is correctly activating the no spawn zone at the right time. and calculating the intersects only once it's placed.
+        // TODO: consider keeping the same NoSpawnZone instances, when switching from the ghost to the real thing.
         _noSpawnZones ??= GetComponentsInChildren<NoSpawnZone>();
         foreach (var noSpawnZone in _noSpawnZones)
         {

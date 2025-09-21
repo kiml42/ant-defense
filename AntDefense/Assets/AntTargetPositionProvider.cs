@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
-//TODO - consider:
-// When the ant has a target it's moving towards,don't just use that location imediately, instead have the target wander back towards it.
+//TODO - consider When the ant has a target it's moving towards,don't just use that location imediately, instead have the target wander back towards it.
 public class AntTargetPositionProvider : MonoBehaviour
 {
     /// <summary>

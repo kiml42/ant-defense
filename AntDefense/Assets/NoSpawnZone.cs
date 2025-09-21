@@ -28,7 +28,6 @@ public class NoSpawnZone : MonoBehaviour
         AllNoSpawnZones.Remove(this);
     }
 
-    // TODO: Fix bug where a ghost separated from existing towers hops the no spawn zone over to existing towers.
     public static Vector3? GetBestEdgePosition(Vector3 position, Vector3? previousGoodPosition = null, float leeway = 0.1f, float previousWeight = 0.5f, float maxJump = 20f)
     {
         var bestPoint = (Vector3?)null;
@@ -124,8 +123,7 @@ public class NoSpawnZone : MonoBehaviour
                 {
                     Point = point,
                     ZoneA = this,
-                    ZoneB = other,
-                    IsOnEdge = null // TODO: Determine if the point is on the edge
+                    ZoneB = other
                 };
                 _intersectionPoints.Add(intersectionPoint);
             }
@@ -190,7 +188,6 @@ public class NoSpawnZone : MonoBehaviour
         //Debug.DrawLine(this.transform.position, lPosition, Color.red, 300);
 
         // see https://math.stackexchange.com/questions/256100/how-can-i-find-the-points-at-which-two-circles-intersect
-        // TODO: check all the maths makes sense from here (it doesn't seem to work)
         float h = Mathf.Sqrt((this.Radius * this.Radius) - (l * l));    // the remaining side of the triangle between the center, L and the intersection point.
         // Find P2
         float x2 = lPosition.x;
