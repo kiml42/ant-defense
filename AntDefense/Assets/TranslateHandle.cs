@@ -174,14 +174,8 @@ public class TranslateHandle : MonoBehaviour
             // Can't place here.
             return;
         }
-        ObjectPlacer.Instance.PlaceObject();
 
-        if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
-        {
-            return;
-        }
-
-        ObjectPlacer.Instance.CancelPlacingObject();
+        ObjectPlacer.Instance.PlaceObject(Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt));
     }
 
     private Quaternion AdjustYUp(Quaternion originalRotation)

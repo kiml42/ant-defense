@@ -74,6 +74,13 @@ public class PlaceableGhost : MonoBehaviour
             foodSmell.MarkAsPermanant(false);
         }
 
+        var placeables = newObject.GetComponents<PlaceableMonoBehaviour>();
+
+        foreach(var placeable in placeables)
+        {
+            placeable.OnPlace(this);
+        }
+
         Destroy(gameObject);
     }
 }
