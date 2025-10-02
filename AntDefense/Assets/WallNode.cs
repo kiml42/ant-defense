@@ -5,19 +5,25 @@ public class WallNode : PlaceableMonoBehaviour
     public WallNode ConnectedNode;
     public Transform ConnectedNodeMarker;
     public Transform Wall;
-    private bool hasBeenPlaced = false;
+
+    public override void OnPlaceAsGhost()
+    {
+        Debug.Log("WallNode ghost placed.");
+        this.UpdateWall();
+        this.enabled = false;   //disable to prevent updating the wall every frame
+    }
 
     public override void OnPlace(PlaceableGhost ghost)
     {
+        Debug.Log("WallNode placed, connected to " + this.ConnectedNode);
         var wallNodeGhost = ghost.GetComponent<WallNode>();
         if (wallNodeGhost != null && wallNodeGhost.ConnectedNode != null)
         {
             //Debug.Log("WallNode placed. Temp node connected to " + wallNodeGhost.ConnectedNode);
             this.ConnectTo(wallNodeGhost.ConnectedNode);
-            this.UpdateWall();
         }
+        this.UpdateWall();
         this.enabled = false;   //disable to prevent updating the wall every frame
-        this.hasBeenPlaced = true;
         ObjectPlacer.Instance.NotifyBuiltWall(this, ghost);
     }
 
@@ -34,7 +40,7 @@ public class WallNode : PlaceableMonoBehaviour
 
     private void UpdateWall()
     {
-        Debug.Log("Updating WallNode. Connected to " + ConnectedNode + ", hasBeenPlaced = " + this.hasBeenPlaced);
+        Debug.Log("Updating WallNode. Connected to " + ConnectedNode);
         if (ConnectedNodeMarker != null)
         {
             if (ConnectedNode != null)
@@ -67,6 +73,8 @@ public class WallNode : PlaceableMonoBehaviour
 
 public abstract class PlaceableMonoBehaviour : MonoBehaviour
 {
+    public abstract void OnPlaceAsGhost();
+
     /// <summary>
     /// called on the real object with the ghost that created it so it can get any data it needs from the ghost before the ghost is destroyed.
     /// </summary>
