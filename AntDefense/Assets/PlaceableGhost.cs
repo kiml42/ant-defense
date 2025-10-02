@@ -49,20 +49,31 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // TODO see where it's actually useful to set this.
-        this.SetNoSpawnZoneEnabled(false);
+        //Debug.Log("Starting placing ghost object " + this);
+        this.StartPlacing();
     }
 
     private void SetNoSpawnZoneEnabled(bool enabled)
     {
         // TODO check if this is correctly activating the no spawn zone at the right time. and calculating the intersects only once it's placed.
-        _noSpawnZones ??= GetComponentsInChildren<NoSpawnZone>();
-        foreach (var noSpawnZone in _noSpawnZones)
+        this._noSpawnZones ??= this.GetComponentsInChildren<NoSpawnZone>();
+        foreach (var noSpawnZone in this._noSpawnZones)
         {
             noSpawnZone.enabled = enabled;
         }
     }
 
+    /// <summary>
+    /// Called when the object is instanciated attached to the translate handle.
+    /// </summary>
+    public virtual void StartPlacing()
+    {
+        this.SetNoSpawnZoneEnabled(false);
+    }
+
+    /// <summary>
+    /// Called when the object is placed and detached from the translate handle.
+    /// </summary>
     public virtual void Place()
     {
         _isPlaced = true;

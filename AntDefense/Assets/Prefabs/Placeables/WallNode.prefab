@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1489239274791151828}
   - component: {fileID: 710721694348773487}
   - component: {fileID: 8092417670727731202}
+  - component: {fileID: 5622701485709215668}
   m_Layer: 0
   m_Name: WallNode
   m_TagString: Untagged
@@ -71,6 +72,21 @@ MonoBehaviour:
   RotationForButton: {x: 0.28308818, y: 0.14199114, z: 0.076293215, w: 0.9454517}
   TimeOut: 5
   SpawnOffset: {x: 0, y: 0, z: 0}
+--- !u!114 &5622701485709215668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1834373357261692949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 808a9ed0a4c799245adda16d685b0ffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GhostMaterial: {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
+  ComponentsToDisable:
+  - {fileID: 7938041827582038657}
 --- !u!1 &2586961702934054646
 GameObject:
   m_ObjectHideFlags: 0
@@ -334,7 +350,7 @@ GameObject:
   - component: {fileID: 846464928393843632}
   - component: {fileID: 3989014026480145146}
   m_Layer: 0
-  m_Name: Cylinder
+  m_Name: NodeFoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -419,7 +435,6 @@ GameObject:
   - component: {fileID: 1406079791709674247}
   - component: {fileID: 6362116471079575269}
   - component: {fileID: 9108290167319995534}
-  - component: {fileID: 3510511347740335293}
   m_Layer: 0
   m_Name: WallFoot
   m_TagString: Untagged
@@ -495,27 +510,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3510511347740335293
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8126956777207597614}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &9109029332990939413
 GameObject:
   m_ObjectHideFlags: 0
