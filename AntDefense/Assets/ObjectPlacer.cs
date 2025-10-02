@@ -5,14 +5,14 @@ using UnityEngine;
 public class ObjectPlacer : MonoBehaviour
 {
     public static ObjectPlacer Instance { get; private set; }
-    public static List<PlaceableGhost> StaticQuickBarObjects;
+    public static List<PlaceableObjectOrGhost> StaticQuickBarObjects;
     // TODO implement cost to place objects
 
     public TranslateHandle Handle;
 
-    public List<PlaceableGhost> QuickBarObjects;
+    public List<PlaceableObjectOrGhost> QuickBarObjects;
 
-    private PlaceableGhost _objectBeingPlaced;
+    private PlaceableObjectOrGhost _objectBeingPlaced;
 
     private readonly KeyCode[] _quickBarKeys = {
         KeyCode.Alpha1,
@@ -60,7 +60,7 @@ public class ObjectPlacer : MonoBehaviour
         StartPlacingGhost(prefab);
     }
 
-    public void StartPlacingGhost(PlaceableGhost prefab)
+    public void StartPlacingGhost(PlaceableObjectOrGhost prefab)
     {
         CancelPlacingObject();
 
@@ -120,7 +120,7 @@ public class ObjectPlacer : MonoBehaviour
         return this._objectBeingPlaced == null ? null : this._objectBeingPlaced.Rotatable;
     }
 
-    internal void NotifyBuiltWall(WallNode wallNode, PlaceableGhost ghost)
+    internal void NotifyBuiltWall(WallNode wallNode, PlaceableObjectOrGhost ghost)
     {
         if(this._lastWallNode == ghost.GetComponent<WallNode>())
         {

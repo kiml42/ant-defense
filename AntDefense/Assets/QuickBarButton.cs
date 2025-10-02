@@ -1,4 +1,4 @@
 ﻿public class QuickBarButton : ClickableButton
 {
-    public PlaceableGhost Ghost { get; set; }
+    public PlaceableObjectOrGhost Ghost { get; set; }
 }

@@ -3,7 +3,6 @@ using UnityEngine;
 public class WallNode : PlaceableMonoBehaviour
 {
     public WallNode ConnectedNode;
-    public Transform ConnectedNodeMarker;
     public Transform Wall;
 
     public override void OnPlaceAsGhost()
@@ -13,13 +12,13 @@ public class WallNode : PlaceableMonoBehaviour
         this.enabled = false;   //disable to prevent updating the wall every frame
     }
 
-    public override void OnPlace(PlaceableGhost ghost)
+    public override void OnPlace(PlaceableObjectOrGhost ghost)
     {
         Debug.Log("WallNode placed, connected to " + this.ConnectedNode);
         var wallNodeGhost = ghost.GetComponent<WallNode>();
         if (wallNodeGhost != null && wallNodeGhost.ConnectedNode != null)
         {
-            //Debug.Log("WallNode placed. Temp node connected to " + wallNodeGhost.ConnectedNode);
+            Debug.Log("WallNode placed. Temp node connected to " + wallNodeGhost.ConnectedNode);
             this.ConnectTo(wallNodeGhost.ConnectedNode);
         }
         this.UpdateWall();
@@ -40,34 +39,24 @@ public class WallNode : PlaceableMonoBehaviour
 
     private void UpdateWall()
     {
-        Debug.Log("Updating WallNode. Connected to " + ConnectedNode);
-        if (ConnectedNodeMarker != null)
+        if (Wall == null)
         {
-            if (ConnectedNode != null)
-            {
-                ConnectedNodeMarker.position = ConnectedNode.transform.position;
-                ConnectedNodeMarker.localScale = Vector3.one;
-            }
-            else
-            {
-                ConnectedNodeMarker.localScale = Vector3.zero;
-            }
+            throw new System.InvalidOperationException("WallNode has no Wall assigned.");
         }
-        if (Wall != null)
+        //Debug.Log("Updating WallNode. Connected to " + ConnectedNode);
+        if (ConnectedNode != null)
         {
-            if (ConnectedNode != null)
+            var direction = ConnectedNode.transform.position - this.transform.position;
+            if (direction.magnitude > 0.01f)
             {
-                var direction = ConnectedNode.transform.position - this.transform.position;
                 var midpoint = this.transform.position + direction * 0.5f;
                 Wall.position = midpoint;
                 Wall.localScale = new Vector3(1, 1, direction.magnitude);
                 Wall.rotation = Quaternion.LookRotation(direction, Vector3.up);
-            }
-            else
-            {
-                Wall.localScale = Vector3.zero;
+                return;
             }
         }
+        Wall.localScale = Vector3.zero;
     }
 }
 
@@ -79,5 +68,5 @@ public abstract class PlaceableMonoBehaviour : MonoBehaviour
     /// called on the real object with the ghost that created it so it can get any data it needs from the ghost before the ghost is destroyed.
     /// </summary>
     /// <param name="ghost"></param>
-    public abstract void OnPlace(PlaceableGhost ghost);
+    public abstract void OnPlace(PlaceableObjectOrGhost ghost);
 }
