@@ -16,10 +16,6 @@ public class WallNode : PlaceableMonoBehaviour
             this.ConnectTo(wallNodeGhost.ConnectedNode);
             this.UpdateWall();
         }
-        else
-        {
-            //Debug.Log("WallNode placed. without connecting.");
-        }
         this.enabled = false;   //disable to prevent updating the wall every frame
         this.hasBeenPlaced = true;
         ObjectPlacer.Instance.NotifyBuiltWall(this, ghost);
