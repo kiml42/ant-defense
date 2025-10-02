@@ -96,7 +96,6 @@ public class ObjectPlacer : MonoBehaviour
                 Debug.Log($"Placing wall node {wallNode}. Connecting to last node: " + _lastWallNode);
                 wallNode.ConnectTo(_lastWallNode);
                 _lastWallNode = wallNode;
-                wallNode.OnPlaceAsGhost();
                 Debug.Log("New last wall node: " + _lastWallNode);
                 _objectBeingPlaced.GetComponent<WallNode>().ConnectTo(_lastWallNode); // make the ghost on the handle connect so that it knows where to connect its ghost wall to.
                 keepPlacing = true; // always keep placing walls, they should form a chain until the user cancels.
@@ -118,22 +117,5 @@ public class ObjectPlacer : MonoBehaviour
     public bool? CanRotateCurrentObject()
     {
         return this._objectBeingPlaced == null ? null : this._objectBeingPlaced.Rotatable;
-    }
-
-    internal void NotifyBuiltWall(WallNode wallNode, PlaceableObjectOrGhost ghost)
-    {
-        if(ghost != null && this._lastWallNode == ghost.GetComponent<WallNode>())
-        {
-            Debug.Log("Updating last wall node from the ghost to the real one.");
-            _lastWallNode = wallNode;
-        }
-        if (_objectBeingPlaced != null)
-        {
-            var placingOjectWallNode = _objectBeingPlaced.GetComponent<WallNode>();
-            if (placingOjectWallNode != null)
-            {
-                placingOjectWallNode.ConnectTo(_lastWallNode);
-            }
-        }
     }
 }

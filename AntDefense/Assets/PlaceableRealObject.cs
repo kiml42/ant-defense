@@ -16,7 +16,7 @@ public class PlaceableRealObject : PlaceableObjectOrGhost
 
         foreach (var placeable in placeables)
         {
-            placeable.OnPlace(null);
+            placeable.OnPlace();
         }
         this.enabled = false;   // disable to prevent updating every frame
     }
