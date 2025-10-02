@@ -122,7 +122,7 @@ public class ObjectPlacer : MonoBehaviour
 
     internal void NotifyBuiltWall(WallNode wallNode, PlaceableObjectOrGhost ghost)
     {
-        if(this._lastWallNode == ghost.GetComponent<WallNode>())
+        if(ghost != null && this._lastWallNode == ghost.GetComponent<WallNode>())
         {
             Debug.Log("Updating last wall node from the ghost to the real one.");
             _lastWallNode = wallNode;

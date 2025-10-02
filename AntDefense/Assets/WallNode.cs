@@ -15,11 +15,14 @@ public class WallNode : PlaceableMonoBehaviour
     public override void OnPlace(PlaceableObjectOrGhost ghost)
     {
         Debug.Log("WallNode placed, connected to " + this.ConnectedNode);
-        var wallNodeGhost = ghost.GetComponent<WallNode>();
-        if (wallNodeGhost != null && wallNodeGhost.ConnectedNode != null)
+        if (ghost != null)
         {
-            Debug.Log("WallNode placed. Temp node connected to " + wallNodeGhost.ConnectedNode);
-            this.ConnectTo(wallNodeGhost.ConnectedNode);
+            var wallNodeGhost = ghost.GetComponent<WallNode>();
+            if (wallNodeGhost != null && wallNodeGhost.ConnectedNode != null)
+            {
+                Debug.Log("WallNode placed. Temp node connected to " + wallNodeGhost.ConnectedNode);
+                this.ConnectTo(wallNodeGhost.ConnectedNode);
+            }
         }
         this.UpdateWall();
         this.enabled = false;   //disable to prevent updating the wall every frame

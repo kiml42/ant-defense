@@ -58,14 +58,15 @@ public class TranslateHandle : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(this.CancelMouseButton))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 500, -1, QueryTriggerInteraction.Ignore))
+            RaycastHit hit;
+            if (this.RaycastToFloor(out hit))
             {
                 _lastMousePosition = hit.point;
             }
         }
         if (Input.GetMouseButtonUp(this.CancelMouseButton))
         {
+            Debug.Log("Cancel mouse up after moving " + _distanceSinceClick);
             if (_distanceSinceClick < CancelThreshold)
             {
                 ObjectPlacer.Instance.CancelPlacingObject();
@@ -97,10 +98,9 @@ public class TranslateHandle : MonoBehaviour
 
     private void HandleMousePosition()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
         var previousPosition = transform.position;
-        if (Physics.Raycast(ray, out var hit, 500, _groundLayermask, QueryTriggerInteraction.Ignore))
+        RaycastHit hit;
+        if (this.RaycastToFloor(out hit))
         {
             //Debug.Log("Pointing at: " + hit.transform + " @ " + hit.point);
             if (Input.GetMouseButton(this.PlaceMouseButton) && (ObjectPlacer.Instance.CanRotateCurrentObject() == true))
@@ -143,7 +143,7 @@ public class TranslateHandle : MonoBehaviour
             this.transform.position = changedPosition.Value;
         }
         var isGood = !NoSpawnZone.IsInAnyNoSpawnZone(transform.position);
-        if(isGood != lastPositionIsGood)
+        if (isGood != lastPositionIsGood)
         {
             // Position state changed.
             lastPositionIsGood = isGood;
@@ -154,6 +154,13 @@ public class TranslateHandle : MonoBehaviour
                     : DisabledColour;
             }
         }
+    }
+
+    private bool RaycastToFloor(out RaycastHit hit)
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        return Physics.Raycast(ray, out hit, 500, _groundLayermask, QueryTriggerInteraction.Ignore);
     }
 
     private void HandleMainMouseUp()
