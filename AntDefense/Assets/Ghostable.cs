@@ -55,7 +55,20 @@ public class Ghostable : MonoBehaviour
         }
         foreach (var collider in this.CollidersToDisable)
         {
+            Debug.Log("Re-enabling collider " + collider);
             collider.enabled = true;
+        }
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            this.Ghostify();
+        }
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            this.UnGhostify();
         }
     }
 }

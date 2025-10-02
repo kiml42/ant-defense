@@ -66,6 +66,7 @@ public class ObjectPlacer : MonoBehaviour
 
         _objectBeingPlaced = Instantiate(prefab, Handle.transform.position - prefab.FloorPoint.position, Handle.transform.rotation);
         _objectBeingPlaced.transform.parent = Handle.transform;
+        _objectBeingPlaced.StartPlacing();
     }
 
     public void CancelPlacingObject()
@@ -88,7 +89,6 @@ public class ObjectPlacer : MonoBehaviour
         if (_objectBeingPlaced != null)
         {
             var newObject = Instantiate(_objectBeingPlaced, _objectBeingPlaced.transform.position, _objectBeingPlaced.transform.rotation);
-            newObject.Place();
 
             var wallNode = newObject.GetComponent<WallNode>();
             if(wallNode != null)
@@ -105,6 +105,7 @@ public class ObjectPlacer : MonoBehaviour
                 Debug.Log("Clearing last wall node because there's no wall node component.");
                 _lastWallNode = null;
             }
+            newObject.Place();
         }
         if(!keepPlacing)
         {

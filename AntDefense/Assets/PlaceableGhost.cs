@@ -46,13 +46,6 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
 
     private NoSpawnZone[] _noSpawnZones;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        //Debug.Log("Starting placing ghost object " + this);
-        this.StartPlacing();
-    }
-
     private void SetNoSpawnZoneEnabled(bool enabled)
     {
         // TODO check if this is correctly activating the no spawn zone at the right time. and calculating the intersects only once it's placed.

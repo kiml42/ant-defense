@@ -66,7 +66,7 @@ public class TranslateHandle : MonoBehaviour
         }
         if (Input.GetMouseButtonUp(this.CancelMouseButton))
         {
-            Debug.Log("Cancel mouse up after moving " + _distanceSinceClick);
+            //Debug.Log("Cancel mouse up after moving " + _distanceSinceClick);
             if (_distanceSinceClick < CancelThreshold)
             {
                 ObjectPlacer.Instance.CancelPlacingObject();
