@@ -4,6 +4,7 @@ public class WallNode : PlaceableMonoBehaviour
 {
     public WallNode ConnectedNode;
     public Transform ConnectedNodeMarker;
+    public Transform Wall;
 
     public override void OnPlace(PlaceableGhost ghost)
     {
@@ -41,10 +42,26 @@ public class WallNode : PlaceableMonoBehaviour
             if (ConnectedNode != null)
             {
                 ConnectedNodeMarker.position = ConnectedNode.transform.position;
+                ConnectedNodeMarker.localScale = Vector3.one;
             }
             else
             {
-                ConnectedNodeMarker.position = this.transform.position - this.transform.up * 5;
+                ConnectedNodeMarker.localScale = Vector3.zero;
+            }
+        }
+        if (Wall != null)
+        {
+            if (ConnectedNode != null)
+            {
+                var direction = ConnectedNode.transform.position - this.transform.position;
+                var midpoint = this.transform.position + direction * 0.5f;
+                Wall.position = midpoint;
+                Wall.localScale = new Vector3(1, 1, direction.magnitude);
+                Wall.rotation = Quaternion.LookRotation(direction, Vector3.up);
+            }
+            else
+            {
+                Wall.localScale = Vector3.zero;
             }
         }
     }
