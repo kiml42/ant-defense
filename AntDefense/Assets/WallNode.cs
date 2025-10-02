@@ -5,6 +5,7 @@ public class WallNode : PlaceableMonoBehaviour
     public WallNode ConnectedNode;
     public Transform ConnectedNodeMarker;
     public Transform Wall;
+    private bool hasBeenPlaced = false;
 
     public override void OnPlace(PlaceableGhost ghost)
     {
@@ -13,11 +14,14 @@ public class WallNode : PlaceableMonoBehaviour
         {
             //Debug.Log("WallNode placed. Temp node connected to " + wallNodeGhost.ConnectedNode);
             this.ConnectTo(wallNodeGhost.ConnectedNode);
+            this.UpdateWall();
         }
         else
         {
             //Debug.Log("WallNode placed. without connecting.");
         }
+        this.enabled = false;   //disable to prevent updating the wall every frame
+        this.hasBeenPlaced = true;
         ObjectPlacer.Instance.NotifyBuiltWall(this, ghost);
     }
 
@@ -27,16 +31,14 @@ public class WallNode : PlaceableMonoBehaviour
         ConnectedNode = other;
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Update()
     {
-
+        this.UpdateWall();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void UpdateWall()
     {
-        //Debug.Log("Updating WallNode. Connected to " + ConnectedNode);
+        Debug.Log("Updating WallNode. Connected to " + ConnectedNode + ", hasBeenPlaced = " + this.hasBeenPlaced);
         if (ConnectedNodeMarker != null)
         {
             if (ConnectedNode != null)

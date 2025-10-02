@@ -206,7 +206,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RealObject: {fileID: 1489239274791151828, guid: fc03a1413b4298648ac5624f71573cd1, type: 3}
   FloorPoint: {fileID: 1489239274791151828}
-  TimeOut: 0.5
+  TimeOut: 5
   Rotatable: 0
   SpawnOffset: {x: 0, y: 0, z: 0}
   Icon: {fileID: 0}
