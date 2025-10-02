@@ -126,5 +126,10 @@ public class ObjectPlacer : MonoBehaviour
             Debug.Log("Updating last wall node from the ghost to the real one.");
             _lastWallNode = wallNode;
         }
+        var placingOjectWallNode = _objectBeingPlaced.GetComponent<WallNode>();
+        if(placingOjectWallNode != null)
+        {
+            placingOjectWallNode.ConnectTo(_lastWallNode);
+        }
     }
 }
