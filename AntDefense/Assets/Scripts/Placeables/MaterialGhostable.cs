@@ -6,7 +6,7 @@ public abstract class BaseGhostable : MonoBehaviour
     public abstract void UnGhostify();
 }
 
-public class Ghostable : BaseGhostable
+public class MaterialGhostable : BaseGhostable
 {
     public Material GhostMaterial;
     private Material originalMaterial;
