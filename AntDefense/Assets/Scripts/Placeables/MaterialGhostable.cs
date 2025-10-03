@@ -1,15 +1,9 @@
 using UnityEngine;
 
-public abstract class BaseGhostable : MonoBehaviour
-{
-    public abstract void Ghostify();
-    public abstract void UnGhostify();
-}
-
 public class MaterialGhostable : BaseGhostable
 {
     public Material GhostMaterial;
-    private Material originalMaterial;
+    public Material OriginalMaterial;
     public Renderer Renderer;
 
     public override void Ghostify()
@@ -17,9 +11,9 @@ public class MaterialGhostable : BaseGhostable
         Debug.Log("Ghostifying " + this);
         if (this.Renderer != null)
         {
-            if (this.originalMaterial == null)
+            if (this.OriginalMaterial == null)
             {
-                this.originalMaterial = this.Renderer.material;
+                this.OriginalMaterial = this.Renderer.material;
             }
             this.Renderer.material = this.GhostMaterial;
         }
@@ -29,7 +23,7 @@ public class MaterialGhostable : BaseGhostable
     {
         if (this.Renderer != null)
         {
-            this.Renderer.material = this.originalMaterial;
+            this.Renderer.material = this.OriginalMaterial;
         }
     }
 
