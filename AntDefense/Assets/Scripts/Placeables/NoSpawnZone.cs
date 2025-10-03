@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class NoSpawnZone : MonoBehaviour
+public class NoSpawnZone : BaseGhostable
 {
     public static HashSet<NoSpawnZone> AllNoSpawnZones = new HashSet<NoSpawnZone>();
     private static readonly List<IntersectionPoint> _intersectionPoints = new List<IntersectionPoint>();
@@ -12,6 +12,12 @@ public class NoSpawnZone : MonoBehaviour
 
     void Start()
     {
+        this.Activate();
+    }
+
+    private void Activate()
+    {
+        this.enabled = true;
         var collider = this.GetComponent<SphereCollider>();
         if (collider != null)
         {
@@ -24,6 +30,12 @@ public class NoSpawnZone : MonoBehaviour
 
     private void OnDestroy()
     {
+        this.Deactivate();
+    }
+
+    private void Deactivate()
+    {
+        this.enabled = false;
         RemoveIntersectionPoints();
         AllNoSpawnZones.Remove(this);
     }
@@ -211,7 +223,15 @@ public class NoSpawnZone : MonoBehaviour
         return points;
     }
 
+    public override void Ghostify()
+    {
+        this.Deactivate();
+    }
 
+    public override void UnGhostify()
+    {
+        this.Activate();
+    }
 
     private class IntersectionPoint
     {
