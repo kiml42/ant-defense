@@ -75,7 +75,7 @@ public class ObjectPlacer : MonoBehaviour
         {
             Destroy(_objectBeingPlaced.gameObject);
             _objectBeingPlaced = null;
-            Debug.Log("Clearing last wall node because placement is being cancelled.");
+            //Debug.Log("Clearing last wall node because placement is being cancelled.");
             _lastWallNode = null;
         }
     }
@@ -93,16 +93,14 @@ public class ObjectPlacer : MonoBehaviour
             var wallNode = newObject.GetComponent<WallNode>();
             if(wallNode != null)
             {
-                Debug.Log($"Placing wall node {wallNode}. Connecting to last node: " + _lastWallNode);
                 wallNode.ConnectTo(_lastWallNode);
                 _lastWallNode = wallNode;
-                Debug.Log("New last wall node: " + _lastWallNode);
                 _objectBeingPlaced.GetComponent<WallNode>().ConnectTo(_lastWallNode); // make the ghost on the handle connect so that it knows where to connect its ghost wall to.
                 keepPlacing = true; // always keep placing walls, they should form a chain until the user cancels.
             }
             else
             {
-                Debug.Log("Clearing last wall node because there's no wall node component.");
+                //Debug.Log("Clearing last wall node because there's no wall node component.");
                 _lastWallNode = null;
             }
             newObject.Place();

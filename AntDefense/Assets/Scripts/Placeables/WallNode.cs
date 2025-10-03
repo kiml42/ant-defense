@@ -7,14 +7,14 @@ public class WallNode : PlaceableMonoBehaviour
 
     public override void OnPlace()
     {
-        Debug.Log("WallNode placed, connected to " + this.ConnectedNode);
+        //Debug.Log("WallNode placed, connected to " + this.ConnectedNode);
         this.UpdateWall();
         this.enabled = false;   //disable to prevent updating the wall every frame
     }
 
     internal void ConnectTo(WallNode other)
     {
-        Debug.Log("Connecting WallNode to " + other);
+        //Debug.Log("Connecting WallNode to " + other);
         ConnectedNode = other;
     }
 
@@ -25,10 +25,7 @@ public class WallNode : PlaceableMonoBehaviour
 
     private void UpdateWall()
     {
-        if (Wall == null)
-        {
-            throw new System.InvalidOperationException("WallNode has no Wall assigned.");
-        }
+        Debug.Assert(Wall != null, "WallNode has no Wall assigned.");
         //Debug.Log("Updating WallNode. Connected to " + ConnectedNode);
         if (ConnectedNode != null)
         {

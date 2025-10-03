@@ -8,7 +8,6 @@ public class MaterialGhostable : BaseGhostable
 
     public override void Ghostify()
     {
-        Debug.Log("Ghostifying " + this);
         if (this.Renderer != null)
         {
             if (this.OriginalMaterial == null)

@@ -21,7 +21,7 @@ public class PlaceableRealObject : PlaceableObjectOrGhost
         base.Place();
         foreach (var ghostable in this.Ghostables)
         {
-            Debug.Log("Unghostifying " + ghostable);
+            //Debug.Log("Unghostifying " + ghostable);
             ghostable.UnGhostify();
         }
     }
