@@ -1,17 +1,18 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectPlacer : MonoBehaviour
 {
     public static ObjectPlacer Instance { get; private set; }
-    public static List<PlaceableGhost> StaticQuickBarObjects;
+    public static List<PlaceableObjectOrGhost> StaticQuickBarObjects;
     // TODO implement cost to place objects
 
     public TranslateHandle Handle;
 
-    public List<PlaceableGhost> QuickBarObjects;
+    public List<PlaceableObjectOrGhost> QuickBarObjects;
 
-    private PlaceableGhost _objectBeingPlaced;
+    private PlaceableObjectOrGhost _objectBeingPlaced;
 
     private readonly KeyCode[] _quickBarKeys = {
         KeyCode.Alpha1,
@@ -59,12 +60,13 @@ public class ObjectPlacer : MonoBehaviour
         StartPlacingGhost(prefab);
     }
 
-    public void StartPlacingGhost(PlaceableGhost prefab)
+    public void StartPlacingGhost(PlaceableObjectOrGhost prefab)
     {
         CancelPlacingObject();
 
         _objectBeingPlaced = Instantiate(prefab, Handle.transform.position - prefab.FloorPoint.position, Handle.transform.rotation);
         _objectBeingPlaced.transform.parent = Handle.transform;
+        _objectBeingPlaced.StartPlacing();
     }
 
     public void CancelPlacingObject()
@@ -73,17 +75,45 @@ public class ObjectPlacer : MonoBehaviour
         {
             Destroy(_objectBeingPlaced.gameObject);
             _objectBeingPlaced = null;
+            Debug.Log("Clearing last wall node because placement is being cancelled.");
+            _lastWallNode = null;
         }
     }
 
-    public void PlaceObject()
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="keepPlacing">if <see langword="true"/> then this should keep placing more of this object regardless of weathr that's the defualt behaviour of the object being placed.</param>
+    public void PlaceObject(bool keepPlacing)
     {
-        if(_objectBeingPlaced != null)
+        if (_objectBeingPlaced != null)
         {
             var newObject = Instantiate(_objectBeingPlaced, _objectBeingPlaced.transform.position, _objectBeingPlaced.transform.rotation);
+
+            var wallNode = newObject.GetComponent<WallNode>();
+            if(wallNode != null)
+            {
+                Debug.Log($"Placing wall node {wallNode}. Connecting to last node: " + _lastWallNode);
+                wallNode.ConnectTo(_lastWallNode);
+                _lastWallNode = wallNode;
+                Debug.Log("New last wall node: " + _lastWallNode);
+                _objectBeingPlaced.GetComponent<WallNode>().ConnectTo(_lastWallNode); // make the ghost on the handle connect so that it knows where to connect its ghost wall to.
+                keepPlacing = true; // always keep placing walls, they should form a chain until the user cancels.
+            }
+            else
+            {
+                Debug.Log("Clearing last wall node because there's no wall node component.");
+                _lastWallNode = null;
+            }
             newObject.Place();
         }
+        if(!keepPlacing)
+        {
+            this.CancelPlacingObject();
+        }
     }
+
+    private WallNode _lastWallNode = null;
 
     public bool? CanRotateCurrentObject()
     {

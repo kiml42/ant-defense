@@ -111,9 +111,9 @@ public class UiPlane : MonoBehaviour
         }
     }
 
-    private static void CreateDummy(PlaceableGhost ghost, QuickBarButton newButton)
+    private static void CreateDummy(PlaceableObjectOrGhost ghost, QuickBarButton newButton)
     {
-        var objectToUse = ghost.Icon == null ? ghost.RealObject : ghost.Icon;
+        var objectToUse = ghost.ActualIcon;
         var dummy = Instantiate(objectToUse, newButton.transform.position + ghost.OffsetForButton, newButton.transform.rotation * ghost.RotationForButton);
         dummy.localScale = dummy.localScale.normalized * newButton.transform.localScale.magnitude * ghost.ScaleForButton;
         dummy.parent = newButton.transform;
