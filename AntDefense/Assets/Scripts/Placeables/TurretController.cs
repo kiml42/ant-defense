@@ -18,34 +18,34 @@ public class TurretController : MonoBehaviour
 
     void FixedUpdate()
     {
-        _reloadTimer -= Time.fixedDeltaTime;
-        if (_targetsInRange.Any())
+        this._reloadTimer -= Time.fixedDeltaTime;
+        if (this._targetsInRange.Any())
         {
             // TODO work out a better way to pick the target.
-            var bestTarget = _targetsInRange.First();
+            var bestTarget = this._targetsInRange.First();
 
             if(bestTarget == null || bestTarget.transform == null)
             {
-                _targetsInRange.Remove(bestTarget);
+                this._targetsInRange.Remove(bestTarget);
                 return;
             }
-            var direction = bestTarget.transform.position - Turner.transform.position;
-            Debug.DrawRay(Turner.transform.position, direction);
+            var direction = bestTarget.transform.position - this.Turner.transform.position;
+            Debug.DrawRay(this.Turner.transform.position, direction);
 
-            Turner.TurnTo(direction);
+            this.Turner.TurnTo(direction);
 
-            if(_reloadTimer < 0)
+            if(this._reloadTimer < 0)
             {
-                Fire();
-                _reloadTimer = this.ReloadTime;
+                this.Fire();
+                this._reloadTimer = this.ReloadTime;
             }
         }
     }
 
     private void Fire()
     {
-        var projectile = Instantiate(Projectile, Emitter.position, Emitter.rotation);
-        projectile.linearVelocity = Emitter.forward * ProjectileSpeed;
+        var projectile = Instantiate(this.Projectile, this.Emitter.position, this.Emitter.rotation);
+        projectile.linearVelocity = this.Emitter.forward * this.ProjectileSpeed;
 
         projectile.transform.parent = this.transform;
 
@@ -64,14 +64,14 @@ public class TurretController : MonoBehaviour
         var healthController = collision.gameObject.GetComponentInParent<HealthController>();
         if(healthController != null)
         {
-            _targetsInRange.Add(healthController);
+            this._targetsInRange.Add(healthController);
         }
-        CleanTargets();
+        this.CleanTargets();
     }
 
     private void CleanTargets()
     {
-        _targetsInRange = _targetsInRange.Where(t => t != null && t.transform != null).ToList();
+        this._targetsInRange = this._targetsInRange.Where(t => t != null && t.transform != null).ToList();
     }
 
     internal void DeregisterTarget(Collider collision)
@@ -80,8 +80,8 @@ public class TurretController : MonoBehaviour
         var healthController = collision.gameObject.GetComponentInParent<HealthController>();
         if (healthController != null)
         {
-            _targetsInRange.Remove(healthController);
+            this._targetsInRange.Remove(healthController);
         }
-        CleanTargets();
+        this.CleanTargets();
     }
 }

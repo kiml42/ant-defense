@@ -21,11 +21,11 @@ public class AntStateMachine : MonoBehaviour
     {
         get
         {
-            if (_currentTarget == null || _currentTarget.gameObject == null || _currentTarget.transform == null)
+            if (this._currentTarget == null || this._currentTarget.gameObject == null || this._currentTarget.transform == null)
             {
-                _currentTarget = null;
+                this._currentTarget = null;
             }
-            return _currentTarget;
+            return this._currentTarget;
         }
     }
 
@@ -60,12 +60,12 @@ public class AntStateMachine : MonoBehaviour
     {
         get
         {
-            if (_disableTrail) return null;
-            switch (State)
+            if (this._disableTrail) return null;
+            switch (this.State)
             {
                 case AntState.SeekingFood:
                 case AntState.ReturningToFood:
-                    TrailTargetValue = null; // no target value for trails to home.
+                    this.TrailTargetValue = null; // no target value for trails to home.
                     return Smell.Home;
                 case AntState.ReportingFood:
                 case AntState.CarryingFood:
@@ -73,7 +73,7 @@ public class AntStateMachine : MonoBehaviour
                 case AntState.ReturningHome:
                     return null;
                 default:
-                    throw new Exception("Unknown state " + State);
+                    throw new Exception("Unknown state " + this.State);
             }
         }
     }
@@ -87,29 +87,29 @@ public class AntStateMachine : MonoBehaviour
 
     private void Start()
     {
-        ViewPoint = ViewPoint != null ? ViewPoint : transform;
-        _rigidbody = this.GetComponent<Rigidbody>();
-        _priorityCalculator = this.GetComponent<ITargetPriorityCalculator>();
+        this.ViewPoint = this.ViewPoint != null ? this.ViewPoint : this.transform;
+        this._rigidbody = this.GetComponent<Rigidbody>();
+        this._priorityCalculator = this.GetComponent<ITargetPriorityCalculator>();
     }
 
     private void FixedUpdate()
     {
-        if (transform.position.y < -10)
+        if (this.transform.position.y < -10)
         {
             Destroy(this.gameObject);
             return;
         }
 
-        if (_currentTarget.IsDestroyed() || (CurrentTarget != null && CurrentTarget.IsSmellable == false))
+        if (this._currentTarget.IsDestroyed() || (this.CurrentTarget != null && this.CurrentTarget.IsSmellable == false))
         {
-            ClearTarget();
+            this.ClearTarget();
         }
 
         //test ray -This is successfully detecting obstacles between the ant and the current target!
-        if (CurrentTarget != null && ViewPoint != null)
+        if (this.CurrentTarget != null && this.ViewPoint != null)
         {
-            var end = ViewPoint.position;
-            var start = CurrentTarget.transform.position;
+            var end = this.ViewPoint.position;
+            var start = this.CurrentTarget.transform.position;
 
             //Debug.DrawRay(start, end - start, Color.magenta);
             var isHit = Physics.Raycast(start, end - start, out var hit, (end - start).magnitude);
@@ -127,7 +127,7 @@ public class AntStateMachine : MonoBehaviour
         //    Debug.Log("Not checking for barriers " + (this == null) + " - " + (ViewPoint == null));
         //}
 
-        foreach (var potentialTarget in _newBetterTargets)
+        foreach (var potentialTarget in this._newBetterTargets)
         {
             if (this.IsBetterThanCurrent(potentialTarget))
             {
@@ -139,39 +139,39 @@ public class AntStateMachine : MonoBehaviour
 
                 if (hasLineOfSight)
                 {
-                    SetTarget(potentialTarget);
+                    this.SetTarget(potentialTarget);
                 }
             }
         }
-        _newBetterTargets.Clear();
+        this._newBetterTargets.Clear();
 
-        if (State == AntState.ReportingFood && CurrentTarget != null && CurrentTarget.Smell == Smell.Food)
+        if (this.State == AntState.ReportingFood && this.CurrentTarget != null && this.CurrentTarget.Smell == Smell.Food)
         {
-            throw new Exception($"State is {State} so the currnet target should not be food, but it is {CurrentTarget}");
+            throw new Exception($"State is {this.State} so the currnet target should not be food, but it is {this.CurrentTarget}");
         }
 
-        _timeSinceTargetAquisition += Time.fixedDeltaTime;
-        if (CurrentTarget != null)
+        this._timeSinceTargetAquisition += Time.fixedDeltaTime;
+        if (this.CurrentTarget != null)
         {
-            Debug.DrawLine(transform.position, CurrentTarget.TargetPoint.position, Color.cyan);
-            if (!CurrentTarget.IsActual && _timeSinceTargetAquisition > MaxTimeGoingForTrailPoint)
+            Debug.DrawLine(this.transform.position, this.CurrentTarget.TargetPoint.position, Color.cyan);
+            if (!this.CurrentTarget.IsActual && this._timeSinceTargetAquisition > this.MaxTimeGoingForTrailPoint)
             {
-                _maxTargetPriority = CurrentTarget.Smell == Smell.Home
+                this._maxTargetPriority = this.CurrentTarget.Smell == Smell.Home
                     ? null  // Continue to accept any home smell after forgetting this one.
-                    : CurrentTarget.GetPriority(_priorityCalculator) - GiveUpPenalty; // Only accept better food smells after forgetting this one.
+                    : this.CurrentTarget.GetPriority(this._priorityCalculator) - this.GiveUpPenalty; // Only accept better food smells after forgetting this one.
                 //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
-                ClearTarget();
+                this.ClearTarget();
             }
-            else if (!CheckLineOfSight(CurrentTarget))
+            else if (!this.CheckLineOfSight(this.CurrentTarget))
             {
                 //Debug.Log("Lost sight of current target!");
-                ClearTarget();
+                this.ClearTarget();
             }
         }
-        if (_maxTargetPriority.HasValue)
+        if (this._maxTargetPriority.HasValue)
         {
             //Debug.Log($"MaxTargetTime {_maxTargetTime}");
-            _maxTargetPriority += Time.fixedDeltaTime * GiveUpRecoveryMultiplier;
+            this._maxTargetPriority += Time.fixedDeltaTime * this.GiveUpRecoveryMultiplier;
         }
     }
 
@@ -179,10 +179,10 @@ public class AntStateMachine : MonoBehaviour
     {
         // TODO This is working!!!! make it neat.
         bool hasLineOfSight;
-        if (potentialTarget != null && ViewPoint != null)
+        if (potentialTarget != null && this.ViewPoint != null)
         {
             Vector3 start = potentialTarget.transform.position;
-            Vector3 end = ViewPoint.position;
+            Vector3 end = this.ViewPoint.position;
             Vector3 direction = (end - start).normalized;
             float distance = Vector3.Distance(start, end);
 
@@ -221,7 +221,7 @@ public class AntStateMachine : MonoBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
-        PositionProvider.NoLongerTouching(collision.transform);
+        this.PositionProvider.NoLongerTouching(collision.transform);
     }
 
     private void OnTriggerExit(Collider other)
@@ -231,8 +231,8 @@ public class AntStateMachine : MonoBehaviour
         {
             // TODO work out how well this works from all states. (particularly when not leaving a trail from home)
             //Debug.Log($"State {State} -> ReturningHome");
-            State = AntState.ReturningHome;
-            SetTarget(LastTrailPoint);
+            this.State = AntState.ReturningHome;
+            this.SetTarget(this.LastTrailPoint);
         }
     }
 
@@ -243,8 +243,8 @@ public class AntStateMachine : MonoBehaviour
         if (@object.TryGetComponent<Smellable>(out var smellable))
         {
             //Debug.Log($"Collided With {@object} smellable: {smellable}");
-            ProcessCollisionWithSmell(smellable);
-            if (CurrentTarget == smellable)
+            this.ProcessCollisionWithSmell(smellable);
+            if (this.CurrentTarget == smellable)
             {
                 // this is now the target, and therefore is not an obstacle.
                 return;
@@ -266,10 +266,10 @@ public class AntStateMachine : MonoBehaviour
         // Also, make it only work for barriers, not other ants, so you don't get many ants going for a dead trail point and bumping each other forever.
 
         // allow more time going for the same target as the obstacle avoidence will hopefully be helping the ant work towards this target.
-        _timeSinceTargetAquisition -= CollisionTargetBonus;
+        this._timeSinceTargetAquisition -= this.CollisionTargetBonus;
 
         // TODO consider only detecting collisions at the front of the ant for this so it doesn't try to avoid things hitting it from behind.
-        PositionProvider.AvoidObstacle(collision);
+        this.PositionProvider.AvoidObstacle(collision);
     }
 
     /// <summary>
@@ -287,48 +287,48 @@ public class AntStateMachine : MonoBehaviour
         switch (smellable.Smell)
         {
             case Smell.Food:
-                if ((smellable.IsActual && State == AntState.SeekingFood) || State == AntState.ReturningToFood)
+                if ((smellable.IsActual && this.State == AntState.SeekingFood) || this.State == AntState.ReturningToFood)
                 {
-                    _maxTargetPriority = null;
+                    this._maxTargetPriority = null;
                     // When seeking or returning to food, rember smelled foods to know how much is in the area when setting the trail back home.
-                    _knownNearbyFood.Add(smellable.GetComponent<Food>());
+                    this._knownNearbyFood.Add(smellable.GetComponent<Food>());
                 }
-                switch (State)
+                switch (this.State)
                 {
                     case AntState.SeekingFood:
                         // has smelled a food or a food trail, follow the trail, or move towards the food!
                         if (!smellable.IsActual)
                         {
-                            if (IsScout)
+                            if (this.IsScout)
                             {
                                 // Scouts always ignore food smells except actual food.
                                 return;
                             }
                             // has found an existing trail, so retrn to the food and pick it up.
-                            State = AntState.ReturningToFood;
+                            this.State = AntState.ReturningToFood;
                         }
-                        if (IsScout && !smellable.IsPermanentSource)
+                        if (this.IsScout && !smellable.IsPermanentSource)
                         {
                             // Scouts only care about permanent sources of food.
                             return;
                         }
-                        _maxTargetPriority = null;
-                        ClearTarget();
-                        RegisterPotentialTarget(smellable);
+                        this._maxTargetPriority = null;
+                        this.ClearTarget();
+                        this.RegisterPotentialTarget(smellable);
                         return;
                     case AntState.ReturningToFood:
-                        RegisterPotentialTarget(smellable);
+                        this.RegisterPotentialTarget(smellable);
                         // in the Returning to food state, maintain the state until the food is actually collided with.
                         return;
                 }
                 return;
             case Smell.Home:
-                switch (State)
+                switch (this.State)
                 {
                     case AntState.ReturningHome:
                     case AntState.ReportingFood:
                     case AntState.CarryingFood:
-                        RegisterPotentialTarget(smellable);
+                        this.RegisterPotentialTarget(smellable);
 
                         return;
                 }
@@ -338,25 +338,25 @@ public class AntStateMachine : MonoBehaviour
 
     private void ClearTarget()
     {
-        _newBetterTargets.Clear();
-        _currentTarget = null;
-        PositionProvider.SetTarget(CurrentTarget);
+        this._newBetterTargets.Clear();
+        this._currentTarget = null;
+        this.PositionProvider.SetTarget(this.CurrentTarget);
     }
 
     private void RegisterPotentialTarget(Smellable smellable)
     {
-        if (State == AntState.ReportingFood && smellable.Smell == Smell.Food)
+        if (this.State == AntState.ReportingFood && smellable.Smell == Smell.Food)
         {
-            throw new Exception($"State is {State} so {smellable} should not be being considered as a possible target.");
+            throw new Exception($"State is {this.State} so {smellable} should not be being considered as a possible target.");
         }
 
-        if (CurrentTarget != null && CurrentTarget.IsActual == true)
+        if (this.CurrentTarget != null && this.CurrentTarget.IsActual == true)
         {
             // Always stick with an actual smell
             return;
         }
 
-        if (_maxTargetPriority.HasValue && smellable.GetPriority(_priorityCalculator) > _maxTargetPriority)
+        if (this._maxTargetPriority.HasValue && smellable.GetPriority(this._priorityCalculator) > this._maxTargetPriority)
         {
             //Debug.Log("Ignoring " + smellable + " because it's more than " + _maxTargetTime + " from the target.");
             return;
@@ -364,11 +364,11 @@ public class AntStateMachine : MonoBehaviour
 
         if (this.IsBetterThanCurrent(smellable))
         {
-            if (IsScout && !smellable.IsActual && smellable.Smell == Smell.Food)
+            if (this.IsScout && !smellable.IsActual && smellable.Smell == Smell.Food)
             {
                 throw new Exception("Scouts should never go for food smells!");
             }
-            _newBetterTargets.Add(smellable);
+            this._newBetterTargets.Add(smellable);
             //// TODO thoroughly test this and refactor it to be neater if it works.
             //bool hasLineOfSight;
             //Debug.Log("Checking for obstacles betwen " + this + " and " + smellable);
@@ -417,16 +417,16 @@ public class AntStateMachine : MonoBehaviour
 
     private bool IsBetterThanCurrent(Smellable smellable)
     {
-        return CurrentTarget == null    // there is no current target
-            || (smellable.IsActual && !CurrentTarget.IsActual)  // the new one is actual and the current one isn't
-            || smellable.GetPriority(_priorityCalculator) < CurrentTarget.GetPriority(_priorityCalculator); // the new one has a better priority than the current one
+        return this.CurrentTarget == null    // there is no current target
+            || (smellable.IsActual && !this.CurrentTarget.IsActual)  // the new one is actual and the current one isn't
+            || smellable.GetPriority(this._priorityCalculator) < this.CurrentTarget.GetPriority(this._priorityCalculator); // the new one has a better priority than the current one
     }
 
     private void SetTarget(Smellable smellable)
     {
-        _currentTarget = smellable;
-        PositionProvider.SetTarget(CurrentTarget);
-        _timeSinceTargetAquisition = 0;
+        this._currentTarget = smellable;
+        this.PositionProvider.SetTarget(this.CurrentTarget);
+        this._timeSinceTargetAquisition = 0;
     }
 
     private void ProcessCollisionWithSmell(Smellable smellable)
@@ -435,54 +435,54 @@ public class AntStateMachine : MonoBehaviour
         {
             case Smell.Food:
 
-                if (_carriedFood != null) return;   // ignore all other food if already carrying
-                if (IsScout)
+                if (this._carriedFood != null) return;   // ignore all other food if already carrying
+                if (this.IsScout)
                 {
-                    if (!smellable.IsPermanentSource || State == AntState.ReportingFood) return;
-                    ReportFoodWithoutCarryingIt(smellable);
+                    if (!smellable.IsPermanentSource || this.State == AntState.ReportingFood) return;
+                    this.ReportFoodWithoutCarryingIt(smellable);
                     return;
                 }
-                if (!smellable.IsPermanentSource && (State == AntState.SeekingFood || State == AntState.ReturningToFood || State == AntState.ReturningHome))
+                if (!smellable.IsPermanentSource && (this.State == AntState.SeekingFood || this.State == AntState.ReturningToFood || this.State == AntState.ReturningHome))
                 {
                     // it's a one-off, so just take it home.
-                    CollectKnownFood(smellable);
-                    _disableTrail = true;
+                    this.CollectKnownFood(smellable);
+                    this._disableTrail = true;
                     return;
                 }
-                switch (State)
+                switch (this.State)
                 {
                     case AntState.SeekingFood:
-                        ReportFoodWithoutCarryingIt(smellable);
+                        this.ReportFoodWithoutCarryingIt(smellable);
                         return;
                     case AntState.ReturningToFood:
-                        CollectKnownFood(smellable);
-                        _disableTrail = false;
+                        this.CollectKnownFood(smellable);
+                        this._disableTrail = false;
                         return;
                 }
                 return;
             case Smell.Home:
-                EatFoodAtHome(smellable);
-                if (IsScout)
+                this.EatFoodAtHome(smellable);
+                if (this.IsScout)
                 {
                     this.GoBackToSeekingFood();
                     return;
                 }
-                switch (State)
+                switch (this.State)
                 {
                     case AntState.ReportingFood:
-                        _disableTrail = false;
-                        _maxTargetPriority = null;
-                        ClearTarget();
-                        State = AntState.ReturningToFood;
-                        RegisterPotentialTarget(LastTrailPoint);
+                        this._disableTrail = false;
+                        this._maxTargetPriority = null;
+                        this.ClearTarget();
+                        this.State = AntState.ReturningToFood;
+                        this.RegisterPotentialTarget(this.LastTrailPoint);
                         return;
                     case AntState.CarryingFood:
-                        _disableTrail = false;
-                        State = AntState.ReturningToFood;
-                        _maxTargetPriority = null;
-                        ClearTarget();
-                        RegisterPotentialTarget(LastTrailPoint);
-                        DropOffFood(smellable);
+                        this._disableTrail = false;
+                        this.State = AntState.ReturningToFood;
+                        this._maxTargetPriority = null;
+                        this.ClearTarget();
+                        this.RegisterPotentialTarget(this.LastTrailPoint);
+                        this.DropOffFood(smellable);
                         return;
                     case AntState.ReturningHome:
                         this.GoBackToSeekingFood();
@@ -495,19 +495,19 @@ public class AntStateMachine : MonoBehaviour
     private void GoBackToSeekingFood()
     {
         this.PositionProvider.RandomiseVector();
-        _disableTrail = false;
-        State = AntState.SeekingFood;
-        _maxTargetPriority = null;
-        ClearTarget();
+        this._disableTrail = false;
+        this.State = AntState.SeekingFood;
+        this._maxTargetPriority = null;
+        this.ClearTarget();
     }
 
     private void CollectKnownFood(Smellable smellable)
     {
-        _maxTargetPriority = null;
-        ClearTarget();
-        RegisterPotentialTarget(LastTrailPoint);
+        this._maxTargetPriority = null;
+        this.ClearTarget();
+        this.RegisterPotentialTarget(this.LastTrailPoint);
         this.UpdateTrailValueForKnownFood();
-        PickUpFood(smellable);
+        this.PickUpFood(smellable);
         smellable.IsSmellable = false;  // TODO consider when/if to turn this back on. (e.g. if the ant dies while carrying the food, or drops the food)
     }
 
@@ -518,19 +518,19 @@ public class AntStateMachine : MonoBehaviour
         this.UpdateTrailValueForKnownFood();
 
         //Debug.Log($"State Seeking -> Reporting");
-        State = AntState.ReportingFood;
-        _maxTargetPriority = null;
-        _disableTrail = false;
-        ClearTarget();
-        this.RegisterPotentialTarget(LastTrailPoint);
+        this.State = AntState.ReportingFood;
+        this._maxTargetPriority = null;
+        this._disableTrail = false;
+        this.ClearTarget();
+        this.RegisterPotentialTarget(this.LastTrailPoint);
     }
 
     private void UpdateTrailValueForKnownFood()
     {
         // Leave a trail indicating how much food has been found at this location.
-        var remainingFoodValue = _knownNearbyFood.Sum(f => f != null ? f.FoodValue : 0);
+        var remainingFoodValue = this._knownNearbyFood.Sum(f => f != null ? f.FoodValue : 0);
         this.TrailTargetValue = remainingFoodValue;
-        _knownNearbyFood.Clear();   // Forget about all the food now it knows what value to use for the trail.
+        this._knownNearbyFood.Clear();   // Forget about all the food now it knows what value to use for the trail.
     }
 
     public Digestion Digestion;
@@ -538,30 +538,30 @@ public class AntStateMachine : MonoBehaviour
 
     private void EatFoodAtHome(Smellable smellable)
     {
-        if (Digestion == null) return;
+        if (this.Digestion == null) return;
         var home = smellable.GetComponentInParent<AntNest>();
 
-        Digestion.EatFoodFrom(home);
+        this.Digestion.EatFoodFrom(home);
     }
 
     private void DropOffFood(Smellable smellable)
     {
-        if (_carriedFood == null || _carriedFood.gameObject == null || _carriedFood.gameObject.IsDestroyed())
+        if (this._carriedFood == null || this._carriedFood.gameObject == null || this._carriedFood.gameObject.IsDestroyed())
         {
-            _carriedFood = null;
+            this._carriedFood = null;
             return;
         }
         var home = smellable.GetComponentInParent<AntNest>();
 
-        home.AddFood(_carriedFood.FoodValue);
+        home.AddFood(this._carriedFood.FoodValue);
 
-        _carriedFood.Destroy();
-        _carriedFood = null;
+        this._carriedFood.Destroy();
+        this._carriedFood = null;
     }
 
     private void PickUpFood(Smellable smellable)
     {
-        if (CarryPoint == null)
+        if (this.CarryPoint == null)
         {
             throw new Exception("Cannot carry food with no carry point");
         }
@@ -577,25 +577,25 @@ public class AntStateMachine : MonoBehaviour
             lifetime.Reset();
         }
 
-        PickUpFood(food);
+        this.PickUpFood(food);
 
-        State = AntState.CarryingFood;
+        this.State = AntState.CarryingFood;
     }
 
     private void PickUpFood(Food food)
     {
-        _carriedFood = food;
-        food.transform.position = CarryPoint.position;
-        food.Attach(_rigidbody);
+        this._carriedFood = food;
+        food.transform.position = this.CarryPoint.position;
+        food.Attach(this._rigidbody);
     }
 
     private Smellable LastTrailPoint
     {
         get
         {
-            if (TrailController == null || TrailController.gameObject == null)
+            if (this.TrailController == null || this.TrailController.gameObject == null)
                 return null;
-            return TrailController.LastTrailPoint;
+            return this.TrailController.LastTrailPoint;
         }
     }
 }

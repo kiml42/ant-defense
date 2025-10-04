@@ -25,7 +25,7 @@ public class NoSpawnZone : BaseGhostable
         }
 
         AllNoSpawnZones.Add(this);
-        AddIntersectionPoints();
+        this.AddIntersectionPoints();
     }
 
     private void OnDestroy()
@@ -36,7 +36,7 @@ public class NoSpawnZone : BaseGhostable
     private void Deactivate()
     {
         this.enabled = false;
-        RemoveIntersectionPoints();
+        this.RemoveIntersectionPoints();
         AllNoSpawnZones.Remove(this);
     }
 
@@ -112,7 +112,7 @@ public class NoSpawnZone : BaseGhostable
         var previous = (Vector3?)null;
         for (int i = 0; i < 33; i++)
         {
-            var target = this.transform.position + new Vector3(Mathf.Cos(i * Mathf.PI / 16), 0, Mathf.Sin(i * Mathf.PI / 16)) * Radius;
+            var target = this.transform.position + new Vector3(Mathf.Cos(i * Mathf.PI / 16), 0, Mathf.Sin(i * Mathf.PI / 16)) * this.Radius;
             target = new Vector3(target.x, 0, target.z);
             if (previous != null)
             {
@@ -128,7 +128,7 @@ public class NoSpawnZone : BaseGhostable
         {
             if (other == this) continue;
 
-            var intersectionPoints = CalculateIntersectionPoints(other);
+            var intersectionPoints = this.CalculateIntersectionPoints(other);
             foreach (var point in intersectionPoints)
             {
                 var intersectionPoint = new IntersectionPoint

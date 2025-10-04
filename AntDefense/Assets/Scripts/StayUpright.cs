@@ -7,20 +7,20 @@ public class StayUpright : MonoBehaviour
 
     void Start()
     {
-        _rigidbody = GetComponent<Rigidbody>();
+        this._rigidbody = this.GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
         // always apply torque to get upright.
-        Vector3 headingError = Vector3.Cross(transform.up, Vector3.up) * 10;
+        Vector3 headingError = Vector3.Cross(this.transform.up, Vector3.up) * 10;
 
         if (headingError.magnitude > 1)
         {
             headingError.Normalize();
         }
 
-        _rigidbody.AddTorque(headingError * TorqueMultiplier);
+        this._rigidbody.AddTorque(headingError * this.TorqueMultiplier);
     }
 }

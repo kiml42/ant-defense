@@ -23,24 +23,24 @@ public class ContinualSpawner : MonoBehaviour
 
     void Start()
     {
-        if (ParentForSpawnedObjects == null)
+        if (this.ParentForSpawnedObjects == null)
         {
-            ParentForSpawnedObjects = this.gameObject;
+            this.ParentForSpawnedObjects = this.gameObject;
         }
-        SpawnObjects(FirstSpawnCount);
+        this.SpawnObjects(this.FirstSpawnCount);
     }
 
     void FixedUpdate()
     {
-        if (MaxSpawns >= 0 && _spawnCount >= MaxSpawns)
+        if (this.MaxSpawns >= 0 && this._spawnCount >= this.MaxSpawns)
         {
             this.enabled = false;
             return;
         }
-        _timeUntilSpawn -= Time.fixedDeltaTime;
-        if (_timeUntilSpawn < 0)
+        this._timeUntilSpawn -= Time.fixedDeltaTime;
+        if (this._timeUntilSpawn < 0)
         {
-            this.SpawnObjects(CountPerSpawn);
+            this.SpawnObjects(this.CountPerSpawn);
         }
     }
 
@@ -49,15 +49,15 @@ public class ContinualSpawner : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             var randomisation = Random.insideUnitSphere;
-            randomisation.Scale(SpawnPositionRandomisation);
+            randomisation.Scale(this.SpawnPositionRandomisation);
 
-            var position = (DefaultSpawnPoint?.position ?? this.transform.position) + new Vector3(randomisation.x, randomisation.y, randomisation.z);
+            var position = (this.DefaultSpawnPoint?.position ?? this.transform.position) + new Vector3(randomisation.x, randomisation.y, randomisation.z);
 
             var orientation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
 
-            Instantiate(PrefabToSpawn, position, orientation, ParentForSpawnedObjects.transform);
+            Instantiate(this.PrefabToSpawn, position, orientation, this.ParentForSpawnedObjects.transform);
         }
-        _timeUntilSpawn = Random.Range(MinRespawnTime, MaxRespawnTime);
-        _spawnCount++;
+        this._timeUntilSpawn = Random.Range(this.MinRespawnTime, this.MaxRespawnTime);
+        this._spawnCount++;
     }
 }

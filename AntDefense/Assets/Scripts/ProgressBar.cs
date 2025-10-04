@@ -4,7 +4,7 @@ public class ProgressBar : MonoBehaviour
 {
     public void AdjustProgress(float currentValue, float MaxValue)
     {
-        AdjustProgress(currentValue / MaxValue);
+        this.AdjustProgress(currentValue / MaxValue);
     }
     public void AdjustProgress(float progress)
     {

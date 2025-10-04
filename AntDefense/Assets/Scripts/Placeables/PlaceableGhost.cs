@@ -10,7 +10,7 @@ public class PlaceableGhost : PlaceableObjectOrGhost
 
     protected override void Finalise()
     {
-        var newObject = Instantiate(RealObject, transform.position + SpawnOffset, transform.rotation);
+        var newObject = Instantiate(this.RealObject, this.transform.position + this.SpawnOffset, this.transform.rotation);
 
         var foodSmells = newObject.GetComponentsInChildren<FoodSmell>();
         foreach (var foodSmell in foodSmells)
@@ -18,7 +18,7 @@ public class PlaceableGhost : PlaceableObjectOrGhost
             foodSmell.MarkAsPermanant(false);
         }
 
-        Destroy(gameObject);
+        Destroy(this.gameObject);
     }
 }
 
@@ -69,7 +69,7 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
     /// </summary>
     public virtual void Place()
     {
-        _isPlaced = true;
+        this._isPlaced = true;
 
         this.SetNoSpawnZoneEnabled(true);
     }
@@ -77,12 +77,12 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_isPlaced)
+        if (this._isPlaced)
         {
-            TimeOut -= Time.deltaTime;
-            if (TimeOut < 0)
+            this.TimeOut -= Time.deltaTime;
+            if (this.TimeOut < 0)
             {
-                Finalise();
+                this.Finalise();
             }
             this.SetNoSpawnZoneEnabled(true);
         }

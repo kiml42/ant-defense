@@ -11,25 +11,25 @@ public class LifetimeController : MonoBehaviour
 
     public void Reset()
     {
-        RemainingTime = _initialLifetime;
+        this.RemainingTime = this._initialLifetime;
     }
 
     private void Start()
     {
-        _initialLifetime = RemainingTime;
-        _initialScale = this.transform.localScale;
+        this._initialLifetime = this.RemainingTime;
+        this._initialScale = this.transform.localScale;
     }
 
     private void FixedUpdate()
     {
-        RemainingTime -= Time.fixedDeltaTime;
-        if (RemainingTime <= 0)
+        this.RemainingTime -= Time.fixedDeltaTime;
+        if (this.RemainingTime <= 0)
         {
             Destroy(this.gameObject);
         }
-        if (ScaleDownTime > 0 && RemainingTime < ScaleDownTime)
+        if (this.ScaleDownTime > 0 && this.RemainingTime < this.ScaleDownTime)
         {
-            this.transform.localScale = _initialScale * RemainingTime / ScaleDownTime;
+            this.transform.localScale = this._initialScale * this.RemainingTime / this.ScaleDownTime;
         }
     }
 }

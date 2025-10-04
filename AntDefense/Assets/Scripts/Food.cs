@@ -10,7 +10,7 @@ public class Food : Carryable
     public override void Attach(Rigidbody other)
     {
         base.Attach(other);
-        foreach (var smell in Smells)
+        foreach (var smell in this.Smells)
         {
             if(smell == null)
                 continue;   // TODO - this shouldn't happen.
@@ -22,7 +22,7 @@ public class Food : Carryable
     public override void Detach()
     {
         base.Detach();
-        foreach (var smell in Smells)
+        foreach (var smell in this.Smells)
         {
             smell.enabled = true;
             smell.IsSmellable = true;
@@ -38,25 +38,25 @@ public abstract class Carryable : MonoBehaviour
 
     private void Start()
     {
-        _rigidbody = this.GetOrAddComponent<Rigidbody>();
-        Mass = _rigidbody.mass;
+        this._rigidbody = this.GetOrAddComponent<Rigidbody>();
+        this.Mass = this._rigidbody.mass;
     }
 
     public virtual void Detach()
     {
         this.transform.parent = null;
-        _rigidbody=this.GetOrAddComponent<Rigidbody>();
-        _rigidbody.mass = Mass;
+        this._rigidbody =this.GetOrAddComponent<Rigidbody>();
+        this._rigidbody.mass = this.Mass;
 
-        _carrier.mass -= Mass;
+        this._carrier.mass -= this.Mass;
     }
 
     public virtual void Destroy()
     {
         this.transform.parent = null;
-        if (_carrier != null)
+        if (this._carrier != null)
         {
-            _carrier.mass -= Mass;
+            this._carrier.mass -= this.Mass;
         }
         //Debug.Log($"Decreasing {_carrier.name}'s mass by {Mass} to {_carrier.mass}");
         Destroy(this.gameObject);
@@ -65,10 +65,10 @@ public abstract class Carryable : MonoBehaviour
     public virtual void Attach(Rigidbody other)
     {
         if (other == null || other.transform == null) return;
-        transform.parent = other.transform;
-        other.mass += Mass;
-        _carrier = other;
+        this.transform.parent = other.transform;
+        other.mass += this.Mass;
+        this._carrier = other;
         //Debug.Log($"Increasing {_carrier.name}'s mass by {Mass} to {_carrier.mass}");
-        Destroy(_rigidbody);
+        Destroy(this._rigidbody);
     }
 }

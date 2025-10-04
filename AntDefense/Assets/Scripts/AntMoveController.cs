@@ -11,41 +11,41 @@ public class AntMoveController : MonoBehaviour
 
     void Start()
     {
-        _rigidbody = GetComponent<Rigidbody>();
-        _positionProvider = GetComponent<AntTargetPositionProvider>();
+        this._rigidbody = this.GetComponent<Rigidbody>();
+        this._positionProvider = this.GetComponent<AntTargetPositionProvider>();
     }
 
     void FixedUpdate()
     {
-        Turn();
-        ApplyForce();
+        this.Turn();
+        this.ApplyForce();
     }
 
     private void Turn()
     {
         // always apply torque to get upright.
-        Vector3 headingError = Vector3.Cross(transform.up, Vector3.up) * 10;
+        Vector3 headingError = Vector3.Cross(this.transform.up, Vector3.up) * 10;
 
-        if (IsUpright)
+        if (this.IsUpright)
         {
             // only turn towards teh target if upright
-            var direction = _positionProvider.DirectionToMove;
+            var direction = this._positionProvider.DirectionToMove;
 
-            var angle = Vector3.SignedAngle(transform.forward, direction, transform.up);
+            var angle = Vector3.SignedAngle(this.transform.forward, direction, this.transform.up);
 
             if(angle >= 90)
             {
-                headingError += transform.up;
+                headingError += this.transform.up;
             }
             else if(angle <= -90)
             {
-                headingError -= transform.up;
+                headingError -= this.transform.up;
             }
             else
             {
                 //Debug.DrawRay(transform.position, direction, Color.blue);
 
-                headingError = Vector3.Cross(transform.forward, direction).normalized;
+                headingError = Vector3.Cross(this.transform.forward, direction).normalized;
             }
         }
 
@@ -58,20 +58,20 @@ public class AntMoveController : MonoBehaviour
 
 
         //_rigidbody.rotation = targetRotation;
-        _rigidbody.AddTorque(headingError * TorqueMultiplier);
+        this._rigidbody.AddTorque(headingError * this.TorqueMultiplier);
     }
 
-    private bool IsUpright => transform.up.y > 0.8;
+    private bool IsUpright => this.transform.up.y > 0.8;
 
     private void ApplyForce()
     {
-        if (!IsUpright)
+        if (!this.IsUpright)
         {
             return;
         }
 
-        var force = _rigidbody.transform.forward * ForceMultiplier;
+        var force = this._rigidbody.transform.forward * this.ForceMultiplier;
         //force.y = 0;
-        _rigidbody.AddForce(force, ForceMode.Impulse);
+        this._rigidbody.AddForce(force, ForceMode.Impulse);
     }
 }

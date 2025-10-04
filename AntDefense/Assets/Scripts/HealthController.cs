@@ -5,34 +5,34 @@ public class HealthController : MonoBehaviour
     public float MaxHealth = 10f;
     private float? _currentHealth = null;
 
-    private float CurrentHealth => _currentHealth ?? MaxHealth;
+    private float CurrentHealth => this._currentHealth ?? this.MaxHealth;
 
     public ProgressBar HealthBar;
 
-    public float Damage => MaxHealth - CurrentHealth;
+    public float Damage => this.MaxHealth - this.CurrentHealth;
 
     public void Heal(float additionalHealth)
     {
-        _currentHealth = Mathf.Min(MaxHealth, CurrentHealth + additionalHealth);
-        UpdateBar();
+        this._currentHealth = Mathf.Min(this.MaxHealth, this.CurrentHealth + additionalHealth);
+        this.UpdateBar();
     }
 
     public void Injure(float lostHealth)
-    { 
-        _currentHealth = CurrentHealth - lostHealth;
-        if (CurrentHealth <= 0)
+    {
+        this._currentHealth = this.CurrentHealth - lostHealth;
+        if (this.CurrentHealth <= 0)
         {
             Debug.Log(this.transform + " has died");
             // TODO drop food when killed (and reactivate it's smell)
             // TODO create dead ant when killed.
-            Destroy(gameObject);
+            Destroy(this.gameObject);
             return;
         }
-        UpdateBar();
+        this.UpdateBar();
     }
 
     private void UpdateBar()
     {
-        HealthBar?.AdjustProgress(CurrentHealth, MaxHealth);
+        this.HealthBar?.AdjustProgress(this.CurrentHealth, this.MaxHealth);
     }
 }
