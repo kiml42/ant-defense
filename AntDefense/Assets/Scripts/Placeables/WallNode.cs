@@ -1,6 +1,12 @@
 using UnityEngine;
 
-public class WallNode : PlaceableMonoBehaviour
+
+public interface IPlaceablePositionValidator
+{
+    bool PositionIsValid(Vector3 position);
+}
+
+public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator
 {
     public WallNode ConnectedNode;
     public Transform Wall;
@@ -19,8 +25,7 @@ public class WallNode : PlaceableMonoBehaviour
         this.ConnectedNode = other;
     }
 
-    // TODO make a position validator interface, or consider fixing the position instead of just disallowing placement.
-    internal bool PositionIsValid(Vector3 position)
+    public bool PositionIsValid(Vector3 position)
     {
         return this.ConnectedNode == null || (position - this.ConnectedNode.transform.position).magnitude <= this.MaxLength + 0.1f;
     }

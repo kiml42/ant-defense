@@ -120,8 +120,22 @@ public class ObjectPlacer : MonoBehaviour
 
     internal bool PositionIsValid(Vector3 position)
     {
-        var wallNodeBeingPlaced = this.WallNodeBeingPlaced;
-        return wallNodeBeingPlaced == null || wallNodeBeingPlaced.PositionIsValid(position);
+        if (this._objectBeingPlaced != null)
+        {
+            var positionValidators = this._objectBeingPlaced.GetComponentsInChildren<IPlaceablePositionValidator>();
+            if (positionValidators != null && positionValidators.Length != 0)
+            {
+                foreach (var validator in positionValidators)
+                {
+                    if (!validator.PositionIsValid(position))
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true; // no object being placed, so position is valid.
     }
 
     /// <summary>
