@@ -53,34 +53,14 @@ public class NoSpawnZone : BaseGhostable
             previousGoodPosition = null;    // the position isn't good anymore.
         }
 
-        var allowedArea = GetAllowedArea();
-        if (allowedArea.HasValue && !IsInRadius(position, allowedArea.Value))
-        {
-            // the position is outside the allowed area.
-            var closestEdgePointInRange = GetClosestPointOnEdge(position, allowedArea.Value);
-            if (!IsInAnyNoSpawnZone(closestEdgePointInRange))
-            {
-                // the closest point on the edge of the allowed area is not in a no spawn zone, so return that.
-                return closestEdgePointInRange;
-            }
-            else
-            {
-                // this point is still in a no spawn zone, return null to say this can't find a good position.
-                return null;
-                // TODO: consider checking the intersections between this circle and all the no spawn zones.
-                // Get list of all the intersections between this circle and the no spawn zones.
-                // discard those that are in a no spawn zone.
-                // add these to the list of points to check.
-                // This might be too heavy to do every frame, so it might need caching if the allowed area doesn't change, or just not worth bothering with.
-            }
-        }
+        (Vector3 center, float radius)? allowedArea;
 
         var transgressedZones = AllNoSpawnZones.Where(z => z.IsInNoSpawnZone(position, leeway));
-        if (!transgressedZones.Any() && (allowedArea == null || IsInRadius(position, allowedArea.Value)))
+        if (!transgressedZones.Any())
         {
-            // Not in any no spawn zone, and inside the allowed area.
-            // so nothing to do.
-            return null;
+            // Not in any no spawn zone
+            // move into the allowed area if there is one
+            return GetClosestPositionInAllowedArea(position);
         }
 
         Action<Vector3> keepIfBetter = (v) =>
@@ -101,8 +81,7 @@ public class NoSpawnZone : BaseGhostable
         var pointsToCheck = transgressedZones.Select(z => GetClosestPointOnEdge(position, z)).ToList();
         pointsToCheck.AddRange(_intersectionPoints.Where(p => p.IsOnEdge == true).Select(i => i.Point));
 
-
-        foreach(var edgePoint in pointsToCheck)
+        foreach (var edgePoint in pointsToCheck)
         {
             if (IsInAnyNoSpawnZone(edgePoint))
             {
@@ -111,7 +90,44 @@ public class NoSpawnZone : BaseGhostable
             }
             keepIfBetter(edgePoint);
         }
-        return bestPoint;
+
+        // move the best point into the allowed area if there is one, and it's otside it.
+        return GetClosestPositionInAllowedArea(bestPoint)
+            ?? bestPoint;   // use best point if GetClosestPositionInAllowedArea returns null, which it will if the best point is already within the allowed area.
+    }
+
+    /// <summary>
+    /// Determines the closest valid position within the allowed area to the specified position.
+    /// </summary>
+    /// <remarks>If the specified position is outside the allowed area, the method attempts to find the
+    /// closest point  on the edge of the allowed area that is not within a restricted "no spawn zone." If no such point
+    /// exists,  the method returns <see langword="null"/>.</remarks>
+    /// <param name="position">The position to evaluate. Can be <see langword="null"/>.</param>
+    /// <returns>The closest valid position within the allowed area, or <see langword="null"/> if the input position is  <see langword="null"/> or no valid position can be determined, or the position doens't need to be updated.</returns>
+    private static Vector3? GetClosestPositionInAllowedArea(Vector3? position)
+    {
+        if(!position.HasValue) return null;
+        var allowedArea = GetAllowedArea();
+        if (allowedArea.HasValue && !IsInRadius(position.Value, allowedArea.Value))
+        {
+            //Debug.Log("Position is outside the allowed area, moving it in." + position.Value);
+            // the position is outside the allowed area.
+            var closestEdgePointInRange = GetClosestPointOnEdge(position.Value, allowedArea.Value);
+            if (!IsInAnyNoSpawnZone(closestEdgePointInRange))
+            {
+                //Debug.Log("The closest point on the edge of the allowed area is not in a no spawn zone, so using that." + closestEdgePointInRange);
+                // the closest point on the edge of the allowed area is not in a no spawn zone, so return that.
+                return closestEdgePointInRange;
+            }
+            else
+            {
+                //Debug.Log("The closest point on the edge of the allowed area is still in a no spawn zone, so can't find a good position." + closestEdgePointInRange);
+                // this point is still in a no spawn zone, return null to say this can't find a good position.
+                return null;
+            }
+        }
+
+        return null;
     }
 
     private static (Vector3 center, float radius)? GetAllowedArea()
