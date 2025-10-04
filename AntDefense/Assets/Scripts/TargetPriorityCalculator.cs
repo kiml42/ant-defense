@@ -27,8 +27,8 @@ public class TargetPriorityCalculator : MonoBehaviour, ITargetPriorityCalculator
 
     private void Start()
     {
-        _actualValueWeighting = ValueWeighting + Random.Range(-ValueWeightingRandomisation, ValueWeightingRandomisation);
-        _actualValueWeighting = Mathf.Clamp01(_actualValueWeighting);   // ensure it's still between 0 and 1, below 0 will actually prefer lower value targets, and above 1 will prefer more distant targets.
+        this._actualValueWeighting = this.ValueWeighting + Random.Range(-this.ValueWeightingRandomisation, this.ValueWeightingRandomisation);
+        this._actualValueWeighting = Mathf.Clamp01(this._actualValueWeighting);   // ensure it's still between 0 and 1, below 0 will actually prefer lower value targets, and above 1 will prefer more distant targets.
     }
 
     /// <summary>
@@ -39,6 +39,6 @@ public class TargetPriorityCalculator : MonoBehaviour, ITargetPriorityCalculator
     /// <returns></returns>
     public float CalculatePriority(float distanceFromTarget, float? targetValue)
     {
-        return ((1-_actualValueWeighting) * distanceFromTarget) - (_actualValueWeighting * targetValue ?? 0);
+        return ((1- this._actualValueWeighting) * distanceFromTarget) - (this._actualValueWeighting * targetValue ?? 0);
     }
 }

@@ -13,19 +13,19 @@ public class ColliderTrigger : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_currentTargets.Any())
+        if (this._currentTargets.Any())
         {
-            _timeToTrigger -= Time.fixedDeltaTime;
+            this._timeToTrigger -= Time.fixedDeltaTime;
             //Debug.Log("Trigger in " + _timeToTrigger);
-            if( _timeToTrigger <= 0)
+            if(this._timeToTrigger <= 0)
             {
-                Triggerable.Trigger();
-                _currentTargets.Clear();
+                this.Triggerable.Trigger();
+                this._currentTargets.Clear();
             }
         }
         else
         {
-            _timeToTrigger = TriggerDelay;
+            this._timeToTrigger = this.TriggerDelay;
         }
     }
 
@@ -36,11 +36,11 @@ public class ColliderTrigger : MonoBehaviour
         if (target != null)
         {
             Debug.Log($"Triggering for " + target);
-            _currentTargets.Add(other);
+            this._currentTargets.Add(other);
         }
     }
     private void OnTriggerExit(Collider other)
     {
-        _currentTargets.Remove(other);
+        this._currentTargets.Remove(other);
     }
 }

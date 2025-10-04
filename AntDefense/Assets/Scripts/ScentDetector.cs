@@ -43,12 +43,12 @@ public class ScentDetector : MonoBehaviour
         //    Debug.Log("3. Not checking for barriers");
         //}
 
-        ProcessSmell(collider?.gameObject);
+        this.ProcessSmell(collider?.gameObject);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        ProcessSmell(collision.gameObject);
+        this.ProcessSmell(collision.gameObject);
     }
 
     private void ProcessSmell(GameObject @object)
@@ -57,7 +57,7 @@ public class ScentDetector : MonoBehaviour
 
         if (smellable != null)
         {
-            AntStateMachine.ProcessSmell(smellable);
+            this.AntStateMachine.ProcessSmell(smellable);
         }
 
     }

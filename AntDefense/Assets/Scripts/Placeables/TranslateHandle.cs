@@ -18,10 +18,10 @@ public class TranslateHandle : MonoBehaviour
 
     private void Start()
     {
-        _uiLayermask = LayerMask.GetMask("UI");
-        _groundLayermask = LayerMask.GetMask("Ground");
-        _materials = this.GetComponentsInChildren<Renderer>().SelectMany(r => r.materials);
-        _originalColour = _materials.First().color;
+        this._uiLayermask = LayerMask.GetMask("UI");
+        this._groundLayermask = LayerMask.GetMask("Ground");
+        this._materials = this.GetComponentsInChildren<Renderer>().SelectMany(r => r.materials);
+        this._originalColour = this._materials.First().color;
     }
 
     private Vector3? _lastMousePosition;
@@ -34,12 +34,12 @@ public class TranslateHandle : MonoBehaviour
 
         if (Input.GetMouseButtonUp(this.PlaceMouseButton))
         {
-            HandleMainMouseUp();
+            this.HandleMainMouseUp();
         }
 
-        HandleMousePosition();
+        this.HandleMousePosition();
 
-        ScaleForDistanceToCamera();
+        this.ScaleForDistanceToCamera();
 
         if (ObjectPlacer.Instance.CanRotateCurrentObject() == false)
         {
@@ -52,27 +52,26 @@ public class TranslateHandle : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Escape))
         {
             ObjectPlacer.Instance.CancelPlacingObject();
-            _distanceSinceClick = 0;
-            _lastMousePosition = null;
+            this._distanceSinceClick = 0;
+            this._lastMousePosition = null;
             return;
         }
         if (Input.GetMouseButtonDown(this.CancelMouseButton))
         {
-            RaycastHit hit;
-            if (this.RaycastToFloor(out hit))
+            if (this.RaycastToFloor(out var hit))
             {
-                _lastMousePosition = hit.point;
+                this._lastMousePosition = hit.point;
             }
         }
         if (Input.GetMouseButtonUp(this.CancelMouseButton))
         {
             //Debug.Log("Cancel mouse up after moving " + _distanceSinceClick);
-            if (_distanceSinceClick < CancelThreshold)
+            if (this._distanceSinceClick < this.CancelThreshold)
             {
                 ObjectPlacer.Instance.CancelPlacingObject();
             }
-            _distanceSinceClick = 0;
-            _lastMousePosition = null;
+            this._distanceSinceClick = 0;
+            this._lastMousePosition = null;
         }
     }
 
@@ -83,75 +82,75 @@ public class TranslateHandle : MonoBehaviour
     {
         var scale = this.GetDistanceToCameraScaleFactor();
 
-        UiObjectsToScale.localScale = Vector3.one * scale;
+        this.UiObjectsToScale.localScale = Vector3.one * scale;
     }
 
     private float GetDistanceToCameraScaleFactor()
     {
         var distance = Camera.main.transform.position.y;
 
-        var excessDistance = distance - DefaultCameraDistance;
+        var excessDistance = distance - this.DefaultCameraDistance;
 
-        var scale = ((excessDistance / DefaultCameraDistance) / 1.5f) + 1;
+        var scale = (excessDistance / this.DefaultCameraDistance / 1.5f) + 1;
         return scale;
     }
 
     private void HandleMousePosition()
     {
-        var previousPosition = transform.position;
-        RaycastHit hit;
-        if (this.RaycastToFloor(out hit))
+        var previousPosition = this.transform.position;
+        if (this.RaycastToFloor(out var hit))
         {
             //Debug.Log("Pointing at: " + hit.transform + " @ " + hit.point);
             if (Input.GetMouseButton(this.PlaceMouseButton) && (ObjectPlacer.Instance.CanRotateCurrentObject() == true))
             {
                 // mous button is down, and the object is rotatable, so rotate it to face the mouse.
-                var vectorToHit = hit.point - transform.position;
+                var vectorToHit = hit.point - this.transform.position;
 
-                if (vectorToHit.magnitude < MinRotateMouseDistance * GetDistanceToCameraScaleFactor())
+                if (vectorToHit.magnitude < this.MinRotateMouseDistance * this.GetDistanceToCameraScaleFactor())
                 {
                     return;
                 }
 
                 var lookRotation = Quaternion.LookRotation(vectorToHit, Vector3.up);
 
-                transform.rotation = AdjustYUp(lookRotation);
+                this.transform.rotation = this.AdjustYUp(lookRotation);
             }
             else
             {
                 // not in rotate mode, so just move to the hit point.
-                transform.position = hit.point;
+                this.transform.position = hit.point;
 
                 // I don't remember what this code was for. Delte it if it's not needed.
                 //var rotatedAgle = transform.rotation;
                 //transform.position = hit.point - new Vector3(rotatedAgle.x, 0, rotatedAgle.z);
             }
 
-            if (_lastMousePosition.HasValue)
+            if (this._lastMousePosition.HasValue)
             {
                 // tracked to support cancelling the placement
                 // TODO: check why.
-                _distanceSinceClick += Vector3.Distance(_lastMousePosition.Value, hit.point);
-                _lastMousePosition = hit.point;
+                this._distanceSinceClick += Vector3.Distance(this._lastMousePosition.Value, hit.point);
+                this._lastMousePosition = hit.point;
             }
         }
 
-        var changedPosition = NoSpawnZone.GetBestEdgePosition(transform.position, previousPosition);
+        var changedPosition = NoSpawnZone.GetBestEdgePosition(this.transform.position, previousPosition);
         if (changedPosition.HasValue)
         {
             //Debug.Log("Snapping to edge of no spawn zone @ " + changedPosition);
             this.transform.position = changedPosition.Value;
         }
-        var isGood = !NoSpawnZone.IsInAnyNoSpawnZone(transform.position);
-        if (isGood != lastPositionIsGood)
+        var isGood = !NoSpawnZone.IsInAnyNoSpawnZone(this.transform.position);
+        isGood &= ObjectPlacer.Instance == null || ObjectPlacer.Instance.PositionIsValid(this.transform.position);
+        if (isGood != this.lastPositionIsGood)
         {
             // Position state changed.
-            lastPositionIsGood = isGood;
-            foreach (var material in _materials)
+            this.lastPositionIsGood = isGood;
+            foreach (var material in this._materials)
             {
                 material.color = isGood
-                    ? _originalColour
-                    : DisabledColour;
+                    ? this._originalColour
+                    : this.DisabledColour;
             }
         }
     }
@@ -160,13 +159,13 @@ public class TranslateHandle : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        return Physics.Raycast(ray, out hit, 500, _groundLayermask, QueryTriggerInteraction.Ignore);
+        return Physics.Raycast(ray, out hit, 500, this._groundLayermask, QueryTriggerInteraction.Ignore);
     }
 
     private void HandleMainMouseUp()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit, 500, _uiLayermask, QueryTriggerInteraction.Collide))
+        if (Physics.Raycast(ray, out var hit, 500, this._uiLayermask, QueryTriggerInteraction.Collide))
         {
             var quickBarButton = hit.transform.GetComponentInParent<QuickBarButton>();
             if (quickBarButton != null)
@@ -176,7 +175,7 @@ public class TranslateHandle : MonoBehaviour
             }
         }
 
-        if(NoSpawnZone.IsInAnyNoSpawnZone(transform.position))
+        if(NoSpawnZone.IsInAnyNoSpawnZone(this.transform.position))
         {
             // Can't place here.
             return;

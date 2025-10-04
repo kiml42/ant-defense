@@ -20,19 +20,19 @@ public class TrailPointController : Smellable
         public float RemainingTime { get; private set; }
         public SmellComponent(float distanceFromTarget, float remainingTime, float? targetValue)
         {
-            DistanceFromTarget = distanceFromTarget;
-            RemainingTime = remainingTime;
-            TargetValue = targetValue;
+            this.DistanceFromTarget = distanceFromTarget;
+            this.RemainingTime = remainingTime;
+            this.TargetValue = targetValue;
         }
 
         internal void DecrementTime()
         {
-            RemainingTime -= Time.fixedDeltaTime;
+            this.RemainingTime -= Time.fixedDeltaTime;
         }
 
         public override string ToString()
         {
-            return DistanceFromTarget + ":" + RemainingTime;
+            return this.DistanceFromTarget + ":" + this.RemainingTime;
         }
     }
 
@@ -43,7 +43,7 @@ public class TrailPointController : Smellable
 
     public Transform Transform => this.transform;
 
-    public override Smell Smell => _trailSmell;
+    public override Smell Smell => this._trailSmell;
 
     public override bool IsActual => false;
 
@@ -61,33 +61,33 @@ public class TrailPointController : Smellable
     public override float GetPriority(ITargetPriorityCalculator priorityCalculator)
     {
         // return the component with the best priotity, if priorityCalculator is null, just return the closest.
-        return _smellComponents.Any()
-            ? _smellComponents.Min(s => priorityCalculator?.CalculatePriority(s.DistanceFromTarget, s.TargetValue) ?? s.DistanceFromTarget)
+        return this._smellComponents.Any()
+            ? this._smellComponents.Min(s => priorityCalculator?.CalculatePriority(s.DistanceFromTarget, s.TargetValue) ?? s.DistanceFromTarget)
             : float.MaxValue;
     }
 
     private void FixedUpdate()
     {
-        foreach (var component in _smellComponents.ToArray())
+        foreach (var component in this._smellComponents.ToArray())
         {
             component.DecrementTime();
             if(component.RemainingTime <= 0)
             {
-                _smellComponents.Remove(component);
+                this._smellComponents.Remove(component);
             }
         }
 
-        if (!_smellComponents.Any())
+        if (!this._smellComponents.Any())
         {
             //Debug.Log("Destroyin because No remaining smells");
-            DestroyThis();
+            this.DestroyThis();
             return;
         }
 
-        var remainingTime = _smellComponents.Max(c => c.RemainingTime);
-        if (ScaleDownTime > 0 && remainingTime < ScaleDownTime)
+        var remainingTime = this._smellComponents.Max(c => c.RemainingTime);
+        if (this.ScaleDownTime > 0 && remainingTime < this.ScaleDownTime)
         {
-            this.transform.localScale = Vector3.one * remainingTime / ScaleDownTime;
+            this.transform.localScale = Vector3.one * remainingTime / this.ScaleDownTime;
         }
     }
 
@@ -103,53 +103,53 @@ public class TrailPointController : Smellable
         {
             Debug.Log("Already destroyed!!!");
         }
-        _trailSmell = trailSmell;
+        this._trailSmell = trailSmell;
 
-        var component = CreateSmellComponent(distanceFromTarget, targetValue);
+        var component = this.CreateSmellComponent(distanceFromTarget, targetValue);
 
         if (component.RemainingTime <= 0)
         {
             //Debug.Log("Destroyin because less than 0 lifetime on set smell");
-            DestroyThis();
+            this.DestroyThis();
             return;
         }
 
-        AddSmellComponent(component);
+        this.AddSmellComponent(component);
         //Debug.Log("Added smell component to self: " + this);
 
-        if (Material != null)
+        if (this.Material != null)
         {
-            var a = Material.material.color.a;
-            switch (_trailSmell)
+            var a = this.Material.material.color.a;
+            switch (this._trailSmell)
             {
                 case Smell.Home:
-                    Material.material.color = new Color(Color.white.r, Color.white.g, Color.white.b, a); break;
+                    this.Material.material.color = new Color(Color.white.r, Color.white.g, Color.white.b, a); break;
                 case Smell.Food:
-                    Material.material.color = new Color(Color.red.r, Color.red.g, Color.red.b, a); break;
+                    this.Material.material.color = new Color(Color.red.r, Color.red.g, Color.red.b, a); break;
             }
         }
     }
 
     private SmellComponent CreateSmellComponent(float distanceFromTarget, float? targetValue)
     {
-        var newLifetime = DefaultLifetime - distanceFromTarget * LifetimePenalty;
+        var newLifetime = this.DefaultLifetime - (distanceFromTarget * this.LifetimePenalty);
         var component = new SmellComponent(distanceFromTarget, newLifetime, targetValue);
         return component;
     }
 
     public void AddSmellComponent(float distanceFromTarget, float? targetValue)
     {
-        AddSmellComponent(CreateSmellComponent(distanceFromTarget, targetValue));
+        this.AddSmellComponent(this.CreateSmellComponent(distanceFromTarget, targetValue));
     }
 
     private void AddSmellComponent(SmellComponent component)
     {
-        _smellComponents.Add(component);
+        this._smellComponents.Add(component);
         //Debug.Log("Added smell. Smells: " + string.Join(", ", _smellComponents));
     }
 
     public override string ToString()
     {
-        return $"TrailPoint smell={Smell}, components: {string.Join(", ", _smellComponents)}";
+        return $"TrailPoint smell={this.Smell}, components: {string.Join(", ", this._smellComponents)}";
     }
 }

@@ -15,16 +15,16 @@ public class GrowingSpawner : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        this.transform.localScale = Vector3.one * InitialScale;
+        this.transform.localScale = Vector3.one * this.InitialScale;
     }
 
     private void FixedUpdate()
     {
-        timer += Time.fixedDeltaTime;
+        this.timer += Time.fixedDeltaTime;
 
-        if(timer >= SpawnTime)
+        if(this.timer >= this.SpawnTime)
         {
-            Instantiate(PrefabToSpawn, this.transform.position, this.transform.rotation, this.transform.parent);
+            Instantiate(this.PrefabToSpawn, this.transform.position, this.transform.rotation, this.transform.parent);
             Destroy(this.gameObject);
         }
 
@@ -34,8 +34,8 @@ public class GrowingSpawner : MonoBehaviour
     void Update()
     {
         // Handle scale;
-        var growProgress = Mathf.Min(1, timer / GrowTime);
-        var scale = InitialScale + (1 - InitialScale) * growProgress;
+        var growProgress = Mathf.Min(1, this.timer / this.GrowTime);
+        var scale = this.InitialScale + ((1 - this.InitialScale) * growProgress);
         this.transform.localScale = Vector3.one * scale;
 
 

@@ -19,7 +19,7 @@ public class ImpactDamageHandler : MonoBehaviour
     {
         if (this.HealthController == null)
         {
-            this.HealthController = GetComponent<HealthController>();
+            this.HealthController = this.GetComponent<HealthController>();
             if (this.HealthController == null)
             {
                 throw new Exception("ImpactDamageHandler requires a HealthController component on the same GameObject or a child GameObject.");
@@ -30,8 +30,8 @@ public class ImpactDamageHandler : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         var impulse = collision.impulse.magnitude;
-        var excessImpule = impulse - ResistanceImpulse;
-        var damage = excessImpule * DamagePerUnitImpulse;
+        var excessImpule = impulse - this.ResistanceImpulse;
+        var damage = excessImpule * this.DamagePerUnitImpulse;
         if (damage > 0)
         {
             //Debug.Log("Collider = " + collision.collider.gameObject + ", Impulse = " + impulse + ", Damage = " + damage);

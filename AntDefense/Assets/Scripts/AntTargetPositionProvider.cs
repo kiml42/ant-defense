@@ -62,7 +62,7 @@ public class AntTargetPositionProvider : MonoBehaviour
 
     void Start()
     {
-        _rigidbody = GetComponent<Rigidbody>();
+        this._rigidbody = this.GetComponent<Rigidbody>();
 
         this.RandomiseVector();
     }
@@ -74,48 +74,48 @@ public class AntTargetPositionProvider : MonoBehaviour
     {
         // Start with the current target position in a random direction.
         var randomPosition = Random.insideUnitCircle.normalized;
-        _randomDirection = new Vector3(randomPosition.x, 0, randomPosition.y);
-        DirectionToMove = _randomDirection;
+        this._randomDirection = new Vector3(randomPosition.x, 0, randomPosition.y);
+        this.DirectionToMove = this._randomDirection;
     }
 
-    float ObstacleAvoidenceWeight => Mathf.Max(0, _obstacleAvoidenceTime) / ObstacleAvoidenceTime;
+    float ObstacleAvoidenceWeight => Mathf.Max(0, this._obstacleAvoidenceTime) / this.ObstacleAvoidenceTime;
     void FixedUpdate()
     {
-        if(_obstacleAvoidenceTime <= 0)
+        if(this._obstacleAvoidenceTime <= 0)
         {
-            _obstacleAvoidenceVector = null;
-            _obstacleAvoidenceTime = 0;
+            this._obstacleAvoidenceVector = null;
+            this._obstacleAvoidenceTime = 0;
         }
 
-        if (_target?.TargetPoint != null)
+        if (this._target?.TargetPoint != null)
         {
-            SetDirectionToMoveWithTarget();
+            this.SetDirectionToMoveWithTarget();
         }
         else
         {
-            TetDirectionToMoveInWanderingMode();
+            this.TetDirectionToMoveInWanderingMode();
         }
 
     }
 
     private void SetDirectionToMoveWithTarget()
     {
-        DirectionToMove = _target.TargetPoint.position - transform.position;
-        if(!_target.IsActual)
+        this.DirectionToMove = this._target.TargetPoint.position - this.transform.position;
+        if(!this._target.IsActual)
         {
-            DirectionToMove -= (transform.right * TrailOffset);
+            this.DirectionToMove -= (this.transform.right * this.TrailOffset);
         }
-        if (_obstacleAvoidenceVector.HasValue)
+        if (this._obstacleAvoidenceVector.HasValue)
         {
             // Add the weighted obstacle avoidence vector to the current direction to move.
-            if(_currentObstacle == null)
+            if(this._currentObstacle == null)
             {
                 // only decrease the time if this ant is no longer colliding with the obstacle.
-                _obstacleAvoidenceTime -= Time.deltaTime;
+                this._obstacleAvoidenceTime -= Time.deltaTime;
             }
 
-            var currentTargetDirectionWeight = Mathf.Max(0, 1 - ObstacleAvoidenceWeight);
-            var weightedCurrentDirection = DirectionToMove * currentTargetDirectionWeight;
+            var currentTargetDirectionWeight = Mathf.Max(0, 1 - this.ObstacleAvoidenceWeight);
+            var weightedCurrentDirection = this.DirectionToMove * currentTargetDirectionWeight;
             var weightedAvodanceVector = this._obstacleAvoidenceVector.Value * this.ObstacleAvoidenceWeight;
             this.DirectionToMove = weightedCurrentDirection + weightedAvodanceVector;
             //Debug.DrawRay(transform.position, weightedCurrentDirection, Color.blue);
@@ -126,30 +126,30 @@ public class AntTargetPositionProvider : MonoBehaviour
 
     private void TetDirectionToMoveInWanderingMode()
     {
-        if (_obstacleAvoidenceVector.HasValue)
+        if (this._obstacleAvoidenceVector.HasValue)
         {
             // set the random direction to the obstacle avoidence direction.
-            _randomDirection = _obstacleAvoidenceVector.Value.normalized * MaxRandomMagnitude;
+            this._randomDirection = this._obstacleAvoidenceVector.Value.normalized * this.MaxRandomMagnitude;
             //Debug.DrawRay(transform.position, _obstacleAvoidenceVector.Value, Color.yellow);
-            _obstacleAvoidenceVector = null;
-            _obstacleAvoidenceTime = 0;
+            this._obstacleAvoidenceVector = null;
+            this._obstacleAvoidenceTime = 0;
         }
         else
         {
-            var randomChangeMagnitude = RandomDirectionChangePerSecond * Time.fixedDeltaTime;
+            var randomChangeMagnitude = this.RandomDirectionChangePerSecond * Time.fixedDeltaTime;
             var randomComponent = Random.insideUnitSphere * randomChangeMagnitude;
-            _randomDirection += randomComponent;
-            _randomDirection = new Vector3(_randomDirection.x, _randomDirection.y * 0.2f, _randomDirection.z);
+            this._randomDirection += randomComponent;
+            this._randomDirection = new Vector3(this._randomDirection.x, this._randomDirection.y * 0.2f, this._randomDirection.z);
         }
-        if (_randomDirection.magnitude > MaxRandomMagnitude)
+        if (this._randomDirection.magnitude > this.MaxRandomMagnitude)
         {
-            _randomDirection = _randomDirection.normalized * MaxRandomMagnitude;
+            this._randomDirection = this._randomDirection.normalized * this.MaxRandomMagnitude;
         }
 
-        var forwardsComponent = transform.forward * ForwardsWeightingWithoutTarget;
+        var forwardsComponent = this.transform.forward * this.ForwardsWeightingWithoutTarget;
         //Debug.DrawRay(transform.position, DirectionToMove, Color.red);
 
-        this.DirectionToMove = _randomDirection + forwardsComponent;
+        this.DirectionToMove = this._randomDirection + forwardsComponent;
 
         //Debug.DrawRay(transform.position, _randomDirection, Color.blue);
         //Debug.DrawRay(transform.position + _randomDirection, forwardsComponent, Color.yellow);
@@ -159,27 +159,27 @@ public class AntTargetPositionProvider : MonoBehaviour
 
     public void SetTarget(Smellable target)
     {
-        _target = target;
+        this._target = target;
     }
 
     internal void NoLongerTouching(Transform @object)
     {
-        if (@object == _currentObstacle)
+        if (@object == this._currentObstacle)
         {
-            _currentObstacle = null;
+            this._currentObstacle = null;
         }
     }
 
     internal void AvoidObstacle(Collision collision)
     {
-        _currentObstacle = collision.transform;
+        this._currentObstacle = collision.transform;
         var relativeObstacleMass = (collision?.rigidbody?.mass ?? 10) / (this._rigidbody?.mass ?? 1);
         var contact = collision.GetContact(0);
 
         var wallNormal = contact.normal;
-        var facingDirection = transform.forward;
+        var facingDirection = this.transform.forward;
 
-        var tangent1 = Vector3.Cross(wallNormal, transform.up).normalized;
+        var tangent1 = Vector3.Cross(wallNormal, this.transform.up).normalized;
         var tangent2 = -tangent1; // Opposite direction
 
         // Determine which tangent is closest to the facing direction
@@ -189,8 +189,8 @@ public class AntTargetPositionProvider : MonoBehaviour
 
         var tangentWeighting = Mathf.Max(0, Random.Range(-0.25f, 1));
 
-        _obstacleAvoidenceVector = chosenTangent + (contact.normal * tangentWeighting);
-        var timeIncrament = ObstacleAvoidenceTime * (relativeObstacleMass / 10);
+        this._obstacleAvoidenceVector = chosenTangent + (contact.normal * tangentWeighting);
+        var timeIncrament = this.ObstacleAvoidenceTime * (relativeObstacleMass / 10);
         var unboundTime = this._obstacleAvoidenceTime + timeIncrament;
         this._obstacleAvoidenceTime = Mathf.Min(this.MaxObstacleAvoidenceTime, Mathf.Max(this.ObstacleAvoidenceTime, unboundTime));
     }

@@ -18,10 +18,10 @@ public class AntCam : MonoBehaviour
     {
         get
         {
-            var all = _upKeyCodes.ToList();
-            all.AddRange(_leftKeyCodes);
-            all.AddRange(_downKeyCodes);
-            all.AddRange(_rightKeyCodes);
+            var all = this._upKeyCodes.ToList();
+            all.AddRange(this._leftKeyCodes);
+            all.AddRange(this._downKeyCodes);
+            all.AddRange(this._rightKeyCodes);
             return all.ToArray();
         }
     }
@@ -34,27 +34,27 @@ public class AntCam : MonoBehaviour
 
     private void Start()
     {
-        _targetXRotation = transform.rotation.x;
+        this._targetXRotation = this.transform.rotation.x;
     }
 
     // Update is called once per frame
     void Update()
     {
-        float newX = transform.position.x;
-        float newZ = transform.position.z;
+        float newX = this.transform.position.x;
+        float newZ = this.transform.position.z;
 
-        HandleZoom();
+        this.HandleZoom();
 
         if (Input.GetMouseButtonDown(MouseButton))
         {
-            _lastMousePosition = Input.mousePosition;
+            this._lastMousePosition = Input.mousePosition;
         }
-        var zoomProportion = GetZoomProportion(CurrentY);
-        var speed = GetProportionOfRange(zoomProportion, MinCameraSpeed, MaxCameraSpeed) * Time.deltaTime;
+        var zoomProportion = this.GetZoomProportion(this.CurrentY);
+        var speed = GetProportionOfRange(zoomProportion, this.MinCameraSpeed, this.MaxCameraSpeed) * Time.deltaTime;
         if (Input.GetMouseButton(MouseButton))
         {
-            var change = Input.mousePosition - _lastMousePosition;
-            _lastMousePosition = Input.mousePosition;
+            var change = Input.mousePosition - this._lastMousePosition;
+            this._lastMousePosition = Input.mousePosition;
             if (change.magnitude > 0)
             {
                 //Debug.Log("Mouse Move " + change);
@@ -65,11 +65,11 @@ public class AntCam : MonoBehaviour
         }
         else
         {
-            ProcessKeys(speed, ref newX, ref newZ);
+            this.ProcessKeys(speed, ref newX, ref newZ);
         }
 
 
-        transform.position = new Vector3(newX, transform.position.y, newZ);
+        this.transform.position = new Vector3(newX, this.transform.position.y, newZ);
     }
 
     private void ProcessKeys(float speed, ref float newX, ref float newZ)
@@ -77,25 +77,25 @@ public class AntCam : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
 
-        foreach (var key in _directionKeys)
+        foreach (var key in this._directionKeys)
         {
             if (Input.GetKey(key))
             {
-                if (_upKeyCodes.Contains(key))
+                if (this._upKeyCodes.Contains(key))
                 {
-                    newZ += KeyScrollSpeed * speed;
+                    newZ += this.KeyScrollSpeed * speed;
                 }
-                if (_downKeyCodes.Contains(key))
+                if (this._downKeyCodes.Contains(key))
                 {
-                    newZ -= KeyScrollSpeed * speed;
+                    newZ -= this.KeyScrollSpeed * speed;
                 }
-                if (_rightKeyCodes.Contains(key))
+                if (this._rightKeyCodes.Contains(key))
                 {
-                    newX += KeyScrollSpeed * speed;
+                    newX += this.KeyScrollSpeed * speed;
                 }
-                if (_leftKeyCodes.Contains(key))
+                if (this._leftKeyCodes.Contains(key))
                 {
-                    newX -= KeyScrollSpeed * speed;
+                    newX -= this.KeyScrollSpeed * speed;
                 }
             }
         }
@@ -108,10 +108,10 @@ public class AntCam : MonoBehaviour
     public float MaxAngleHeight = 100;
     public float MaxAngle = 0;
 
-    private float CurrentY => transform.InverseTransformPoint(Camera.transform.position).y;
+    private float CurrentY => this.transform.InverseTransformPoint(this.Camera.transform.position).y;
     private float GetZoomProportion(float actualNewY)
     {
-        return Mathf.Clamp01((actualNewY - MinY) / (MaxAngleHeight - MinY));
+        return Mathf.Clamp01((actualNewY - this.MinY) / (this.MaxAngleHeight - this.MinY));
     }
 
     private void HandleZoom()
@@ -121,37 +121,37 @@ public class AntCam : MonoBehaviour
         if (Input.mouseScrollDelta.y != 0 || ctrlPushed || shiftPushed)
         {
             // TODO consider make this work on the proportion first, and get both angle and distance from that.
-            float currentY = CurrentY;
+            float currentY = this.CurrentY;
             var speedMultiplyer = currentY / 100;
-            var newY = currentY - Input.mouseScrollDelta.y * CameraZoomSpeed * speedMultiplyer;
+            var newY = currentY - (Input.mouseScrollDelta.y * this.CameraZoomSpeed * speedMultiplyer);
 
             if (shiftPushed)
             {
                 // Zoom in
-                newY -= KeyZoomSpeed * CameraZoomSpeed * speedMultiplyer;
+                newY -= this.KeyZoomSpeed * this.CameraZoomSpeed * speedMultiplyer;
             }
             if(ctrlPushed)
             {
                 // Zoom out
-                newY += KeyZoomSpeed * CameraZoomSpeed * speedMultiplyer;
+                newY += this.KeyZoomSpeed * this.CameraZoomSpeed * speedMultiplyer;
             }
 
 
-            var actualNewY = Mathf.Clamp(newY, MinY, MaxY);
+            var actualNewY = Mathf.Clamp(newY, this.MinY, this.MaxY);
             if (currentY == actualNewY)
             {
                 return;
             }
 
-            var zoomProportion = GetZoomProportion(actualNewY);
+            var zoomProportion = this.GetZoomProportion(actualNewY);
 
-            var newAngle = GetProportionOfRange(zoomProportion, MinAngle, MaxAngle);
+            var newAngle = GetProportionOfRange(zoomProportion, this.MinAngle, this.MaxAngle);
 
-            _targetXRotation = _targetXRotation - Input.mouseScrollDelta.y * CameraPanSpeed * speedMultiplyer;
+            this._targetXRotation = this._targetXRotation - (Input.mouseScrollDelta.y * this.CameraPanSpeed * speedMultiplyer);
 
-            transform.rotation = Quaternion.AngleAxis(newAngle, Vector3.right);
+            this.transform.rotation = Quaternion.AngleAxis(newAngle, Vector3.right);
 
-            Camera.transform.position = transform.TransformPoint(new Vector3(0, actualNewY, 0));
+            this.Camera.transform.position = this.transform.TransformPoint(new Vector3(0, actualNewY, 0));
         }
 
     }

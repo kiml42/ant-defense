@@ -28,51 +28,51 @@ public class Digestion : MonoBehaviour
 
     public ProgressBar FoodBar;
 
-    private float _requiredFood => MaxFood - CurrentFood;
+    private float _requiredFood => this.MaxFood - this.CurrentFood;
 
     void Start()
     {
-        CurrentFood = StartFood;
+        this.CurrentFood = this.StartFood;
     }
 
     void FixedUpdate()
     {
-        var foodUse = Expenditure * Time.fixedDeltaTime;
-        UseFood(foodUse);
+        var foodUse = this.Expenditure * Time.fixedDeltaTime;
+        this.UseFood(foodUse);
 
-        if (CurrentFood <= 0)
+        if (this.CurrentFood <= 0)
         {
             // take damage instead
-            HealthController.Injure(-CurrentFood);
-            CurrentFood = 0;
+            this.HealthController.Injure(-this.CurrentFood);
+            this.CurrentFood = 0;
         }
-        else if(HealthController.Damage > 0)
+        else if(this.HealthController.Damage > 0)
         {
             // heal
-            var maxHealing = HealRate * Time.fixedDeltaTime;
-            var requiredHealing = HealthController.Damage;
-            var actualHealing = Mathf.Min(requiredHealing, maxHealing, CurrentFood);
+            var maxHealing = this.HealRate * Time.fixedDeltaTime;
+            var requiredHealing = this.HealthController.Damage;
+            var actualHealing = Mathf.Min(requiredHealing, maxHealing, this.CurrentFood);
 
-            HealthController.Heal(actualHealing);
-            UseFood(actualHealing);
+            this.HealthController.Heal(actualHealing);
+            this.UseFood(actualHealing);
         }
-        FoodBar?.AdjustProgress(CurrentFood, MaxFood);
+        this.FoodBar?.AdjustProgress(this.CurrentFood, this.MaxFood);
     }
 
     internal void EatFoodFrom(AntNest home)
     {
-        var foodToEat = MathF.Min(_requiredFood, home.CurrentFood);
+        var foodToEat = MathF.Min(this._requiredFood, home.CurrentFood);
         home.UseFood(foodToEat);
-        AddFood(foodToEat);
+        this.AddFood(foodToEat);
     }
 
     internal void AddFood(float additionalFood)
     {
-        CurrentFood += additionalFood;
+        this.CurrentFood += additionalFood;
     }
 
     internal void UseFood(float cost)
     {
-        CurrentFood -= cost;
+        this.CurrentFood -= cost;
     }
 }

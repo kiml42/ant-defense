@@ -30,14 +30,14 @@ public class UiPlane : MonoBehaviour
             throw new Exception("There should not be multiple UI planes!");
         }
         Instance = this;
-        InitialiseQuickBar();
+        this.InitialiseQuickBar();
     }
 
     private void Update()
     {
         if (ProtectMes.Any(p => p.UiObject == null))
         {
-            InitialiseProtectMes();
+            this.InitialiseProtectMes();
         }
 
         foreach (var p in ProtectMes.Where(p => p.ProtectMe == null && p.UiObject != null).ToArray())
@@ -61,17 +61,17 @@ public class UiPlane : MonoBehaviour
     {
         // TODO : calculate spacing based on available space.
         // TODO : improve positioning & rotation of the objects
-        var leftOffset = -ProtectMesSpacing * (ProtectMes.Count - 1) / 2;
+        var leftOffset = -this.ProtectMesSpacing * (ProtectMes.Count - 1) / 2;
 
         // foreach with index
 
         var i = 0;
         foreach (var p in ProtectMes)
         {
-            var offset = leftOffset + i * ProtectMesSpacing;
+            var offset = leftOffset + (i * this.ProtectMesSpacing);
             if (p.UiObject == null)
             {
-                p.UiObject = Instantiate(p.ProtectMe.transform, ProtectMesCenter.position + new Vector3(offset, 0, 0), Quaternion.Euler(this.ProtectMeRotation));
+                p.UiObject = Instantiate(p.ProtectMe.transform, this.ProtectMesCenter.position + new Vector3(offset, 0, 0), Quaternion.Euler(this.ProtectMeRotation));
                 p.UiObject.parent = this.transform;
                 p.UiObject.localScale *= this.ProtectMeScale;
                 Dummyise(p.UiObject);
@@ -82,32 +82,32 @@ public class UiPlane : MonoBehaviour
 
     private void InitialiseQuickBar()
     {
-        if (_buttons != null) return;
+        if (this._buttons != null) return;
 
         Camera cam = Camera.main;
-        var distance = (cam.transform.position - transform.position).magnitude;
-        _height = Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * distance * 2f;
-        _width = _height * cam.aspect;
-        var min = Mathf.Min(_height, _width);
-        transform.position = cam.transform.position + cam.transform.forward * distance;
+        var distance = (cam.transform.position - this.transform.position).magnitude;
+        this._height = Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * distance * 2f;
+        this._width = this._height * cam.aspect;
+        var min = Mathf.Min(this._height, this._width);
+        this.transform.position = cam.transform.position + (cam.transform.forward * distance);
 
-        transform.localScale = new Vector3(min, min, min);
+        this.transform.localScale = new Vector3(min, min, min);
 
-        _buttons = new List<QuickBarButton>();
+        this._buttons = new List<QuickBarButton>();
         var quickBarObjects = ObjectPlacer.Instance.QuickBarObjects;
 
-        var leftOffset = -QuickBarSpacing * (quickBarObjects.Count - 1) / 2;
+        var leftOffset = -this.QuickBarSpacing * (quickBarObjects.Count - 1) / 2;
 
         for (int i = 0; i < quickBarObjects.Count; i++)
         {
-            var offset = leftOffset + i * QuickBarSpacing;
+            var offset = leftOffset + (i * this.QuickBarSpacing);
             var ghost = quickBarObjects[i];
-            var newButton = Instantiate(QuickBarButton, QuickBarCenter.transform.position + new Vector3(offset, 0, 0), QuickBarCenter.transform.rotation);
+            var newButton = Instantiate(this.QuickBarButton, this.QuickBarCenter.transform.position + new Vector3(offset, 0, 0), this.QuickBarCenter.transform.rotation);
             newButton.transform.parent = this.transform;
             newButton.Ghost = ghost;
             CreateDummy(ghost, newButton);
 
-            _buttons.Add(newButton);
+            this._buttons.Add(newButton);
         }
     }
 
@@ -155,7 +155,7 @@ public class UiPlane : MonoBehaviour
         public ProtectMe ProtectMe;
         public ProtectMeBarObject(ProtectMe protectMe)
         {
-            ProtectMe = protectMe;
+            this.ProtectMe = protectMe;
         }
     }
 }

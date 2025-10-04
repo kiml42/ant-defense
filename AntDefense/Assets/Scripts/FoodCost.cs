@@ -6,5 +6,5 @@ public class FoodCost : MonoBehaviour
     public HealthController HealthController;
     public Digestion Digestion;
 
-    public float Cost => OverheadCost + ((HealthController?.MaxHealth + Digestion.MaxFood) ?? 0);
+    public float Cost => this.OverheadCost + ((this.HealthController?.MaxHealth + this.Digestion.MaxFood) ?? 0);
 }

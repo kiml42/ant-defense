@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -30,7 +31,7 @@ public class ObjectPlacer : MonoBehaviour
     {
         if(Instance != null && Instance != this)
         {
-            throw new System.Exception("There should not be multiple Object Placers!");
+            throw new Exception("There should not be multiple Object Placers!");
         }
         Instance = this;
         StaticQuickBarObjects = this.QuickBarObjects;
@@ -38,44 +39,44 @@ public class ObjectPlacer : MonoBehaviour
 
     void Update()
     {
-        ProcessQuickKeys();
+        this.ProcessQuickKeys();
     }
 
     private void ProcessQuickKeys()
     {
-        for (int i = 0; i < _quickBarKeys.Length; i++)
+        for (int i = 0; i < this._quickBarKeys.Length; i++)
         {
-            if (Input.GetKeyUp(_quickBarKeys[i]))
+            if (Input.GetKeyUp(this._quickBarKeys[i]))
             {
-                SpawnQuickObject(i);
+                this.SpawnQuickObject(i);
             }
         }
     }
 
     private void SpawnQuickObject(int i)
     {
-        if (QuickBarObjects.Count <= i) return;
-        var prefab = QuickBarObjects[i];
-        StartPlacingGhost(prefab);
+        if (this.QuickBarObjects.Count <= i) return;
+        var prefab = this.QuickBarObjects[i];
+        this.StartPlacingGhost(prefab);
     }
 
     public void StartPlacingGhost(PlaceableObjectOrGhost prefab)
     {
-        CancelPlacingObject();
+        this.CancelPlacingObject();
 
-        _objectBeingPlaced = Instantiate(prefab, Handle.transform.position - prefab.FloorPoint.position, Handle.transform.rotation);
-        _objectBeingPlaced.transform.parent = Handle.transform;
-        _objectBeingPlaced.StartPlacing();
+        this._objectBeingPlaced = Instantiate(prefab, this.Handle.transform.position - prefab.FloorPoint.position, this.Handle.transform.rotation);
+        this._objectBeingPlaced.transform.parent = this.Handle.transform;
+        this._objectBeingPlaced.StartPlacing();
     }
 
     public void CancelPlacingObject()
     {
-        if (_objectBeingPlaced != null)
+        if (this._objectBeingPlaced != null)
         {
-            Destroy(_objectBeingPlaced.gameObject);
-            _objectBeingPlaced = null;
+            Destroy(this._objectBeingPlaced.gameObject);
+            this._objectBeingPlaced = null;
             //Debug.Log("Clearing last wall node because placement is being cancelled.");
-            _lastWallNode = null;
+            this._lastWallNode = null;
         }
     }
 
@@ -85,28 +86,28 @@ public class ObjectPlacer : MonoBehaviour
     /// <param name="keepPlacing">if <see langword="true"/> then this should keep placing more of this object regardless of weathr that's the defualt behaviour of the object being placed.</param>
     public void PlaceObject(bool keepPlacing)
     {
-        if (_objectBeingPlaced != null)
+        if (this._objectBeingPlaced != null && this.PositionIsValid(this._objectBeingPlaced.transform.position))
         {
-            var newObject = Instantiate(_objectBeingPlaced, _objectBeingPlaced.transform.position, _objectBeingPlaced.transform.rotation);
+            var newObject = Instantiate(this._objectBeingPlaced, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
 
             var wallNode = newObject.GetComponent<WallNode>();
             if(wallNode != null)
             {
-                wallNode.ConnectTo(_lastWallNode);
-                _lastWallNode = wallNode;
-                _objectBeingPlaced.GetComponent<WallNode>().ConnectTo(_lastWallNode); // make the ghost on the handle connect so that it knows where to connect its ghost wall to.
+                wallNode.ConnectTo(this._lastWallNode);
+                this._lastWallNode = wallNode;
+                this._objectBeingPlaced.GetComponent<WallNode>().ConnectTo(this._lastWallNode); // make the ghost on the handle connect so that it knows where to connect its ghost wall to.
                 keepPlacing = true; // always keep placing walls, they should form a chain until the user cancels.
             }
             else
             {
                 //Debug.Log("Clearing last wall node because there's no wall node component.");
-                _lastWallNode = null;
+                this._lastWallNode = null;
             }
             newObject.Place();
-        }
-        if(!keepPlacing)
-        {
-            this.CancelPlacingObject();
+            if(!keepPlacing)
+            {
+                this.CancelPlacingObject();
+            }
         }
     }
 
@@ -115,5 +116,38 @@ public class ObjectPlacer : MonoBehaviour
     public bool? CanRotateCurrentObject()
     {
         return this._objectBeingPlaced == null ? null : this._objectBeingPlaced.Rotatable;
+    }
+
+    internal bool PositionIsValid(Vector3 position)
+    {
+        if (this._objectBeingPlaced != null)
+        {
+            var positionValidators = this._objectBeingPlaced.GetComponentsInChildren<IPlaceablePositionValidator>();
+            if (positionValidators != null && positionValidators.Length != 0)
+            {
+                foreach (var validator in positionValidators)
+                {
+                    if (!validator.PositionIsValid(position))
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true; // no object being placed, so position is valid.
+    }
+
+    /// <summary>
+    /// Returns the WallNode component of the object being placed, or null if there is no object being placed or if the object being placed does not have a WallNode component.
+    /// </summary>
+    public WallNode WallNodeBeingPlaced
+    {
+        get
+        {
+            return this._objectBeingPlaced == null
+                ? null
+                : this._objectBeingPlaced.GetComponent<WallNode>();
+        }
     }
 }

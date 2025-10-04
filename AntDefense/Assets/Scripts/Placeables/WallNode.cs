@@ -1,9 +1,16 @@
 using UnityEngine;
 
-public class WallNode : PlaceableMonoBehaviour
+
+public interface IPlaceablePositionValidator
+{
+    bool PositionIsValid(Vector3 position);
+}
+
+public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator
 {
     public WallNode ConnectedNode;
     public Transform Wall;
+    public float MaxLength;
 
     public override void OnPlace()
     {
@@ -15,7 +22,12 @@ public class WallNode : PlaceableMonoBehaviour
     internal void ConnectTo(WallNode other)
     {
         //Debug.Log("Connecting WallNode to " + other);
-        ConnectedNode = other;
+        this.ConnectedNode = other;
+    }
+
+    public bool PositionIsValid(Vector3 position)
+    {
+        return this.ConnectedNode == null || (position - this.ConnectedNode.transform.position).magnitude <= this.MaxLength + 0.1f;
     }
 
     private void Update()
@@ -25,21 +37,21 @@ public class WallNode : PlaceableMonoBehaviour
 
     private void UpdateWall()
     {
-        Debug.Assert(Wall != null, "WallNode has no Wall assigned.");
+        Debug.Assert(this.Wall != null, "WallNode has no Wall assigned.");
         //Debug.Log("Updating WallNode. Connected to " + ConnectedNode);
-        if (ConnectedNode != null)
+        if (this.ConnectedNode != null)
         {
-            var direction = ConnectedNode.transform.position - this.transform.position;
+            var direction = this.ConnectedNode.transform.position - this.transform.position;
             if (direction.magnitude > 0.01f)
             {
-                var midpoint = this.transform.position + direction * 0.5f;
-                Wall.position = midpoint;
-                Wall.localScale = new Vector3(1, 1, direction.magnitude);
-                Wall.rotation = Quaternion.LookRotation(direction, Vector3.up);
+                var midpoint = this.transform.position + (direction * 0.5f);
+                this.Wall.position = midpoint;
+                this.Wall.localScale = new Vector3(1, 1, direction.magnitude);
+                this.Wall.rotation = Quaternion.LookRotation(direction, Vector3.up);
                 return;
             }
         }
-        Wall.localScale = Vector3.zero;
+        this.Wall.localScale = Vector3.zero;
     }
 }
 

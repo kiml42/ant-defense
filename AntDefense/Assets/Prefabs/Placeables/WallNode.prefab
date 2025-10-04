@@ -52,6 +52,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ConnectedNode: {fileID: 0}
   Wall: {fileID: 1347924309845364681}
+  MaxLength: 50
 --- !u!114 &8092417670727731202
 MonoBehaviour:
   m_ObjectHideFlags: 0

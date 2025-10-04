@@ -30,33 +30,33 @@ public class FlipTrap : Triggerable
     // Start is called before the first frame update
     void Start()
     {
-        _rearmCountdown = ReArmDelay;
+        this._rearmCountdown = this.ReArmDelay;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        _rearmCountdown -= Time.fixedDeltaTime;
-        _resetCountdown -= Time.fixedDeltaTime;
+        this._rearmCountdown -= Time.fixedDeltaTime;
+        this._resetCountdown -= Time.fixedDeltaTime;
 
-        if(_resetCountdown <= 0)
+        if(this._resetCountdown <= 0)
         {
-            var motor = Hinge.motor;
-            motor.targetVelocity = ResetSpeed;
-            Hinge.motor = motor;
+            var motor = this.Hinge.motor;
+            motor.targetVelocity = this.ResetSpeed;
+            this.Hinge.motor = motor;
         }
     }
 
     public override void Trigger()
     {
-        if (_rearmCountdown <= 0)
+        if (this._rearmCountdown <= 0)
         {
-            _rearmCountdown = ReArmDelay;
-            _resetCountdown = ResetDelay;
+            this._rearmCountdown = this.ReArmDelay;
+            this._resetCountdown = this.ResetDelay;
 
-            var motor = Hinge.motor;
-            motor.targetVelocity = FireSpeed;
-            Hinge.motor = motor;
+            var motor = this.Hinge.motor;
+            motor.targetVelocity = this.FireSpeed;
+            this.Hinge.motor = motor;
         }
     }
 }

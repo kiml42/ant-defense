@@ -26,71 +26,71 @@ public class AntTrailController : MonoBehaviour
 
     void Start()
     {
-        AntStateMachine = GetComponentInChildren<AntStateMachine>();
-        if (TrailParent == null)
+        this.AntStateMachine = this.GetComponentInChildren<AntStateMachine>();
+        if (this.TrailParent == null)
         {
             if(_defaultTrailParent == null)
             {
                 _defaultTrailParent = new GameObject();
                 _defaultTrailParent.name = "TrailParent";
             }
-            TrailParent = _defaultTrailParent;
+            this.TrailParent = _defaultTrailParent;
         }
-        _rigidbody = GetComponent<Rigidbody>();
+        this._rigidbody = this.GetComponent<Rigidbody>();
     }
 
     void FixedUpdate()
     {
-        if (_lastSmell != AntStateMachine.TrailSmell)
+        if (this._lastSmell != this.AntStateMachine.TrailSmell)
         {
             // The smell has changed, so reset the trail.
-            _lastSmell = AntStateMachine.TrailSmell;
-            _lastTrailPointLocation = null;
-            _distanceSinceTarget = 0;
-            _targetValue = AntStateMachine.TrailTargetValue;
+            this._lastSmell = this.AntStateMachine.TrailSmell;
+            this._lastTrailPointLocation = null;
+            this._distanceSinceTarget = 0;
+            this._targetValue = this.AntStateMachine.TrailTargetValue;
         }
-        var updateDistance = _rigidbody.linearVelocity.magnitude * Time.fixedDeltaTime;
-        _distanceSinceTarget += updateDistance;
+        var updateDistance = this._rigidbody.linearVelocity.magnitude * Time.fixedDeltaTime;
+        this._distanceSinceTarget += updateDistance;
 
-        LeaveTrail();
+        this.LeaveTrail();
     }
 
     private void LeaveTrail()
     {
-        if (!AntStateMachine.TrailSmell.HasValue) return;
+        if (!this.AntStateMachine.TrailSmell.HasValue) return;
         var distanceToLastPoint = this._lastTrailPointLocation.HasValue
-            ? (_lastTrailPointLocation.Value - this.transform.position).magnitude
+            ? (this._lastTrailPointLocation.Value - this.transform.position).magnitude
             : 0;
         if (!this._lastTrailPointLocation.HasValue || distanceToLastPoint > this.TrailPointSpawnDistance)
         {
             // TODO consider if there is a lighter method for this just seeing the location of the center Possibly by keeping an octree index for the locations of all trail points
-            Collider[] overlaps = Physics.OverlapSphere(transform.position, OverlapRadius);
+            Collider[] overlaps = Physics.OverlapSphere(this.transform.position, this.OverlapRadius);
 
             var relevantOverlaps = overlaps
                 .Where(overlap => !overlap.IsDestroyed())
                 .Select(overlap => overlap.GetComponent<TrailPointController>())
-                .Where(otherTrailPoint => otherTrailPoint != null && !otherTrailPoint.IsDestroyed() && otherTrailPoint.Smell == AntStateMachine.TrailSmell);
+                .Where(otherTrailPoint => otherTrailPoint != null && !otherTrailPoint.IsDestroyed() && otherTrailPoint.Smell == this.AntStateMachine.TrailSmell);
 
             if (relevantOverlaps.Any())
             {
                 // there's one close enough, use that.
-                var best = relevantOverlaps.OrderBy(o => (o.transform.position - transform.position).magnitude).First();
+                var best = relevantOverlaps.OrderBy(o => (o.transform.position - this.transform.position).magnitude).First();
 
-                best.AddSmellComponent(_distanceSinceTarget, _targetValue);
+                best.AddSmellComponent(this._distanceSinceTarget, this._targetValue);
                 //Debug.Log("Added smell component to other: " + best + ". distance = " + (best.transform.position - transform.position).magnitude);
-                LastTrailPoint = best;
+                this.LastTrailPoint = best;
             }
             else
             {
                 // none are close enough, so create a new one.
-                var newPoint = Instantiate(TrailPoint, this.transform.position, Quaternion.identity, TrailParent.transform);
+                var newPoint = Instantiate(this.TrailPoint, this.transform.position, Quaternion.identity, this.TrailParent.transform);
                 newPoint.GetComponent<TrailPointController>()
-                    .SetSmell(AntStateMachine.TrailSmell.Value, _distanceSinceTarget, _targetValue);
+                    .SetSmell(this.AntStateMachine.TrailSmell.Value, this._distanceSinceTarget, this._targetValue);
                 newPoint.gameObject.layer = 2;
                 //Debug.Log("Leaving trail with smell: " + newPoint.GetComponent<TrailPointController>().Smell);
-                LastTrailPoint = newPoint;
+                this.LastTrailPoint = newPoint;
             }
-            _lastTrailPointLocation = this.transform.position;
+            this._lastTrailPointLocation = this.transform.position;
         }
     }
 }
