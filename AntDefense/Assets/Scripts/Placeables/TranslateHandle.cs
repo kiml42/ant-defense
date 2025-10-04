@@ -58,8 +58,7 @@ public class TranslateHandle : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(this.CancelMouseButton))
         {
-            RaycastHit hit;
-            if (this.RaycastToFloor(out hit))
+            if (this.RaycastToFloor(out var hit))
             {
                 this._lastMousePosition = hit.point;
             }
@@ -99,8 +98,7 @@ public class TranslateHandle : MonoBehaviour
     private void HandleMousePosition()
     {
         var previousPosition = this.transform.position;
-        RaycastHit hit;
-        if (this.RaycastToFloor(out hit))
+        if (this.RaycastToFloor(out var hit))
         {
             //Debug.Log("Pointing at: " + hit.transform + " @ " + hit.point);
             if (Input.GetMouseButton(this.PlaceMouseButton) && (ObjectPlacer.Instance.CanRotateCurrentObject() == true))
