@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.XR;
 
 public class NoSpawnZone : BaseGhostable
 {
@@ -45,17 +48,41 @@ public class NoSpawnZone : BaseGhostable
         var bestPoint = (Vector3?)null;
         var bestDistance = maxJump;
 
-        if (previousGoodPosition != null && NoSpawnZone.IsInAnyNoSpawnZone(previousGoodPosition.Value))
+        if (previousGoodPosition != null && IsInAnyNoSpawnZone(previousGoodPosition.Value))
         {
             previousGoodPosition = null;    // the position isn't good anymore.
         }
 
-        var transgressedZones = AllNoSpawnZones.Where(z => z.IsInNoSpawnZone(position, leeway));
-        if (!transgressedZones.Any())
+        var allowedArea = GetAllowedArea();
+        if (allowedArea.HasValue && !IsInRadius(position, allowedArea.Value))
         {
-            // Not in any no spawn zone, so nothing to do.
+            // the position is outside the allowed area.
+            var closestEdgePointInRange = GetClosestPointOnEdge(position, allowedArea.Value);
+            if (!IsInAnyNoSpawnZone(closestEdgePointInRange))
+            {
+                // the closest point on the edge of the allowed area is not in a no spawn zone, so return that.
+                return closestEdgePointInRange;
+            }
+            else
+            {
+                // this point is still in a no spawn zone, return null to say this can't find a good position.
+                return null;
+                // TODO: consider checking the intersections between this circle and all the no spawn zones.
+                // Get list of all the intersections between this circle and the no spawn zones.
+                // discard those that are in a no spawn zone.
+                // add these to the list of points to check.
+                // This might be too heavy to do every frame, so it might need caching if the allowed area doesn't change, or just not worth bothering with.
+            }
+        }
+
+        var transgressedZones = AllNoSpawnZones.Where(z => z.IsInNoSpawnZone(position, leeway));
+        if (!transgressedZones.Any() && (allowedArea == null || IsInRadius(position, allowedArea.Value)))
+        {
+            // Not in any no spawn zone, and inside the allowed area.
+            // so nothing to do.
             return null;
         }
+
         Action<Vector3> keepIfBetter = (v) =>
         {
             var distance = (v - position).magnitude;
@@ -71,38 +98,52 @@ public class NoSpawnZone : BaseGhostable
             }
         };
 
-        foreach (var zone in transgressedZones)
+        var pointsToCheck = transgressedZones.Select(z => GetClosestPointOnEdge(position, z)).ToList();
+        pointsToCheck.AddRange(_intersectionPoints.Where(p => p.IsOnEdge == true).Select(i => i.Point));
+
+
+        foreach(var edgePoint in pointsToCheck)
         {
-            var edgePoint = GetClosestPointOnEdge(position, zone);
             if (IsInAnyNoSpawnZone(edgePoint))
             {
                 // This edge point is still in a no spawn zone, so ignore it.
                 continue;
             }
             keepIfBetter(edgePoint);
-            //if(bestPoint == edgePoint)
-            //{
-            //    Debug.Log("found better point on edge of zone " + zone.name + " at " + edgePoint);
-            //}
-        }
-        foreach (var intersect in _intersectionPoints.Where(p => p.IsOnEdge == true))
-        {
-            keepIfBetter(intersect.Point);
-            //if (bestPoint == intersect.Point)
-            //{
-            //    Debug.Log("found better point on intersection of zones " + intersect.ZoneA.name + " and " + intersect.ZoneB.name + " at " + intersect.Point);
-            //}
         }
         return bestPoint;
     }
 
+    private static (Vector3 center, float radius)? GetAllowedArea()
+    {
+        var wallNadeBeingPlaced = ObjectPlacer.Instance != null ? ObjectPlacer.Instance.WallNodeBeingPlaced : null;
+
+        if (wallNadeBeingPlaced != null && wallNadeBeingPlaced.ConnectedNode != null)
+        {
+            var center = wallNadeBeingPlaced.ConnectedNode.transform.position;
+            var radius = wallNadeBeingPlaced.MaxLength;
+            return (center, radius);
+        }
+        return null;
+    }
+
     private static Vector3 GetClosestPointOnEdge(Vector3 position, NoSpawnZone zone)
     {
-        var direction = (position - zone.transform.position);
+        return GetClosestPointOnEdge(position, zone.transform.position, zone.Radius);
+    }
+
+    private static Vector3 GetClosestPointOnEdge(Vector3 position, (Vector3 center, float radius) area)
+    {
+        return GetClosestPointOnEdge(position, area.center, area.radius);
+    }
+
+    private static Vector3 GetClosestPointOnEdge(Vector3 position, Vector3 center, float radius)
+    {
+        var direction = position - center;
         direction = new Vector3(direction.x, 0, direction.z);    // move it down to the plane
         direction.Normalize();
-        var newX = zone.transform.position.x + direction.x * zone.Radius;
-        var newZ = zone.transform.position.z + direction.z * zone.Radius;
+        var newX = center.x + direction.x * radius;
+        var newZ = center.z + direction.z * radius;
         var edgePoint = new Vector3(newX, 0, newZ);
         return edgePoint;
     }
@@ -153,13 +194,21 @@ public class NoSpawnZone : BaseGhostable
 
     public bool IsInNoSpawnZone(Vector3 position, float leeway = 0.1f)
     {
-        var vector = position - this.transform.position;
+        var center = this.transform.position;
+        var radius = this.Radius;
+
+        return IsInRadius(position, center, radius, leeway);
+    }
+
+    private static bool IsInRadius(Vector3 position, (Vector3 center, float radius) area, float leeway = 0.1f)
+    {
+        return IsInRadius(position, area.center, area.radius, leeway);
+    }
+    private static bool IsInRadius(Vector3 position, Vector3 center, float radius, float leeway = 0.1f)
+    {
+        var vector = position - center;
         vector = new Vector3(vector.x, 0, vector.z);    // move it down to the plane
-        var isInside = (vector.magnitude + leeway) < this.Radius;
-        //if (isInside)
-        //{
-        //    Debug.Log(position + " is inside circle. distance = " + vector.magnitude + ", r = " + this.Radius + ", leeway = " + leeway);
-        //}
+        var isInside = (vector.magnitude + leeway) < radius;
         return isInside;
     }
 

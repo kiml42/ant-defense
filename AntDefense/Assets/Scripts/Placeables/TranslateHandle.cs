@@ -92,7 +92,7 @@ public class TranslateHandle : MonoBehaviour
 
         var excessDistance = distance - this.DefaultCameraDistance;
 
-        var scale = ((excessDistance / this.DefaultCameraDistance) / 1.5f) + 1;
+        var scale = (excessDistance / this.DefaultCameraDistance / 1.5f) + 1;
         return scale;
     }
 

@@ -22,7 +22,7 @@ public class WallNode : PlaceableMonoBehaviour
     // TODO make a position validator interface, or consider fixing the position instead of just disallowing placement.
     internal bool PositionIsValid(Vector3 position)
     {
-        return this.ConnectedNode == null || (position - this.ConnectedNode.transform.position).magnitude <= this.MaxLength;
+        return this.ConnectedNode == null || (position - this.ConnectedNode.transform.position).magnitude <= this.MaxLength + 0.1f;
     }
 
     private void Update()
