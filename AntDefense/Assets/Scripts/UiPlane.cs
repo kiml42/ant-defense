@@ -68,7 +68,7 @@ public class UiPlane : MonoBehaviour
         var i = 0;
         foreach (var p in ProtectMes)
         {
-            var offset = leftOffset + i * this.ProtectMesSpacing;
+            var offset = leftOffset + (i * this.ProtectMesSpacing);
             if (p.UiObject == null)
             {
                 p.UiObject = Instantiate(p.ProtectMe.transform, this.ProtectMesCenter.position + new Vector3(offset, 0, 0), Quaternion.Euler(this.ProtectMeRotation));
@@ -89,7 +89,7 @@ public class UiPlane : MonoBehaviour
         this._height = Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * distance * 2f;
         this._width = this._height * cam.aspect;
         var min = Mathf.Min(this._height, this._width);
-        this.transform.position = cam.transform.position + cam.transform.forward * distance;
+        this.transform.position = cam.transform.position + (cam.transform.forward * distance);
 
         this.transform.localScale = new Vector3(min, min, min);
 
@@ -100,7 +100,7 @@ public class UiPlane : MonoBehaviour
 
         for (int i = 0; i < quickBarObjects.Count; i++)
         {
-            var offset = leftOffset + i * this.QuickBarSpacing;
+            var offset = leftOffset + (i * this.QuickBarSpacing);
             var ghost = quickBarObjects[i];
             var newButton = Instantiate(this.QuickBarButton, this.QuickBarCenter.transform.position + new Vector3(offset, 0, 0), this.QuickBarCenter.transform.rotation);
             newButton.transform.parent = this.transform;

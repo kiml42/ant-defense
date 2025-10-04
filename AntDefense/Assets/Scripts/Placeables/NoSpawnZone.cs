@@ -53,8 +53,6 @@ public class NoSpawnZone : BaseGhostable
             previousGoodPosition = null;    // the position isn't good anymore.
         }
 
-        (Vector3 center, float radius)? allowedArea;
-
         var transgressedZones = AllNoSpawnZones.Where(z => z.IsInNoSpawnZone(position, leeway));
         if (!transgressedZones.Any())
         {
@@ -158,8 +156,8 @@ public class NoSpawnZone : BaseGhostable
         var direction = position - center;
         direction = new Vector3(direction.x, 0, direction.z);    // move it down to the plane
         direction.Normalize();
-        var newX = center.x + direction.x * radius;
-        var newZ = center.z + direction.z * radius;
+        var newX = center.x + (direction.x * radius);
+        var newZ = center.z + (direction.z * radius);
         var edgePoint = new Vector3(newX, 0, newZ);
         return edgePoint;
     }
@@ -169,7 +167,7 @@ public class NoSpawnZone : BaseGhostable
         var previous = (Vector3?)null;
         for (int i = 0; i < 33; i++)
         {
-            var target = this.transform.position + new Vector3(Mathf.Cos(i * Mathf.PI / 16), 0, Mathf.Sin(i * Mathf.PI / 16)) * this.Radius;
+            var target = this.transform.position + (new Vector3(Mathf.Cos(i * Mathf.PI / 16), 0, Mathf.Sin(i * Mathf.PI / 16)) * this.Radius);
             target = new Vector3(target.x, 0, target.z);
             if (previous != null)
             {
@@ -246,7 +244,7 @@ public class NoSpawnZone : BaseGhostable
 
         float dx = this.transform.position.x - other.transform.position.x;
         float dz = this.transform.position.z - other.transform.position.z; // Use z for 2D plane
-        float d = Mathf.Sqrt(dx * dx + dz * dz);
+        float d = Mathf.Sqrt((dx * dx) + (dz * dz));
         // No solution: circles are separate or one is contained within the other
         if (
             d > this.Radius + other.Radius // The circles are too far appart and don't touch

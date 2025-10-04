@@ -44,7 +44,7 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator
             var direction = this.ConnectedNode.transform.position - this.transform.position;
             if (direction.magnitude > 0.01f)
             {
-                var midpoint = this.transform.position + direction * 0.5f;
+                var midpoint = this.transform.position + (direction * 0.5f);
                 this.Wall.position = midpoint;
                 this.Wall.localScale = new Vector3(1, 1, direction.magnitude);
                 this.Wall.rotation = Quaternion.LookRotation(direction, Vector3.up);

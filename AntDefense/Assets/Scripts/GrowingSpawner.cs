@@ -35,7 +35,7 @@ public class GrowingSpawner : MonoBehaviour
     {
         // Handle scale;
         var growProgress = Mathf.Min(1, this.timer / this.GrowTime);
-        var scale = this.InitialScale + (1 - this.InitialScale) * growProgress;
+        var scale = this.InitialScale + ((1 - this.InitialScale) * growProgress);
         this.transform.localScale = Vector3.one * scale;
 
 

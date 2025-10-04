@@ -123,7 +123,7 @@ public class AntCam : MonoBehaviour
             // TODO consider make this work on the proportion first, and get both angle and distance from that.
             float currentY = this.CurrentY;
             var speedMultiplyer = currentY / 100;
-            var newY = currentY - Input.mouseScrollDelta.y * this.CameraZoomSpeed * speedMultiplyer;
+            var newY = currentY - (Input.mouseScrollDelta.y * this.CameraZoomSpeed * speedMultiplyer);
 
             if (shiftPushed)
             {
@@ -147,7 +147,7 @@ public class AntCam : MonoBehaviour
 
             var newAngle = GetProportionOfRange(zoomProportion, this.MinAngle, this.MaxAngle);
 
-            this._targetXRotation = this._targetXRotation - Input.mouseScrollDelta.y * this.CameraPanSpeed * speedMultiplyer;
+            this._targetXRotation = this._targetXRotation - (Input.mouseScrollDelta.y * this.CameraPanSpeed * speedMultiplyer);
 
             this.transform.rotation = Quaternion.AngleAxis(newAngle, Vector3.right);
 

@@ -43,7 +43,7 @@ public class AntNest : MonoBehaviour
         {
             for (int i = 0; i < this.AntsPerSpawn; i++)
             {
-                var position = (this.SpawnPoint?.position ?? this.transform.position) + Random.insideUnitSphere * this.SpawnRadius;
+                var position = (this.SpawnPoint?.position ?? this.transform.position) + (Random.insideUnitSphere * this.SpawnRadius);
                 var randomLookTarget = Random.insideUnitCircle;
                 var rotation = Quaternion.LookRotation(new Vector3(randomLookTarget.x, 0, randomLookTarget.y), Vector3.up);
 

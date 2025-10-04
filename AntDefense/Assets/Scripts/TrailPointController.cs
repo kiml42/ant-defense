@@ -132,7 +132,7 @@ public class TrailPointController : Smellable
 
     private SmellComponent CreateSmellComponent(float distanceFromTarget, float? targetValue)
     {
-        var newLifetime = this.DefaultLifetime - distanceFromTarget * this.LifetimePenalty;
+        var newLifetime = this.DefaultLifetime - (distanceFromTarget * this.LifetimePenalty);
         var component = new SmellComponent(distanceFromTarget, newLifetime, targetValue);
         return component;
     }
