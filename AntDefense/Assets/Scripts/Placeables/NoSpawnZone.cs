@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.XR;
 
 public class NoSpawnZone : BaseGhostable
 {
-    public static HashSet<NoSpawnZone> AllNoSpawnZones = new HashSet<NoSpawnZone>();
-    private static readonly List<IntersectionPoint> _intersectionPoints = new List<IntersectionPoint>();
+    public static HashSet<NoSpawnZone> AllNoSpawnZones = new();
+    private static readonly List<IntersectionPoint> _intersectionPoints = new();
 
     public float Radius = 3;
 
@@ -61,7 +58,7 @@ public class NoSpawnZone : BaseGhostable
             return GetClosestPositionInAllowedArea(position);
         }
 
-        Action<Vector3> keepIfBetter = (v) =>
+        void keepIfBetter(Vector3 v)
         {
             var distance = (v - position).magnitude;
             var previousDistance = previousGoodPosition.HasValue
@@ -74,7 +71,7 @@ public class NoSpawnZone : BaseGhostable
                 bestPoint = v;
                 Debug.DrawLine(v + (Vector3.up * distance), v - (Vector3.up * distance), Color.green, 2);
             }
-        };
+        }
 
         var pointsToCheck = transgressedZones.Select(z => GetClosestPointOnEdge(position, z)).ToList();
         pointsToCheck.AddRange(_intersectionPoints.Where(p => p.IsOnEdge == true).Select(i => i.Point));
