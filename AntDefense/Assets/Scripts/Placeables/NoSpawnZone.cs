@@ -29,6 +29,10 @@ public class NoSpawnZone : BaseGhostable
     {
         public readonly Vector3 Point;
         public readonly PointType Type;
+        public virtual void Activate()
+        {
+            // Do nothing by default.
+        }
 
         public AdjustedPoint(Vector3 point, PointType type)
         {
@@ -44,6 +48,12 @@ public class NoSpawnZone : BaseGhostable
         public InteractionPoint(IInteractivePosition point) : base (point.Position, PointType.InteractionPoint)
         {
             this._pointObject = point;
+        }
+
+        public override void Activate()
+        {
+            base.Activate();
+            this._pointObject.Interact();
         }
     }
 
