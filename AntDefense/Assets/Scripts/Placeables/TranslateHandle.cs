@@ -141,20 +141,20 @@ public class TranslateHandle : MonoBehaviour
         switch (changedPosition.Type)
         {
             case NoSpawnZone.PointType.Original:
-                Debug.Log($"Original is fine {changedPosition.Point}");
+                //Debug.Log($"Original is fine {changedPosition.Point}");
                 // no adjustment needed
                 break;
             case NoSpawnZone.PointType.Corrected:
-                Debug.Log($"Corrected position {changedPosition.Point}");
+                //Debug.Log($"Corrected position {changedPosition.Point}");
                 this.transform.position = changedPosition.Point;
                 break;
             case NoSpawnZone.PointType.InteractionPoint:
-                Debug.Log($"InteractionPoint position {changedPosition.Point}");
+                //Debug.Log($"InteractionPoint position {changedPosition.Point}");
                 this.transform.position = changedPosition.Point;
                 // TODO remember that this is an interactive point.
                 break;
             case NoSpawnZone.PointType.Invalid:
-                Debug.Log($"Invalid position {changedPosition.Point}");
+                //Debug.Log($"Invalid position {changedPosition.Point}");
                 isGood = false;
                 break;
         }
@@ -195,17 +195,8 @@ public class TranslateHandle : MonoBehaviour
 
         if (this._lastCorrectedPoint == null) return;
 
+        Debug.Log("Activating " +  this._lastCorrectedPoint);
         this._lastCorrectedPoint.Activate();
-
-        // TODO handle this through Activate.
-        switch (this._lastCorrectedPoint.Type)
-        {
-            case NoSpawnZone.PointType.Original:
-            case NoSpawnZone.PointType.Corrected:
-                ObjectPlacer.Instance.PlaceObject(Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt));
-                return;
-            // no other types place an object.
-        }
     }
 
     private Quaternion AdjustYUp(Quaternion originalRotation)

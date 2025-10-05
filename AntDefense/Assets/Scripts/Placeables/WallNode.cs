@@ -66,6 +66,7 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
 
     public void Interact()
     {
+        // TODO: work out why this starts placing the wall correctly, but when it's finalised the node remains but the wall dissapears.
         Debug.Log("Interaction with wall node " + this);
         ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
     }

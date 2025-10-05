@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class NoSpawnZone : BaseGhostable
@@ -31,7 +32,13 @@ public class NoSpawnZone : BaseGhostable
         public readonly PointType Type;
         public virtual void Activate()
         {
-            // Do nothing by default.
+            Debug.Assert(this.Type != PointType.InteractionPoint, "Interactie points should always use their own class");
+            if (this.Type == PointType.Invalid)
+            {
+                // nothing to do if the point is invalid.
+                return;
+            }
+            ObjectPlacer.Instance.PlaceObject(Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt));
         }
 
         public AdjustedPoint(Vector3 point, PointType type)
@@ -40,6 +47,24 @@ public class NoSpawnZone : BaseGhostable
             this.Type = type;
         }
     }
+
+    //public class ValidSpawnPoint : AdjustedPoint
+    //{
+    //    private ValidSpawnPoint(Vector3 point, PointType type): base(point, type) {}
+    //    public static ValidSpawnPoint Original(Vector3 point)
+    //    {
+    //        return new ValidSpawnPoint(point, PointType.Original);
+    //    }
+
+    //    public static ValidSpawnPoint Corrected(Vector3 point)
+    //    {
+    //        return new ValidSpawnPoint(point, PointType.Corrected);
+    //    }
+
+    //    public override void Activate()
+    //    {
+    //    }
+    //}
 
     public class InteractionPoint : AdjustedPoint
     {
@@ -52,7 +77,7 @@ public class NoSpawnZone : BaseGhostable
 
         public override void Activate()
         {
-            base.Activate();
+            // Don't call base because we don't want the default behaviour
             this._pointObject.Interact();
         }
     }
