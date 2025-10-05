@@ -6,17 +6,27 @@ public interface IPlaceablePositionValidator
     bool PositionIsValid(Vector3 position);
 }
 
-public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator
+public interface IInteractivePosition
+{
+    Vector3 Position { get; }
+
+    void Interact();
+}
+
+public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IInteractivePosition
 {
     public WallNode ConnectedNode;
     public Transform Wall;
     public float MaxLength;
+
+    public Vector3 Position => this.transform.position;
 
     public override void OnPlace()
     {
         //Debug.Log("WallNode placed, connected to " + this.ConnectedNode);
         this.UpdateWall();
         this.enabled = false;   //disable to prevent updating the wall every frame
+        NoSpawnZone.Register(this); // register this as an interactive point
     }
 
     internal void ConnectTo(WallNode other)
@@ -52,6 +62,12 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator
             }
         }
         this.Wall.localScale = Vector3.zero;
+    }
+
+    public void Interact()
+    {
+        Debug.Log("Interaction with wall node " + this);
+        ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
     }
 }
 

@@ -6,7 +6,10 @@ using UnityEngine;
 public class NoSpawnZone : BaseGhostable
 {
     public static HashSet<NoSpawnZone> AllNoSpawnZones = new();
+
     private static readonly List<IntersectionPoint> _intersectionPoints = new();
+
+    private static readonly List<IInteractivePosition> InteractivePoints = new();
 
     public float Radius = 3;
 
@@ -75,6 +78,7 @@ public class NoSpawnZone : BaseGhostable
 
         var pointsToCheck = transgressedZones.Select(z => GetClosestPointOnEdge(position, z)).ToList();
         pointsToCheck.AddRange(_intersectionPoints.Where(p => p.IsOnEdge == true).Select(i => i.Point));
+        pointsToCheck.AddRange(InteractivePoints.Select(p => p.Position));
 
         foreach (var edgePoint in pointsToCheck)
         {
@@ -291,6 +295,11 @@ public class NoSpawnZone : BaseGhostable
     public override void UnGhostify()
     {
         this.Activate();
+    }
+
+    internal static void Register(IInteractivePosition point)
+    {
+        InteractivePoints.Add(point);
     }
 
     private class IntersectionPoint

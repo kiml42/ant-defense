@@ -138,6 +138,19 @@ public class ObjectPlacer : MonoBehaviour
         return true; // no object being placed, so position is valid.
     }
 
+    internal void StartPlacingWallConnectedTo(WallNode wallNode)
+    {
+        for (var i = 0; i < QuickBarObjects.Count; i++)
+        {
+            var prefab = this.QuickBarObjects[i];
+            if (prefab.GetComponent<WallNode>() != null)
+            {
+                this.StartPlacingGhost(prefab);
+                this.WallNodeBeingPlaced.ConnectTo(wallNode);
+            }
+        }
+    }
+
     /// <summary>
     /// Returns the WallNode component of the object being placed, or null if there is no object being placed or if the object being placed does not have a WallNode component.
     /// </summary>
