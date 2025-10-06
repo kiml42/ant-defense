@@ -1,12 +1,85 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class NoSpawnZone : BaseGhostable
 {
+    public enum PointType
+    {
+        /// <summary>
+        /// The original value is being used without any correction required
+        /// </summary>
+        Original,
+        /// <summary>
+        /// The position was invalid, and this is the closest valid poition
+        /// </summary>
+        Corrected,
+        /// <summary>
+        /// The closest position is an interactive point, so clicking now should interact with it rather than placing an object
+        /// </summary>
+        InteractionPoint,
+        /// <summary>
+        /// The original position is invalid, and no valid position was found
+        /// </summary>
+        Invalid
+    }
+
+    public class AdjustedPoint
+    {
+        public readonly Vector3 Point;
+        public readonly PointType Type;
+
+        public float SnapPriority
+        {
+            get
+            {
+                return this.Type switch
+                {
+                    PointType.InteractionPoint => 2,
+                    _ => 0
+                };
+            }
+        }
+
+        public virtual void Activate()
+        {
+            Debug.Assert(this.Type != PointType.InteractionPoint, "Interactie points should always use their own class");
+            if (this.Type == PointType.Invalid)
+            {
+                // nothing to do if the point is invalid.
+                return;
+            }
+            ObjectPlacer.Instance.PlaceObject(Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt));
+        }
+
+        public AdjustedPoint(Vector3 point, PointType type)
+        {
+            this.Point = point;
+            this.Type = type;
+        }
+    }
+
+    public class InteractionPoint : AdjustedPoint
+    {
+        private readonly IInteractivePosition _pointObject;
+
+        public InteractionPoint(IInteractivePosition point) : base(point.Position, PointType.InteractionPoint)
+        {
+            this._pointObject = point;
+        }
+
+        public override void Activate()
+        {
+            // Don't call base because we don't want the default behaviour
+            this._pointObject.Interact();
+        }
+    }
+
     public static HashSet<NoSpawnZone> AllNoSpawnZones = new();
+
     private static readonly List<IntersectionPoint> _intersectionPoints = new();
+
+    private static readonly List<InteractionPoint> InteractionPoints = new();
 
     public float Radius = 3;
 
@@ -40,9 +113,9 @@ public class NoSpawnZone : BaseGhostable
         AllNoSpawnZones.Remove(this);
     }
 
-    public static Vector3? GetBestEdgePosition(Vector3 position, Vector3? previousGoodPosition = null, float leeway = 0.1f, float previousWeight = 0.5f, float maxJump = 20f)
+    public static AdjustedPoint GetBestEdgePosition(Vector3 position, Vector3? previousGoodPosition = null, float leeway = 0.1f, float previousWeight = 0.5f, float maxJump = 20f)
     {
-        var bestPoint = (Vector3?)null;
+        var currentPoint = new AdjustedPoint(position, PointType.Original);
         var bestDistance = maxJump;
 
         if (previousGoodPosition != null && IsInAnyNoSpawnZone(previousGoodPosition.Value))
@@ -55,40 +128,43 @@ public class NoSpawnZone : BaseGhostable
         {
             // Not in any no spawn zone
             // move into the allowed area if there is one
-            return GetClosestPositionInAllowedArea(position);
+            return GetClosestPositionInAllowedArea(currentPoint);
         }
 
-        void keepIfBetter(Vector3 v)
+        var bestPoint = new AdjustedPoint(position, PointType.Invalid);    // initilise to the original, but we now know it's invalid.
+
+        void keepIfBetter(AdjustedPoint otherPoint)
         {
-            var distance = (v - position).magnitude;
+            var otherPoointPosition = otherPoint.Point;
+            var distance = (otherPoointPosition - position).magnitude - otherPoint.SnapPriority;
             var previousDistance = previousGoodPosition.HasValue
-                ? (v - previousGoodPosition.Value).magnitude
+                ? (otherPoointPosition - previousGoodPosition.Value).magnitude
                 : 0;
             var weightedTotalDistance = distance + (previousDistance * previousWeight);
             if (distance < bestDistance)
             {
                 bestDistance = distance;
-                bestPoint = v;
-                Debug.DrawLine(v + (Vector3.up * distance), v - (Vector3.up * distance), Color.green, 2);
+                bestPoint = otherPoint;
+                Debug.DrawLine(otherPoointPosition + (Vector3.up * distance), otherPoointPosition - (Vector3.up * distance), Color.green, 2);
             }
         }
 
-        var pointsToCheck = transgressedZones.Select(z => GetClosestPointOnEdge(position, z)).ToList();
-        pointsToCheck.AddRange(_intersectionPoints.Where(p => p.IsOnEdge == true).Select(i => i.Point));
+        var pointsToCheck = transgressedZones.Select(z => GetClosestPointOnEdge(position, z, PointType.Corrected)).ToList();
+        pointsToCheck.AddRange(_intersectionPoints.Where(p => p.IsOnEdge == true));
+        pointsToCheck.AddRange(InteractionPoints);
 
-        foreach (var edgePoint in pointsToCheck)
+        foreach (var point in pointsToCheck)
         {
-            if (IsInAnyNoSpawnZone(edgePoint))
+            if (point.Type != PointType.InteractionPoint && IsInAnyNoSpawnZone(point.Point))
             {
-                // This edge point is still in a no spawn zone, so ignore it.
+                // This edge point is still in a no spawn zone, so ignore it (unless it's an interaction point)
                 continue;
             }
-            keepIfBetter(edgePoint);
+            keepIfBetter(point);
         }
 
         // move the best point into the allowed area if there is one, and it's otside it.
-        return GetClosestPositionInAllowedArea(bestPoint)
-            ?? bestPoint;   // use best point if GetClosestPositionInAllowedArea returns null, which it will if the best point is already within the allowed area.
+        return GetClosestPositionInAllowedArea(bestPoint);
     }
 
     /// <summary>
@@ -99,30 +175,27 @@ public class NoSpawnZone : BaseGhostable
     /// exists,  the method returns <see langword="null"/>.</remarks>
     /// <param name="position">The position to evaluate. Can be <see langword="null"/>.</param>
     /// <returns>The closest valid position within the allowed area, or <see langword="null"/> if the input position is  <see langword="null"/> or no valid position can be determined, or the position doens't need to be updated.</returns>
-    private static Vector3? GetClosestPositionInAllowedArea(Vector3? position)
+    private static AdjustedPoint GetClosestPositionInAllowedArea(AdjustedPoint position)
     {
-        if(!position.HasValue) return null;
+        Debug.Assert(position != null, "Position should not be null.");
         var allowedArea = GetAllowedArea();
-        if (allowedArea.HasValue && !IsInRadius(position.Value, allowedArea.Value))
+        if (allowedArea.HasValue && !IsInRadius(position.Point, allowedArea.Value))
         {
+            position = new AdjustedPoint(position.Point, PointType.Invalid);    // we now know the position is invalid.
             //Debug.Log("Position is outside the allowed area, moving it in." + position.Value);
             // the position is outside the allowed area.
-            var closestEdgePointInRange = GetClosestPointOnEdge(position.Value, allowedArea.Value);
-            if (!IsInAnyNoSpawnZone(closestEdgePointInRange))
+            var closestEdgePointInRange = GetClosestPointOnEdge(position.Point, allowedArea.Value, PointType.Corrected);
+
+            if (!IsInAnyNoSpawnZone(closestEdgePointInRange.Point))
             {
                 //Debug.Log("The closest point on the edge of the allowed area is not in a no spawn zone, so using that." + closestEdgePointInRange);
                 // the closest point on the edge of the allowed area is not in a no spawn zone, so return that.
                 return closestEdgePointInRange;
             }
-            else
-            {
-                //Debug.Log("The closest point on the edge of the allowed area is still in a no spawn zone, so can't find a good position." + closestEdgePointInRange);
-                // this point is still in a no spawn zone, return null to say this can't find a good position.
-                return null;
-            }
         }
 
-        return null;
+        // return the original position, if it's invalid, it will have been marked so, otherwise it's valid.
+        return position;
     }
 
     private static (Vector3 center, float radius)? GetAllowedArea()
@@ -138,17 +211,17 @@ public class NoSpawnZone : BaseGhostable
         return null;
     }
 
-    private static Vector3 GetClosestPointOnEdge(Vector3 position, NoSpawnZone zone)
+    private static AdjustedPoint GetClosestPointOnEdge(Vector3 position, NoSpawnZone zone, PointType type)
     {
-        return GetClosestPointOnEdge(position, zone.transform.position, zone.Radius);
+        return GetClosestPointOnEdge(position, zone.transform.position, zone.Radius, type);
     }
 
-    private static Vector3 GetClosestPointOnEdge(Vector3 position, (Vector3 center, float radius) area)
+    private static AdjustedPoint GetClosestPointOnEdge(Vector3 position, (Vector3 center, float radius) area, PointType type)
     {
-        return GetClosestPointOnEdge(position, area.center, area.radius);
+        return GetClosestPointOnEdge(position, area.center, area.radius, type);
     }
 
-    private static Vector3 GetClosestPointOnEdge(Vector3 position, Vector3 center, float radius)
+    private static AdjustedPoint GetClosestPointOnEdge(Vector3 position, Vector3 center, float radius, PointType type)
     {
         var direction = position - center;
         direction = new Vector3(direction.x, 0, direction.z);    // move it down to the plane
@@ -156,7 +229,7 @@ public class NoSpawnZone : BaseGhostable
         var newX = center.x + (direction.x * radius);
         var newZ = center.z + (direction.z * radius);
         var edgePoint = new Vector3(newX, 0, newZ);
-        return edgePoint;
+        return new AdjustedPoint(edgePoint, type);
     }
 
     private void Update()
@@ -183,12 +256,7 @@ public class NoSpawnZone : BaseGhostable
             var intersectionPoints = this.CalculateIntersectionPoints(other);
             foreach (var point in intersectionPoints)
             {
-                var intersectionPoint = new IntersectionPoint
-                {
-                    Point = point,
-                    ZoneA = this,
-                    ZoneB = other
-                };
+                var intersectionPoint = new IntersectionPoint(point, this, other);
                 _intersectionPoints.Add(intersectionPoint);
             }
         }
@@ -293,11 +361,21 @@ public class NoSpawnZone : BaseGhostable
         this.Activate();
     }
 
-    private class IntersectionPoint
+    internal static void Register(IInteractivePosition point)
     {
-        public Vector3 Point;
-        public NoSpawnZone ZoneA;
-        public NoSpawnZone ZoneB;
+        InteractionPoints.Add(new InteractionPoint(point));
+    }
+
+    private class IntersectionPoint : AdjustedPoint
+    {
+        public readonly NoSpawnZone ZoneA;
+        public readonly NoSpawnZone ZoneB;
         public bool? IsOnEdge;
+
+        public IntersectionPoint(Vector3 point, NoSpawnZone noSpawnZone, NoSpawnZone other) : base(point, PointType.Corrected)
+        {
+            this.ZoneA = noSpawnZone;
+            this.ZoneB = other;
+        }
     }
 }

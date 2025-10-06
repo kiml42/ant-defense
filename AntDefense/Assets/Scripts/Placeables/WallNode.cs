@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -6,17 +7,28 @@ public interface IPlaceablePositionValidator
     bool PositionIsValid(Vector3 position);
 }
 
-public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator
+public interface IInteractivePosition
+{
+    Vector3 Position { get; }
+
+    void Interact();
+}
+
+public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IInteractivePosition
 {
     public WallNode ConnectedNode;
     public Transform Wall;
+    public Transform Node;
     public float MaxLength;
+
+    public Vector3 Position => this.transform.position;
 
     public override void OnPlace()
     {
         //Debug.Log("WallNode placed, connected to " + this.ConnectedNode);
         this.UpdateWall();
         this.enabled = false;   //disable to prevent updating the wall every frame
+        NoSpawnZone.Register(this); // register this as an interactive point
     }
 
     internal void ConnectTo(WallNode other)
@@ -52,6 +64,37 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator
             }
         }
         this.Wall.localScale = Vector3.zero;
+    }
+
+    public void Interact()
+    {
+        Debug.Log("Interaction with wall node " + this);
+
+        if(ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null)
+        {
+            var placedObject = ObjectPlacer.Instance.PlaceObject(true);
+            placedObject.GetComponent<WallNode>().RemoveNode();
+        }
+        else
+        {
+            ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
+        }
+    }
+
+    /// <summary>
+    /// Remove the node, but leave the wall, used for finishing at an existing node
+    /// </summary>
+    /// <exception cref="NotImplementedException"></exception>
+    private void RemoveNode()
+    {
+        foreach(var r in this.Node.GetComponentsInChildren<MeshRenderer>())
+        {
+            r.enabled = false;
+        }
+        foreach(var c in this.Node.GetComponentsInChildren<Collider>())
+        {
+            c.enabled = false;
+        }
     }
 }
 

@@ -9,7 +9,8 @@ public class TranslateHandle : MonoBehaviour
     public float MinRotateMouseDistance = 1f;
     private int _uiLayermask;
     private int _groundLayermask;
-    private bool lastPositionIsGood = false;
+    private bool _lastPositionIsGood = false;
+    private NoSpawnZone.AdjustedPoint _lastCorrectedPoint;
 
     // TODO: handle this with a visually disaleable script on every rendered object.
     private IEnumerable<Material> _materials;
@@ -134,18 +135,35 @@ public class TranslateHandle : MonoBehaviour
             }
         }
 
+        bool isGood = true;
         var changedPosition = NoSpawnZone.GetBestEdgePosition(this.transform.position, previousPosition);
-        if (changedPosition.HasValue)
+        this._lastCorrectedPoint = changedPosition;
+        switch (changedPosition.Type)
         {
-            //Debug.Log("Snapping to edge of no spawn zone @ " + changedPosition);
-            this.transform.position = changedPosition.Value;
+            case NoSpawnZone.PointType.Original:
+                //Debug.Log($"Original is fine {changedPosition.Point}");
+                // no adjustment needed
+                break;
+            case NoSpawnZone.PointType.Corrected:
+                //Debug.Log($"Corrected position {changedPosition.Point}");
+                this.transform.position = changedPosition.Point;
+                break;
+            case NoSpawnZone.PointType.InteractionPoint:
+                //Debug.Log($"InteractionPoint position {changedPosition.Point}");
+                this.transform.position = changedPosition.Point;
+                // TODO remember that this is an interactive point.
+                break;
+            case NoSpawnZone.PointType.Invalid:
+                //Debug.Log($"Invalid position {changedPosition.Point}");
+                isGood = false;
+                break;
         }
-        var isGood = !NoSpawnZone.IsInAnyNoSpawnZone(this.transform.position);
+
         isGood &= ObjectPlacer.Instance == null || ObjectPlacer.Instance.PositionIsValid(this.transform.position);
-        if (isGood != this.lastPositionIsGood)
+        if (isGood != this._lastPositionIsGood)
         {
             // Position state changed.
-            this.lastPositionIsGood = isGood;
+            this._lastPositionIsGood = isGood;
             foreach (var material in this._materials)
             {
                 material.color = isGood
@@ -175,13 +193,10 @@ public class TranslateHandle : MonoBehaviour
             }
         }
 
-        if(NoSpawnZone.IsInAnyNoSpawnZone(this.transform.position))
-        {
-            // Can't place here.
-            return;
-        }
+        if (this._lastCorrectedPoint == null) return;
 
-        ObjectPlacer.Instance.PlaceObject(Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt));
+        Debug.Log("Activating " +  this._lastCorrectedPoint);
+        this._lastCorrectedPoint.Activate();
     }
 
     private Quaternion AdjustYUp(Quaternion originalRotation)
