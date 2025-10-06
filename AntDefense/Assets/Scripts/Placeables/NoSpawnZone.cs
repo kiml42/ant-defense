@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class NoSpawnZone : BaseGhostable
@@ -30,6 +28,19 @@ public class NoSpawnZone : BaseGhostable
     {
         public readonly Vector3 Point;
         public readonly PointType Type;
+
+        public float SnapPriority
+        {
+            get
+            {
+                return this.Type switch
+                {
+                    PointType.InteractionPoint => 2,
+                    _ => 0
+                };
+            }
+        }
+
         public virtual void Activate()
         {
             Debug.Assert(this.Type != PointType.InteractionPoint, "Interactie points should always use their own class");
@@ -48,29 +59,11 @@ public class NoSpawnZone : BaseGhostable
         }
     }
 
-    //public class ValidSpawnPoint : AdjustedPoint
-    //{
-    //    private ValidSpawnPoint(Vector3 point, PointType type): base(point, type) {}
-    //    public static ValidSpawnPoint Original(Vector3 point)
-    //    {
-    //        return new ValidSpawnPoint(point, PointType.Original);
-    //    }
-
-    //    public static ValidSpawnPoint Corrected(Vector3 point)
-    //    {
-    //        return new ValidSpawnPoint(point, PointType.Corrected);
-    //    }
-
-    //    public override void Activate()
-    //    {
-    //    }
-    //}
-
     public class InteractionPoint : AdjustedPoint
     {
         private readonly IInteractivePosition _pointObject;
 
-        public InteractionPoint(IInteractivePosition point) : base (point.Position, PointType.InteractionPoint)
+        public InteractionPoint(IInteractivePosition point) : base(point.Position, PointType.InteractionPoint)
         {
             this._pointObject = point;
         }
@@ -143,7 +136,7 @@ public class NoSpawnZone : BaseGhostable
         void keepIfBetter(AdjustedPoint otherPoint)
         {
             var otherPoointPosition = otherPoint.Point;
-            var distance = (otherPoointPosition - position).magnitude;
+            var distance = (otherPoointPosition - position).magnitude - otherPoint.SnapPriority;
             var previousDistance = previousGoodPosition.HasValue
                 ? (otherPoointPosition - previousGoodPosition.Value).magnitude
                 : 0;
