@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -17,6 +18,7 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
 {
     public WallNode ConnectedNode;
     public Transform Wall;
+    public Transform Node;
     public float MaxLength;
 
     public Vector3 Position => this.transform.position;
@@ -66,9 +68,33 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
 
     public void Interact()
     {
-        // TODO: work out why this starts placing the wall correctly, but when it's finalised the node remains but the wall dissapears.
         Debug.Log("Interaction with wall node " + this);
-        ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
+
+        if(ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null)
+        {
+            var placedObject = ObjectPlacer.Instance.PlaceObject(true);
+            placedObject.GetComponent<WallNode>().RemoveNode();
+        }
+        else
+        {
+            ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
+        }
+    }
+
+    /// <summary>
+    /// Remove the node, but leave the wall, used for finishing at an existing node
+    /// </summary>
+    /// <exception cref="NotImplementedException"></exception>
+    private void RemoveNode()
+    {
+        foreach(var r in this.Node.GetComponentsInChildren<MeshRenderer>())
+        {
+            r.enabled = false;
+        }
+        foreach(var c in this.Node.GetComponentsInChildren<Collider>())
+        {
+            c.enabled = false;
+        }
     }
 }
 

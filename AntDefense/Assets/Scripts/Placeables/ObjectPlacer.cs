@@ -83,8 +83,9 @@ public class ObjectPlacer : MonoBehaviour
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="keepPlacing">if <see langword="true"/> then this should keep placing more of this object regardless of weathr that's the defualt behaviour of the object being placed.</param>
-    public void PlaceObject(bool keepPlacing)
+    /// <param name="keepPlacing">if <see langword="true"/> then this should keep placing more of this object regardless of weather that's the defualt behaviour of the object being placed.</param>
+    /// <returns>The object that was placed</returns>
+    public PlaceableObjectOrGhost PlaceObject(bool keepPlacing)
     {
         if (this._objectBeingPlaced != null && this.PositionIsValid(this._objectBeingPlaced.transform.position))
         {
@@ -108,7 +109,9 @@ public class ObjectPlacer : MonoBehaviour
             {
                 this.CancelPlacingObject();
             }
+            return newObject;
         }
+        return null;
     }
 
     private WallNode _lastWallNode = null;
