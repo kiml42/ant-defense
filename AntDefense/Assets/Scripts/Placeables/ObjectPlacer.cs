@@ -140,6 +140,7 @@ public class ObjectPlacer : MonoBehaviour
 
     internal void StartPlacingWallConnectedTo(WallNode wallNode)
     {
+        this._lastWallNode = wallNode;
         for (var i = 0; i < this.QuickBarObjects.Count; i++)
         {
             var prefab = this.QuickBarObjects[i];
