@@ -195,7 +195,7 @@ public class TranslateHandle : MonoBehaviour
 
         if (this._lastCorrectedPoint == null) return;
 
-        Debug.Log("Activating " +  this._lastCorrectedPoint);
+        //Debug.Log("Activating " +  this._lastCorrectedPoint);
         this._lastCorrectedPoint.Activate();
     }
 
