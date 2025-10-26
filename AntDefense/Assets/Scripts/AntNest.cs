@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AntNest : MonoBehaviour
 {
-    public GameObject AntParent;
+    private static GameObject antParent;
     public Transform SpawnPoint;
     public Vector3 SpawnVelocity = Vector3.zero;
 
@@ -28,11 +28,13 @@ public class AntNest : MonoBehaviour
     /// </summary>
     public float ReserveFood = 20f;
 
+    public int MaxAnts = 100;
+
     void Start()
     {
-        if (this.AntParent == null)
+        if (antParent == null)
         {
-            this.AntParent = this.gameObject;
+            antParent = new GameObject("Ants");
         }
     }
 
@@ -48,7 +50,7 @@ public class AntNest : MonoBehaviour
                 var rotation = Quaternion.LookRotation(new Vector3(randomLookTarget.x, 0, randomLookTarget.y), Vector3.up);
 
                 var prefab = this.AntPrefabs[i % this.AntPrefabs.Count];
-                var instance = Instantiate(prefab.transform, position, rotation, this.AntParent.transform);
+                var instance = Instantiate(prefab.transform, position, rotation, antParent.transform);
                 this.Digestion.UseFood(prefab.Cost);
                 
                 instance.GetComponent<Rigidbody>().linearVelocity = this.SpawnVelocity;
