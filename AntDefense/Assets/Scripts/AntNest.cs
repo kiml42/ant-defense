@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AntNest : MonoBehaviour
@@ -12,6 +13,7 @@ public class AntNest : MonoBehaviour
     public float MaxRespawnTime = 5;
 
     public List<FoodCost> AntPrefabs;
+    public List<float> TargetProportions;
 
     public int AntsPerSpawn = 5;
     public float SpawnRadius = 1;
@@ -28,6 +30,9 @@ public class AntNest : MonoBehaviour
     /// </summary>
     public float ReserveFood = 20f;
 
+    /// <summary>
+    /// The maximum number of ants allowed to exist at one time.
+    /// </summary>
     public int MaxAnts = 100;
 
     void Start()
@@ -36,7 +41,10 @@ public class AntNest : MonoBehaviour
         {
             antParent = new GameObject("Ants");
         }
+        this.spawnsByPrefabIndex = new int[this.AntPrefabs.Count];
     }
+
+    private int[] spawnsByPrefabIndex;
 
     void FixedUpdate()
     {
@@ -45,17 +53,47 @@ public class AntNest : MonoBehaviour
         {
             for (int i = 0; i < this.AntsPerSpawn; i++)
             {
-                var position = (this.SpawnPoint?.position ?? this.transform.position) + (Random.insideUnitSphere * this.SpawnRadius);
+                if (antParent.transform.childCount >= this.MaxAnts)
+                {
+                    break;
+                }
+                var position = this.SpawnPoint.position + (Random.insideUnitSphere * this.SpawnRadius);
                 var randomLookTarget = Random.insideUnitCircle;
                 var rotation = Quaternion.LookRotation(new Vector3(randomLookTarget.x, 0, randomLookTarget.y), Vector3.up);
-
-                var prefab = this.AntPrefabs[i % this.AntPrefabs.Count];
+                var prefab = this.PickPrefab();
                 var instance = Instantiate(prefab.transform, position, rotation, antParent.transform);
                 this.Digestion.UseFood(prefab.Cost);
-                
+
                 instance.GetComponent<Rigidbody>().linearVelocity = this.SpawnVelocity;
             }
         }
+    }
+
+    private FoodCost PickPrefab()
+    {
+        var totalSpawned = this.spawnsByPrefabIndex.Sum();
+        var bestIndex = 0;
+
+        
+        if (totalSpawned != 0)
+        {
+            var worstDefecit = float.MinValue;
+            for (var i = 0; i < this.AntPrefabs.Count; i++)
+            {
+                var actualProportion = (float)this.spawnsByPrefabIndex[i] / totalSpawned;
+                var defecit = this.TargetProportions[i] - actualProportion;
+                //Debug.Log($"AntNest: Prefab {i} actual proportion {actualProportion}, target {this.TargetProportions[i]}, defecit {defecit}");
+                if (defecit > worstDefecit)
+                {
+                    worstDefecit = defecit;
+                    bestIndex = i;
+                }
+            }
+        }
+
+        //Debug.Log($"AntNest: Picking prefab index {bestIndex}");
+        this.spawnsByPrefabIndex[bestIndex]++;
+        return this.AntPrefabs[bestIndex];
     }
 
     internal void UseFood(float foodToEat)

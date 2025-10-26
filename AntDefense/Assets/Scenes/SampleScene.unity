@@ -949,10 +949,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 32434936974746235, guid: 98c4698d565f2884b9b31b30eaf8f856, type: 3}
-      propertyPath: StartFood
-      value: 400
-      objectReference: {fileID: 0}
     - target: {fileID: 2165823639415891137, guid: 98c4698d565f2884b9b31b30eaf8f856, type: 3}
       propertyPath: m_LocalPosition.x
       value: -84.4
@@ -996,6 +992,10 @@ PrefabInstance:
     - target: {fileID: 2489419493895671369, guid: 98c4698d565f2884b9b31b30eaf8f856, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4243399154530772869, guid: 98c4698d565f2884b9b31b30eaf8f856, type: 3}
+      propertyPath: m_Icon
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4243399154530772869, guid: 98c4698d565f2884b9b31b30eaf8f856, type: 3}
       propertyPath: m_Name
