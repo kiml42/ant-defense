@@ -19,7 +19,7 @@ public class AntNest : MonoBehaviour
     public float CurrentFood { get { return this.Digestion.CurrentFood; } }
 
     // TODO consider multiple ants
-    private float costEachSpawn => this.AntPrefabs.First().Cost * this.AntsPerSpawn;
+    private float CostEachSpawn => this.AntPrefabs.First().Cost * this.AntsPerSpawn;
 
     public Digestion Digestion;
 
@@ -39,7 +39,7 @@ public class AntNest : MonoBehaviour
     void FixedUpdate()
     {
         var availableFood = this.CurrentFood - this.ReserveFood;
-        if(availableFood >= this.costEachSpawn)
+        if(availableFood >= this.CostEachSpawn)
         {
             for (int i = 0; i < this.AntsPerSpawn; i++)
             {
