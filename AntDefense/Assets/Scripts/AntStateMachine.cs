@@ -631,5 +631,9 @@ public enum AntState
     /// Carrying food home to the nest.
     /// </summary>
     CarryingFood,
+
+    /// <summary>
+    /// The ant is returning home without food, e.g. after failing to find food, or exiting the world zone.
+    /// </summary>
     ReturningHome
 }
