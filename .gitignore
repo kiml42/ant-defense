@@ -73,3 +73,7 @@ crashlytics-build.properties
 /AntDefense/Library
 /AntDefense/Logs
 /AntDefense/Temp
+
+# Ignore all files in CompressedBuilds folder except .zip files
+/CompressedBuilds/**/*
+!CompressedBuilds/*.zip
