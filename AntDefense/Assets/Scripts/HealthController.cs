@@ -31,7 +31,6 @@ public class HealthController : MonoBehaviour
                 deadObject.transform.position = this.transform.position;
             }
             // TODO drop food when killed (and reactivate it's smell)
-            // TODO create dead ant when killed.
             Destroy(this.gameObject);
             return;
         }
@@ -40,6 +39,9 @@ public class HealthController : MonoBehaviour
 
     private void UpdateBar()
     {
-        this.HealthBar?.AdjustProgress(this.CurrentHealth, this.MaxHealth);
+        if (this.HealthBar != null)
+        {
+            this.HealthBar.AdjustProgress(this.CurrentHealth, this.MaxHealth);
+        }
     }
 }
