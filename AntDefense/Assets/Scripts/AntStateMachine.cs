@@ -598,6 +598,7 @@ public class AntStateMachine : DeathActionBehaviour
         if (lifetime != null)
         {
             lifetime.Reset();
+            lifetime.IsRunning = false;
         }
 
         this.PickUpFood(food);
@@ -617,6 +618,11 @@ public class AntStateMachine : DeathActionBehaviour
         if(this._carriedFood != null)
         {
             this._carriedFood.Detach();
+            var lifetime = this._carriedFood.GetComponent<LifetimeController>();
+            if(lifetime != null)
+            {
+                lifetime.IsRunning = true;
+            }
             this._carriedFood = null;
         }
     }

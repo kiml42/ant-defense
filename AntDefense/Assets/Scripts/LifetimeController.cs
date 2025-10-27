@@ -6,6 +6,8 @@ public class LifetimeController : MonoBehaviour
 
     public float ScaleDownTime = 0;
 
+    public bool IsRunning = true;
+
     private float _initialLifetime;
     Vector3 _initialScale;
 
