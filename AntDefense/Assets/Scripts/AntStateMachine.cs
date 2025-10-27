@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 // TODO split this up into multiple classes, it's getting a bit too big and complicated.
-public class AntStateMachine : MonoBehaviour
+public class AntStateMachine : DeathActionBehaviour
 {
     public Smellable _currentTarget;
     private Food _carriedFood;
@@ -568,7 +569,7 @@ public class AntStateMachine : MonoBehaviour
 
         var food = smellable.GetComponentInParent<Food>();
 
-        // adjust the rail target value to account for this food being removed.
+        // adjust the trail target value to account for this food being removed.
         this.TrailTargetValue -= food.FoodValue;
 
         var lifetime = food.GetComponent<LifetimeController>();
@@ -587,6 +588,15 @@ public class AntStateMachine : MonoBehaviour
         this._carriedFood = food;
         food.transform.position = this.CarryPoint.position;
         food.Attach(this._rigidbody);
+    }
+
+    public override void OnDeath()
+    {
+        if(this._carriedFood != null)
+        {
+            this._carriedFood.Detach();
+            this._carriedFood = null;
+        }
     }
 
     private Smellable LastTrailPoint

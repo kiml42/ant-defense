@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using UnityEngine;
 
 public class HealthController : MonoBehaviour
@@ -24,17 +25,26 @@ public class HealthController : MonoBehaviour
         this._currentHealth = this.CurrentHealth - lostHealth;
         if (this.CurrentHealth <= 0)
         {
-            Debug.Log(this.transform + " has died");
-            if (this.DeadObject != null)
-            {
-                var deadObject = Instantiate(this.DeadObject);
-                deadObject.transform.position = this.transform.position;
-            }
-            // TODO drop food when killed (and reactivate it's smell)
-            Destroy(this.gameObject);
+            this.Die();
             return;
         }
         this.UpdateBar();
+    }
+
+    private void Die()
+    {
+        Debug.Log(this.transform + " has died");
+        if (this.DeadObject != null)
+        {
+            var deadObject = Instantiate(this.DeadObject);
+            deadObject.transform.position = this.transform.position;
+        }
+        var deathActions = this.GetComponentsInChildren<DeathActionBehaviour>();
+        foreach (var action in deathActions)
+        {
+            action.OnDeath();
+        }
+        Destroy(this.gameObject);
     }
 
     private void UpdateBar()
