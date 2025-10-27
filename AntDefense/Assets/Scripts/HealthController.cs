@@ -11,6 +11,8 @@ public class HealthController : MonoBehaviour
 
     public float Damage => this.MaxHealth - this.CurrentHealth;
 
+    public Transform DeadObject;
+
     public void Heal(float additionalHealth)
     {
         this._currentHealth = Mathf.Min(this.MaxHealth, this.CurrentHealth + additionalHealth);
@@ -23,6 +25,11 @@ public class HealthController : MonoBehaviour
         if (this.CurrentHealth <= 0)
         {
             Debug.Log(this.transform + " has died");
+            if (this.DeadObject != null)
+            {
+                var deadObject = Instantiate(this.DeadObject);
+                deadObject.transform.position = this.transform.position;
+            }
             // TODO drop food when killed (and reactivate it's smell)
             // TODO create dead ant when killed.
             Destroy(this.gameObject);
