@@ -594,8 +594,7 @@ public class AntStateMachine : DeathActionBehaviour
         // adjust the trail target value to account for this food being removed.
         this.TrailTargetValue -= food.FoodValue;
 
-        var lifetime = food.GetComponent<LifetimeController>();
-        if (lifetime != null)
+        if (food.TryGetComponent<LifetimeController>(out var lifetime))
         {
             lifetime.Reset();
             lifetime.IsRunning = false;
@@ -618,10 +617,13 @@ public class AntStateMachine : DeathActionBehaviour
         if(this._carriedFood != null)
         {
             this._carriedFood.Detach();
-            var lifetime = this._carriedFood.GetComponent<LifetimeController>();
-            if(lifetime != null)
+            if(this._carriedFood.TryGetComponent<LifetimeController>(out var lifetime))
             {
                 lifetime.IsRunning = true;
+            }
+            foreach(var smell in this._carriedFood.Smells)
+            {
+                smell.MarkAsPermanant(false);   // dropped food is not at its source any more.
             }
             this._carriedFood = null;
         }
