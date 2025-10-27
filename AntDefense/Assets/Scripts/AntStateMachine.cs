@@ -113,7 +113,7 @@ public class AntStateMachine : DeathActionBehaviour
 
         if(this.LastTrailPoint != null && this.LastTrailPoint.RemainingTime < this.GoHomeTime)
         {
-            Debug.Log($"Ant {this} last trail point {this.LastTrailPoint} has only {this.LastTrailPoint.RemainingTime} time remaining, going home.");
+            //Debug.Log($"Ant {this} last trail point {this.LastTrailPoint} has only {this.LastTrailPoint.RemainingTime} time remaining, going home.");
             this.GiveUpAndReturnHome();
         }
 
@@ -249,7 +249,7 @@ public class AntStateMachine : DeathActionBehaviour
 
     private void GiveUpAndReturnHome()
     {
-        Debug.Log($"Ant {this} giving up and returning home from state {this.State}");
+        //Debug.Log($"Ant {this} giving up and returning home from state {this.State}");
         this.State = AntState.ReturningHome;
         if (this.LastTrailPoint == null || this.LastTrailPoint.Smell != Smell.Home)
         {
