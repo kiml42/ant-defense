@@ -58,6 +58,8 @@ public class TrailPointController : Smellable
     public float DefaultLifetime = 80;
     public override bool IsPermanentSource => true;
 
+    public float RemainingTime => this._smellComponents.Any() ? this._smellComponents.Max(c => c.RemainingTime) : 0;
+
     public override float GetPriority(ITargetPriorityCalculator priorityCalculator)
     {
         // return the component with the best priotity, if priorityCalculator is null, just return the closest.
@@ -99,24 +101,22 @@ public class TrailPointController : Smellable
 
     internal void SetSmell(Smell trailSmell, float distanceFromTarget, float? targetValue)
     {
+        //Debug.Log($"Setting smell on trail point {this} to {trailSmell} dist={distanceFromTarget} targetValue={targetValue}");
         if (this.IsDestroyed())
         {
             Debug.Log("Already destroyed!!!");
         }
         this._trailSmell = trailSmell;
+        var added = this.AddSmellComponent(distanceFromTarget, targetValue);
 
-        var component = this.CreateSmellComponent(distanceFromTarget, targetValue);
-
-        if (component.RemainingTime <= 0)
+        if (!added)
         {
-            //Debug.Log("Destroyin because less than 0 lifetime on set smell");
+            //Debug.Log("Destroying because less than 0 lifetime on set smell");
             this.DestroyThis();
             return;
         }
 
-        this.AddSmellComponent(component);
         //Debug.Log("Added smell component to self: " + this);
-
         if (this.Material != null)
         {
             var a = this.Material.material.color.a;
@@ -137,15 +137,17 @@ public class TrailPointController : Smellable
         return component;
     }
 
-    public void AddSmellComponent(float distanceFromTarget, float? targetValue)
+    public bool AddSmellComponent(float distanceFromTarget, float? targetValue)
     {
-        this.AddSmellComponent(this.CreateSmellComponent(distanceFromTarget, targetValue));
-    }
+        var component = this.CreateSmellComponent(distanceFromTarget, targetValue);
 
-    private void AddSmellComponent(SmellComponent component)
-    {
+        if(component.RemainingTime <= 0)
+        {
+            return false;
+        }
         this._smellComponents.Add(component);
         //Debug.Log("Added smell. Smells: " + string.Join(", ", _smellComponents));
+        return true;
     }
 
     public override string ToString()

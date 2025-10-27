@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -9,12 +8,12 @@ public class AntTrailController : MonoBehaviour
     public GameObject TrailParent;
     private AntStateMachine AntStateMachine;
 
-    public Smellable TrailPoint;
+    public TrailPointController TrailPoint;
     public float TrailPointSpawnDistance = 3f;
 
     private Smell? _lastSmell = null;
     private Vector3? _lastTrailPointLocation;
-    public Smellable LastTrailPoint { get; private set; }
+    public TrailPointController LastTrailPoint { get; private set; }
     private float _distanceSinceTarget = 0;
     private float? _targetValue = null;
 
@@ -29,7 +28,7 @@ public class AntTrailController : MonoBehaviour
         this.AntStateMachine = this.GetComponentInChildren<AntStateMachine>();
         if (this.TrailParent == null)
         {
-            if(_defaultTrailParent == null)
+            if (_defaultTrailParent == null)
             {
                 _defaultTrailParent = new GameObject();
                 _defaultTrailParent.name = "TrailParent";
@@ -78,16 +77,17 @@ public class AntTrailController : MonoBehaviour
 
                 best.AddSmellComponent(this._distanceSinceTarget, this._targetValue);
                 //Debug.Log("Added smell component to other: " + best + ". distance = " + (best.transform.position - transform.position).magnitude);
+
                 this.LastTrailPoint = best;
             }
             else
             {
                 // none are close enough, so create a new one.
                 var newPoint = Instantiate(this.TrailPoint, this.transform.position, Quaternion.identity, this.TrailParent.transform);
-                newPoint.GetComponent<TrailPointController>()
-                    .SetSmell(this.AntStateMachine.TrailSmell.Value, this._distanceSinceTarget, this._targetValue);
+                newPoint.SetSmell(this.AntStateMachine.TrailSmell.Value, this._distanceSinceTarget, this._targetValue);
                 newPoint.gameObject.layer = 2;
                 //Debug.Log("Leaving trail with smell: " + newPoint.GetComponent<TrailPointController>().Smell);
+
                 this.LastTrailPoint = newPoint;
             }
             this._lastTrailPointLocation = this.transform.position;

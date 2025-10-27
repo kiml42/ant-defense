@@ -86,6 +86,11 @@ public class AntStateMachine : DeathActionBehaviour
     private Rigidbody _rigidbody;
     private ITargetPriorityCalculator _priorityCalculator;
 
+    /// <summary>
+    /// If the last trail point has this much time or less remaining when it is placed, the ant will give up and return home.
+    /// </summary>
+    public float GoHomeTime = 2f;
+
     private void Start()
     {
         this.ViewPoint = this.ViewPoint != null ? this.ViewPoint : this.transform;
@@ -104,6 +109,12 @@ public class AntStateMachine : DeathActionBehaviour
         if (this._currentTarget.IsDestroyed() || (this.CurrentTarget != null && this.CurrentTarget.IsSmellable == false))
         {
             this.ClearTarget();
+        }
+
+        if(this.LastTrailPoint != null && this.LastTrailPoint.RemainingTime < this.GoHomeTime)
+        {
+            Debug.Log($"Ant {this} last trail point {this.LastTrailPoint} has only {this.LastTrailPoint.RemainingTime} time remaining, going home.");
+            this.GiveUpAndReturnHome();
         }
 
         //test ray -This is successfully detecting obstacles between the ant and the current target!
@@ -232,9 +243,20 @@ public class AntStateMachine : DeathActionBehaviour
         {
             // TODO work out how well this works from all states. (particularly when not leaving a trail from home)
             //Debug.Log($"State {State} -> ReturningHome");
-            this.State = AntState.ReturningHome;
-            this.SetTarget(this.LastTrailPoint);
+            this.GiveUpAndReturnHome();
         }
+    }
+
+    private void GiveUpAndReturnHome()
+    {
+        Debug.Log($"Ant {this} giving up and returning home from state {this.State}");
+        this.State = AntState.ReturningHome;
+        if (this.LastTrailPoint == null || this.LastTrailPoint.Smell != Smell.Home)
+        {
+            // not leaving a trail towards home, so can't use it to go home.
+            return;
+        }
+        this.SetTarget(this.LastTrailPoint);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -599,13 +621,13 @@ public class AntStateMachine : DeathActionBehaviour
         }
     }
 
-    private Smellable LastTrailPoint
+    private TrailPointController LastTrailPoint
     {
         get
         {
-            if (this.TrailController == null || this.TrailController.gameObject == null)
-                return null;
-            return this.TrailController.LastTrailPoint;
+            return this.TrailController == null || this.TrailController.gameObject == null
+                ? null
+                : this.TrailController.LastTrailPoint;
         }
     }
 }
