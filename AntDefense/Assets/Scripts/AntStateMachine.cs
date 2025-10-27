@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 // TODO split this up into multiple classes, it's getting a bit too big and complicated.
-public class AntStateMachine : MonoBehaviour
+public class AntStateMachine : DeathActionBehaviour
 {
     public Smellable _currentTarget;
     private Food _carriedFood;
@@ -85,6 +86,11 @@ public class AntStateMachine : MonoBehaviour
     private Rigidbody _rigidbody;
     private ITargetPriorityCalculator _priorityCalculator;
 
+    /// <summary>
+    /// If the last trail point has this much time or less remaining when it is placed, the ant will give up and return home.
+    /// </summary>
+    public float GoHomeTime = 2f;
+
     private void Start()
     {
         this.ViewPoint = this.ViewPoint != null ? this.ViewPoint : this.transform;
@@ -103,6 +109,12 @@ public class AntStateMachine : MonoBehaviour
         if (this._currentTarget.IsDestroyed() || (this.CurrentTarget != null && this.CurrentTarget.IsSmellable == false))
         {
             this.ClearTarget();
+        }
+
+        if(this.LastTrailPoint != null && this.LastTrailPoint.RemainingTime < this.GoHomeTime)
+        {
+            //Debug.Log($"Ant {this} last trail point {this.LastTrailPoint} has only {this.LastTrailPoint.RemainingTime} time remaining, going home.");
+            this.GiveUpAndReturnHome();
         }
 
         //test ray -This is successfully detecting obstacles between the ant and the current target!
@@ -231,9 +243,20 @@ public class AntStateMachine : MonoBehaviour
         {
             // TODO work out how well this works from all states. (particularly when not leaving a trail from home)
             //Debug.Log($"State {State} -> ReturningHome");
-            this.State = AntState.ReturningHome;
-            this.SetTarget(this.LastTrailPoint);
+            this.GiveUpAndReturnHome();
         }
+    }
+
+    private void GiveUpAndReturnHome()
+    {
+        //Debug.Log($"Ant {this} giving up and returning home from state {this.State}");
+        this.State = AntState.ReturningHome;
+        if (this.LastTrailPoint == null || this.LastTrailPoint.Smell != Smell.Home)
+        {
+            // not leaving a trail towards home, so can't use it to go home.
+            return;
+        }
+        this.SetTarget(this.LastTrailPoint);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -568,7 +591,7 @@ public class AntStateMachine : MonoBehaviour
 
         var food = smellable.GetComponentInParent<Food>();
 
-        // adjust the rail target value to account for this food being removed.
+        // adjust the trail target value to account for this food being removed.
         this.TrailTargetValue -= food.FoodValue;
 
         var lifetime = food.GetComponent<LifetimeController>();
@@ -589,13 +612,22 @@ public class AntStateMachine : MonoBehaviour
         food.Attach(this._rigidbody);
     }
 
-    private Smellable LastTrailPoint
+    public override void OnDeath()
+    {
+        if(this._carriedFood != null)
+        {
+            this._carriedFood.Detach();
+            this._carriedFood = null;
+        }
+    }
+
+    private TrailPointController LastTrailPoint
     {
         get
         {
-            if (this.TrailController == null || this.TrailController.gameObject == null)
-                return null;
-            return this.TrailController.LastTrailPoint;
+            return this.TrailController == null || this.TrailController.gameObject == null
+                ? null
+                : this.TrailController.LastTrailPoint;
         }
     }
 }
@@ -621,5 +653,9 @@ public enum AntState
     /// Carrying food home to the nest.
     /// </summary>
     CarryingFood,
+
+    /// <summary>
+    /// The ant is returning home without food, e.g. after failing to find food, or exiting the world zone.
+    /// </summary>
     ReturningHome
 }
