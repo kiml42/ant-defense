@@ -50,7 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FloorPoint: {fileID: 374015092026775150}
   Rotatable: 0
-  Cost: 10
+  BaseCost: 10
   Icon: {fileID: 0}
   ScaleForButton: 1
   OffsetForButton: {x: 0, y: 0, z: 0}

@@ -53,6 +53,7 @@ MonoBehaviour:
   Wall: {fileID: 1347924309845364681}
   Node: {fileID: 5782363422508442936}
   MaxLength: 50
+  CostPerMeter: 1
 --- !u!114 &8092417670727731202
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,7 +68,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FloorPoint: {fileID: 1489239274791151828}
   Rotatable: 0
-  Cost: 50
+  BaseCost: 20
   Icon: {fileID: 0}
   ScaleForButton: 0.6
   OffsetForButton: {x: 0, y: 0, z: 0}

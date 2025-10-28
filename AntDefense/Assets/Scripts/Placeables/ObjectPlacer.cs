@@ -89,8 +89,8 @@ public class ObjectPlacer : MonoBehaviour
     {
         if (this._objectBeingPlaced != null && this.CanPlaceAt(this._objectBeingPlaced.transform.position))
         {
-            Debug.Log($"Spending {this._objectBeingPlaced.Cost} for {this._objectBeingPlaced}");
-            MoneyTracker.Spend(this._objectBeingPlaced.Cost);
+            Debug.Log($"Spending {this._objectBeingPlaced.TotalCost} for {this._objectBeingPlaced}");
+            MoneyTracker.Spend(this._objectBeingPlaced.TotalCost);
             var newObject = Instantiate(this._objectBeingPlaced, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
 
             var wallNode = newObject.GetComponent<WallNode>();

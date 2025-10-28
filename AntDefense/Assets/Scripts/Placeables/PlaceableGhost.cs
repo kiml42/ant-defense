@@ -29,7 +29,23 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
 
     public bool Rotatable = true;
 
-    public float Cost;
+    public float BaseCost;
+
+    public float TotalCost
+    {
+        get
+        {
+            float additionalCost = 0;
+            var placeableComponents = this.GetComponentsInChildren<PlaceableMonoBehaviour>();
+            //Debug.Log($"Calculating total cost for {this}. Found {placeableComponents.Length} placeable components.");
+            foreach (var placeableComponent in placeableComponents)
+            {
+                //Debug.Log($" - {placeableComponent} has additional cost {placeableComponent.AdditionalCost}");
+                additionalCost += placeableComponent.AdditionalCost;
+            }
+            return this.BaseCost + additionalCost;
+        }
+    }
 
     // TODO put this on the UI canvas.
     // TODO just make a button version.
@@ -95,7 +111,7 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
         }
     }
 
-    public bool CanAfford => MoneyTracker.CanAfford(this.Cost);
+    public bool CanAfford => MoneyTracker.CanAfford(this.TotalCost);
 
     protected abstract void Finalise();
 }
