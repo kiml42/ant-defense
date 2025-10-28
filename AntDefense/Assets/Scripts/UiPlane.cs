@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class UiPlane : MonoBehaviour
@@ -105,6 +104,8 @@ public class UiPlane : MonoBehaviour
             var newButton = Instantiate(this.QuickBarButton, this.QuickBarCenter.transform.position + new Vector3(offset, 0, 0), this.QuickBarCenter.transform.rotation);
             newButton.transform.parent = this.transform;
             newButton.Ghost = ghost;
+
+            newButton.CostText.text = $"£{ghost.BaseCost:F2}";
             CreateDummy(ghost, newButton);
 
             this._buttons.Add(newButton);

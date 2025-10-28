@@ -22,14 +22,13 @@ public class MoneyTracker : MonoBehaviour
     void FixedUpdate()
     {
         CurrentMoney += this.IncomePerSecond * Time.fixedDeltaTime;
-        //Debug.Log("Current Money: " + CurrentMoney);
     }
 
     void Update()
     {
         if (this.MoneyText != null)
         {
-            this.MoneyText.text = $"Money: £{CurrentMoney:F2}";
+            this.MoneyText.text = $"£{CurrentMoney:F2}";
         }
     }
 
