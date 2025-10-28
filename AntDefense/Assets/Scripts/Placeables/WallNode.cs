@@ -21,6 +21,21 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
     public Transform Node;
     public float MaxLength;
 
+    public float CostPerMeter = 1f;
+
+    public override float AdditionalCost
+    {
+        get
+        {
+            if (this.ConnectedNode != null)
+            {
+                var length = (this.ConnectedNode.transform.position - this.transform.position).magnitude;
+                return length * this.CostPerMeter;
+            }
+            return 0f;
+        }
+    }
+
     public Vector3 Position => this.transform.position;
 
     public override void OnPlace()
@@ -100,6 +115,8 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
 
 public abstract class PlaceableMonoBehaviour : MonoBehaviour
 {
+    public virtual float AdditionalCost => 0f;
+
     /// <summary>
     /// Called when the object is placed to start whatever spawn behaviour it has defined.
     /// </summary>

@@ -29,6 +29,25 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
 
     public bool Rotatable = true;
 
+    public float BaseCost;
+
+    public float TotalCost
+    {
+        get
+        {
+            float additionalCost = 0;
+            var placeableComponents = this.GetComponentsInChildren<PlaceableMonoBehaviour>();
+            //Debug.Log($"Calculating total cost for {this}. Found {placeableComponents.Length} placeable components.");
+            foreach (var placeableComponent in placeableComponents)
+            {
+                //Debug.Log($" - {placeableComponent} has additional cost {placeableComponent.AdditionalCost}");
+                additionalCost += placeableComponent.AdditionalCost;
+            }
+            return this.BaseCost + additionalCost;
+        }
+    }
+
+    // TODO put this on the UI canvas.
     // TODO just make a button version.
     public Transform Icon;
     public float ScaleForButton = 1;
@@ -36,7 +55,7 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
     public Quaternion RotationForButton = Quaternion.identity;
 
     protected abstract Transform FallbackIcon { get; }
-    public Transform ActualIcon { get{ return this.Icon == null ? this.FallbackIcon : this.Icon; } }
+    public Transform ActualIcon { get { return this.Icon == null ? this.FallbackIcon : this.Icon; } }
 
     public float TimeOut = 3;
 

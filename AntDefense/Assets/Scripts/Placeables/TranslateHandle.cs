@@ -1,6 +1,7 @@
-using System.Linq;
-using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
+using UnityEngine;
 
 public class TranslateHandle : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class TranslateHandle : MonoBehaviour
     private IEnumerable<Material> _materials;
     public Color DisabledColour;
     private Color _originalColour;
+
+    public TextMeshPro CostText;
 
     private void Start()
     {
@@ -45,6 +48,16 @@ public class TranslateHandle : MonoBehaviour
         if (ObjectPlacer.Instance.CanRotateCurrentObject() == false)
         {
             this.transform.rotation = Quaternion.identity;
+        }
+
+        if(this.CostText != null)
+        {
+            var cost = ObjectPlacer.Instance.CostForCurrentObject;
+            this.CostText.gameObject.SetActive(cost.HasValue);
+            if (cost.HasValue)
+            {
+                this.CostText.text = $"£{cost:F2}";
+            }
         }
     }
 
@@ -159,7 +172,7 @@ public class TranslateHandle : MonoBehaviour
                 break;
         }
 
-        isGood &= ObjectPlacer.Instance == null || ObjectPlacer.Instance.PositionIsValid(this.transform.position);
+        isGood &= ObjectPlacer.Instance == null || ObjectPlacer.Instance.CanPlaceAt(this.transform.position);
         if (isGood != this._lastPositionIsGood)
         {
             // Position state changed.
