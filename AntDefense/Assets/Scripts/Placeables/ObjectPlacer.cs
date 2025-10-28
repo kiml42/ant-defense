@@ -29,7 +29,7 @@ public class ObjectPlacer : MonoBehaviour
 
     private void Awake()
     {
-        if(Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             throw new Exception("There should not be multiple Object Placers!");
         }
@@ -39,6 +39,7 @@ public class ObjectPlacer : MonoBehaviour
 
     void Update()
     {
+        this._costCache = null; // reset cost cache each frame.
         this.ProcessQuickKeys();
     }
 
@@ -94,7 +95,7 @@ public class ObjectPlacer : MonoBehaviour
             var newObject = Instantiate(this._objectBeingPlaced, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
 
             var wallNode = newObject.GetComponent<WallNode>();
-            if(wallNode != null)
+            if (wallNode != null)
             {
                 wallNode.ConnectTo(this._lastWallNode);
                 this._lastWallNode = wallNode;
@@ -107,13 +108,13 @@ public class ObjectPlacer : MonoBehaviour
                 this._lastWallNode = null;
             }
             newObject.Place();
-            if(!keepPlacing)
+            if (!keepPlacing)
             {
                 this.CancelPlacingObject();
             }
             return newObject;
         }
-        Debug.Log($"Can't place {this._objectBeingPlaced}. ValidPosition = {this.PositionIsValid(this._objectBeingPlaced.transform.position)}, CanAfford = {this._objectBeingPlaced.CanAfford}");
+        Debug.Log($"Can't place {this._objectBeingPlaced}. ValidPosition = {this.PositionIsValid(this._objectBeingPlaced.transform.position)}, CanAfford = {this.CanAffordCurrentObject}");
         return null;
     }
 
@@ -124,11 +125,30 @@ public class ObjectPlacer : MonoBehaviour
         return this._objectBeingPlaced == null ? null : this._objectBeingPlaced.Rotatable;
     }
 
-    public float? CostForCurrentObject => this._objectBeingPlaced == null ? null : (float?)this._objectBeingPlaced.TotalCost;
+    private float? _costCache;
+    public float? CostForCurrentObject
+    {
+        get
+        {
+            if (!this._costCache.HasValue)
+            {
+                this._costCache = this._objectBeingPlaced == null ? null : (float?)this._objectBeingPlaced.TotalCost;
+            }
+            return this._costCache;
+        }
+    }
+    public bool CanAffordCurrentObject
+    {
+        get
+        {
+            var cost = this.CostForCurrentObject;
+            return !cost.HasValue || MoneyTracker.CanAfford(cost.Value);
+        }
+    }
 
     internal bool CanPlaceAt(Vector3 position)
     {
-        return (this._objectBeingPlaced == null || this._objectBeingPlaced.CanAfford) && this.PositionIsValid(position);
+        return this.CanAffordCurrentObject && this.PositionIsValid(position);
     }
 
     private bool PositionIsValid(Vector3 position)
