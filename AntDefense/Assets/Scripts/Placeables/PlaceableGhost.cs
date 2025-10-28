@@ -95,6 +95,8 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
         }
     }
 
+    public bool CanAfford => MoneyTracker.CanAfford(this.Cost);
+
     protected abstract void Finalise();
 }
 

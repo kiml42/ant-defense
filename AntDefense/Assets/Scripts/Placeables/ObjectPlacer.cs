@@ -87,7 +87,7 @@ public class ObjectPlacer : MonoBehaviour
     /// <returns>The object that was placed</returns>
     public PlaceableObjectOrGhost PlaceObject(bool keepPlacing)
     {
-        if (this._objectBeingPlaced != null && this.PositionIsValid(this._objectBeingPlaced.transform.position) && MoneyTracker.CanAfford(this._objectBeingPlaced.Cost))
+        if (this._objectBeingPlaced != null && this.CanPlaceAt(this._objectBeingPlaced.transform.position))
         {
             Debug.Log($"Spending {this._objectBeingPlaced.Cost} for {this._objectBeingPlaced}");
             MoneyTracker.Spend(this._objectBeingPlaced.Cost);
@@ -113,7 +113,7 @@ public class ObjectPlacer : MonoBehaviour
             }
             return newObject;
         }
-        Debug.Log($"Can't place {this._objectBeingPlaced}. ValidPosition = {this.PositionIsValid(this._objectBeingPlaced.transform.position)}, CanAfford = {MoneyTracker.CanAfford(this._objectBeingPlaced.Cost)}");
+        Debug.Log($"Can't place {this._objectBeingPlaced}. ValidPosition = {this.PositionIsValid(this._objectBeingPlaced.transform.position)}, CanAfford = {this._objectBeingPlaced.CanAfford}");
         return null;
     }
 
@@ -124,7 +124,12 @@ public class ObjectPlacer : MonoBehaviour
         return this._objectBeingPlaced == null ? null : this._objectBeingPlaced.Rotatable;
     }
 
-    internal bool PositionIsValid(Vector3 position)
+    internal bool CanPlaceAt(Vector3 position)
+    {
+        return (this._objectBeingPlaced == null || this._objectBeingPlaced.CanAfford) && this.PositionIsValid(position);
+    }
+
+    private bool PositionIsValid(Vector3 position)
     {
         if (this._objectBeingPlaced != null)
         {

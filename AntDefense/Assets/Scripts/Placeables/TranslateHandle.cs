@@ -159,7 +159,7 @@ public class TranslateHandle : MonoBehaviour
                 break;
         }
 
-        isGood &= ObjectPlacer.Instance == null || ObjectPlacer.Instance.PositionIsValid(this.transform.position);
+        isGood &= ObjectPlacer.Instance == null || ObjectPlacer.Instance.CanPlaceAt(this.transform.position);
         if (isGood != this._lastPositionIsGood)
         {
             // Position state changed.
