@@ -39,7 +39,7 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
     public Quaternion RotationForButton = Quaternion.identity;
 
     protected abstract Transform FallbackIcon { get; }
-    public Transform ActualIcon { get{ return this.Icon == null ? this.FallbackIcon : this.Icon; } }
+    public Transform ActualIcon { get { return this.Icon == null ? this.FallbackIcon : this.Icon; } }
 
     public float TimeOut = 3;
 
@@ -75,8 +75,6 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
         this._isPlaced = true;
 
         this.SetNoSpawnZoneEnabled(true);
-
-        MoneyTracker.Spend(this.Cost);
     }
 
     // Update is called once per frame

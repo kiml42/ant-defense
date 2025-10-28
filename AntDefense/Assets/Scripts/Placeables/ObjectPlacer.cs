@@ -87,8 +87,10 @@ public class ObjectPlacer : MonoBehaviour
     /// <returns>The object that was placed</returns>
     public PlaceableObjectOrGhost PlaceObject(bool keepPlacing)
     {
-        if (this._objectBeingPlaced != null && this.PositionIsValid(this._objectBeingPlaced.transform.position))
+        if (this._objectBeingPlaced != null && this.PositionIsValid(this._objectBeingPlaced.transform.position) && MoneyTracker.CanAfford(this._objectBeingPlaced.Cost))
         {
+            Debug.Log($"Spending {this._objectBeingPlaced.Cost} for {this._objectBeingPlaced}");
+            MoneyTracker.Spend(this._objectBeingPlaced.Cost);
             var newObject = Instantiate(this._objectBeingPlaced, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
 
             var wallNode = newObject.GetComponent<WallNode>();
@@ -111,6 +113,7 @@ public class ObjectPlacer : MonoBehaviour
             }
             return newObject;
         }
+        Debug.Log($"Can't place {this._objectBeingPlaced}. ValidPosition = {this.PositionIsValid(this._objectBeingPlaced.transform.position)}, CanAfford = {MoneyTracker.CanAfford(this._objectBeingPlaced.Cost)}");
         return null;
     }
 

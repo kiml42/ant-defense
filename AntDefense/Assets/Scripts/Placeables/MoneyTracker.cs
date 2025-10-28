@@ -37,4 +37,9 @@ public class MoneyTracker : MonoBehaviour
     {
         CurrentMoney -= cost;
     }
+
+    internal static bool CanAfford(float cost)
+    {
+        return CurrentMoney >= cost;
+    }
 }
