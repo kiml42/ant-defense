@@ -56,7 +56,7 @@ public class TranslateHandle : MonoBehaviour
             this.CostText.gameObject.SetActive(cost.HasValue);
             if (cost.HasValue)
             {
-                this.CostText.text = $"Cost: £{cost:F2}";
+                this.CostText.text = $"£{cost:F2}";
             }
         }
     }
