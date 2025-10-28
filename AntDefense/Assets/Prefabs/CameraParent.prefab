@@ -335,6 +335,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2216222680422780478}
   - component: {fileID: 6293637574194553421}
+  - component: {fileID: 2893852097155029584}
   m_Layer: 0
   m_Name: UI Plane
   m_TagString: Untagged
@@ -379,6 +380,18 @@ MonoBehaviour:
   ProtectMesCenter: {fileID: 2214808390194161454}
   ProtectMeScale: 0.05
   ProtectMeRotation: {x: 315.59634, y: 302.6238, z: 80.566826}
+--- !u!114 &2893852097155029584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4562196949753137823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8ec425c5446a2f4b97ac7e6fdf7798e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &7456297363724634827
 GameObject:
   m_ObjectHideFlags: 0
