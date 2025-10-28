@@ -894,12 +894,16 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2011528156845601686, guid: 671a2805116037f4aadc102530200391, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2011528156845601686, guid: 671a2805116037f4aadc102530200391, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.45
+      value: -0.28
       objectReference: {fileID: 0}
     - target: {fileID: 2011528156845601686, guid: 671a2805116037f4aadc102530200391, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.2
+      value: -0.07
       objectReference: {fileID: 0}
     - target: {fileID: 2547856477298814153, guid: 671a2805116037f4aadc102530200391, type: 3}
       propertyPath: m_fontSize

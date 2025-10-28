@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class MoneyTracker : MonoBehaviour
@@ -6,6 +7,8 @@ public class MoneyTracker : MonoBehaviour
     public float IncomePerSecond = 0.1f;
 
     public static float CurrentMoney { get; private set; }
+
+    public TextMeshProUGUI MoneyText;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -18,5 +21,13 @@ public class MoneyTracker : MonoBehaviour
     {
         CurrentMoney += this.IncomePerSecond * Time.fixedDeltaTime;
         Debug.Log("Current Money: " + CurrentMoney);
+    }
+
+    void Update()
+    {
+        if (this.MoneyText != null)
+        {
+            this.MoneyText.text = $"Money: £{CurrentMoney:F2}";
+        }
     }
 }
