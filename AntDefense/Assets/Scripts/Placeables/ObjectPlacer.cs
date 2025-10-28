@@ -124,6 +124,8 @@ public class ObjectPlacer : MonoBehaviour
         return this._objectBeingPlaced == null ? null : this._objectBeingPlaced.Rotatable;
     }
 
+    public float? CostForCurrentObject => this._objectBeingPlaced == null ? null : (float?)this._objectBeingPlaced.TotalCost;
+
     internal bool CanPlaceAt(Vector3 position)
     {
         return (this._objectBeingPlaced == null || this._objectBeingPlaced.CanAfford) && this.PositionIsValid(position);
