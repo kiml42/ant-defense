@@ -20,7 +20,7 @@ public class MoneyTracker : MonoBehaviour
     void FixedUpdate()
     {
         CurrentMoney += this.IncomePerSecond * Time.fixedDeltaTime;
-        Debug.Log("Current Money: " + CurrentMoney);
+        //Debug.Log("Current Money: " + CurrentMoney);
     }
 
     void Update()
