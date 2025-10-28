@@ -1,4 +1,6 @@
+using System;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MoneyTracker : MonoBehaviour
@@ -29,5 +31,10 @@ public class MoneyTracker : MonoBehaviour
         {
             this.MoneyText.text = $"Money: £{CurrentMoney:F2}";
         }
+    }
+
+    internal static void Spend(float cost)
+    {
+        CurrentMoney -= cost;
     }
 }

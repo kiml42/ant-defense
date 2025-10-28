@@ -29,6 +29,9 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
 
     public bool Rotatable = true;
 
+    public float Cost;
+
+    // TODO put this on the UI canvas.
     // TODO just make a button version.
     public Transform Icon;
     public float ScaleForButton = 1;
@@ -72,6 +75,8 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
         this._isPlaced = true;
 
         this.SetNoSpawnZoneEnabled(true);
+
+        MoneyTracker.Spend(this.Cost);
     }
 
     // Update is called once per frame

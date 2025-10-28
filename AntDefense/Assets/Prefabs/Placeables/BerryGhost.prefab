@@ -48,14 +48,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61ba694a89b1b0f4c92763c7e56214e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RealObject: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
   FloorPoint: {fileID: 374015092026775150}
-  TimeOut: 0
   Rotatable: 0
-  SpawnOffset: {x: 0, y: 2, z: 0}
+  Cost: 10
+  Icon: {fileID: 0}
   ScaleForButton: 1
   OffsetForButton: {x: 0, y: 0, z: 0}
   RotationForButton: {x: 0, y: 0, z: 0, w: 1}
+  TimeOut: 0
+  SpawnOffset: {x: 0, y: 2, z: 0}
+  RealObject: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
 --- !u!1 &6652936135346501748
 GameObject:
   m_ObjectHideFlags: 0
@@ -118,6 +120,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -139,6 +143,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -256,6 +261,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -277,6 +284,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -343,6 +351,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -364,6 +374,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
