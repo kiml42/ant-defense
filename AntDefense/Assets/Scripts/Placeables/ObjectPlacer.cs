@@ -90,7 +90,7 @@ public class ObjectPlacer : MonoBehaviour
     {
         if (this._objectBeingPlaced != null && this.CanPlaceAt(this._objectBeingPlaced.transform.position))
         {
-            Debug.Log($"Spending {this._objectBeingPlaced.TotalCost} for {this._objectBeingPlaced}");
+            //Debug.Log($"Spending {this._objectBeingPlaced.TotalCost} for {this._objectBeingPlaced}");
             MoneyTracker.Spend(this._objectBeingPlaced.TotalCost);
             var newObject = Instantiate(this._objectBeingPlaced, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
 
@@ -114,7 +114,7 @@ public class ObjectPlacer : MonoBehaviour
             }
             return newObject;
         }
-        Debug.Log($"Can't place {this._objectBeingPlaced}. ValidPosition = {this.PositionIsValid(this._objectBeingPlaced.transform.position)}, CanAfford = {this.CanAffordCurrentObject}");
+        //Debug.Log($"Can't place {this._objectBeingPlaced}. ValidPosition = {this.PositionIsValid(this._objectBeingPlaced.transform.position)}, CanAfford = {this.CanAffordCurrentObject}");
         return null;
     }
 
