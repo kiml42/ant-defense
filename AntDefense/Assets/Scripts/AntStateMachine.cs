@@ -267,11 +267,19 @@ public class AntStateMachine : DeathActionBehaviour
         {
             //Debug.Log($"Collided With {@object} smellable: {smellable}");
             this.ProcessCollisionWithSmell(smellable);
-            if (this.CurrentTarget == smellable)
+            if(smellable.Smell == Smell.Home)
             {
-                // this is now the target, and therefore is not an obstacle.
-                return;
+                return; // never consider home smells as obstacles.
             }
+            if(this.State == AntState.SeekingFood || this.State == AntState.ReturningToFood)
+            {
+                return; // while seeking or returning to food, ignore collisions with smellables that aren't the target.
+            }
+        }
+        if (@object.TryGetComponent<Rigidbody>(out var rigidbody))
+        {
+            // TODO consider a differnt evasion approach for other ants.
+            return; // ignore collisions with rigidbodies (other ants, moving objects, etc)
         }
 
         if (@object.layer == GroundLayer)

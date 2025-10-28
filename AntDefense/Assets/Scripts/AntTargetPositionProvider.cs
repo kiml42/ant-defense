@@ -93,7 +93,7 @@ public class AntTargetPositionProvider : MonoBehaviour
         }
         else
         {
-            this.TetDirectionToMoveInWanderingMode();
+            this.SetDirectionToMoveInWanderingMode();
         }
 
     }
@@ -124,7 +124,7 @@ public class AntTargetPositionProvider : MonoBehaviour
         }
     }
 
-    private void TetDirectionToMoveInWanderingMode()
+    private void SetDirectionToMoveInWanderingMode()
     {
         if (this._obstacleAvoidenceVector.HasValue)
         {
@@ -172,6 +172,7 @@ public class AntTargetPositionProvider : MonoBehaviour
 
     internal void AvoidObstacle(Collision collision)
     {
+        //Debug.Log($"{this.transform} colliding with {collision.transform} - Avoiding Obstacle.");
         this._currentObstacle = collision.transform;
         var relativeObstacleMass = (collision?.rigidbody?.mass ?? 10) / (this._rigidbody?.mass ?? 1);
         var contact = collision.GetContact(0);
