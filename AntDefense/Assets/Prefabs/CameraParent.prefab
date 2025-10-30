@@ -150,7 +150,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 1
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -632,7 +632,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   InitialMoney: 100
-  IncomePerSecond: 0.1
+  IncomePerSecond: 0.5
   MoneyText: {fileID: 1667837508001840636}
 --- !u!1 &7456297363724634827
 GameObject:
