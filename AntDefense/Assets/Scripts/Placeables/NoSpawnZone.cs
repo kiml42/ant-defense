@@ -49,7 +49,7 @@ public class NoSpawnZone : BaseGhostable
                 // nothing to do if the point is invalid.
                 return;
             }
-            ObjectPlacer.Instance.PlaceObject(Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt));
+            ObjectPlacer.Instance.PlaceObject();
         }
 
         public AdjustedPoint(Vector3 point, PointType type)

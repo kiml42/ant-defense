@@ -87,7 +87,7 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
 
         if(ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null)
         {
-            var placedObject = ObjectPlacer.Instance.PlaceObject(true);
+            var placedObject = ObjectPlacer.Instance.PlaceObject();
             placedObject.GetComponent<WallNode>().RemoveNode();
         }
         else

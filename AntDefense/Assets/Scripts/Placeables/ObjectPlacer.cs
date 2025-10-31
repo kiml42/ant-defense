@@ -84,9 +84,8 @@ public class ObjectPlacer : MonoBehaviour
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="keepPlacing">if <see langword="true"/> then this should keep placing more of this object regardless of weather that's the defualt behaviour of the object being placed.</param>
     /// <returns>The object that was placed</returns>
-    public PlaceableObjectOrGhost PlaceObject(bool keepPlacing)
+    public PlaceableObjectOrGhost PlaceObject()
     {
         if (this._objectBeingPlaced != null && this.CanPlaceAt(this._objectBeingPlaced.transform.position))
         {
@@ -100,7 +99,6 @@ public class ObjectPlacer : MonoBehaviour
                 wallNode.ConnectTo(this._lastWallNode);
                 this._lastWallNode = wallNode;
                 this._objectBeingPlaced.GetComponent<WallNode>().ConnectTo(this._lastWallNode); // make the ghost on the handle connect so that it knows where to connect its ghost wall to.
-                keepPlacing = true; // always keep placing walls, they should form a chain until the user cancels.
             }
             else
             {
@@ -108,10 +106,7 @@ public class ObjectPlacer : MonoBehaviour
                 this._lastWallNode = null;
             }
             newObject.Place();
-            if (!keepPlacing)
-            {
-                this.CancelPlacingObject();
-            }
+
             return newObject;
         }
         //Debug.Log($"Can't place {this._objectBeingPlaced}. ValidPosition = {this.PositionIsValid(this._objectBeingPlaced.transform.position)}, CanAfford = {this.CanAffordCurrentObject}");
