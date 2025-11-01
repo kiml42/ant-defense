@@ -675,6 +675,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6583085279849142699}
   - component: {fileID: 8137990677537509276}
+  - component: {fileID: 367656063969515580}
   m_Layer: 0
   m_Name: CameraParent
   m_TagString: Untagged
@@ -723,6 +724,21 @@ MonoBehaviour:
   MinAngle: -50
   MaxAngleHeight: 100
   MaxAngle: 0
+--- !u!114 &367656063969515580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8619060628631676251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f30233407c8511479683cfebf4b1d09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  TogglePauseKey: 32
+  AccelerateTimeKey: 273
+  DecelerateTimeKey: 46
 --- !u!1 &9169468475242597711
 GameObject:
   m_ObjectHideFlags: 0
