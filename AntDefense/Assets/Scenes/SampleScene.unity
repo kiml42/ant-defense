@@ -1430,9 +1430,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1245708977195111101, guid: 671a2805116037f4aadc102530200391, type: 3}
-      propertyPath: m_AdditionalShaderChannelsFlag
-      value: 25
+    - target: {fileID: 367656063969515580, guid: 671a2805116037f4aadc102530200391, type: 3}
+      propertyPath: AccelerateTimeKey
+      value: 109
+      objectReference: {fileID: 0}
+    - target: {fileID: 367656063969515580, guid: 671a2805116037f4aadc102530200391, type: 3}
+      propertyPath: DecelerateTimeKey
+      value: 110
       objectReference: {fileID: 0}
     - target: {fileID: 6583085279849142699, guid: 671a2805116037f4aadc102530200391, type: 3}
       propertyPath: m_LocalPosition.x

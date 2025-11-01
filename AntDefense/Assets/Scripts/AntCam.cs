@@ -37,6 +37,8 @@ public class AntCam : MonoBehaviour
         this._targetXRotation = this.transform.rotation.x;
     }
 
+    private float Speed => GetProportionOfRange(this.GetZoomProportion(this.CurrentY), this.MinCameraSpeed, this.MaxCameraSpeed) * Time.deltaTime;
+    
     // Update is called once per frame
     void Update()
     {
@@ -49,8 +51,7 @@ public class AntCam : MonoBehaviour
         {
             this._lastMousePosition = Input.mousePosition;
         }
-        var zoomProportion = this.GetZoomProportion(this.CurrentY);
-        var speed = GetProportionOfRange(zoomProportion, this.MinCameraSpeed, this.MaxCameraSpeed) * Time.deltaTime;
+
         if (Input.GetMouseButton(MouseButton))
         {
             var change = Input.mousePosition - this._lastMousePosition;
@@ -59,44 +60,43 @@ public class AntCam : MonoBehaviour
             {
                 //Debug.Log("Mouse Move " + change);
                 //transform.position += change;
-                newX -= change.x * speed;
-                newZ -= change.y * speed;
+                newX -= change.x * this.Speed;
+                newZ -= change.y * this.Speed;
             }
         }
         else
         {
-            this.ProcessKeys(speed, ref newX, ref newZ);
+            this.ProcessKeys(ref newX, ref newZ);
         }
 
 
         this.transform.position = new Vector3(newX, this.transform.position.y, newZ);
     }
 
-    private void ProcessKeys(float speed, ref float newX, ref float newZ)
+    private void ProcessKeys(ref float newX, ref float newZ)
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-            Application.Quit();
-
         foreach (var key in this._directionKeys)
         {
             if (Input.GetKey(key))
             {
+                Debug.Log("Key Move " + key + ", speed = " + this.Speed);
                 if (this._upKeyCodes.Contains(key))
                 {
-                    newZ += this.KeyScrollSpeed * speed;
+                    newZ += this.KeyScrollSpeed * this.Speed;
                 }
                 if (this._downKeyCodes.Contains(key))
                 {
-                    newZ -= this.KeyScrollSpeed * speed;
+                    newZ -= this.KeyScrollSpeed * this.Speed;
                 }
                 if (this._rightKeyCodes.Contains(key))
                 {
-                    newX += this.KeyScrollSpeed * speed;
+                    newX += this.KeyScrollSpeed * this.Speed;
                 }
                 if (this._leftKeyCodes.Contains(key))
                 {
-                    newX -= this.KeyScrollSpeed * speed;
+                    newX -= this.KeyScrollSpeed * this.Speed;
                 }
+                Debug.Log($"New pos {newX}, {newZ} ");
             }
         }
     }

@@ -39,6 +39,8 @@ public class GlobalKeyHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
         var anyChange = false;
         if (Input.GetKeyUp(this.TogglePauseKey))
         {
