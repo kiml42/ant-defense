@@ -111,7 +111,7 @@ public class AntTargetPositionProvider : MonoBehaviour
             if(this._currentObstacle == null)
             {
                 // only decrease the time if this ant is no longer colliding with the obstacle.
-                this._obstacleAvoidenceTime -= Time.deltaTime;
+                this._obstacleAvoidenceTime -= Time.fixedDeltaTime;
             }
 
             var currentTargetDirectionWeight = Mathf.Max(0, 1 - this.ObstacleAvoidenceWeight);
