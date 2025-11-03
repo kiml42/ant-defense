@@ -37,7 +37,7 @@ public class AntCam : MonoBehaviour
         this._targetXRotation = this.transform.rotation.x;
     }
 
-    private float Speed => GetProportionOfRange(this.GetZoomProportion(this.CurrentY), this.MinCameraSpeed, this.MaxCameraSpeed) * Time.deltaTime;
+    private float Speed => GetProportionOfRange(this.GetZoomProportion(this.CurrentY), this.MinCameraSpeed, this.MaxCameraSpeed) * Time.unscaledDeltaTime;
     
     // Update is called once per frame
     void Update()
@@ -68,7 +68,6 @@ public class AntCam : MonoBehaviour
         {
             this.ProcessKeys(ref newX, ref newZ);
         }
-
 
         this.transform.position = new Vector3(newX, this.transform.position.y, newZ);
     }
