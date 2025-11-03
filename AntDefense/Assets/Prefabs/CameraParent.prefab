@@ -738,7 +738,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   TogglePauseKey: 32
   FastForwardModeKey: 102
-  FastForwardTimeScale: 5
+  FastForwardTimeScale: 3
+  FastForwardTargetFrameRate: 30
 --- !u!1 &9169468475242597711
 GameObject:
   m_ObjectHideFlags: 0
