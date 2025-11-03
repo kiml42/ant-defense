@@ -9,6 +9,32 @@ public class GlobalKeyHandler : MonoBehaviour
     public KeyCode FastForwardModeKey = KeyCode.F;
 
     public float FastForwardTimeScale = 3f;
+
+    public float FastForwardTargetFrameRate = 30f;
+
+    private float _scaledFastForwardTimeScale
+    {
+        get
+        {
+            var currentTimeScale = Time.timeScale;
+            var currentFrameRate = 1f / Time.unscaledDeltaTime;
+            var scaleFactor =  currentFrameRate / this.FastForwardTargetFrameRate;
+            float newTimeScale = currentTimeScale;
+            if (scaleFactor < 0.8)
+            {
+                // current frame rate is too low so decrease the timescale proportionally.
+                newTimeScale = currentTimeScale - 0.1f;
+                //Debug.Log($"Slowing down scale factor: {scaleFactor}, adjusted time scale: {newTimeScale}");
+            } else if (scaleFactor > 1.2)
+            {
+                // current frame rate could stand to be lower so increase the timescale proportionally.
+                newTimeScale = currentTimeScale + 0.01f;
+                //Debug.Log($"Speeding up scale factor: {scaleFactor}, adjusted time scale: {newTimeScale}");
+            }
+            //Debug.Log($"Fast forward scale factor: {scaleFactor}, adjusted time scale: {newTimeScale}");
+            return Mathf.Max(newTimeScale, this.FastForwardTimeScale);
+        }
+    }
     public enum TimeScaleMode
     {
         Paused,
@@ -29,7 +55,7 @@ public class GlobalKeyHandler : MonoBehaviour
                 case TimeScaleMode.Normal:
                     return 1f;
                 case TimeScaleMode.FastForward:
-                    return this.FastForwardTimeScale;
+                    return this._scaledFastForwardTimeScale;
                 default:
                     return 1f;
             }
@@ -76,9 +102,10 @@ public class GlobalKeyHandler : MonoBehaviour
             anyChange = true;
         }
 
-        if (anyChange)
+        if (anyChange || this._currentMode == TimeScaleMode.FastForward)
         {
-            Time.timeScale = (int)this.CurrentTimeScale;
+            Time.timeScale = this.CurrentTimeScale;
+            //Debug.Log($"Changed time scale mode to {this._currentMode}, time scale: {Time.timeScale}, deltaTime={Time.deltaTime}");
             AudioListener.pause = this._currentMode == TimeScaleMode.Paused;
         }
     }
