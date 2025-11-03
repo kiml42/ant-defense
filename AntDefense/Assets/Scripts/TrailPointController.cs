@@ -27,7 +27,7 @@ public class TrailPointController : Smellable
 
         internal void DecrementTime()
         {
-            this.RemainingTime -= Time.fixedDeltaTime;
+            this.RemainingTime -= Time.deltaTime;
         }
 
         public override string ToString()

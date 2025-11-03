@@ -37,7 +37,7 @@ public class ContinualSpawner : MonoBehaviour
             this.enabled = false;
             return;
         }
-        this._timeUntilSpawn -= Time.fixedDeltaTime;
+        this._timeUntilSpawn -= Time.deltaTime;
         if (this._timeUntilSpawn < 0)
         {
             this.SpawnObjects(this.CountPerSpawn);

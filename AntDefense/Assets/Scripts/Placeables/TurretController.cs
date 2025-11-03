@@ -18,7 +18,7 @@ public class TurretController : MonoBehaviour
 
     void FixedUpdate()
     {
-        this._reloadTimer -= Time.fixedDeltaTime;
+        this._reloadTimer -= Time.deltaTime;
         if (this._targetsInRange.Any())
         {
             // TODO work out a better way to pick the target.

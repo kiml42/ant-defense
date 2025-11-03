@@ -162,7 +162,7 @@ public class AntStateMachine : DeathActionBehaviour
             throw new Exception($"State is {this.State} so the currnet target should not be food, but it is {this.CurrentTarget}");
         }
 
-        this._timeSinceTargetAquisition += Time.fixedDeltaTime;
+        this._timeSinceTargetAquisition += Time.deltaTime;
         if (this.CurrentTarget != null)
         {
             Debug.DrawLine(this.transform.position, this.CurrentTarget.TargetPoint.position, Color.cyan);
@@ -183,7 +183,7 @@ public class AntStateMachine : DeathActionBehaviour
         if (this._maxTargetPriority.HasValue)
         {
             //Debug.Log($"MaxTargetTime {_maxTargetTime}");
-            this._maxTargetPriority += Time.fixedDeltaTime * this.GiveUpRecoveryMultiplier;
+            this._maxTargetPriority += Time.deltaTime * this.GiveUpRecoveryMultiplier;
         }
     }
 

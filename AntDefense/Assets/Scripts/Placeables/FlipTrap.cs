@@ -36,8 +36,8 @@ public class FlipTrap : Triggerable
     // Update is called once per frame
     void FixedUpdate()
     {
-        this._rearmCountdown -= Time.fixedDeltaTime;
-        this._resetCountdown -= Time.fixedDeltaTime;
+        this._rearmCountdown -= Time.deltaTime;
+        this._resetCountdown -= Time.deltaTime;
 
         if(this._resetCountdown <= 0)
         {

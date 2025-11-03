@@ -48,7 +48,7 @@ public class AntTrailController : MonoBehaviour
             this._distanceSinceTarget = 0;
             this._targetValue = this.AntStateMachine.TrailTargetValue;
         }
-        var updateDistance = this._rigidbody.linearVelocity.magnitude * Time.fixedDeltaTime;
+        var updateDistance = this._rigidbody.linearVelocity.magnitude * Time.deltaTime;
         this._distanceSinceTarget += updateDistance;
 
         this.LeaveTrail();

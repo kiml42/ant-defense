@@ -36,9 +36,16 @@ public class GlobalKeyHandler : MonoBehaviour
         }
     }
 
+    //private void FixedUpdate()
+    //{
+        
+    //    Debug.Log($"FixedUpdate: Current time scale mode: {this._currentMode}, time scale: {Time.timeScale}, deltaTime={Time.deltaTime}, fixedDeltaTime={Time.fixedDeltaTime}");
+    //}
+
     // Update is called once per frame
     void Update()
     {
+        //Debug.Log($"Update: Current time scale mode: {this._currentMode}, time scale: {Time.timeScale}, deltaTime={Time.deltaTime}, fixedDeltaTime={Time.fixedDeltaTime}");
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
         var anyChange = false;
