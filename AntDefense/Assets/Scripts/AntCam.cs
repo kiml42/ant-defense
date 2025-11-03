@@ -115,21 +115,21 @@ public class AntCam : MonoBehaviour
 
     private void HandleZoom()
     {
-        var ctrlPushed = Input.GetKey(KeyCode.LeftControl);
-        var shiftPushed = Input.GetKey(KeyCode.LeftShift);
-        if (Input.mouseScrollDelta.y != 0 || ctrlPushed || shiftPushed)
+        var zoomOutPushed = Input.GetKey(KeyCode.LeftControl);
+        var zoomInPushed = Input.GetKey(KeyCode.LeftShift);
+        if (Input.mouseScrollDelta.y != 0 || zoomOutPushed || zoomInPushed)
         {
             // TODO consider make this work on the proportion first, and get both angle and distance from that.
             float currentY = this.CurrentY;
             var speedMultiplyer = currentY / 100;
             var newY = currentY - (Input.mouseScrollDelta.y * this.CameraZoomSpeed * speedMultiplyer);
 
-            if (shiftPushed)
+            if (zoomInPushed)
             {
                 // Zoom in
                 newY -= this.KeyZoomSpeed * this.CameraZoomSpeed * speedMultiplyer;
             }
-            if(ctrlPushed)
+            if(zoomOutPushed)
             {
                 // Zoom out
                 newY += this.KeyZoomSpeed * this.CameraZoomSpeed * speedMultiplyer;
