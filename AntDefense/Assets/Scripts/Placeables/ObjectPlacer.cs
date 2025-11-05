@@ -6,7 +6,6 @@ public class ObjectPlacer : MonoBehaviour
 {
     public static ObjectPlacer Instance { get; private set; }
     public static List<PlaceableObjectOrGhost> StaticQuickBarObjects;
-    // TODO implement cost to place objects
 
     public TranslateHandle Handle;
 

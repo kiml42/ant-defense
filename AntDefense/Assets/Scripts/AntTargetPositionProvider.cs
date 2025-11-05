@@ -136,7 +136,7 @@ public class AntTargetPositionProvider : MonoBehaviour
         }
         else
         {
-            var randomChangeMagnitude = this.RandomDirectionChangePerSecond * Time.fixedDeltaTime;
+            var randomChangeMagnitude = this.RandomDirectionChangePerSecond * Time.deltaTime;
             var randomComponent = Random.insideUnitSphere * randomChangeMagnitude;
             this._randomDirection += randomComponent;
             this._randomDirection = new Vector3(this._randomDirection.x, this._randomDirection.y * 0.2f, this._randomDirection.z);

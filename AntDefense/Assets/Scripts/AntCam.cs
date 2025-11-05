@@ -37,6 +37,8 @@ public class AntCam : MonoBehaviour
         this._targetXRotation = this.transform.rotation.x;
     }
 
+    private float Speed => GetProportionOfRange(this.GetZoomProportion(this.CurrentY), this.MinCameraSpeed, this.MaxCameraSpeed) * Time.unscaledDeltaTime;
+    
     // Update is called once per frame
     void Update()
     {
@@ -49,8 +51,7 @@ public class AntCam : MonoBehaviour
         {
             this._lastMousePosition = Input.mousePosition;
         }
-        var zoomProportion = this.GetZoomProportion(this.CurrentY);
-        var speed = GetProportionOfRange(zoomProportion, this.MinCameraSpeed, this.MaxCameraSpeed) * Time.deltaTime;
+
         if (Input.GetMouseButton(MouseButton))
         {
             var change = Input.mousePosition - this._lastMousePosition;
@@ -59,44 +60,42 @@ public class AntCam : MonoBehaviour
             {
                 //Debug.Log("Mouse Move " + change);
                 //transform.position += change;
-                newX -= change.x * speed;
-                newZ -= change.y * speed;
+                newX -= change.x * this.Speed;
+                newZ -= change.y * this.Speed;
             }
         }
         else
         {
-            this.ProcessKeys(speed, ref newX, ref newZ);
+            this.ProcessKeys(ref newX, ref newZ);
         }
-
 
         this.transform.position = new Vector3(newX, this.transform.position.y, newZ);
     }
 
-    private void ProcessKeys(float speed, ref float newX, ref float newZ)
+    private void ProcessKeys(ref float newX, ref float newZ)
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-            Application.Quit();
-
         foreach (var key in this._directionKeys)
         {
             if (Input.GetKey(key))
             {
+                //Debug.Log("Key Move " + key + ", speed = " + this.Speed);
                 if (this._upKeyCodes.Contains(key))
                 {
-                    newZ += this.KeyScrollSpeed * speed;
+                    newZ += this.KeyScrollSpeed * this.Speed;
                 }
                 if (this._downKeyCodes.Contains(key))
                 {
-                    newZ -= this.KeyScrollSpeed * speed;
+                    newZ -= this.KeyScrollSpeed * this.Speed;
                 }
                 if (this._rightKeyCodes.Contains(key))
                 {
-                    newX += this.KeyScrollSpeed * speed;
+                    newX += this.KeyScrollSpeed * this.Speed;
                 }
                 if (this._leftKeyCodes.Contains(key))
                 {
-                    newX -= this.KeyScrollSpeed * speed;
+                    newX -= this.KeyScrollSpeed * this.Speed;
                 }
+                Debug.Log($"New pos {newX}, {newZ} ");
             }
         }
     }
@@ -116,21 +115,21 @@ public class AntCam : MonoBehaviour
 
     private void HandleZoom()
     {
-        var ctrlPushed = Input.GetKey(KeyCode.LeftControl);
-        var shiftPushed = Input.GetKey(KeyCode.LeftShift);
-        if (Input.mouseScrollDelta.y != 0 || ctrlPushed || shiftPushed)
+        var zoomOutPushed = Input.GetKey(KeyCode.LeftControl);
+        var zoomInPushed = Input.GetKey(KeyCode.LeftShift);
+        if (Input.mouseScrollDelta.y != 0 || zoomOutPushed || zoomInPushed)
         {
             // TODO consider make this work on the proportion first, and get both angle and distance from that.
             float currentY = this.CurrentY;
             var speedMultiplyer = currentY / 100;
             var newY = currentY - (Input.mouseScrollDelta.y * this.CameraZoomSpeed * speedMultiplyer);
 
-            if (shiftPushed)
+            if (zoomInPushed)
             {
                 // Zoom in
                 newY -= this.KeyZoomSpeed * this.CameraZoomSpeed * speedMultiplyer;
             }
-            if(ctrlPushed)
+            if(zoomOutPushed)
             {
                 // Zoom out
                 newY += this.KeyZoomSpeed * this.CameraZoomSpeed * speedMultiplyer;

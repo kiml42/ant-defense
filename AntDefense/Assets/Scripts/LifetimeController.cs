@@ -24,7 +24,7 @@ public class LifetimeController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        this.RemainingTime -= Time.fixedDeltaTime;
+        this.RemainingTime -= Time.deltaTime;
         if (this.RemainingTime <= 0)
         {
             Destroy(this.gameObject);

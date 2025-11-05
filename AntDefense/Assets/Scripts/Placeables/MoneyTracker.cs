@@ -21,7 +21,7 @@ public class MoneyTracker : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        CurrentMoney += this.IncomePerSecond * Time.fixedDeltaTime;
+        CurrentMoney += this.IncomePerSecond * Time.deltaTime;
     }
 
     void Update()

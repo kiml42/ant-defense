@@ -15,7 +15,7 @@ public class ColliderTrigger : MonoBehaviour
     {
         if (this._currentTargets.Any())
         {
-            this._timeToTrigger -= Time.fixedDeltaTime;
+            this._timeToTrigger -= Time.deltaTime;
             //Debug.Log("Trigger in " + _timeToTrigger);
             if(this._timeToTrigger <= 0)
             {

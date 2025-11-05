@@ -20,7 +20,7 @@ public class GrowingSpawner : MonoBehaviour
 
     private void FixedUpdate()
     {
-        this.timer += Time.fixedDeltaTime;
+        this.timer += Time.deltaTime;
 
         if(this.timer >= this.SpawnTime)
         {

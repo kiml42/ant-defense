@@ -37,7 +37,7 @@ public class Digestion : MonoBehaviour
 
     void FixedUpdate()
     {
-        var foodUse = this.Expenditure * Time.fixedDeltaTime;
+        var foodUse = this.Expenditure * Time.deltaTime;
         this.UseFood(foodUse);
 
         if (this.CurrentFood <= 0)
@@ -49,7 +49,7 @@ public class Digestion : MonoBehaviour
         else if(this.HealthController.Damage > 0)
         {
             // heal
-            var maxHealing = this.HealRate * Time.fixedDeltaTime;
+            var maxHealing = this.HealRate * Time.deltaTime;
             var requiredHealing = this.HealthController.Damage;
             var actualHealing = Mathf.Min(requiredHealing, maxHealing, this.CurrentFood);
 
