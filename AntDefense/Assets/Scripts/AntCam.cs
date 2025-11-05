@@ -78,7 +78,7 @@ public class AntCam : MonoBehaviour
         {
             if (Input.GetKey(key))
             {
-                Debug.Log("Key Move " + key + ", speed = " + this.Speed);
+                //Debug.Log("Key Move " + key + ", speed = " + this.Speed);
                 if (this._upKeyCodes.Contains(key))
                 {
                     newZ += this.KeyScrollSpeed * this.Speed;
