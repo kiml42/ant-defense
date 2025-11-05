@@ -195,6 +195,22 @@ public class TranslateHandle : MonoBehaviour
 
     private void HandleMainMouseUp()
     {
+        var activated = this.TryActivateQuickBarButton();
+
+        if (activated)
+        {
+            return;
+        }
+
+        if (this._lastCorrectedPoint == null) return;
+
+        //Debug.Log("Activating " +  this._lastCorrectedPoint);
+        this._lastCorrectedPoint.Activate();
+    }
+
+    private bool TryActivateQuickBarButton()
+    {
+        var activated = false;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit, 500, this._uiLayermask, QueryTriggerInteraction.Collide))
         {
@@ -202,14 +218,11 @@ public class TranslateHandle : MonoBehaviour
             if (quickBarButton != null)
             {
                 ObjectPlacer.Instance.StartPlacingGhost(quickBarButton.Ghost);
-                return;
+                activated = true;
             }
         }
 
-        if (this._lastCorrectedPoint == null) return;
-
-        //Debug.Log("Activating " +  this._lastCorrectedPoint);
-        this._lastCorrectedPoint.Activate();
+        return activated;
     }
 
     private Quaternion AdjustYUp(Quaternion originalRotation)
