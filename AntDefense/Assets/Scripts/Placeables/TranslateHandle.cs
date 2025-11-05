@@ -11,7 +11,7 @@ public class TranslateHandle : MonoBehaviour
     private int _uiLayermask;
     private int _groundLayermask;
     private bool _lastPositionIsGood = false;
-    private NoSpawnZone.AdjustedPoint _lastCorrectedPoint;
+    private NoSpawnZone.AdjustedPoint _lastActivateablePoint;
 
     // TODO: handle this with a visually disaleable script on every rendered object.
     private IEnumerable<Material> _materials;
@@ -36,9 +36,14 @@ public class TranslateHandle : MonoBehaviour
     {
         this.HandleCancelButton();
 
+        if (Input.GetMouseButtonDown(this.PlaceMouseButton))
+        {
+            this.TryActivateQuickBarButton();
+        }
+
         if (Input.GetMouseButtonUp(this.PlaceMouseButton))
         {
-            this.HandleMainMouseUp();
+            this.ActivatePoint();
         }
 
         this.HandleMousePosition();
@@ -150,7 +155,7 @@ public class TranslateHandle : MonoBehaviour
 
         bool isGood = true;
         var changedPosition = NoSpawnZone.GetBestEdgePosition(this.transform.position, previousPosition);
-        this._lastCorrectedPoint = changedPosition;
+        this._lastActivateablePoint = changedPosition;
         switch (changedPosition.Type)
         {
             case NoSpawnZone.PointType.Original:
@@ -193,19 +198,12 @@ public class TranslateHandle : MonoBehaviour
         return Physics.Raycast(ray, out hit, 500, this._groundLayermask, QueryTriggerInteraction.Ignore);
     }
 
-    private void HandleMainMouseUp()
+    private void ActivatePoint()
     {
-        var activated = this.TryActivateQuickBarButton();
-
-        if (activated)
-        {
-            return;
-        }
-
-        if (this._lastCorrectedPoint == null) return;
+        if (this._lastActivateablePoint == null) return;
 
         //Debug.Log("Activating " +  this._lastCorrectedPoint);
-        this._lastCorrectedPoint.Activate();
+        this._lastActivateablePoint.Activate();
     }
 
     private bool TryActivateQuickBarButton()
