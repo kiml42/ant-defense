@@ -56,7 +56,6 @@ public class TrailPointController : Smellable
 
     public float ScaleDownTime = 4;
     public float DefaultLifetime = 80;
-    public override bool IsPermanentSource => true;
 
     public float RemainingTime => this._smellComponents.Any() ? this._smellComponents.Max(c => c.RemainingTime) : 0;
 

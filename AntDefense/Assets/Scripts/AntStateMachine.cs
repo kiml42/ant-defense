@@ -338,11 +338,6 @@ public class AntStateMachine : DeathActionBehaviour
                             // has found an existing trail, so retrn to the food and pick it up.
                             this.State = AntState.ReturningToFood;
                         }
-                        if (this.IsScout && !smellable.IsPermanentSource)
-                        {
-                            // Scouts only care about permanent sources of food.
-                            return;
-                        }
                         this._maxTargetPriority = null;
                         this.ClearTarget();
                         this.RegisterPotentialTarget(smellable);
@@ -469,13 +464,14 @@ public class AntStateMachine : DeathActionBehaviour
                 if (this._carriedFood != null) return;   // ignore all other food if already carrying
                 if (this.IsScout)
                 {
-                    if (!smellable.IsPermanentSource || this.State == AntState.ReportingFood) return;
+                    if (this.State == AntState.ReportingFood) return;
                     this.ReportFoodWithoutCarryingIt(smellable);
                     return;
                 }
-                if (!smellable.IsPermanentSource && (this.State == AntState.SeekingFood || this.State == AntState.ReturningToFood || this.State == AntState.ReturningHome))
+                if (this._knownNearbyFood.Count == 1 && (this.State == AntState.SeekingFood || this.State == AntState.ReturningToFood || this.State == AntState.ReturningHome))
                 {
                     // it's a one-off, so just take it home.
+                    Debug.Log("One-off food found, just taking it home.");
                     this.CollectKnownFood(smellable);
                     this._disableTrail = true;
                     return;
@@ -628,10 +624,6 @@ public class AntStateMachine : DeathActionBehaviour
             if(this._carriedFood.TryGetComponent<LifetimeController>(out var lifetime))
             {
                 lifetime.IsRunning = true;
-            }
-            foreach(var smell in this._carriedFood.Smells)
-            {
-                smell.MarkAsPermanant(false);   // dropped food is not at its source any more.
             }
             this._carriedFood = null;
         }
