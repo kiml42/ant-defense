@@ -10,11 +10,6 @@ public abstract class Smellable : MonoBehaviour
     /// </summary>
     public abstract bool IsActual { get; }
 
-    /// <summary>
-    /// true for objects that are spawned at a source of that sort of object, or are permanent, and therefore ants should leave a trail to say it's there.
-    /// false indicates that this is a one-off source of this smell, so they shouldn't leave a trail for it.
-    /// </summary>
-    public abstract bool IsPermanentSource { get; }
 
     public Transform TargetPoint;
 

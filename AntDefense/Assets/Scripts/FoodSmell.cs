@@ -2,13 +2,9 @@ using System;
 
 public class FoodSmell : Smellable
 {
-    private bool _isPermanentSource = true;
-
     public override Smell Smell => Smell.Food;
 
     public override bool IsActual => true;
-
-    public override bool IsPermanentSource => this._isPermanentSource;
 
     private float _foodValue;
 
@@ -22,11 +18,6 @@ public class FoodSmell : Smellable
     public override string ToString()
     {
         return "Actual Food";
-    }
-
-    public void MarkAsPermanant(bool isPermanentSource)
-    {
-        this._isPermanentSource = isPermanentSource;
     }
 
     public override float GetPriority(ITargetPriorityCalculator priorityCalculator)

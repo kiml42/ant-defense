@@ -28,12 +28,6 @@ public class PlaceableRealObject : PlaceableObjectOrGhost
 
     protected override void Finalise()
     {
-        var foodSmells = this.GetComponentsInChildren<FoodSmell>();
-        foreach (var foodSmell in foodSmells)
-        {
-            foodSmell.MarkAsPermanant(false);
-        }
-
         var placeables = this.GetComponents<PlaceableMonoBehaviour>();
 
         foreach (var placeable in placeables)
