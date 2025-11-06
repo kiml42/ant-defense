@@ -39,12 +39,6 @@ public class HealthController : MonoBehaviour
             var deadObject = Instantiate(this.DeadObject);
             this.DeadObject = null; // prevent duplicate instanciation.
             deadObject.transform.position = this.transform.position;
-            var smellComponents = deadObject.GetComponentsInChildren<FoodSmell>();
-            foreach (var smellComponent in smellComponents)
-            {
-                // DeathObjects are never permanent food.
-                smellComponent.MarkAsPermanant(false);
-            }
         }
         var deathActions = this.GetComponentsInChildren<DeathActionBehaviour>();
         foreach (var action in deathActions)

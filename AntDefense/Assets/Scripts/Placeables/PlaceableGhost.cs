@@ -10,14 +10,7 @@ public class PlaceableGhost : PlaceableObjectOrGhost
 
     protected override void Finalise()
     {
-        var newObject = Instantiate(this.RealObject, this.transform.position + this.SpawnOffset, this.transform.rotation);
-
-        var foodSmells = newObject.GetComponentsInChildren<FoodSmell>();
-        foreach (var foodSmell in foodSmells)
-        {
-            foodSmell.MarkAsPermanant(false);
-        }
-
+        Instantiate(this.RealObject, this.transform.position + this.SpawnOffset, this.transform.rotation);
         Destroy(this.gameObject);
     }
 }

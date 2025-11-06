@@ -51,11 +51,8 @@ public class TrailPointController : Smellable
     /// </summary>
     public float LifetimePenalty = 1;
 
-    public float OverlapRadius = 0.2f;
-
     public float ScaleDownTime = 4;
     public float DefaultLifetime = 80;
-    public override bool IsPermanentSource => true;
 
     public float RemainingTime => this._smellComponents.Any() ? this._smellComponents.Max(c => c.RemainingTime) : 0;
 
