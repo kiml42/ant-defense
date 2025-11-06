@@ -56,7 +56,7 @@ public class AntTrailController : MonoBehaviour
 
     private void LeaveTrail()
     {
-        if (!this.AntStateMachine.TrailSmell.HasValue) return;
+        if (!this.AntStateMachine.TrailSmell.HasValue || this._targetValue <= 0) return;
         var distanceToLastPoint = this._lastTrailPointLocation.HasValue
             ? (this._lastTrailPointLocation.Value - this.transform.position).magnitude
             : 0;
