@@ -11,7 +11,7 @@ public class AntTrailController : MonoBehaviour
     /// <summary>
     /// Distance around the proposed new location for a trail point to check for existing trail points
     /// </summary>
-    public const float OverlapRadius = 0.5f;
+    public const float OverlapRadius = 2f;
 
     private AntStateMachine AntStateMachine;
 
