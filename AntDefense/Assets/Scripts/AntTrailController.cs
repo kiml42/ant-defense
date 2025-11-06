@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class AntTrailController : MonoBehaviour
 {
-    private static GameObject _defaultTrailParent;
-    public GameObject TrailParent;
+    private static GameObject TrailParent;
+
+    private const float TrailPointSpawnDistance = 3f;
+
+    /// <summary>
+    /// Distance around the proposed new location for a trail point to check for existing trail points
+    /// </summary>
+    public const float OverlapRadius = 0.5f;
+
     private AntStateMachine AntStateMachine;
 
     public TrailPointController TrailPoint;
-    public float TrailPointSpawnDistance = 3f;
 
     private Smell? _lastSmell = null;
     private Vector3? _lastTrailPointLocation;
@@ -17,24 +23,18 @@ public class AntTrailController : MonoBehaviour
     private float _distanceSinceTarget = 0;
     private float? _targetValue = null;
 
-    /// <summary>
-    /// Distance around the proposed new location for a trail point to check for existing trail points
-    /// </summary>
-    public float OverlapRadius = 0.5f;
     private Rigidbody _rigidbody;
 
     void Start()
     {
         this.AntStateMachine = this.GetComponentInChildren<AntStateMachine>();
-        if (this.TrailParent == null)
+
+        if (TrailParent == null)
         {
-            if (_defaultTrailParent == null)
-            {
-                _defaultTrailParent = new GameObject();
-                _defaultTrailParent.name = "TrailParent";
-            }
-            this.TrailParent = _defaultTrailParent;
+            TrailParent = new GameObject();
+            TrailParent.name = "TrailParent";
         }
+
         this._rigidbody = this.GetComponent<Rigidbody>();
     }
 
@@ -60,10 +60,10 @@ public class AntTrailController : MonoBehaviour
         var distanceToLastPoint = this._lastTrailPointLocation.HasValue
             ? (this._lastTrailPointLocation.Value - this.transform.position).magnitude
             : 0;
-        if (!this._lastTrailPointLocation.HasValue || distanceToLastPoint > this.TrailPointSpawnDistance)
+        if (!this._lastTrailPointLocation.HasValue || distanceToLastPoint > TrailPointSpawnDistance)
         {
             // TODO consider if there is a lighter method for this just seeing the location of the center Possibly by keeping an octree index for the locations of all trail points
-            Collider[] overlaps = Physics.OverlapSphere(this.transform.position, this.OverlapRadius);
+            Collider[] overlaps = Physics.OverlapSphere(this.transform.position, OverlapRadius);
 
             var relevantOverlaps = overlaps
                 .Where(overlap => !overlap.IsDestroyed())
@@ -83,7 +83,7 @@ public class AntTrailController : MonoBehaviour
             else
             {
                 // none are close enough, so create a new one.
-                var newPoint = Instantiate(this.TrailPoint, this.transform.position, Quaternion.identity, this.TrailParent.transform);
+                var newPoint = Instantiate(this.TrailPoint, this.transform.position, Quaternion.identity, TrailParent.transform);
                 newPoint.SetSmell(this.AntStateMachine.TrailSmell.Value, this._distanceSinceTarget, this._targetValue);
                 newPoint.gameObject.layer = 2;
                 //Debug.Log("Leaving trail with smell: " + newPoint.GetComponent<TrailPointController>().Smell);

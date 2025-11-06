@@ -52,8 +52,6 @@ public class TrailPointController : Smellable
     /// </summary>
     public float LifetimePenalty = 1;
 
-    public float OverlapRadius = 0.2f;
-
     public float ScaleDownTime = 4;
     public float DefaultLifetime = 80;
 
