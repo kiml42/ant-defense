@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -73,7 +72,7 @@ public class TrailPointController : Smellable
         foreach (var component in this._smellComponents.ToArray())
         {
             component.DecrementTime();
-            if(component.RemainingTime <= 0)
+            if (component.RemainingTime <= 0)
             {
                 this._smellComponents.Remove(component);
             }
@@ -86,10 +85,13 @@ public class TrailPointController : Smellable
             return;
         }
 
-        var remainingTime = this._smellComponents.Max(c => c.RemainingTime);
-        if (this.ScaleDownTime > 0 && remainingTime < this.ScaleDownTime)
+        if (this.ScaleDownTime > 0)
         {
-            this.transform.localScale = Vector3.one * remainingTime / this.ScaleDownTime;
+            var remainingTime = this._smellComponents.Max(c => c.RemainingTime);
+            if (remainingTime < this.ScaleDownTime)
+            {
+                this.transform.localScale = Vector3.one * remainingTime / this.ScaleDownTime;
+            }
         }
     }
 
@@ -141,7 +143,7 @@ public class TrailPointController : Smellable
     {
         var component = this.CreateSmellComponent(distanceFromTarget, targetValue);
 
-        if(component.RemainingTime <= 0)
+        if (component.RemainingTime <= 0)
         {
             return false;
         }
