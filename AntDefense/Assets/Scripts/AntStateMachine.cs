@@ -478,7 +478,6 @@ public class AntStateMachine : DeathActionBehaviour
                 if (isSmallQuantityOfFood && CanPickUpFoodFromThisState)
                 {
                     // it's a one-off, so just take it home.
-                    Debug.Log("One-off food found, just taking it home.");
                     this.CollectKnownFood(smellable);
                     this._disableTrail = true;
                     return;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ public class Food : Carryable
     public override void Detach()
     {
         base.Detach();
-        foreach (var smell in this.Smells)
+        foreach (var smell in this.Smells.Where(s => s != null))
         {
             smell.enabled = true;
             smell.IsSmellable = true;
