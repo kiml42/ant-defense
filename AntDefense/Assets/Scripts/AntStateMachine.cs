@@ -53,6 +53,11 @@ public class AntStateMachine : DeathActionBehaviour
 
     public const int GroundLayer = 3;
 
+    /// <summary>
+    /// If the ant has found a total food value less than or equal to this amount, it will just carry the food home while reporting it, instead of just reporting it.
+    /// The idea is to prioritise summoning more ants if there's a larger amount of food, but to just get the food home now if it's a smaller amount.
+    /// </summary>
+    public float LimitForReporitingOnly = 50;
     public AntTrailController TrailController;
 
     public Transform CarryPoint;
@@ -468,7 +473,9 @@ public class AntStateMachine : DeathActionBehaviour
                     this.ReportFoodWithoutCarryingIt(smellable);
                     return;
                 }
-                if (this._knownNearbyFood.Count == 1 && (this.State == AntState.SeekingFood || this.State == AntState.ReturningToFood || this.State == AntState.ReturningHome))
+                var isSmallQuantityOfFood = this._knownNearbyFood.Count == 1 || this.KnownFoodValue <= LimitForReporitingOnly;
+                var CanPickUpFoodFromThisState = this.State == AntState.SeekingFood || this.State == AntState.ReturningToFood || this.State == AntState.ReturningHome;
+                if (isSmallQuantityOfFood && CanPickUpFoodFromThisState)
                 {
                     // it's a one-off, so just take it home.
                     Debug.Log("One-off food found, just taking it home.");
@@ -554,10 +561,12 @@ public class AntStateMachine : DeathActionBehaviour
     private void UpdateTrailValueForKnownFood()
     {
         // Leave a trail indicating how much food has been found at this location.
-        var remainingFoodValue = this._knownNearbyFood.Sum(f => f != null ? f.FoodValue : 0);
+        var remainingFoodValue = this.KnownFoodValue;
         this.TrailTargetValue = remainingFoodValue;
         this._knownNearbyFood.Clear();   // Forget about all the food now it knows what value to use for the trail.
     }
+
+    private float KnownFoodValue => this._knownNearbyFood.Sum(f => f != null ? f.FoodValue : 0);
 
     public Digestion Digestion;
     private bool _disableTrail;
