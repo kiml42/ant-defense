@@ -535,7 +535,6 @@ public class AntStateMachine : DeathActionBehaviour
         this.RegisterPotentialTarget(this.LastTrailPoint);
         this.UpdateTrailValueForKnownFood();
         this.PickUpFood(smellable);
-        smellable.IsSmellable = false;  // TODO consider when/if to turn this back on. (e.g. if the ant dies while carrying the food, or drops the food)
     }
 
     private void ReportFoodWithoutCarryingIt(Smellable smellable)
@@ -604,16 +603,11 @@ public class AntStateMachine : DeathActionBehaviour
             lifetime.IsRunning = false;
         }
 
-        this.PickUpFood(food);
-
-        this.State = AntState.CarryingFood;
-    }
-
-    private void PickUpFood(Food food)
-    {
         this._carriedFood = food;
         food.transform.position = this.CarryPoint.position;
         food.Attach(this._rigidbody);
+
+        this.State = AntState.CarryingFood;
     }
 
     public override void OnDeath()
