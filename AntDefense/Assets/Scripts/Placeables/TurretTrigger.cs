@@ -6,17 +6,11 @@ public class TurretTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(this.TurretController != null)
-        {
-            this.TurretController.RegisterTarget(other);
-        }
+        this.TurretController.RegisterTarget(other);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (this.TurretController != null)
-        {
-            this.TurretController.DeregisterTarget(other);
-        }
+        this.TurretController.DeregisterTarget(other);
     }
 }

@@ -16,9 +16,27 @@ public class TurretController : MonoBehaviour
 
     private List<HealthController> _targetsInRange = new List<HealthController>();
 
+    private float _range;
+    void Start()
+    {
+        var trigger = this.GetComponentInChildren<TurretTrigger>();
+        if (trigger != null)
+        {
+            var collider = trigger.GetComponentInChildren<SphereCollider>();
+            if (collider != null)
+            {
+                this._range = collider.radius * collider.transform.localScale.x;
+                Debug.Log($"TurretController: Determined range as {this._range}");
+                return;
+            }
+        }
+        throw new Exception("TurretController could not determine its range because it could not find a TurretTrigger with a SphereCollider.");
+    }
+
     void FixedUpdate()
     {
         this._reloadTimer -= Time.deltaTime;
+        this.CleanTargets();
         if (this._targetsInRange.Any())
         {
             // TODO work out a better way to pick the target.
@@ -34,7 +52,7 @@ public class TurretController : MonoBehaviour
 
             this.Turner.TurnTo(direction);
 
-            if(this._reloadTimer < 0)
+            if(this._reloadTimer <= 0)
             {
                 this.Fire();
                 this._reloadTimer = this.ReloadTime;
@@ -63,7 +81,12 @@ public class TurretController : MonoBehaviour
 
     private void CleanTargets()
     {
-        this._targetsInRange = this._targetsInRange.Where(t => t != null && t.transform != null).ToList();
+        this._targetsInRange = this._targetsInRange.Where(this.IsValudTarget).ToList();
+    }
+
+    private bool IsValudTarget(HealthController t)
+    {
+        return t != null && t.transform != null && (t.transform.position - this.transform.position).magnitude <= this._range;
     }
 
     internal void DeregisterTarget(Collider collision)
