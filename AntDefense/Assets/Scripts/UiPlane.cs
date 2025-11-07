@@ -124,10 +124,11 @@ public class UiPlane : MonoBehaviour
 
     private static void Dummyise(Transform dummy)
     {
-        var componentsToDestroy = dummy.GetComponentsInChildren<MonoBehaviour>().Cast<Component>().ToList();
-        componentsToDestroy.AddRange(dummy.GetComponentsInChildren<HingeJoint>().Cast<Component>());
-        componentsToDestroy.AddRange(dummy.GetComponentsInChildren<Rigidbody>().Cast<Component>());
+        var componentsToDestroy = dummy.GetComponentsInChildren<MonoBehaviour>().Cast<UnityEngine.Object>().ToList();
+        componentsToDestroy.AddRange(dummy.GetComponentsInChildren<HingeJoint>());
+        componentsToDestroy.AddRange(dummy.GetComponentsInChildren<Rigidbody>());
         componentsToDestroy.AddRange(dummy.GetComponentsInChildren<Collider>());
+        componentsToDestroy.AddRange(dummy.GetComponentsInChildren<TurretTrigger>().Select(t => t.gameObject));
 
         foreach (var component in componentsToDestroy)
         {
