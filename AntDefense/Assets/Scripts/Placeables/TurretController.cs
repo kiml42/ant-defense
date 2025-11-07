@@ -26,7 +26,6 @@ public class TurretController : MonoBehaviour
             if (collider != null)
             {
                 this._range = collider.radius * collider.transform.localScale.x;
-                Debug.Log($"TurretController: Determined range as {this._range}");
                 return;
             }
         }
@@ -48,7 +47,7 @@ public class TurretController : MonoBehaviour
                 return;
             }
             var direction = bestTarget.transform.position - this.Turner.transform.position;
-            Debug.DrawRay(this.Turner.transform.position, direction);
+            //Debug.DrawRay(this.Turner.transform.position, direction);
 
             this.Turner.TurnTo(direction);
 
