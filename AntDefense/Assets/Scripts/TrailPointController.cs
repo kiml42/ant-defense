@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class TrailPointController : Smellable
 {
@@ -64,6 +65,18 @@ public class TrailPointController : Smellable
             : float.MaxValue;
     }
 
+    private void Update()
+    {
+        if (this.ScaleDownTime > 0)
+        {
+            var remainingTime = this._smellComponents.Max(c => c.RemainingTime);
+            if (remainingTime < this.ScaleDownTime)
+            {
+                this.transform.localScale = Vector3.one * remainingTime / this.ScaleDownTime;
+            }
+        }
+    }
+
     private void FixedUpdate()
     {
         foreach (var component in this._smellComponents.ToArray())
@@ -81,15 +94,6 @@ public class TrailPointController : Smellable
             this.DestroyThis();
             return;
         }
-
-        if (this.ScaleDownTime > 0)
-        {
-            var remainingTime = this._smellComponents.Max(c => c.RemainingTime);
-            if (remainingTime < this.ScaleDownTime)
-            {
-                this.transform.localScale = Vector3.one * remainingTime / this.ScaleDownTime;
-            }
-        }
     }
 
     private void DestroyThis()
@@ -101,10 +105,8 @@ public class TrailPointController : Smellable
     internal void SetSmell(Smell trailSmell, float distanceFromTarget, float? targetValue)
     {
         //Debug.Log($"Setting smell on trail point {this} to {trailSmell} dist={distanceFromTarget} targetValue={targetValue}");
-        if (this.IsDestroyed())
-        {
-            Debug.Log("Already destroyed!!!");
-        }
+        Assert.IsFalse(this.IsDestroyed(), "Setting smell on destroyed trail point");
+
         this._trailSmell = trailSmell;
         var added = this.AddSmellComponent(distanceFromTarget, targetValue);
 
