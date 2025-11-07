@@ -88,6 +88,8 @@ public class AntTrailController : MonoBehaviour
                 newPoint.gameObject.layer = 2;
                 //Debug.Log("Leaving trail with smell: " + newPoint.GetComponent<TrailPointController>().Smell);
 
+                TrailPointManager.Register(newPoint);
+
                 this.LastTrailPoint = newPoint;
             }
             this._lastTrailPointLocation = this.transform.position;

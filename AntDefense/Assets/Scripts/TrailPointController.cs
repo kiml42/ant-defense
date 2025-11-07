@@ -65,9 +65,9 @@ public class TrailPointController : Smellable
             : float.MaxValue;
     }
 
-    private void Update()
+    public void UpdateVisuals()
     {
-        if (this.ScaleDownTime > 0)
+        if (this.ScaleDownTime > 0 && this._smellComponents.Any())
         {
             var remainingTime = this._smellComponents.Max(c => c.RemainingTime);
             if (remainingTime < this.ScaleDownTime)
@@ -77,7 +77,7 @@ public class TrailPointController : Smellable
         }
     }
 
-    private void FixedUpdate()
+    public void UpdateTrailPoint()
     {
         foreach (var component in this._smellComponents.ToArray())
         {
@@ -98,8 +98,9 @@ public class TrailPointController : Smellable
 
     private void DestroyThis()
     {
-        Destroy(this);
+        if(this.IsDestroyed()) { return; }
         Destroy(this.gameObject);
+        Destroy(this);
     }
 
     internal void SetSmell(Smell trailSmell, float distanceFromTarget, float? targetValue)
