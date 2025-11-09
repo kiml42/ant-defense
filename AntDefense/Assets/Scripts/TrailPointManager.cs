@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -13,16 +14,13 @@ public class TrailPointManager : MonoBehaviour
             throw new System.Exception("There should not be multiple TrailPointManagers!");
         }
         Instance = this;
+        
     }
 
     private void Update()
     {
-        foreach (var trailPoint in _trailPoints.ToArray())
+        foreach (var trailPoint in _trailPoints.Where(t => !t.IsDestroyed()).ToArray())
         {
-            if(trailPoint.IsDestroyed())
-            {
-                continue;
-            }
             trailPoint.UpdateVisuals();
         }
     }
