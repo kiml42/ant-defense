@@ -63,7 +63,20 @@ public class TrailPointController : Smellable
             : float.MaxValue;
     }
 
-    public void UpdateVisuals()
+    public void UpdateVisibility()
+    {
+        if (TrailPointManager.VisibleTrailSmells.Contains(this.Smell))
+        {
+            this.Material.enabled = true;
+        }
+        else
+        {
+            this.Material.enabled = false;
+        }
+        this.UpdateScale();
+    }
+
+    public void UpdateScale()
     {
         var remainingTime = this.RemainingTime;
         if (remainingTime < this.ScaleDownTime)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -14,14 +15,66 @@ public class TrailPointManager : MonoBehaviour
             throw new System.Exception("There should not be multiple TrailPointManagers!");
         }
         Instance = this;
-        
+
+    }
+
+    public static Smell[] VisibleTrailSmells
+    {
+        get
+        {
+            switch (_currentTrailDisplayMode)
+            {
+                case TrailDisplayMode.All:
+                    return new[] { Smell.Home, Smell.Food };
+                case TrailDisplayMode.FoodOnly:
+                    return new[] { Smell.Food };
+                default:
+                    return Array.Empty<Smell>();
+            }
+        }
+    }
+    private static TrailDisplayMode _currentTrailDisplayMode = TrailDisplayMode.All;
+    private enum TrailDisplayMode
+    {
+        All,
+        FoodOnly,
+        None
     }
 
     private void Update()
     {
-        foreach (var trailPoint in _trailPoints.Take(this.MaxTrailPointsPurUiFrame).Where(t => !t.IsDestroyed()))
+        var cycleTrailMode = Input.GetKeyUp(KeyCode.T);
+        if (cycleTrailMode)
         {
-            trailPoint.UpdateVisuals();
+            switch (_currentTrailDisplayMode)
+            {
+                case TrailDisplayMode.All:
+                    _currentTrailDisplayMode = TrailDisplayMode.FoodOnly;
+                    break;
+                case TrailDisplayMode.FoodOnly:
+                    _currentTrailDisplayMode = TrailDisplayMode.None;
+                    break;
+                case TrailDisplayMode.None:
+                    _currentTrailDisplayMode = TrailDisplayMode.All;
+                    break;
+            }
+            // update all.
+            foreach (var trailPoint in _trailPoints.Where(t => !t.IsDestroyed()))
+            {
+                trailPoint.UpdateVisibility();
+            }
+        }
+        else if(_currentTrailDisplayMode != TrailDisplayMode.None)
+        {
+            var includedPoints = _trailPoints.Where(t => !t.IsDestroyed());
+            if(_currentTrailDisplayMode != TrailDisplayMode.All)
+            {
+                includedPoints = includedPoints.Where(t => VisibleTrailSmells.Contains(t.Smell));
+            }
+            foreach (var trailPoint in includedPoints.Take(this.MaxTrailPointsPurUiFrame))
+            {
+                trailPoint.UpdateScale();
+            }
         }
     }
 
