@@ -33,7 +33,7 @@ public class HealthController : MonoBehaviour
 
     private void Die()
     {
-        Debug.Log(this.transform + " has died");
+        //Debug.Log(this.transform + " has died");
         if (this.DeadObject != null)
         {
             var deadObject = Instantiate(this.DeadObject);
