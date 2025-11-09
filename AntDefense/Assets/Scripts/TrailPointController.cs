@@ -17,17 +17,15 @@ public class TrailPointController : Smellable
         /// </summary>
         public readonly float? TargetValue;
 
-        public float RemainingTime { get; private set; }
-        public SmellComponent(float distanceFromTarget, float remainingTime, float? targetValue)
+        private readonly float _expirationTime;
+        public float RemainingTime => this._expirationTime - Time.fixedTime;
+        public float ExpirationTime => this._expirationTime;
+        public SmellComponent(float distanceFromTarget, float expirationTime, float? targetValue)
         {
+            Debug.Assert(expirationTime >= Time.fixedTime, $"Expiration time must be in the future. expirationTime = {expirationTime}, Now = {Time.fixedTime}");
             this.DistanceFromTarget = distanceFromTarget;
-            this.RemainingTime = remainingTime;
+            this._expirationTime = expirationTime;
             this.TargetValue = targetValue;
-        }
-
-        internal void DecrementTime()
-        {
-            this.RemainingTime -= Time.deltaTime;
         }
 
         public override string ToString()
@@ -79,13 +77,9 @@ public class TrailPointController : Smellable
 
     public void UpdateTrailPoint()
     {
-        foreach (var component in this._smellComponents.ToArray())
+        foreach (var component in this._smellComponents.Where(c => c.ExpirationTime < Time.fixedTime).ToArray())
         {
-            component.DecrementTime();
-            if (component.RemainingTime <= 0)
-            {
-                this._smellComponents.Remove(component);
-            }
+            this._smellComponents.Remove(component);
         }
 
         if (!this._smellComponents.Any())
@@ -135,7 +129,12 @@ public class TrailPointController : Smellable
     private SmellComponent CreateSmellComponent(float distanceFromTarget, float? targetValue)
     {
         var newLifetime = this.DefaultLifetime - (distanceFromTarget * this.LifetimePenalty);
-        var component = new SmellComponent(distanceFromTarget, newLifetime, targetValue);
+        if(newLifetime < 0)
+        {
+            return null;    // Point is too far from the target.
+        }
+        var expirationTime = Time.fixedTime + newLifetime;
+        var component = new SmellComponent(distanceFromTarget, expirationTime, targetValue);
         return component;
     }
 
@@ -143,7 +142,7 @@ public class TrailPointController : Smellable
     {
         var component = this.CreateSmellComponent(distanceFromTarget, targetValue);
 
-        if (component.RemainingTime <= 0)
+        if (component == null)
         {
             return false;
         }
