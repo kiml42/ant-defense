@@ -65,13 +65,10 @@ public class TrailPointController : Smellable
 
     public void UpdateVisuals()
     {
-        if (this.ScaleDownTime > 0 && this._smellComponents.Any())
+        var remainingTime = this.RemainingTime;
+        if (remainingTime < this.ScaleDownTime)
         {
-            var remainingTime = this._smellComponents.Max(c => c.RemainingTime);
-            if (remainingTime < this.ScaleDownTime)
-            {
-                this.transform.localScale = Vector3.one * remainingTime / this.ScaleDownTime;
-            }
+            this.transform.localScale = Vector3.one * remainingTime / this.ScaleDownTime;
         }
     }
 

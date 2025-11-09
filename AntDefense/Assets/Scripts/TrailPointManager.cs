@@ -19,13 +19,14 @@ public class TrailPointManager : MonoBehaviour
 
     private void Update()
     {
-        foreach (var trailPoint in _trailPoints.Where(t => !t.IsDestroyed()).ToArray())
+        foreach (var trailPoint in _trailPoints.Take(this.MaxTrailPointsPurUiFrame).Where(t => !t.IsDestroyed()))
         {
             trailPoint.UpdateVisuals();
         }
     }
 
     public int MaxTrailPointsPerFrame = 100;
+    public int MaxTrailPointsPurUiFrame = 300;
 
     void FixedUpdate()
     {
