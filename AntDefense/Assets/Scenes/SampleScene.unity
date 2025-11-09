@@ -1092,6 +1092,25 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 0f6f3109aef3e0b44a689522f4cbeae2, type: 3}
+--- !u!1 &1416865361 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8619060628631676251, guid: 671a2805116037f4aadc102530200391, type: 3}
+  m_PrefabInstance: {fileID: 2482698632040115840}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1416865365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416865361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71307c75d13a5c342a7d58289f6fc2e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrailPointManager
+  MaxTrailPointsPerFrame: 100
+  MaxTrailPointsPurUiFrame: 300
 --- !u!1001 &1549344821
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1485,7 +1504,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8619060628631676251, guid: 671a2805116037f4aadc102530200391, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1416865365}
   m_SourcePrefab: {fileID: 100100000, guid: 671a2805116037f4aadc102530200391, type: 3}
 --- !u!1001 &4605385262907968652
 PrefabInstance:
