@@ -240,7 +240,7 @@ MonoBehaviour:
   SpawnRadius: 2
   Digestion: {fileID: 32434936974746235}
   ReserveFood: 100
-  MaxAnts: 80
+  MaxAnts: 200
 --- !u!114 &32434936974746235
 MonoBehaviour:
   m_ObjectHideFlags: 0
