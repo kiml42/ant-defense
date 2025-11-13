@@ -28,10 +28,7 @@ public class TranslateHandle : MonoBehaviour
 
     private void Start()
     {
-        if(Instance != null)
-        {
-            throw new InvalidOperationException("Multiple TranslateHandle instances detected!");
-        }
+        Debug.Assert(Instance == null || Instance == this, "Multiple TranslateHandle instances detected!");
         Instance = this;
         this._uiLayermask = LayerMask.GetMask("UI");
         this._groundLayermask = LayerMask.GetMask("Ground");

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 public class FoodSmell : Smellable
 {
@@ -11,7 +12,7 @@ public class FoodSmell : Smellable
     private void Start()
     {
         var food = this.GetComponent<Food>();
-        if (food == null) throw new System.Exception($"FoodSmell {this} must be attached to a GameObject with a Food component.");
+        Debug.Assert(food != null, $"FoodSmell {this} must be attached to a GameObject with a Food component.");
         this._foodValue = food.FoodValue;
     }
 

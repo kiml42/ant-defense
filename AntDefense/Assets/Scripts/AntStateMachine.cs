@@ -116,7 +116,7 @@ public class AntStateMachine : DeathActionBehaviour
             this.ClearTarget();
         }
 
-        if(this.LastTrailPoint != null && this.LastTrailPoint.RemainingTime < this.GoHomeTime)
+        if (this.LastTrailPoint != null && this.LastTrailPoint.RemainingTime < this.GoHomeTime)
         {
             //Debug.Log($"Ant {this} last trail point {this.LastTrailPoint} has only {this.LastTrailPoint.RemainingTime} time remaining, going home.");
             this.GiveUpAndReturnHome();
@@ -162,10 +162,7 @@ public class AntStateMachine : DeathActionBehaviour
         }
         this._newBetterTargets.Clear();
 
-        if (this.State == AntState.ReportingFood && this.CurrentTarget != null && this.CurrentTarget.Smell == Smell.Food)
-        {
-            throw new Exception($"State is {this.State} so the currnet target should not be food, but it is {this.CurrentTarget}");
-        }
+        Debug.Assert(this.State != AntState.ReportingFood || this.CurrentTarget == null || this.CurrentTarget.Smell != Smell.Food, $"State is {this.State} so the currnet target should not be food, but it is {this.CurrentTarget}");
 
         this._timeSinceTargetAquisition += Time.deltaTime;
         if (this.CurrentTarget != null)
@@ -272,11 +269,11 @@ public class AntStateMachine : DeathActionBehaviour
         {
             //Debug.Log($"Collided With {@object} smellable: {smellable}");
             this.ProcessCollisionWithSmell(smellable);
-            if(smellable.Smell == Smell.Home)
+            if (smellable.Smell == Smell.Home)
             {
                 return; // never consider home smells as obstacles.
             }
-            if(this.State == AntState.SeekingFood || this.State == AntState.ReturningToFood)
+            if (this.State == AntState.SeekingFood || this.State == AntState.ReturningToFood)
             {
                 return; // while seeking or returning to food, ignore collisions with smellables that aren't the target.
             }
@@ -376,10 +373,7 @@ public class AntStateMachine : DeathActionBehaviour
 
     private void RegisterPotentialTarget(Smellable smellable)
     {
-        if (this.State == AntState.ReportingFood && smellable.Smell == Smell.Food)
-        {
-            throw new Exception($"State is {this.State} so {smellable} should not be being considered as a possible target.");
-        }
+        Debug.Assert(this.State != AntState.ReportingFood || smellable.Smell != Smell.Food, $"State is {this.State} so {smellable} should not be being considered as a possible target.");
 
         if (this.CurrentTarget != null && this.CurrentTarget.IsActual == true)
         {
@@ -395,11 +389,9 @@ public class AntStateMachine : DeathActionBehaviour
 
         if (this.IsBetterThanCurrent(smellable))
         {
-            if (this.IsScout && !smellable.IsActual && smellable.Smell == Smell.Food)
-            {
-                throw new Exception("Scouts should never go for food smells!");
-            }
+            Debug.Assert(!this.IsScout || smellable.IsActual || smellable.Smell != Smell.Food);
             this._newBetterTargets.Add(smellable);
+
             //// TODO thoroughly test this and refactor it to be neater if it works.
             //bool hasLineOfSight;
             //Debug.Log("Checking for obstacles betwen " + this + " and " + smellable);
@@ -595,10 +587,7 @@ public class AntStateMachine : DeathActionBehaviour
 
     private void PickUpFood(Smellable smellable)
     {
-        if (this.CarryPoint == null)
-        {
-            throw new Exception("Cannot carry food with no carry point");
-        }
+        Debug.Assert(this.CarryPoint != null, "Cannot carry food with no carry point");
 
         var food = smellable.GetComponentInParent<Food>();
 
@@ -620,10 +609,10 @@ public class AntStateMachine : DeathActionBehaviour
 
     public override void OnDeath()
     {
-        if(this._carriedFood != null)
+        if (this._carriedFood != null)
         {
             this._carriedFood.Detach();
-            if(this._carriedFood.TryGetComponent<LifetimeController>(out var lifetime))
+            if (this._carriedFood.TryGetComponent<LifetimeController>(out var lifetime))
             {
                 lifetime.IsRunning = true;
             }

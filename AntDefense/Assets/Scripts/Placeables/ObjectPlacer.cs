@@ -28,10 +28,7 @@ public class ObjectPlacer : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            throw new Exception("There should not be multiple Object Placers!");
-        }
+        Debug.Assert (Instance == null || Instance == this, "There should not be multiple Object Placers!");
         Instance = this;
         StaticQuickBarObjects = this.QuickBarObjects;
     }
