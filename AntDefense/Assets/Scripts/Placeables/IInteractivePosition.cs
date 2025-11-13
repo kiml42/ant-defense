@@ -1,8 +1,11 @@
 using UnityEngine;
 
-public interface IInteractivePosition
+public interface IInteractivePosition : IKnowsPosition
+{
+    void Interact();
+}
+
+public interface  IKnowsPosition
 {
     Vector3 Position { get; }
-
-    void Interact();
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -5,6 +6,8 @@ using UnityEngine;
 
 public class TranslateHandle : MonoBehaviour
 {
+    public static TranslateHandle Instance { get; private set; }
+
     public int PlaceMouseButton = 0;
     public int CancelMouseButton = 1;
     public float MinRotateMouseDistance = 1f;
@@ -22,6 +25,11 @@ public class TranslateHandle : MonoBehaviour
 
     private void Start()
     {
+        if(Instance != null)
+        {
+            throw new InvalidOperationException("Multiple TranslateHandle instances detected!");
+        }
+        Instance = this;
         this._uiLayermask = LayerMask.GetMask("UI");
         this._groundLayermask = LayerMask.GetMask("Ground");
         this._materials = this.GetComponentsInChildren<Renderer>().SelectMany(r => r.materials);
@@ -43,6 +51,8 @@ public class TranslateHandle : MonoBehaviour
 
         if (Input.GetMouseButtonUp(this.PlaceMouseButton))
         {
+            this._selectedObject?.Deselect();   // deselect any selected object when clicking anywhere.
+            this._selectedObject = null;
             this.ActivatePoint();
         }
 
@@ -237,5 +247,12 @@ public class TranslateHandle : MonoBehaviour
 
         // Construct a new rotation with Y pointing up and the adjusted forward direction
         return Quaternion.LookRotation(forward, Vector3.up);
+    }
+
+    private ISelectableObject _selectedObject;
+    internal void SetSelectedObject(ISelectableObject activeObject)
+    {
+        this._selectedObject = activeObject;
+        this._selectedObject?.Select();
     }
 }

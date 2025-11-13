@@ -3,7 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class TurretController : MonoBehaviour
+public interface ISelectableObject : IKnowsPosition
+{
+    void Select();
+    void Deselect();
+}
+
+public class TurretController : MonoBehaviour, IInteractivePosition, ISelectableObject
 {
     public Rigidbody Projectile;
     public Transform Emitter;
@@ -14,11 +20,23 @@ public class TurretController : MonoBehaviour
 
     private float _reloadTimer = 0;
 
-    private List<HealthController> _targetsInRange = new List<HealthController>();
+    private List<HealthController> _targetsInRange = new();
 
     private float _range;
+    public Vector3 Position => this.transform.position;
+
+    private MeshRenderer _rangeRenderer;
+
+    public void Interact()
+    {
+        Debug.Log("Interaction with turret " + this);
+        TranslateHandle.Instance.SetSelectedObject(this);
+    }
+
     void Start()
     {
+        NoSpawnZone.Register(this); // register this as an interactive point
+
         var trigger = this.GetComponentInChildren<TurretTrigger>();
         if (trigger != null)
         {
@@ -26,6 +44,8 @@ public class TurretController : MonoBehaviour
             if (collider != null)
             {
                 this._range = collider.radius * collider.transform.localScale.x;
+                this._rangeRenderer = collider.GetComponentInChildren<MeshRenderer>();
+                this.Deselect();
                 return;
             }
         }
@@ -97,5 +117,15 @@ public class TurretController : MonoBehaviour
             this._targetsInRange.Remove(healthController);
         }
         this.CleanTargets();
+    }
+
+    public void Select()
+    {
+        this._rangeRenderer.enabled = true;
+    }
+
+    public void Deselect()
+    {
+        this._rangeRenderer.enabled = false;
     }
 }
