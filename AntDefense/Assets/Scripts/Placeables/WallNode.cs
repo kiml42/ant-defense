@@ -1,19 +1,6 @@
 using System;
 using UnityEngine;
 
-
-public interface IPlaceablePositionValidator
-{
-    bool PositionIsValid(Vector3 position);
-}
-
-public interface IInteractivePosition
-{
-    Vector3 Position { get; }
-
-    void Interact();
-}
-
 public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IInteractivePosition
 {
     public WallNode ConnectedNode;
