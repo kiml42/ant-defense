@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -25,7 +24,9 @@ public class TurretController : MonoBehaviour, IInteractivePosition, ISelectable
     private float _range;
     public Vector3 Position => this.transform.position;
 
-    private MeshRenderer _rangeRenderer;
+    public MeshRenderer RangeRenderer;
+
+    public TurretTrigger Trigger;
 
     public void Interact()
     {
@@ -35,21 +36,16 @@ public class TurretController : MonoBehaviour, IInteractivePosition, ISelectable
 
     void Start()
     {
+        Debug.Assert(this.Emitter != null, "TurretController requires an Emitter transform to fire projectiles from.");
+        Debug.Assert(this.Turner != null, "TurretController requires a TurretTurner to aim the turret.");
+        Debug.Assert(this.Projectile != null, "TurretController requires a Projectile to fire.");
+        Debug.Assert(this.Trigger != null, "TurretController requires a TurretTrigger to determine its range.");
+
         NoSpawnZone.Register(this); // register this as an interactive point
 
-        var trigger = this.GetComponentInChildren<TurretTrigger>();
-        if (trigger != null)
-        {
-            var collider = trigger.GetComponentInChildren<SphereCollider>();
-            if (collider != null)
-            {
-                this._range = collider.radius * collider.transform.localScale.x;
-                this._rangeRenderer = collider.GetComponentInChildren<MeshRenderer>();
-                this.Deselect();
-                return;
-            }
-        }
-        throw new Exception("TurretController could not determine its range because it could not find a TurretTrigger with a SphereCollider.");
+        this._range = this.Trigger.TriggerCollider.radius * this.Trigger.TriggerCollider.transform.localScale.x;
+        this.Deselect();
+        return;
     }
 
     void FixedUpdate()
@@ -61,7 +57,7 @@ public class TurretController : MonoBehaviour, IInteractivePosition, ISelectable
             // TODO work out a better way to pick the target.
             var bestTarget = this._targetsInRange.First();
 
-            if(bestTarget == null || bestTarget.transform == null)
+            if (bestTarget == null || bestTarget.transform == null)
             {
                 this._targetsInRange.Remove(bestTarget);
                 return;
@@ -71,7 +67,7 @@ public class TurretController : MonoBehaviour, IInteractivePosition, ISelectable
 
             this.Turner.TurnTo(direction);
 
-            if(this._reloadTimer <= 0)
+            if (this._reloadTimer <= 0)
             {
                 this.Fire();
                 this._reloadTimer = this.ReloadTime;
@@ -91,7 +87,7 @@ public class TurretController : MonoBehaviour, IInteractivePosition, ISelectable
     {
         if (collision.isTrigger) { return; }
         var healthController = collision.gameObject.GetComponentInParent<HealthController>();
-        if(healthController != null)
+        if (healthController != null)
         {
             this._targetsInRange.Add(healthController);
         }
@@ -121,11 +117,13 @@ public class TurretController : MonoBehaviour, IInteractivePosition, ISelectable
 
     public void Select()
     {
-        this._rangeRenderer.enabled = true;
+        if (this.RangeRenderer != null)
+            this.RangeRenderer.enabled = true;
     }
 
     public void Deselect()
     {
-        this._rangeRenderer.enabled = false;
+        if (this.RangeRenderer != null)
+            this.RangeRenderer.enabled = false;
     }
 }
