@@ -71,8 +71,9 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
     public void Interact()
     {
         Debug.Log("Interaction with wall node " + this);
+        TranslateHandle.Instance.SetSelectedObject(this);
 
-        if(ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null)
+        if (ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null)
         {
             // is currently placing a wall node
             // the wall node that is being placed is already connected to another node

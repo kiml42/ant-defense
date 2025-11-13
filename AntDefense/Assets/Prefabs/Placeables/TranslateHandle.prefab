@@ -1682,6 +1682,7 @@ MonoBehaviour:
   MinRotateMouseDistance: 1
   DisabledColour: {r: 0.7075472, g: 0.07008722, b: 0.07008722, a: 0.46666667}
   CostText: {fileID: 2668488614391271967}
+  SelectedObjectHighlight: {fileID: 3718810060759407500, guid: 5d925c7ba5e0ace4999444cba20ab5dc, type: 3}
   CancelThreshold: 0.1
   UiObjectsToScale: {fileID: 7589486153762582375}
   DefaultCameraDistance: 30

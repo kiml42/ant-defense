@@ -23,6 +23,9 @@ public class TranslateHandle : MonoBehaviour
 
     public TextMeshPro CostText;
 
+    public Transform SelectedObjectHighlight;
+    private Transform _slelectedObjectHighlightInstance;
+
     private void Start()
     {
         if(Instance != null)
@@ -51,8 +54,7 @@ public class TranslateHandle : MonoBehaviour
 
         if (Input.GetMouseButtonUp(this.PlaceMouseButton))
         {
-            this._selectedObject?.Deselect();   // deselect any selected object when clicking anywhere.
-            this._selectedObject = null;
+            this.DeselectObject();
             this.ActivatePoint();
         }
 
@@ -252,8 +254,23 @@ public class TranslateHandle : MonoBehaviour
     private ISelectableObject _selectedObject;
     internal void SetSelectedObject(ISelectableObject activeObject)
     {
-        this._selectedObject?.Deselect();
+        this.DeselectObject();
         this._selectedObject = activeObject;
         this._selectedObject?.Select();
+        if (this.SelectedObjectHighlight != null)
+        {
+            Debug.Log("Creating selected object highlight instance");
+            this._slelectedObjectHighlightInstance = Instantiate(this.SelectedObjectHighlight, this._selectedObject.Position, Quaternion.identity);
+        }
+    }
+
+    private void DeselectObject()
+    {
+        if (this._slelectedObjectHighlightInstance != null)
+        {
+            Destroy(this._slelectedObjectHighlightInstance.gameObject);
+        }
+        this._selectedObject?.Deselect();   // deselect any selected object when clicking anywhere.
+        this._selectedObject = null;
     }
 }
