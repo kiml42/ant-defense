@@ -79,6 +79,7 @@ public class TranslateHandle : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Escape))
         {
+            this.DeselectObject();
             ObjectPlacer.Instance.CancelPlacingObject();
             this._distanceSinceClick = 0;
             this._lastMousePosition = null;
@@ -96,6 +97,7 @@ public class TranslateHandle : MonoBehaviour
             //Debug.Log("Cancel mouse up after moving " + _distanceSinceClick);
             if (this._distanceSinceClick < this.CancelThreshold)
             {
+                this.DeselectObject();
                 ObjectPlacer.Instance.CancelPlacingObject();
             }
             this._distanceSinceClick = 0;
