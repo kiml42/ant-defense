@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IInteractivePosition
+public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IInteractivePosition, ISelectableObject
 {
     public WallNode ConnectedNode;
     public Transform Wall;
@@ -74,13 +74,29 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
 
         if(ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null)
         {
+            // is currently placing a wall node
+            // the wall node that is being placed is already connected to another node
+            // So place the new wall node at this location, for the connected wall to be placed correctly, but then hide the new node because it overlaps this node.
+            // TODO: account for cost properly in this case - the wall should cost money, but the new node should not.
             var placedObject = ObjectPlacer.Instance.PlaceObject();
             placedObject.GetComponent<WallNode>().RemoveNode();
         }
         else
         {
+            // not currently placing a wall node, or the wall node being placed is not yet connected to another node, so start placing a new wall node connected to this one.
             ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
         }
+    }
+
+    public void Select()
+    {
+        Debug.Log("WallNode selected: " + this);
+        // TODO make selecting the wall node be the trigger for starting to place a wall node connected to this one.
+        // TODO have a wall placing mode for placing walls, rather than just relying on selecting wall nodes.
+    }
+
+    public void Deselect()
+    {
     }
 
     /// <summary>
