@@ -78,7 +78,6 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
             // is currently placing a wall node
             // the wall node that is being placed is already connected to another node
             // So place the new wall node at this location, for the connected wall to be placed correctly, but then hide the new node because it overlaps this node.
-            // TODO: account for cost properly in this case - the wall should cost money, but the new node should not.
             var placedObject = ObjectPlacer.Instance.PlaceObject();
             placedObject.GetComponent<WallNode>().RemoveNode();
         }
