@@ -25,6 +25,7 @@ public class TranslateHandle : MonoBehaviour
 
     public Transform SelectedObjectHighlight;
     private Transform _slelectedObjectHighlightInstance;
+    public float MinScale = 1f;
 
     private void Start()
     {
@@ -122,7 +123,7 @@ public class TranslateHandle : MonoBehaviour
         var excessDistance = distance - this.DefaultCameraDistance;
 
         var scale = (excessDistance / this.DefaultCameraDistance / 1.5f) + 1;
-        return scale;
+        return Mathf.Max(scale, this.MinScale);
     }
 
     private void HandleMousePosition()
