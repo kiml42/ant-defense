@@ -100,6 +100,8 @@ MonoBehaviour:
   Turner: {fileID: 5561282523204595056}
   ReloadTime: 1
   ProjectileSpeed: 100
+  RangeRenderer: {fileID: 8398902838619543497}
+  Trigger: {fileID: 2732589430912378637}
 --- !u!1 &3563334362215727571
 GameObject:
   m_ObjectHideFlags: 0
@@ -225,6 +227,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TurretController: {fileID: 3631510004101697051}
+  TriggerCollider: {fileID: 4665431837526761117}
 --- !u!1 &4797715489487285133
 GameObject:
   m_ObjectHideFlags: 0

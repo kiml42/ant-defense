@@ -20,10 +20,7 @@ public class ImpactDamageHandler : MonoBehaviour
         if (this.HealthController == null)
         {
             this.HealthController = this.GetComponent<HealthController>();
-            if (this.HealthController == null)
-            {
-                throw new Exception("ImpactDamageHandler requires a HealthController component on the same GameObject or a child GameObject.");
-            }
+            Debug.Assert(this.HealthController != null, "ImpactDamageHandler did not find a HealthController on the same GameObject, trying children.");
         }
     }
 

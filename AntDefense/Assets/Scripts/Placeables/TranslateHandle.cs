@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -5,6 +6,8 @@ using UnityEngine;
 
 public class TranslateHandle : MonoBehaviour
 {
+    public static TranslateHandle Instance { get; private set; }
+
     public int PlaceMouseButton = 0;
     public int CancelMouseButton = 1;
     public float MinRotateMouseDistance = 1f;
@@ -20,8 +23,14 @@ public class TranslateHandle : MonoBehaviour
 
     public TextMeshPro CostText;
 
+    public Transform SelectedObjectHighlight;
+    private Transform _slelectedObjectHighlightInstance;
+    public float MinScale = 1f;
+
     private void Start()
     {
+        Debug.Assert(Instance == null || Instance == this, "Multiple TranslateHandle instances detected!");
+        Instance = this;
         this._uiLayermask = LayerMask.GetMask("UI");
         this._groundLayermask = LayerMask.GetMask("Ground");
         this._materials = this.GetComponentsInChildren<Renderer>().SelectMany(r => r.materials);
@@ -43,6 +52,7 @@ public class TranslateHandle : MonoBehaviour
 
         if (Input.GetMouseButtonUp(this.PlaceMouseButton))
         {
+            this.DeselectObject();
             this.ActivatePoint();
         }
 
@@ -70,6 +80,7 @@ public class TranslateHandle : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Escape))
         {
+            this.DeselectObject();
             ObjectPlacer.Instance.CancelPlacingObject();
             this._distanceSinceClick = 0;
             this._lastMousePosition = null;
@@ -87,6 +98,7 @@ public class TranslateHandle : MonoBehaviour
             //Debug.Log("Cancel mouse up after moving " + _distanceSinceClick);
             if (this._distanceSinceClick < this.CancelThreshold)
             {
+                this.DeselectObject();
                 ObjectPlacer.Instance.CancelPlacingObject();
             }
             this._distanceSinceClick = 0;
@@ -111,7 +123,7 @@ public class TranslateHandle : MonoBehaviour
         var excessDistance = distance - this.DefaultCameraDistance;
 
         var scale = (excessDistance / this.DefaultCameraDistance / 1.5f) + 1;
-        return scale;
+        return Mathf.Max(scale, this.MinScale);
     }
 
     private void HandleMousePosition()
@@ -237,5 +249,28 @@ public class TranslateHandle : MonoBehaviour
 
         // Construct a new rotation with Y pointing up and the adjusted forward direction
         return Quaternion.LookRotation(forward, Vector3.up);
+    }
+
+    private ISelectableObject _selectedObject;
+    internal void SetSelectedObject(ISelectableObject activeObject)
+    {
+        this.DeselectObject();
+        this._selectedObject = activeObject;
+        this._selectedObject?.Select();
+        if (this.SelectedObjectHighlight != null)
+        {
+            Debug.Log("Creating selected object highlight instance");
+            this._slelectedObjectHighlightInstance = Instantiate(this.SelectedObjectHighlight, this._selectedObject.Position, Quaternion.identity);
+        }
+    }
+
+    private void DeselectObject()
+    {
+        if (this._slelectedObjectHighlightInstance != null)
+        {
+            Destroy(this._slelectedObjectHighlightInstance.gameObject);
+        }
+        this._selectedObject?.Deselect();   // deselect any selected object when clicking anywhere.
+        this._selectedObject = null;
     }
 }

@@ -24,10 +24,7 @@ public class UiPlane : MonoBehaviour
 
     private void Start()
     {
-        if (Instance != null && Instance != this)
-        {
-            throw new Exception("There should not be multiple UI planes!");
-        }
+        Debug.Assert(Instance == null || Instance == this, "There should not be multiple UI planes!");
         Instance = this;
         this.InitialiseQuickBar();
     }

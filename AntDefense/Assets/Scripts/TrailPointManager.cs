@@ -10,12 +10,8 @@ public class TrailPointManager : MonoBehaviour
     private static readonly Queue<TrailPointController> _trailPoints = new();
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            throw new System.Exception("There should not be multiple TrailPointManagers!");
-        }
+        Debug.Assert(Instance == null || Instance == this, "There should not be multiple TrailPointManagers!");
         Instance = this;
-
     }
 
     public static Smell[] VisibleTrailSmells
@@ -64,10 +60,10 @@ public class TrailPointManager : MonoBehaviour
                 trailPoint.UpdateVisibility();
             }
         }
-        else if(_currentTrailDisplayMode != TrailDisplayMode.None)
+        else if (_currentTrailDisplayMode != TrailDisplayMode.None)
         {
             var includedPoints = _trailPoints.Where(t => !t.IsDestroyed());
-            if(_currentTrailDisplayMode != TrailDisplayMode.All)
+            if (_currentTrailDisplayMode != TrailDisplayMode.All)
             {
                 includedPoints = includedPoints.Where(t => VisibleTrailSmells.Contains(t.Smell));
             }

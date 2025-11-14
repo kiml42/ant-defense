@@ -35,7 +35,7 @@ public class NoSpawnZone : BaseGhostable
             {
                 return this.Type switch
                 {
-                    PointType.InteractionPoint => 2,
+                    PointType.InteractionPoint => 4,
                     _ => 0
                 };
             }

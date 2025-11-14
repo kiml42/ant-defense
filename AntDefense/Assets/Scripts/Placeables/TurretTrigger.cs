@@ -3,6 +3,13 @@ using UnityEngine;
 public class TurretTrigger : MonoBehaviour
 {
     public TurretController TurretController;
+    public SphereCollider TriggerCollider;
+
+    private void Start()
+    {
+        Debug.Assert(this.TurretController != null, "TurretTrigger requires a TurretController to register targets with.");
+        Debug.Assert(this.TriggerCollider != null, "TurretTrigger requires a SphereCollider to define its trigger area.");
+    }
 
     private void OnTriggerEnter(Collider other)
     {
