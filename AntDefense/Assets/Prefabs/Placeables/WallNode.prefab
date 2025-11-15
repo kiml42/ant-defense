@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 710721694348773487}
   - component: {fileID: 8092417670727731202}
   - component: {fileID: 5622701485709215668}
+  - component: {fileID: 380059699532123661}
   m_Layer: 0
   m_Name: WallNode
   m_TagString: Untagged
@@ -90,6 +91,18 @@ MonoBehaviour:
   GhostMaterial: {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
   OriginalMaterial: {fileID: 0}
   Renderer: {fileID: 0}
+--- !u!114 &380059699532123661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1834373357261692949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59b436d704ec3af488d3a368642954b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColliderGhostable
 --- !u!1 &2586961702934054646
 GameObject:
   m_ObjectHideFlags: 0
@@ -168,7 +181,6 @@ GameObject:
   - component: {fileID: 7470243927961247771}
   - component: {fileID: 6018007928291524577}
   - component: {fileID: 5712758428748713101}
-  - component: {fileID: 1213972103743917468}
   - component: {fileID: 2395402121732242385}
   m_Layer: 0
   m_Name: Wall
@@ -269,18 +281,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1213972103743917468
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4529891399528907297}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59b436d704ec3af488d3a368642954b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2395402121732242385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -309,7 +309,6 @@ GameObject:
   - component: {fileID: 6336691038196134746}
   - component: {fileID: 3364657898501686454}
   - component: {fileID: 1078190670684022284}
-  - component: {fileID: 4631743224229858590}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -426,18 +425,6 @@ MonoBehaviour:
   GhostMaterial: {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
   OriginalMaterial: {fileID: 0}
   Renderer: {fileID: 6336691038196134746}
---- !u!114 &4631743224229858590
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5634726112598461944}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59b436d704ec3af488d3a368642954b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &6148484922465968118
 GameObject:
   m_ObjectHideFlags: 0

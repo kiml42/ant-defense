@@ -2,22 +2,28 @@ using UnityEngine;
 
 public class ColliderGhostable : BaseGhostable
 {
-    private Collider _colliderToDisable;
-    private Collider ColliderToDisable
+    private Collider[] _colliderToDisable;
+    private Collider[] CollidersToDisable
     {
         get
         {
-            return this._colliderToDisable ??= this.GetComponent<Collider>();
+            return this._colliderToDisable ??= this.GetComponentsInChildren<Collider>();
         }
     }
 
     public override void Ghostify()
     {
-        this.ColliderToDisable.enabled = false;
+        foreach(Collider collider in this.CollidersToDisable)
+        {
+            collider.enabled = false;
+        }
     }
 
     public override void UnGhostify()
     {
-       this.ColliderToDisable.enabled = true;
+        foreach (Collider collider in this.CollidersToDisable)
+        {
+            collider.enabled = true;
+        }
     }
 }
