@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class ColliderGhostable : BaseGhostable
 {
-    private Collider[] _colliderToDisable;
+    private Collider[] _collidersToDisable;
     private Collider[] CollidersToDisable
     {
         get
         {
-            return this._colliderToDisable ??= this.GetComponentsInChildren<Collider>();
+            return this._collidersToDisable ??= this.GetComponentsInChildren<Collider>();
         }
     }
 
