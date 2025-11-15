@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ObjectPlacer : MonoBehaviour
@@ -11,6 +12,11 @@ public class ObjectPlacer : MonoBehaviour
 
     public List<PlaceableObjectOrGhost> QuickBarObjects;
 
+    /// <summary>
+    /// This is tracked so that when the new object is created and finalised,
+    /// it is a new copy and doesn't retain any of the changes made to the <see cref="_objectBeingPlaced"/> instance.
+    /// </summary>
+    PlaceableObjectOrGhost _prefabBeingPlaced;
     private PlaceableObjectOrGhost _objectBeingPlaced;
 
     private readonly KeyCode[] _quickBarKeys = {
@@ -61,6 +67,7 @@ public class ObjectPlacer : MonoBehaviour
     {
         this.CancelPlacingObject();
 
+        this._prefabBeingPlaced = prefab;
         this._objectBeingPlaced = Instantiate(prefab, this.Handle.transform.position - prefab.FloorPoint.position, this.Handle.transform.rotation);
         this._objectBeingPlaced.transform.parent = this.Handle.transform;
         this._objectBeingPlaced.StartPlacing();
@@ -74,6 +81,7 @@ public class ObjectPlacer : MonoBehaviour
             this._objectBeingPlaced = null;
             //Debug.Log("Clearing last wall node because placement is being cancelled.");
             this._lastWallNode = null;
+            this._prefabBeingPlaced = null;
         }
     }
 
@@ -87,7 +95,7 @@ public class ObjectPlacer : MonoBehaviour
         {
             //Debug.Log($"Spending {this._objectBeingPlaced.TotalCost} for {this._objectBeingPlaced}");
             MoneyTracker.Spend(this._objectBeingPlaced.TotalCost);
-            var newObject = Instantiate(this._objectBeingPlaced, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
+            var newObject = Instantiate(this._prefabBeingPlaced, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
 
             var wallNode = newObject.GetComponent<WallNode>();
             if (wallNode != null)

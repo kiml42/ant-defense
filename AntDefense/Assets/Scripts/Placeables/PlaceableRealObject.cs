@@ -16,6 +16,7 @@ public class PlaceableRealObject : PlaceableObjectOrGhost
         }
     }
 
+    // TODO: consider if this is still nessesary now that it isn't spawning a copy of the ghosified object.
     public override void Place()
     {
         base.Place();
