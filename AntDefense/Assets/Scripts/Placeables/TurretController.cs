@@ -8,7 +8,7 @@ public interface ISelectableObject : IKnowsPosition
     void Deselect();
 }
 
-public class TurretController : BaseGhostable, IInteractivePosition, ISelectableObject
+public class TurretController : BaseGhostableMonobehaviour, IInteractivePosition, ISelectableObject
 {
     public Rigidbody Projectile;
     public Transform Emitter;

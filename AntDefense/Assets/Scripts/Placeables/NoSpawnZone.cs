@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class NoSpawnZone : BaseGhostable
+public class NoSpawnZone : BaseGhostableMonobehaviour
 {
     public enum PointType
     {

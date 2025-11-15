@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MaterialGhostable : BaseGhostable
+public class MaterialGhostable : BaseGhostableMonobehaviour
 {
     public Material GhostMaterial;
     public Material OriginalMaterial;

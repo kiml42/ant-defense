@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class RigidbodyGhostable : BaseGhostable
+public class RigidbodyGhostable : BaseGhostableMonobehaviour
 {
     private Rigidbody[] _rbsToDisable;
     private Rigidbody[] RbsToDisable

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ColliderGhostable : BaseGhostable
+public class ColliderGhostable : BaseGhostableMonobehaviour
 {
     private Collider[] _collidersToDisable;
     private Collider[] CollidersToDisable
