@@ -56,6 +56,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1489239274791151828}
   - component: {fileID: 3631510004101697051}
+  - component: {fileID: -9012147323840322498}
   m_Layer: 0
   m_Name: PeaShooter
   m_TagString: Untagged
@@ -102,6 +103,27 @@ MonoBehaviour:
   ProjectileSpeed: 100
   RangeRenderer: {fileID: 8398902838619543497}
   Trigger: {fileID: 2732589430912378637}
+--- !u!114 &-9012147323840322498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1834373357261692949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68d6eb515c8d2d942a6303e9041f7ae0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FloorPoint: {fileID: 1489239274791151828}
+  Rotatable: 0
+  BaseCost: 30
+  Icon: {fileID: 0}
+  ScaleForButton: 0.6
+  OffsetForButton: {x: 0, y: 0, z: 0}
+  RotationForButton: {x: 0.28308818, y: 0.14199114, z: 0.076293215, w: 0.9454517}
+  TimeOut: 3
+  SpawnOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &3563334362215727571
 GameObject:
   m_ObjectHideFlags: 0
