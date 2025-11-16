@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IInteractivePosition, ISelectableObject
+public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePositionValidator, IInteractivePosition, ISelectableObject
 {
     public WallNode ConnectedNode;
     public Transform Wall;
@@ -11,7 +11,7 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
 
     public float CostPerMeter = 1f;
 
-    private ISelectableObject[] _selectionDelegates;
+    private ISelectableObject[] _selectionDelegates;    // TODO replace with similar property in parent class.
 
     public override float AdditionalCost
     {
@@ -26,7 +26,7 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
         }
     }
 
-    public Vector3 Position => this.transform.position;
+    public override Vector3 Position => this.transform.position;
 
     public override void OnPlace()
     {
@@ -82,6 +82,8 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
 
             this._selectionDelegates = selectables;
             this.UpdateSelectionStateForDelegates();
+
+            newObject.WallParent = this;
             return;
         }
 
@@ -109,27 +111,25 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
         if (this._selectionDelegates == null) return;
         foreach (var item in this._selectionDelegates)
         {
-            if (this._isSelected)
+            if (this.IsSelected)
                 item.Select();
             else
                 item.Deselect();
         }
     }
 
-    private bool _isSelected = false;
-
-    public void Select()
+    public override void Select()
     {
-        this._isSelected = true;
+        this.IsSelected = true;
         Debug.Log("WallNode selected: " + this);
         // TODO make selecting the wall node be the trigger for starting to place a wall node connected to this one.
         // TODO have a wall placing mode for placing walls, rather than just relying on selecting wall nodes.
         this.UpdateSelectionStateForDelegates();
     }
 
-    public void Deselect()
+    public override void Deselect()
     {
-        this._isSelected = false;
+        this.IsSelected = false;
         this.UpdateSelectionStateForDelegates();
     }
 
@@ -148,9 +148,19 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
             c.enabled = false;
         }
     }
+
+    public override void Ghostify()
+    {
+        // Do nothing
+    }
+
+    public override void UnGhostify()
+    {
+        // Do nothing
+    }
 }
 
-public abstract class PlaceableMonoBehaviour : MonoBehaviour
+public abstract class PlaceableSelectableGhostableMonoBehaviour : SelectableGhostableMonoBehaviour
 {
     public virtual float AdditionalCost => 0f;
 

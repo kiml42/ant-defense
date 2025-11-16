@@ -123,12 +123,16 @@ public class TurretController : SelectableGhostableMonoBehaviour, IInteractivePo
 
     public override void Select()
     {
+        if (this.IsSelected) return;
+        base.Select();
         if (this.RangeRenderer != null)
             this.RangeRenderer.enabled = true;
     }
 
     public override void Deselect()
     {
+        if (!this.IsSelected) return;
+        base.Select();
         if (this.RangeRenderer != null)
             this.RangeRenderer.enabled = false;
     }

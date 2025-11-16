@@ -34,7 +34,7 @@ public class PlaceableRealObject : PlaceableObjectOrGhost
 
     protected override void Finalise()
     {
-        var placeables = this.GetComponents<PlaceableMonoBehaviour>();
+        var placeables = this.GetComponents<PlaceableSelectableGhostableMonoBehaviour>();
 
         foreach (var placeable in placeables)
         {

@@ -15,13 +15,14 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
     /// The wall object to build with this object if it is being placed but not on an existing wall node.
     /// </summary>
     public WallNode WallToBuildOn;
+    public WallNode WallParent;
 
     public float TotalCost
     {
         get
         {
             float additionalCost = 0;
-            var placeableComponents = this.GetComponentsInChildren<PlaceableMonoBehaviour>();
+            var placeableComponents = this.GetComponentsInChildren<PlaceableSelectableGhostableMonoBehaviour>();
             //Debug.Log($"Calculating total cost for {this}. Found {placeableComponents.Length} placeable components.");
             foreach (var placeableComponent in placeableComponents)
             {
