@@ -9,7 +9,7 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
     public float BaseCost;
 
     // TODO fix placing on walls with wall to build on set.
-    public bool CanBuildOnWall => this.WallToBuildOn == null;
+    public bool CanBuildOnWall => this.WallToBuildOn != null;
 
     /// <summary>
     /// The wall object to build with this object if it is being placed but not on an existing wall node.
