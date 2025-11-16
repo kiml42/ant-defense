@@ -26,15 +26,15 @@ public class MaterialGhostable : BaseGhostableMonobehaviour
         }
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            this.Ghostify();
-        }
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            this.UnGhostify();
-        }
-    }
+    //void Update()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.Space))
+    //    {
+    //        this.Ghostify();
+    //    }
+    //    if (Input.GetKeyDown(KeyCode.Return))
+    //    {
+    //        this.UnGhostify();
+    //    }
+    //}
 }
