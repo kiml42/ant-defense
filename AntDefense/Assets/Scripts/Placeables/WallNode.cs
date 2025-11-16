@@ -73,7 +73,20 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
 
     public void Interact()
     {
-        Debug.Log("Interaction with wall node " + this);
+        if (ObjectPlacer.Instance.CanBuildOnWall && this._selectionDelegates == null)
+        {
+            // The object can be placed on a wall, and this wall can have an object placed on top of it.
+            // Place the object on this wall, and set this wall as the parent.
+            var newObject = ObjectPlacer.Instance.PlaceObject(this.transform);
+            var selectables = newObject.GetComponents(typeof(ISelectableObject)).Cast<ISelectableObject>().ToArray();
+
+            this._selectionDelegates = selectables;
+            this.UpdateSelectionStateForDelegates();
+            return;
+        }
+
+        //Debug.Log("Interaction with wall node " + this);
+
         TranslateHandle.Instance.SetSelectedObject(this);
 
         if (ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null)
@@ -83,16 +96,6 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
             // So place the new wall node at this location, for the connected wall to be placed correctly, but then hide the new node because it overlaps this node.
             var placedObject = ObjectPlacer.Instance.PlaceObject();
             placedObject.GetComponent<WallNode>().RemoveNode();
-        }
-        else if (ObjectPlacer.Instance.CanBuildOnWall && this._selectionDelegates == null)
-        {
-            // The object can be placed on a wall, and this wall can have an object placed on top of it.
-            // Place the object on this wall, and set this wall as the parent.
-            var newObject = ObjectPlacer.Instance.PlaceObject(this.transform);
-            var selectables = newObject.GetComponents(typeof(ISelectableObject)).Cast<ISelectableObject>().ToArray();
-
-            this._selectionDelegates = selectables;
-            this.UpdateSelectionStateForDelegates();
         }
         else
         {
