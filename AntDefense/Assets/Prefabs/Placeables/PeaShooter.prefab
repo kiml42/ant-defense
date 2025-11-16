@@ -119,7 +119,7 @@ MonoBehaviour:
   FloorPoint: {fileID: 1489239274791151828}
   Rotatable: 0
   BaseCost: 30
-  CanBuildOnWall: 1
+  WallToBuildOn: {fileID: 710721694348773487, guid: fc03a1413b4298648ac5624f71573cd1, type: 3}
   Icon: {fileID: 0}
   ScaleForButton: 0.6
   OffsetForButton: {x: 0, y: 0, z: 0}

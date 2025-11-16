@@ -8,7 +8,12 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
 
     public float BaseCost;
 
-    public bool CanBuildOnWall = false;
+    public bool CanBuildOnWall => this.WallToBuildOn == null;
+
+    /// <summary>
+    /// The wall object to build with this object if it is being placed but not on an existing wall node.
+    /// </summary>
+    public PlaceableMonoBehaviour WallToBuildOn;
 
     public float TotalCost
     {

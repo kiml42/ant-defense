@@ -97,7 +97,7 @@ public class ObjectPlacer : MonoBehaviour
             MoneyTracker.Spend(this._objectBeingPlaced.TotalCost);
             var newObject = Instantiate(this._prefabBeingPlaced, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
 
-            var wallNode = newObject.GetComponent<WallNode>();
+            var wallNode = newObject.GetComponentInChildren<WallNode>();
             if (wallNode != null)
             {
                 wallNode.ConnectTo(this._lastWallNode);
@@ -110,6 +110,8 @@ public class ObjectPlacer : MonoBehaviour
                 this._lastWallNode = null;
             }
             newObject.Place();
+
+            // TODO place a wall for the object if it needs one and connect it up correctly and charge the correct price.
 
             if(parent != null)
             {
@@ -134,6 +136,7 @@ public class ObjectPlacer : MonoBehaviour
     {
         get
         {
+            // TODO account for the wall that will be automatically added if the object being placed comes with a wall, and it's not being placed on a wall.
             if (!this._costCache.HasValue)
             {
                 this._costCache = this._objectBeingPlaced == null ? null : (float?)this._objectBeingPlaced.TotalCost;
