@@ -6,6 +6,8 @@ public class PlaceableRealObject : PlaceableObjectOrGhost
     private BaseGhostableMonobehaviour[] Ghostables { get { return this._ghostables ??= this.GetComponentsInChildren<BaseGhostableMonobehaviour>(); } }
     override protected Transform FallbackIcon { get { return this.transform; } }
 
+    public SelectableGhostableMonoBehaviour ObjectToDeselectWhenPlaced;
+
     public override void StartPlacing()
     {
         //Debug.Log("Starting placing real object " + this);
@@ -23,6 +25,10 @@ public class PlaceableRealObject : PlaceableObjectOrGhost
         {
             //Debug.Log("Unghostifying " + ghostable);
             ghostable.UnGhostify();
+        }
+        if(this.ObjectToDeselectWhenPlaced != null)
+        {
+            this.ObjectToDeselectWhenPlaced.Deselect();
         }
     }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IInteractivePosition, ISelectableObject
@@ -9,6 +10,8 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
     public float MaxLength;
 
     public float CostPerMeter = 1f;
+
+    private ISelectableObject[] _selectionDelegates;
 
     public override float AdditionalCost
     {
@@ -81,6 +84,16 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
             var placedObject = ObjectPlacer.Instance.PlaceObject();
             placedObject.GetComponent<WallNode>().RemoveNode();
         }
+        else if (ObjectPlacer.Instance.CanBuildOnWall && this._selectionDelegates == null)
+        {
+            // The object can be placed on a wall, and this wall can have an object placed on top of it.
+            // Place the object on this wall, and set this wall as the parent.
+            var newObject = ObjectPlacer.Instance.PlaceObject(this.transform);
+            var selectables = newObject.GetComponents(typeof(ISelectableObject)).Cast<ISelectableObject>().ToArray();
+
+            this._selectionDelegates = selectables;
+            this.UpdateSelectionStateForDelegates();
+        }
         else
         {
             // not currently placing a wall node, or the wall node being placed is not yet connected to another node, so start placing a new wall node connected to this one.
@@ -88,15 +101,33 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
         }
     }
 
+    private void UpdateSelectionStateForDelegates()
+    {
+        if (this._selectionDelegates == null) return;
+        foreach (var item in this._selectionDelegates)
+        {
+            if (this._isSelected)
+                item.Select();
+            else
+                item.Deselect();
+        }
+    }
+
+    private bool _isSelected = false;
+
     public void Select()
     {
+        this._isSelected = true;
         Debug.Log("WallNode selected: " + this);
         // TODO make selecting the wall node be the trigger for starting to place a wall node connected to this one.
         // TODO have a wall placing mode for placing walls, rather than just relying on selecting wall nodes.
+        this.UpdateSelectionStateForDelegates();
     }
 
     public void Deselect()
     {
+        this._isSelected = false;
+        this.UpdateSelectionStateForDelegates();
     }
 
     /// <summary>

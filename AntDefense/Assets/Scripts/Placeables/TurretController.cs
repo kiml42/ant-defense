@@ -8,7 +8,7 @@ public interface ISelectableObject : IKnowsPosition
     void Deselect();
 }
 
-public class TurretController : BaseGhostableMonobehaviour, IInteractivePosition, ISelectableObject
+public class TurretController : SelectableGhostableMonoBehaviour, IInteractivePosition
 {
     public Rigidbody Projectile;
     public Transform Emitter;
@@ -22,7 +22,7 @@ public class TurretController : BaseGhostableMonobehaviour, IInteractivePosition
     private List<HealthController> _targetsInRange = new();
 
     private float _range;
-    public Vector3 Position => this.transform.position;
+    public override Vector3 Position => this.transform.position;
 
     public MeshRenderer RangeRenderer;
 
@@ -46,7 +46,6 @@ public class TurretController : BaseGhostableMonobehaviour, IInteractivePosition
         NoSpawnZone.Register(this); // register this as an interactive point
 
         this._range = this.Trigger.TriggerCollider.radius * this.Trigger.TriggerCollider.transform.localScale.x;
-        this.Deselect();
         return;
     }
 
@@ -54,7 +53,6 @@ public class TurretController : BaseGhostableMonobehaviour, IInteractivePosition
     {
         if (!this._enabled)
         {
-            this.Deselect();
             return;
         }
 
@@ -123,13 +121,13 @@ public class TurretController : BaseGhostableMonobehaviour, IInteractivePosition
         this.CleanTargets();
     }
 
-    public void Select()
+    public override void Select()
     {
         if (this.RangeRenderer != null)
             this.RangeRenderer.enabled = true;
     }
 
-    public void Deselect()
+    public override void Deselect()
     {
         if (this.RangeRenderer != null)
             this.RangeRenderer.enabled = false;

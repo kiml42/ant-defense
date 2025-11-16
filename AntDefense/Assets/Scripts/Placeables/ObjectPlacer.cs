@@ -89,7 +89,7 @@ public class ObjectPlacer : MonoBehaviour
     /// 
     /// </summary>
     /// <returns>The object that was placed</returns>
-    public PlaceableObjectOrGhost PlaceObject()
+    public PlaceableObjectOrGhost PlaceObject(Transform parent = null)
     {
         if (this._objectBeingPlaced != null && this.CanPlaceAt(this._objectBeingPlaced.transform.position))
         {
@@ -110,6 +110,11 @@ public class ObjectPlacer : MonoBehaviour
                 this._lastWallNode = null;
             }
             newObject.Place();
+
+            if(parent != null)
+            {
+                newObject.transform.parent = parent;
+            }
 
             return newObject;
         }
@@ -196,4 +201,6 @@ public class ObjectPlacer : MonoBehaviour
                 : this._objectBeingPlaced.GetComponent<WallNode>();
         }
     }
+
+    public bool CanBuildOnWall { get { return this._prefabBeingPlaced != null && this._prefabBeingPlaced.CanBuildOnWall; } }
 }
