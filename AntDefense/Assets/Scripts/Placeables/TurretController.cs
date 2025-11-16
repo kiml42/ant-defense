@@ -8,7 +8,7 @@ public interface ISelectableObject : IKnowsPosition
     void Deselect();
 }
 
-public class TurretController : MonoBehaviour, IInteractivePosition, ISelectableObject
+public class TurretController : BaseGhostableMonobehaviour, IInteractivePosition, ISelectableObject
 {
     public Rigidbody Projectile;
     public Transform Emitter;
@@ -27,6 +27,8 @@ public class TurretController : MonoBehaviour, IInteractivePosition, ISelectable
     public MeshRenderer RangeRenderer;
 
     public TurretTrigger Trigger;
+
+    private bool _enabled = true;
 
     public void Interact()
     {
@@ -50,6 +52,12 @@ public class TurretController : MonoBehaviour, IInteractivePosition, ISelectable
 
     void FixedUpdate()
     {
+        if (!this._enabled)
+        {
+            this.Deselect();
+            return;
+        }
+
         this._reloadTimer -= Time.deltaTime;
         this.CleanTargets();
         if (this._targetsInRange.Any())
@@ -125,5 +133,15 @@ public class TurretController : MonoBehaviour, IInteractivePosition, ISelectable
     {
         if (this.RangeRenderer != null)
             this.RangeRenderer.enabled = false;
+    }
+
+    public override void Ghostify()
+    {
+        this._enabled = false;
+    }
+
+    public override void UnGhostify()
+    {
+        this._enabled = true;
     }
 }

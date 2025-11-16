@@ -56,6 +56,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1489239274791151828}
   - component: {fileID: 3631510004101697051}
+  - component: {fileID: -9012147323840322498}
+  - component: {fileID: 6453981498242109298}
   m_Layer: 0
   m_Name: PeaShooter
   m_TagString: Untagged
@@ -102,6 +104,39 @@ MonoBehaviour:
   ProjectileSpeed: 100
   RangeRenderer: {fileID: 8398902838619543497}
   Trigger: {fileID: 2732589430912378637}
+--- !u!114 &-9012147323840322498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1834373357261692949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68d6eb515c8d2d942a6303e9041f7ae0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FloorPoint: {fileID: 1489239274791151828}
+  Rotatable: 0
+  BaseCost: 30
+  Icon: {fileID: 0}
+  ScaleForButton: 0.6
+  OffsetForButton: {x: 0, y: 0, z: 0}
+  RotationForButton: {x: 0.28308818, y: 0.14199114, z: 0.076293215, w: 0.9454517}
+  TimeOut: 3
+  SpawnOffset: {x: 0, y: 0, z: 0}
+--- !u!114 &6453981498242109298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1834373357261692949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59b436d704ec3af488d3a368642954b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColliderGhostable
 --- !u!1 &3563334362215727571
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,6 +275,7 @@ GameObject:
   - component: {fileID: 8501093439145108800}
   - component: {fileID: 6439116401107928745}
   - component: {fileID: 123313315461227101}
+  - component: {fileID: 7074144758754950822}
   m_Layer: 0
   m_Name: barrel
   m_TagString: Untagged
@@ -342,6 +378,21 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!114 &7074144758754950822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4797715489487285133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 808a9ed0a4c799245adda16d685b0ffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GhostMaterial: {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
+  OriginalMaterial: {fileID: 0}
+  Renderer: {fileID: 6439116401107928745}
 --- !u!1 &5438856199470397677
 GameObject:
   m_ObjectHideFlags: 0
@@ -385,6 +436,7 @@ GameObject:
   - component: {fileID: 4351529390072960469}
   - component: {fileID: 6336691038196134746}
   - component: {fileID: 3364657898501686454}
+  - component: {fileID: 9045829639846254954}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -486,6 +538,21 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!114 &9045829639846254954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5634726112598461944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 808a9ed0a4c799245adda16d685b0ffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GhostMaterial: {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
+  OriginalMaterial: {fileID: 0}
+  Renderer: {fileID: 6336691038196134746}
 --- !u!1 &6148484922465968118
 GameObject:
   m_ObjectHideFlags: 0
@@ -497,6 +564,8 @@ GameObject:
   - component: {fileID: 1893413522949566791}
   - component: {fileID: 846464928393843632}
   - component: {fileID: 3989014026480145146}
+  - component: {fileID: 2078180835213451441}
+  - component: {fileID: 2078273206525479755}
   m_Layer: 0
   m_Name: Cylinder
   m_TagString: Untagged
@@ -575,6 +644,36 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2078180835213451441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6148484922465968118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 808a9ed0a4c799245adda16d685b0ffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GhostMaterial: {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
+  OriginalMaterial: {fileID: 0}
+  Renderer: {fileID: 0}
+--- !u!114 &2078273206525479755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6148484922465968118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 808a9ed0a4c799245adda16d685b0ffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GhostMaterial: {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
+  OriginalMaterial: {fileID: 0}
+  Renderer: {fileID: 3989014026480145146}
 --- !u!1 &6956860544877528276
 GameObject:
   m_ObjectHideFlags: 0
@@ -587,6 +686,7 @@ GameObject:
   - component: {fileID: 869500934249373324}
   - component: {fileID: 6453007546876370551}
   - component: {fileID: 2368135157110005065}
+  - component: {fileID: 3668991441385845590}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -686,6 +786,21 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3668991441385845590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6956860544877528276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 808a9ed0a4c799245adda16d685b0ffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GhostMaterial: {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
+  OriginalMaterial: {fileID: 0}
+  Renderer: {fileID: 6453007546876370551}
 --- !u!1 &9109029332990939413
 GameObject:
   m_ObjectHideFlags: 0

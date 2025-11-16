@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class LifetimeController : MonoBehaviour
+public class LifetimeController : BaseGhostableMonobehaviour
 {
     public float RemainingTime = 30;
 
@@ -24,6 +24,7 @@ public class LifetimeController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!this.IsRunning) return;
         this.RemainingTime -= Time.deltaTime;
         if (this.RemainingTime <= 0)
         {
@@ -33,5 +34,15 @@ public class LifetimeController : MonoBehaviour
         {
             this.transform.localScale = this._initialScale * this.RemainingTime / this.ScaleDownTime;
         }
+    }
+
+    public override void Ghostify()
+    {
+        this.IsRunning = false;
+    }
+
+    public override void UnGhostify()
+    {
+        this.IsRunning = true;
     }
 }

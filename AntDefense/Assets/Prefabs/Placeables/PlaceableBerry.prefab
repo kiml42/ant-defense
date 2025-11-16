@@ -9,9 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3562446625101866731}
-  - component: {fileID: 1482762059953385253}
+  - component: {fileID: 4963767131132120068}
+  - component: {fileID: 4735118555562144494}
+  - component: {fileID: 5547485908265407466}
   m_Layer: 0
-  m_Name: BerryGhost
+  m_Name: PlaceableBerry
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,9 +36,10 @@ Transform:
   - {fileID: 464810295206959341}
   - {fileID: 2104728224519849826}
   - {fileID: 374015092026775150}
+  - {fileID: 6923380631408852786}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1482762059953385253
+--- !u!114 &4963767131132120068
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,9 +48,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 2451422094013383525}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61ba694a89b1b0f4c92763c7e56214e5, type: 3}
+  m_Script: {fileID: 11500000, guid: 68d6eb515c8d2d942a6303e9041f7ae0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaceableRealObject
   FloorPoint: {fileID: 374015092026775150}
   Rotatable: 0
   BaseCost: 0.2
@@ -57,7 +60,30 @@ MonoBehaviour:
   RotationForButton: {x: 0, y: 0, z: 0, w: 1}
   TimeOut: 0
   SpawnOffset: {x: 0, y: 2, z: 0}
-  RealObject: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+--- !u!114 &4735118555562144494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2451422094013383525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59b436d704ec3af488d3a368642954b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColliderGhostable
+--- !u!114 &5547485908265407466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2451422094013383525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a029929a61edc9e4dac39984ab7deb96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RigidbodyGhostable
 --- !u!1 &6652936135346501748
 GameObject:
   m_ObjectHideFlags: 0
@@ -217,7 +243,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4234925670691479942
 Transform:
   m_ObjectHideFlags: 0
@@ -307,7 +333,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2104728224519849826
 Transform:
   m_ObjectHideFlags: 0
@@ -402,3 +428,121 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!1001 &5864971305724271065
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3562446625101866731}
+    m_Modifications:
+    - target: {fileID: 2451422094013383525, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+      propertyPath: m_Name
+      value: Berry
+      objectReference: {fileID: 0}
+    - target: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7137983243265383188, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3346474094472933573}
+    - targetCorrespondingSourceObject: {fileID: 8302698094805185435, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3318032656420842109}
+  m_SourcePrefab: {fileID: 100100000, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+--- !u!1 &2476288998513912386 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8302698094805185435, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+  m_PrefabInstance: {fileID: 5864971305724271065}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3318032656420842109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2476288998513912386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 808a9ed0a4c799245adda16d685b0ffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MaterialGhostable
+  GhostMaterial: {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
+  OriginalMaterial: {fileID: 0}
+  Renderer: {fileID: 8849844602273999048}
+--- !u!1 &3633179652292068045 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7137983243265383188, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+  m_PrefabInstance: {fileID: 5864971305724271065}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3346474094472933573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3633179652292068045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 808a9ed0a4c799245adda16d685b0ffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MaterialGhostable
+  GhostMaterial: {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
+  OriginalMaterial: {fileID: 0}
+  Renderer: {fileID: 4207217028328554338}
+--- !u!23 &4207217028328554338 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7712301991266002619, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+  m_PrefabInstance: {fileID: 5864971305724271065}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6923380631408852786 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3562446625101866731, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+  m_PrefabInstance: {fileID: 5864971305724271065}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8849844602273999048 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3149254820523602193, guid: bafa29947aa011c409980a9b056e8ede, type: 3}
+  m_PrefabInstance: {fileID: 5864971305724271065}
+  m_PrefabAsset: {fileID: 0}

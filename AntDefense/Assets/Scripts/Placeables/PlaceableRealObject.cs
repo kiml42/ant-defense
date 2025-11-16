@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class PlaceableRealObject : PlaceableObjectOrGhost
 {
-    private BaseGhostable[] _ghostables;
-    private BaseGhostable[] Ghostables { get { return this._ghostables ??= this.GetComponentsInChildren<BaseGhostable>(); } }
+    private BaseGhostableMonobehaviour[] _ghostables;
+    private BaseGhostableMonobehaviour[] Ghostables { get { return this._ghostables ??= this.GetComponentsInChildren<BaseGhostableMonobehaviour>(); } }
     override protected Transform FallbackIcon { get { return this.transform; } }
 
     public override void StartPlacing()

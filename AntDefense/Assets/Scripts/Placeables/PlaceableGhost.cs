@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-[Obsolete("Use PlaceableRealObject instead")]
+[Obsolete("Use PlaceableRealObject instead - only used for flip traps")]
 public class PlaceableGhost : PlaceableObjectOrGhost
 {
     public Transform RealObject;
