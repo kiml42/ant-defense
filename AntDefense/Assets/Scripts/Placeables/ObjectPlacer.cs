@@ -89,10 +89,21 @@ public class ObjectPlacer : MonoBehaviour
     /// 
     /// </summary>
     /// <returns>The object that was placed</returns>
-    public PlaceableObjectOrGhost PlaceObject(Transform parent = null)
+    public PlaceableObjectOrGhost PlaceObject(WallNode parent = null)
     {
         if (this._objectBeingPlaced != null && this.CanPlaceAt(this._objectBeingPlaced.transform.position))
         {
+            if(this._prefabBeingPlaced != null && this._prefabBeingPlaced.WallToBuildOn != null && parent == null)
+            {
+                // There is a prefab being placed, and it needs a wall, but a wall hasn't been provided.
+                var wall = Instantiate(this._prefabBeingPlaced.WallToBuildOn, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
+                var placeableObjectOrGhost = wall.GetComponentInChildren<PlaceableObjectOrGhost>();
+                placeableObjectOrGhost.Place();
+                MoneyTracker.Spend(placeableObjectOrGhost.TotalCost);   // TODO, also update the UI to indicate this cost
+                wall.Interact();
+                return placeableObjectOrGhost;
+            }
+
             //Debug.Log($"Spending {this._objectBeingPlaced.TotalCost} for {this._objectBeingPlaced}");
             MoneyTracker.Spend(this._objectBeingPlaced.TotalCost);
             var newObject = Instantiate(this._prefabBeingPlaced, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
@@ -109,13 +120,15 @@ public class ObjectPlacer : MonoBehaviour
                 //Debug.Log("Clearing last wall node because there's no wall node component.");
                 this._lastWallNode = null;
             }
+
             newObject.Place();
 
             // TODO place a wall for the object if it needs one and connect it up correctly and charge the correct price.
 
             if(parent != null)
             {
-                newObject.transform.parent = parent;
+                // it's being built with a parent already.
+                newObject.transform.parent = parent.transform;
             }
 
             return newObject;

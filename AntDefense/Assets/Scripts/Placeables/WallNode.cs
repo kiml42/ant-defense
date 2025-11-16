@@ -77,7 +77,7 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
         {
             // The object can be placed on a wall, and this wall can have an object placed on top of it.
             // Place the object on this wall, and set this wall as the parent.
-            var newObject = ObjectPlacer.Instance.PlaceObject(this.transform);
+            var newObject = ObjectPlacer.Instance.PlaceObject(this);
             var selectables = newObject.GetComponents(typeof(ISelectableObject)).Cast<ISelectableObject>().ToArray();
 
             this._selectionDelegates = selectables;
