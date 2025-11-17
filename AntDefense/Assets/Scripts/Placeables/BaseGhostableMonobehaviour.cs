@@ -10,30 +10,35 @@ public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehavi
 {
     public abstract Vector3 Position { get; }
 
-    // TODO use this to link the wall node with the connected placeable, both ways so that selecting or deselecting either affects both.
-    public ISelectableObject ConnectedSelectable { get; set; }
+    public SelectableGhostableMonoBehaviour ConnectedSelectable { get; set; }
 
     public bool IsSelected { get; protected set; }
 
-    public virtual void Deselect()
-    {
-        if (!this.IsSelected) return;
-        if (this.ConnectedSelectable != null)
-        {
-            this.ConnectedSelectable.Deselect();
-        }
-        this.IsSelected = false;
-    }
-
-    public virtual void Select()
+    public void Select()
     {
         if (this.IsSelected) return;
+        this.IsSelected = true; // Make sure this is set before calling Select on the connected selectable to avoid infinite recursion.
 
         // TODO: make sure the turret and the wall each have the other registered as their connected selectable.
         if (this.ConnectedSelectable != null)
         {
             this.ConnectedSelectable.Select();
         }
-        this.IsSelected = true;
+        this.OnSelect();
     }
+
+    public void Deselect()
+    {
+        if (!this.IsSelected) return;
+        this.IsSelected = false;    // Make sure this is unset before calling Deselect on the connected selectable to avoid infinite recursion.
+
+        if (this.ConnectedSelectable != null)
+        {
+            this.ConnectedSelectable.Deselect();
+        }
+        this.OnDeselect();
+    }
+
+    protected abstract void OnSelect();
+    protected abstract void OnDeselect();
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePositionValidator, ISelectableObject
@@ -71,39 +72,23 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
         this.Wall.localScale = Vector3.zero;
     }
 
-    private void UpdateSelectionStateForDelegates()
+    protected override void OnSelect()
     {
-        if (this._selectionDelegates == null) return;
-        foreach (var item in this._selectionDelegates)
-        {
-            if (this.IsSelected)
-                item.Select();
-            else
-                item.Deselect();
-        }
-    }
-
-    public override void Select()
-    {
-        // TODO check for silly loops through select methods.
-        if (this.IsSelected) return;    // already selected, do nothing.
         Debug.Log("WallNode selected: " + this);
-        //base.Select();
-        // TODO make selecting the wall node be the trigger for starting to place a wall node connected to this one.
         // TODO have a wall placing mode for placing walls, rather than just relying on selecting wall nodes.
-        this.UpdateSelectionStateForDelegates();
 
         if (ObjectPlacer.Instance.CanBuildOnWall && this._selectionDelegates == null)
         {
             // The object can be placed on a wall, and this wall can have an object placed on top of it.
             // Place the object on this wall, and set this wall as the parent.
             var newObject = ObjectPlacer.Instance.PlaceObject(this);
-            var selectables = newObject.GetComponents(typeof(ISelectableObject)).Cast<ISelectableObject>().ToArray();
+            if(newObject != null)   // new object will be null if it can't be placed (e.g. too expensive)
+            {
+                this.ConnectedSelectable = newObject.GetComponent<SelectableGhostableMonoBehaviour>();
+                this.ConnectedSelectable.ConnectedSelectable = this;
 
-            this._selectionDelegates = selectables;
-            this.UpdateSelectionStateForDelegates();
-
-            newObject.WallParent = this;
+                newObject.WallParent = this;
+            }
             return;
         }
 
@@ -114,20 +99,16 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
             // So place the new wall node at this location, for the connected wall to be placed correctly, but then hide the new node because it overlaps this node.
             var placedObject = ObjectPlacer.Instance.PlaceObject();
             placedObject.GetComponent<WallNode>().RemoveNode();
-        }
-        else
-        {
-            // not currently placing a wall node, or the wall node being placed is not yet connected to another node, so start placing a new wall node connected to this one.
-            ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
+            return;
         }
 
-        this.IsSelected = true;
+        // not currently placing a wall node, or the wall node being placed is not yet connected to another node, so start placing a new wall node connected to this one.
+        ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
     }
 
-    public override void Deselect()
+    protected override void OnDeselect()
     {
-        this.IsSelected = false;
-        this.UpdateSelectionStateForDelegates();
+        // Do nothing
     }
 
     /// <summary>

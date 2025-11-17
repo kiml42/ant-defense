@@ -125,18 +125,14 @@ public class TurretController : SelectableGhostableMonoBehaviour
         this.CleanTargets();
     }
 
-    public override void Select()
+    protected override void OnSelect()
     {
-        if (this.IsSelected) return;    // already selected, do nothing.
-        base.Select();
         if (this.RangeRenderer != null)
             this.RangeRenderer.enabled = true;
     }
 
-    public override void Deselect()
+    protected override void OnDeselect()
     {
-        if (!this.IsSelected) return;
-        base.Select();
         if (this.RangeRenderer != null)
             this.RangeRenderer.enabled = false;
     }
