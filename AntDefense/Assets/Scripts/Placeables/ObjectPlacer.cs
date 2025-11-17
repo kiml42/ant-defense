@@ -31,6 +31,7 @@ public class ObjectPlacer : MonoBehaviour
         KeyCode.Alpha9,
         KeyCode.Alpha0,
     };
+    public bool IsPlacingObject => this._objectBeingPlaced != null;
 
     private void Awake()
     {
@@ -75,7 +76,7 @@ public class ObjectPlacer : MonoBehaviour
 
     public void CancelPlacingObject()
     {
-        if (this._objectBeingPlaced != null)
+        if (IsPlacingObject)
         {
             Destroy(this._objectBeingPlaced.gameObject);
             this._objectBeingPlaced = null;

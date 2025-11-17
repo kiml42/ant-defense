@@ -12,8 +12,6 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
     public float CostPerMeter = 1f;
 
-    private ISelectableObject[] _selectionDelegates;    // TODO replace with similar property in parent class.
-
     public override float AdditionalCost
     {
         get
@@ -77,7 +75,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
         Debug.Log("WallNode selected: " + this);
         // TODO have a wall placing mode for placing walls, rather than just relying on selecting wall nodes.
 
-        if (ObjectPlacer.Instance.CanBuildOnWall && this._selectionDelegates == null)
+        if (ObjectPlacer.Instance.CanBuildOnWall && this.ConnectedSelectable == null)
         {
             // The object can be placed on a wall, and this wall can have an object placed on top of it.
             // Place the object on this wall, and set this wall as the parent.
@@ -88,22 +86,32 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
                 this.ConnectedSelectable.ConnectedSelectable = this;
 
                 newObject.WallParent = this;
+
+                this.Deselect();
             }
             return;
         }
 
-        if (ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null)
+        if (
+            ObjectPlacer.Instance.WallNodeBeingPlaced != null                   // A wall node is being placed
+            && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null  // It is connected to something
+            && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != this  // It's not connected to this
+            )
         {
             // is currently placing a wall node
             // the wall node that is being placed is already connected to another node
             // So place the new wall node at this location, for the connected wall to be placed correctly, but then hide the new node because it overlaps this node.
             var placedObject = ObjectPlacer.Instance.PlaceObject();
-            placedObject.GetComponent<WallNode>().RemoveNode();
+            if (placedObject != null)   // may not be able to place the object (e.g. too expensive), so do nothing.
+            {
+                placedObject.GetComponent<WallNode>().RemoveNode();
+            }
             return;
         }
 
-        // not currently placing a wall node, or the wall node being placed is not yet connected to another node, so start placing a new wall node connected to this one.
-        ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
+        if(!ObjectPlacer.Instance.IsPlacingObject || (ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null))
+            // not currently placing a wall node, or the wall node being placed is not yet connected to another node, so start placing a new wall node connected to this one.
+            ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
     }
 
     protected override void OnDeselect()

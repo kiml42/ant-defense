@@ -12,31 +12,36 @@ public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehavi
 
     public SelectableGhostableMonoBehaviour ConnectedSelectable { get; set; }
 
-    public bool IsSelected { get; protected set; }
+    /// <summary>
+    /// Nullable so that either a select or deselect will always trigger the first time.
+    /// </summary>
+    private bool? _isSelected = null;
+    public bool IsSelected => this._isSelected ?? false;
 
     public void Select()
     {
-        if (this.IsSelected) return;
-        this.IsSelected = true; // Make sure this is set before calling Select on the connected selectable to avoid infinite recursion.
+        this.OnSelect();
+        TranslateHandle.Instance.SetSelectedObject(this, false);
+        if (this._isSelected == true) return;
+        this._isSelected = true; // Make sure this is set before calling Select on the connected selectable to avoid infinite recursion.
 
         // TODO: make sure the turret and the wall each have the other registered as their connected selectable.
         if (this.ConnectedSelectable != null)
         {
             this.ConnectedSelectable.Select();
         }
-        this.OnSelect();
     }
 
     public void Deselect()
     {
-        if (!this.IsSelected) return;
-        this.IsSelected = false;    // Make sure this is unset before calling Deselect on the connected selectable to avoid infinite recursion.
+        this.OnDeselect();
+        if (this.IsSelected == false) return;
+        this._isSelected = false;    // Make sure this is unset before calling Deselect on the connected selectable to avoid infinite recursion.
 
         if (this.ConnectedSelectable != null)
         {
             this.ConnectedSelectable.Deselect();
         }
-        this.OnDeselect();
     }
 
     protected abstract void OnSelect();

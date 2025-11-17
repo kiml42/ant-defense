@@ -45,6 +45,7 @@ public class TranslateHandle : MonoBehaviour
     {
         this.HandleCancelButton();
 
+        // TODO: bug when clicking briefy on a quick bar button - it places the object immediately behind the button. Need to enforce some movement to start the drag.
         if (Input.GetMouseButtonDown(this.PlaceMouseButton))
         {
             this.TryActivateQuickBarButton();
@@ -52,7 +53,7 @@ public class TranslateHandle : MonoBehaviour
 
         if (Input.GetMouseButtonUp(this.PlaceMouseButton))
         {
-            this.DeselectObject();
+            this.DeselectObjects();
             this.ActivatePoint();
         }
 
@@ -80,7 +81,7 @@ public class TranslateHandle : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Escape))
         {
-            this.DeselectObject();
+            this.DeselectObjects();
             ObjectPlacer.Instance.CancelPlacingObject();
             this._distanceSinceClick = 0;
             this._lastMousePosition = null;
@@ -98,7 +99,7 @@ public class TranslateHandle : MonoBehaviour
             //Debug.Log("Cancel mouse up after moving " + _distanceSinceClick);
             if (this._distanceSinceClick < this.CancelThreshold)
             {
-                this.DeselectObject();
+                this.DeselectObjects();
                 ObjectPlacer.Instance.CancelPlacingObject();
             }
             this._distanceSinceClick = 0;
@@ -250,27 +251,33 @@ public class TranslateHandle : MonoBehaviour
         return Quaternion.LookRotation(forward, Vector3.up);
     }
 
-    private ISelectableObject _selectedObject;
-    internal void SetSelectedObject(ISelectableObject activeObject)
+    private readonly HashSet<ISelectableObject> _selectedObjects = new();
+
+    internal void SetSelectedObject(ISelectableObject activeObject, bool clearOtherSelections)
     {
-        if (activeObject.IsSelected) return;
-        this.DeselectObject();
-        this._selectedObject = activeObject;
-        this._selectedObject?.Select();
-        if (this.SelectedObjectHighlight != null)
+        // TODO: fix inconsistent state when building a turret.
+        // TODO: avoid ecessive itterations.
+        if (this._selectedObjects.Contains(activeObject)) return;
+        if(clearOtherSelections) this.DeselectObjects();
+        this._selectedObjects.Add(activeObject);
+        activeObject.Select();
+        if (this.SelectedObjectHighlight != null && clearOtherSelections)
         {
             Debug.Log("Creating selected object highlight instance");
-            this._slelectedObjectHighlightInstance = Instantiate(this.SelectedObjectHighlight, this._selectedObject.Position, Quaternion.identity);
+            this._slelectedObjectHighlightInstance = Instantiate(this.SelectedObjectHighlight, activeObject.Position, Quaternion.identity);
         }
     }
 
-    private void DeselectObject()
+    private void DeselectObjects()
     {
         if (this._slelectedObjectHighlightInstance != null)
         {
             Destroy(this._slelectedObjectHighlightInstance.gameObject);
         }
-        this._selectedObject?.Deselect();   // deselect any selected object when clicking anywhere.
-        this._selectedObject = null;
+        foreach (var selectedObject in this._selectedObjects)
+        {
+            selectedObject.Deselect();   // deselect any selected object when clicking anywhere.
+        }
+        this._selectedObjects.Clear();
     }
 }
