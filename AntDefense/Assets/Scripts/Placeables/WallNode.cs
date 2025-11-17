@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePositionValidator, IInteractivePosition, ISelectableObject
+public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePositionValidator, ISelectableObject
 {
     public WallNode ConnectedNode;
     public Transform Wall;
@@ -71,39 +71,11 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
         this.Wall.localScale = Vector3.zero;
     }
 
-    public void Interact()
+    public override void Interact()
     {
-        if (ObjectPlacer.Instance.CanBuildOnWall && this._selectionDelegates == null)
-        {
-            // The object can be placed on a wall, and this wall can have an object placed on top of it.
-            // Place the object on this wall, and set this wall as the parent.
-            var newObject = ObjectPlacer.Instance.PlaceObject(this);
-            var selectables = newObject.GetComponents(typeof(ISelectableObject)).Cast<ISelectableObject>().ToArray();
-
-            this._selectionDelegates = selectables;
-            this.UpdateSelectionStateForDelegates();
-
-            newObject.WallParent = this;
-            return;
-        }
-
-        //Debug.Log("Interaction with wall node " + this);
-
+        // TODO do everything through select and get rid of interact.
+        Debug.Log("Interaction with wall node " + this);
         TranslateHandle.Instance.SetSelectedObject(this);
-
-        if (ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null)
-        {
-            // is currently placing a wall node
-            // the wall node that is being placed is already connected to another node
-            // So place the new wall node at this location, for the connected wall to be placed correctly, but then hide the new node because it overlaps this node.
-            var placedObject = ObjectPlacer.Instance.PlaceObject();
-            placedObject.GetComponent<WallNode>().RemoveNode();
-        }
-        else
-        {
-            // not currently placing a wall node, or the wall node being placed is not yet connected to another node, so start placing a new wall node connected to this one.
-            ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
-        }
     }
 
     private void UpdateSelectionStateForDelegates()
@@ -120,11 +92,44 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
     public override void Select()
     {
-        this.IsSelected = true;
+        // TODO check for silly loops through select methods.
+        if (this.IsSelected) return;    // already selected, do nothing.
         Debug.Log("WallNode selected: " + this);
+        //base.Select();
         // TODO make selecting the wall node be the trigger for starting to place a wall node connected to this one.
         // TODO have a wall placing mode for placing walls, rather than just relying on selecting wall nodes.
         this.UpdateSelectionStateForDelegates();
+
+        if (ObjectPlacer.Instance.CanBuildOnWall && this._selectionDelegates == null)
+        {
+            // The object can be placed on a wall, and this wall can have an object placed on top of it.
+            // Place the object on this wall, and set this wall as the parent.
+            var newObject = ObjectPlacer.Instance.PlaceObject(this);
+            var selectables = newObject.GetComponents(typeof(ISelectableObject)).Cast<ISelectableObject>().ToArray();
+
+            this._selectionDelegates = selectables;
+            this.UpdateSelectionStateForDelegates();
+
+            newObject.WallParent = this;
+            return;
+        }
+
+        if (ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null)
+        {
+            // is currently placing a wall node
+            // the wall node that is being placed is already connected to another node
+            // So place the new wall node at this location, for the connected wall to be placed correctly, but then hide the new node because it overlaps this node.
+            var placedObject = ObjectPlacer.Instance.PlaceObject();
+            placedObject.GetComponent<WallNode>().RemoveNode();
+        }
+        else
+        {
+            // not currently placing a wall node, or the wall node being placed is not yet connected to another node, so start placing a new wall node connected to this one.
+            ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
+        }
+
+        this.IsSelected = true;
+        TranslateHandle.Instance.SetSelectedObject(this);
     }
 
     public override void Deselect()

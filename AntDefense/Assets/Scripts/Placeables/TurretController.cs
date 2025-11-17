@@ -4,11 +4,12 @@ using UnityEngine;
 
 public interface ISelectableObject : IKnowsPosition
 {
+    public bool IsSelected { get; }
     void Select();
     void Deselect();
 }
 
-public class TurretController : SelectableGhostableMonoBehaviour, IInteractivePosition
+public class TurretController : SelectableGhostableMonoBehaviour
 {
     public Rigidbody Projectile;
     public Transform Emitter;
@@ -30,7 +31,7 @@ public class TurretController : SelectableGhostableMonoBehaviour, IInteractivePo
 
     private bool _enabled = true;
 
-    public void Interact()
+    public override void Interact()
     {
         Debug.Log("Interaction with turret " + this);
         TranslateHandle.Instance.SetSelectedObject(this);
@@ -123,7 +124,7 @@ public class TurretController : SelectableGhostableMonoBehaviour, IInteractivePo
 
     public override void Select()
     {
-        if (this.IsSelected) return;
+        if (this.IsSelected) return;    // already selected, do nothing.
         base.Select();
         if (this.RangeRenderer != null)
             this.RangeRenderer.enabled = true;

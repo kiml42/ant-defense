@@ -6,6 +6,7 @@ public class FlipTrap : Triggerable, IInteractivePosition, ISelectableObject
 
     public float FireSpeed = -500;
     public float ResetSpeed = 10;
+    public bool IsSelected { get; private set; }
 
     /// <summary>
     /// Delay before reseeting
@@ -73,11 +74,15 @@ public class FlipTrap : Triggerable, IInteractivePosition, ISelectableObject
 
     public void Select()
     {
+        if (this.IsSelected) return;
         this.TriggerRenderer.enabled = true;
+        this.IsSelected = true;
     }
 
     public void Deselect()
     {
+        if (!this.IsSelected) return;
         this.TriggerRenderer.enabled = false;
+        this.IsSelected = false;
     }
 }

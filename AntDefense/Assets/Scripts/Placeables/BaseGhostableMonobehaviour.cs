@@ -6,14 +6,14 @@ public abstract class BaseGhostableMonobehaviour : MonoBehaviour
     public abstract void UnGhostify();
 }
 
-public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehaviour, ISelectableObject
+public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehaviour, ISelectableObject, IInteractivePosition
 {
     public abstract Vector3 Position { get; }
 
     // TODO use this to link the wall node with the connected placeable, both ways so that selecting or deselecting either affects both.
     public ISelectableObject ConnectedSelectable { get; set; }
 
-    protected bool IsSelected { get; set; }
+    public bool IsSelected { get; protected set; }
 
     public virtual void Deselect()
     {
@@ -22,7 +22,10 @@ public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehavi
         {
             this.ConnectedSelectable.Deselect();
         }
+        this.IsSelected = false;
     }
+
+    public abstract void Interact();
 
     public virtual void Select()
     {
@@ -31,5 +34,6 @@ public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehavi
         {
             this.ConnectedSelectable.Select();
         }
+        this.IsSelected = true;
     }
 }

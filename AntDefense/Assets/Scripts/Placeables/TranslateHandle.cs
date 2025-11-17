@@ -254,6 +254,7 @@ public class TranslateHandle : MonoBehaviour
     private ISelectableObject _selectedObject;
     internal void SetSelectedObject(ISelectableObject activeObject)
     {
+        if (activeObject.IsSelected) return;
         this.DeselectObject();
         this._selectedObject = activeObject;
         this._selectedObject?.Select();
