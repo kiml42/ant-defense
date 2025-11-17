@@ -28,6 +28,8 @@ public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehavi
     public virtual void Select()
     {
         if (this.IsSelected) return;
+
+        // TODO: make sure the turret and the wall each have the other registered as their connected selectable.
         if (this.ConnectedSelectable != null)
         {
             this.ConnectedSelectable.Select();
