@@ -196,7 +196,6 @@ public class ObjectPlacer : MonoBehaviour
 
     internal void StartPlacingWallConnectedTo(WallNode wallNode)
     {
-        this._lastWallNode = wallNode;
         for (var i = 0; i < this.QuickBarObjects.Count; i++)
         {
             var prefab = this.QuickBarObjects[i];
@@ -206,6 +205,9 @@ public class ObjectPlacer : MonoBehaviour
                 this.WallNodeBeingPlaced.ConnectTo(wallNode);
             }
         }
+        this._lastWallNode = wallNode;  // this must come after StartPlacingGhost because StartPlacingGhost cancelss teh current placing, and clears the last wall node.
+
+        // TODO check if StartPlacingGhost should clear the last wall node
     }
 
     /// <summary>

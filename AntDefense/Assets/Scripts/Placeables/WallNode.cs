@@ -39,6 +39,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
     {
         //Debug.Log("Connecting WallNode to " + other);
         this.ConnectedNode = other;
+        this.UpdateWall();
     }
 
     public bool PositionIsValid(Vector3 position)
