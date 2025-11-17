@@ -15,9 +15,9 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
         /// </summary>
         Corrected,
         /// <summary>
-        /// The closest position is an interactive point, so clicking now should interact with it rather than placing an object
+        /// The closest position is a selection point, so clicking now should select it rather than placing an object
         /// </summary>
-        InteractionPoint,
+        SelectionPoint,
         /// <summary>
         /// The original position is invalid, and no valid position was found
         /// </summary>
@@ -35,7 +35,7 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
             {
                 return this.Type switch
                 {
-                    PointType.InteractionPoint => 4,
+                    PointType.SelectionPoint => 4,
                     _ => 0
                 };
             }
@@ -43,7 +43,7 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
 
         public virtual void Activate()
         {
-            Debug.Assert(this.Type != PointType.InteractionPoint, "Interactie points should always use their own class");
+            Debug.Assert(this.Type != PointType.SelectionPoint, "Selection points should always use their own class");
             if (this.Type == PointType.Invalid)
             {
                 // nothing to do if the point is invalid.
@@ -59,11 +59,11 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
         }
     }
 
-    public class InteractionPoint : AdjustedPoint
+    private class SelectionPoint : AdjustedPoint
     {
-        private readonly IInteractivePosition _pointObject;
+        private readonly ISelectableObject _pointObject;
 
-        public InteractionPoint(IInteractivePosition point) : base(point.Position, PointType.InteractionPoint)
+        public SelectionPoint(ISelectableObject point) : base(point.Position, PointType.SelectionPoint)
         {
             this._pointObject = point;
         }
@@ -71,7 +71,7 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
         public override void Activate()
         {
             // Don't call base because we don't want the default behaviour
-            this._pointObject.Interact();
+            TranslateHandle.Instance.SetSelectedObject(this._pointObject);
         }
     }
 
@@ -79,7 +79,7 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
 
     private static readonly List<IntersectionPoint> _intersectionPoints = new();
 
-    private static readonly List<InteractionPoint> InteractionPoints = new();
+    private static readonly List<SelectionPoint> SelectionPoints = new();
 
     public float Radius = 3;
 
@@ -151,13 +151,13 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
 
         var pointsToCheck = transgressedZones.Select(z => GetClosestPointOnEdge(position, z, PointType.Corrected)).ToList();
         pointsToCheck.AddRange(_intersectionPoints.Where(p => p.IsOnEdge == true));
-        pointsToCheck.AddRange(InteractionPoints);
+        pointsToCheck.AddRange(SelectionPoints);
 
         foreach (var point in pointsToCheck)
         {
-            if (point.Type != PointType.InteractionPoint && IsInAnyNoSpawnZone(point.Point))
+            if (point.Type != PointType.SelectionPoint && IsInAnyNoSpawnZone(point.Point))
             {
-                // This edge point is still in a no spawn zone, so ignore it (unless it's an interaction point)
+                // This edge point is still in a no spawn zone, so ignore it (unless it's a selection point)
                 continue;
             }
             keepIfBetter(point);
@@ -361,9 +361,9 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
         this.Activate();
     }
 
-    internal static void Register(IInteractivePosition point)
+    internal static void Register(ISelectableObject point)
     {
-        InteractionPoints.Add(new InteractionPoint(point));
+        SelectionPoints.Add(new SelectionPoint(point));
     }
 
     private class IntersectionPoint : AdjustedPoint

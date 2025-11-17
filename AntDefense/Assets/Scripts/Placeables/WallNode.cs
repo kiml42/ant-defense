@@ -33,7 +33,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
         //Debug.Log("WallNode placed, connected to " + this.ConnectedNode);
         this.UpdateWall();
         this.enabled = false;   //disable to prevent updating the wall every frame
-        NoSpawnZone.Register(this); // register this as an interactive point
+        NoSpawnZone.Register(this); // register this as a selection point
     }
 
     internal void ConnectTo(WallNode other)
@@ -69,13 +69,6 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
             }
         }
         this.Wall.localScale = Vector3.zero;
-    }
-
-    public override void Interact()
-    {
-        // TODO do everything through select and get rid of interact.
-        Debug.Log("Interaction with wall node " + this);
-        TranslateHandle.Instance.SetSelectedObject(this);
     }
 
     private void UpdateSelectionStateForDelegates()
@@ -129,7 +122,6 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
         }
 
         this.IsSelected = true;
-        TranslateHandle.Instance.SetSelectedObject(this);
     }
 
     public override void Deselect()

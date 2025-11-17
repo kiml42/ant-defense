@@ -100,7 +100,7 @@ public class ObjectPlacer : MonoBehaviour
                 var placeableObjectOrGhost = wall.GetComponentInChildren<PlaceableObjectOrGhost>();
                 placeableObjectOrGhost.Place();
                 MoneyTracker.Spend(placeableObjectOrGhost.TotalCost);   // TODO, also update the UI to indicate this cost
-                wall.Interact();
+                wall.Select();
                 return placeableObjectOrGhost;
             }
 

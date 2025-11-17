@@ -178,10 +178,9 @@ public class TranslateHandle : MonoBehaviour
                 //Debug.Log($"Corrected position {changedPosition.Point}");
                 this.transform.position = changedPosition.Point;
                 break;
-            case NoSpawnZone.PointType.InteractionPoint:
-                //Debug.Log($"InteractionPoint position {changedPosition.Point}");
+            case NoSpawnZone.PointType.SelectionPoint:
+                //Debug.Log($"SelectionPoint position {changedPosition.Point}");
                 this.transform.position = changedPosition.Point;
-                // TODO remember that this is an interactive point.
                 break;
             case NoSpawnZone.PointType.Invalid:
                 //Debug.Log($"Invalid position {changedPosition.Point}");

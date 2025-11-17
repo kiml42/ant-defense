@@ -6,7 +6,7 @@ public abstract class BaseGhostableMonobehaviour : MonoBehaviour
     public abstract void UnGhostify();
 }
 
-public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehaviour, ISelectableObject, IInteractivePosition
+public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehaviour, ISelectableObject
 {
     public abstract Vector3 Position { get; }
 
@@ -24,8 +24,6 @@ public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehavi
         }
         this.IsSelected = false;
     }
-
-    public abstract void Interact();
 
     public virtual void Select()
     {

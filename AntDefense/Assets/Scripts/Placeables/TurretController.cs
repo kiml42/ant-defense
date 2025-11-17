@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public interface ISelectableObject : IKnowsPosition
@@ -23,19 +24,21 @@ public class TurretController : SelectableGhostableMonoBehaviour
     private List<HealthController> _targetsInRange = new();
 
     private float _range;
-    public override Vector3 Position => this.transform.position;
+    public override Vector3 Position
+    {
+        get
+        {
+            Debug.Assert(this.transform != null, "TurretController has no transform!");
+            Debug.Assert(!this.IsDestroyed(), "TurretController is destroyed!");
+            return this.transform.position;
+        }
+    }
 
     public MeshRenderer RangeRenderer;
 
     public TurretTrigger Trigger;
 
     private bool _enabled = true;
-
-    public override void Interact()
-    {
-        Debug.Log("Interaction with turret " + this);
-        TranslateHandle.Instance.SetSelectedObject(this);
-    }
 
     void Start()
     {
