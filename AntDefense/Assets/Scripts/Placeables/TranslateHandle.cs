@@ -263,9 +263,15 @@ public class TranslateHandle : MonoBehaviour
         activeObject.Select();
         if (this.SelectedObjectHighlight != null)
         {
-            this.DestroyHighlightInstance();
-            Debug.Log("Creating selected object highlight instance");
-            this._slelectedObjectHighlightInstance = Instantiate(this.SelectedObjectHighlight, activeObject.Position, Quaternion.identity);
+            if (this._slelectedObjectHighlightInstance != null)
+            {
+                this._slelectedObjectHighlightInstance.transform.position = activeObject.Position;
+            }
+            else
+            {
+                Debug.Log("Creating selected object highlight instance");
+                this._slelectedObjectHighlightInstance = Instantiate(this.SelectedObjectHighlight, activeObject.Position, Quaternion.identity);
+            }
         }
     }
 
