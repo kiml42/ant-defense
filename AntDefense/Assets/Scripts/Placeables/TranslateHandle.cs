@@ -261,8 +261,9 @@ public class TranslateHandle : MonoBehaviour
         if(clearOtherSelections) this.DeselectObjects();
         this._selectedObjects.Add(activeObject);
         activeObject.Select();
-        if (this.SelectedObjectHighlight != null && clearOtherSelections)
+        if (this.SelectedObjectHighlight != null)
         {
+            this.DestroyHighlightInstance();
             Debug.Log("Creating selected object highlight instance");
             this._slelectedObjectHighlightInstance = Instantiate(this.SelectedObjectHighlight, activeObject.Position, Quaternion.identity);
         }
@@ -270,14 +271,19 @@ public class TranslateHandle : MonoBehaviour
 
     private void DeselectObjects()
     {
-        if (this._slelectedObjectHighlightInstance != null)
-        {
-            Destroy(this._slelectedObjectHighlightInstance.gameObject);
-        }
+        this.DestroyHighlightInstance();
         foreach (var selectedObject in this._selectedObjects)
         {
             selectedObject.Deselect();   // deselect any selected object when clicking anywhere.
         }
         this._selectedObjects.Clear();
+    }
+
+    private void DestroyHighlightInstance()
+    {
+        if (this._slelectedObjectHighlightInstance != null)
+        {
+            Destroy(this._slelectedObjectHighlightInstance.gameObject);
+        }
     }
 }
