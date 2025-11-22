@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -66,7 +65,7 @@ public class TranslateHandle : MonoBehaviour
             this.transform.rotation = Quaternion.identity;
         }
 
-        if(this.CostText != null)
+        if (this.CostText != null)
         {
             var cost = ObjectPlacer.Instance.CostForCurrentObject;
             this.CostText.gameObject.SetActive(cost.HasValue);
@@ -251,26 +250,27 @@ public class TranslateHandle : MonoBehaviour
         return Quaternion.LookRotation(forward, Vector3.up);
     }
 
-    private readonly HashSet<ISelectableObject> _selectedObjects = new();
+    private ISelectableObject _selectedObject = null;
 
-    internal void SetSelectedObject(ISelectableObject activeObject, bool clearOtherSelections)
+    internal void SetSelectedObject(ISelectableObject objectToSelect)
     {
         // TODO: fix inconsistent state when building a turret.
         // TODO: avoid ecessive itterations.
-        if (this._selectedObjects.Contains(activeObject)) return;
-        if(clearOtherSelections) this.DeselectObjects();
-        this._selectedObjects.Add(activeObject);
-        activeObject.Select();
-        if (this.SelectedObjectHighlight != null)
+        if (this._selectedObject == objectToSelect) return;
+
+        this.DeselectObjects();
+        this._selectedObject = objectToSelect.Select();
+
+        if (this._slelectedObjectHighlightInstance != null)
         {
-            if (this._slelectedObjectHighlightInstance != null)
-            {
-                this._slelectedObjectHighlightInstance.transform.position = activeObject.Position;
-            }
-            else
+            this._slelectedObjectHighlightInstance.transform.position = objectToSelect.Position;
+        }
+        else
+        {
+            if (this.SelectedObjectHighlight != null)
             {
                 Debug.Log("Creating selected object highlight instance");
-                this._slelectedObjectHighlightInstance = Instantiate(this.SelectedObjectHighlight, activeObject.Position, Quaternion.identity);
+                this._slelectedObjectHighlightInstance = Instantiate(this.SelectedObjectHighlight, objectToSelect.Position, Quaternion.identity);
             }
         }
     }
@@ -278,11 +278,11 @@ public class TranslateHandle : MonoBehaviour
     private void DeselectObjects()
     {
         this.DestroyHighlightInstance();
-        foreach (var selectedObject in this._selectedObjects)
+        if (this._selectedObject != null)
         {
-            selectedObject.Deselect();   // deselect any selected object when clicking anywhere.
+            this._selectedObject.Deselect();   // deselect any selected object when clicking anywhere.
         }
-        this._selectedObjects.Clear();
+        this._selectedObject = null;
     }
 
     private void DestroyHighlightInstance()

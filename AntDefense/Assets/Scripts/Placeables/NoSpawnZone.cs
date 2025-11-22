@@ -71,7 +71,7 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
         public override void Activate()
         {
             // Don't call base because we don't want the default behaviour
-            TranslateHandle.Instance.SetSelectedObject(this._pointObject, true);
+            TranslateHandle.Instance.SetSelectedObject(this._pointObject);
         }
     }
 

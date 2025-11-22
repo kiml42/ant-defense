@@ -66,11 +66,12 @@ public class FlipTrap : Triggerable, ISelectableObject
 
     public MeshRenderer TriggerRenderer;
 
-    public void Select()
+    public ISelectableObject Select()
     {
-        if (this.IsSelected) return;
+        if (this.IsSelected) return this;
         this.TriggerRenderer.enabled = true;
         this.IsSelected = true;
+        return this;
     }
 
     public void Deselect()

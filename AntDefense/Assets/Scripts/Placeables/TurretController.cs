@@ -6,7 +6,7 @@ using UnityEngine;
 public interface ISelectableObject : IKnowsPosition
 {
     public bool IsSelected { get; }
-    void Select();
+    ISelectableObject Select();
     void Deselect();
 }
 

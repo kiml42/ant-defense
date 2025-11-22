@@ -11,6 +11,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
     public float MaxLength;
 
     public float CostPerMeter = 1f;
+    private SelectableGhostableMonoBehaviour _child;
 
     public override float AdditionalCost
     {
@@ -76,15 +77,14 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
         Debug.Log("WallNode selected: " + this);
         // TODO have a wall placing mode for placing walls, rather than just relying on selecting wall nodes.
 
-        if (ObjectPlacer.Instance.CanBuildOnWall && this.ConnectedSelectable == null)
+        if (ObjectPlacer.Instance.CanBuildOnWall && this._child == null)
         {
             // The object can be placed on a wall, and this wall can have an object placed on top of it.
             // Place the object on this wall, and set this wall as the parent.
             var newObject = ObjectPlacer.Instance.PlaceObject(this);
             if(newObject != null)   // new object will be null if it can't be placed (e.g. too expensive)
             {
-                this.ConnectedSelectable = newObject.GetComponent<SelectableGhostableMonoBehaviour>();
-                this.ConnectedSelectable.ConnectedSelectable = this;
+                this._child = newObject.GetComponent<SelectableGhostableMonoBehaviour>();
 
                 newObject.WallParent = this;
 

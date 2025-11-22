@@ -10,40 +10,65 @@ public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehavi
 {
     public abstract Vector3 Position { get; }
 
-    public SelectableGhostableMonoBehaviour ConnectedSelectable { get; set; }
-
     /// <summary>
     /// Nullable so that either a select or deselect will always trigger the first time.
     /// </summary>
     private bool? _isSelected = null;
     public bool IsSelected => this._isSelected ?? false;
 
-    public void Select()
+    /// <summary>
+    /// Select only deffers up the chin of parents until it gets to the top-level selectable.
+    /// Once the top level is found, it calls OnSelect on itself and all children.
+    /// Only the top level selectable is registered with the TranslateHandle.
+    /// </summary>
+    /// <returns>The top-level selected object.</returns>
+    public ISelectableObject Select()
     {
-        this.OnSelect();
-        TranslateHandle.Instance.SetSelectedObject(this, false);
-        if (this._isSelected == true) return;
-        this._isSelected = true; // Make sure this is set before calling Select on the connected selectable to avoid infinite recursion.
-
-        // TODO: make sure the turret and the wall each have the other registered as their connected selectable.
-        if (this.ConnectedSelectable != null)
+        var parent = this.GetComponentInParent<SelectableGhostableMonoBehaviour>();
+        if (parent != null && parent != this)
         {
-            this.ConnectedSelectable.Select();
+            // Defer selection to parent.
+            return parent.Select();
         }
+
+        // this is the top-level selectable
+        this.OnSelect();
+
+        var children = this.GetComponentsInChildren<SelectableGhostableMonoBehaviour>();
+        foreach (var child in children)
+        {
+            if (child != this)
+            {
+                child.OnSelect();
+            }
+        }
+
+        this._isSelected = true; // Make sure this is set before calling Select on the connected selectable to avoid infinite recursion.
+        return this;
     }
 
     public void Deselect()
     {
-        this.OnDeselect();
-        if (this.IsSelected == false) return;
-        this._isSelected = false;    // Make sure this is unset before calling Deselect on the connected selectable to avoid infinite recursion.
-
-        if (this.ConnectedSelectable != null)
+        var parent = this.GetComponentInParent<SelectableGhostableMonoBehaviour>();
+        if (parent != null)
         {
-            this.ConnectedSelectable.Deselect();
+            // Defer selection to parent.
+            parent.OnDeselect();
+            return;
         }
+
+        // this is the top-level selectable
+        this.OnDeselect();
+        this._isSelected = false;    // Make sure this is unset before calling Deselect on the connected selectable to avoid infinite recursion.
     }
 
+    /// <summary>
+    /// Additional action to perform when this object is selected, or when this is a child object of the selected object.
+    /// </summary>
     protected abstract void OnSelect();
+
+    /// <summary>
+    /// Additional action to perform when this object is deselected, or when this is a child object of the deselected object.
+    /// </summary>
     protected abstract void OnDeselect();
 }

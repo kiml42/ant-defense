@@ -101,7 +101,7 @@ public class ObjectPlacer : MonoBehaviour
                 var placeableObjectOrGhost = wall.GetComponentInChildren<PlaceableObjectOrGhost>();
                 placeableObjectOrGhost.Place();
                 MoneyTracker.Spend(placeableObjectOrGhost.TotalCost);   // TODO, also update the UI to indicate this cost
-                TranslateHandle.Instance.SetSelectedObject(wall, true);
+                TranslateHandle.Instance.SetSelectedObject(wall);
                 return placeableObjectOrGhost;
             }
 
@@ -116,7 +116,7 @@ public class ObjectPlacer : MonoBehaviour
                 wallNode.ConnectTo(this._lastWallNode);
                 this._lastWallNode = wallNode;
                 this._objectBeingPlaced.GetComponent<WallNode>().ConnectTo(this._lastWallNode); // make the ghost on the handle connect so that it knows where to connect its ghost wall to.
-                TranslateHandle.Instance.SetSelectedObject(wallNode, true);
+                TranslateHandle.Instance.SetSelectedObject(wallNode);
             }
             else
             {
