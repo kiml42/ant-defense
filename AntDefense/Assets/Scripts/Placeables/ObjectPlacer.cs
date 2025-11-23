@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ObjectPlacer : MonoBehaviour
@@ -35,7 +33,7 @@ public class ObjectPlacer : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Assert (Instance == null || Instance == this, "There should not be multiple Object Placers!");
+        Debug.Assert(Instance == null || Instance == this, "There should not be multiple Object Placers!");
         Instance = this;
         StaticQuickBarObjects = this.QuickBarObjects;
     }
@@ -92,52 +90,57 @@ public class ObjectPlacer : MonoBehaviour
     /// <returns>The object that was placed</returns>
     public PlaceableObjectOrGhost PlaceObject(WallNode parent = null)
     {
-        if (this._objectBeingPlaced != null && this.CanPlaceAt(this._objectBeingPlaced.transform.position))
+        if (this._objectBeingPlaced == null)
         {
-            if(this._prefabBeingPlaced != null && this._prefabBeingPlaced.WallToBuildOn != null && parent == null)
-            {
-                // There is a prefab being placed, and it needs a wall, but a wall hasn't been provided.
-                var wall = Instantiate(this._prefabBeingPlaced.WallToBuildOn, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
-                var placeableObjectOrGhost = wall.GetComponentInChildren<PlaceableObjectOrGhost>();
-                placeableObjectOrGhost.Place();
-                MoneyTracker.Spend(placeableObjectOrGhost.TotalCost);   // TODO, also update the UI to indicate this cost
-                TranslateHandle.Instance.SetSelectedObject(wall);
-                return placeableObjectOrGhost;
-            }
-
-            //Debug.Log($"Spending {this._objectBeingPlaced.TotalCost} for {this._objectBeingPlaced}");
-            MoneyTracker.Spend(this._objectBeingPlaced.TotalCost);
-            var newObject = Instantiate(this._prefabBeingPlaced, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
-
-            var wallNode = newObject.GetComponentInChildren<WallNode>();
-            if (wallNode != null)
-            {
-                // TODO fix chaninging wall nodes when placing multiple walls in a row.
-                wallNode.ConnectTo(this._lastWallNode);
-                this._lastWallNode = wallNode;
-                this._objectBeingPlaced.GetComponent<WallNode>().ConnectTo(this._lastWallNode); // make the ghost on the handle connect so that it knows where to connect its ghost wall to.
-                TranslateHandle.Instance.SetSelectedObject(wallNode);
-            }
-            else
-            {
-                //Debug.Log("Clearing last wall node because there's no wall node component.");
-                this._lastWallNode = null;
-            }
-
-            newObject.Place();
-
-            // TODO place a wall for the object if it needs one and connect it up correctly and charge the correct price.
-
-            if(parent != null)
-            {
-                // it's being built with a parent already.
-                newObject.transform.parent = parent.transform;
-            }
-
-            return newObject;
+            Debug.LogWarning("No object is being placed, so cannot place anything.");
+            return null;
         }
-        //Debug.Log($"Can't place {this._objectBeingPlaced}. ValidPosition = {this.PositionIsValid(this._objectBeingPlaced.transform.position)}, CanAfford = {this.CanAffordCurrentObject}");
-        return null;
+        if (!this.CanPlaceAt(this._objectBeingPlaced.transform.position))
+        {
+            Debug.LogWarning("Cannot place the object being placed at its current position.");
+            return null;
+        }
+        if (this._prefabBeingPlaced != null && this._prefabBeingPlaced.WallToBuildOn != null && parent == null)
+        {
+            // There is a prefab being placed, and it needs a wall, but a wall hasn't been provided.
+            var wall = Instantiate(this._prefabBeingPlaced.WallToBuildOn, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
+            var wallPlaceable = wall.GetComponentInChildren<PlaceableObjectOrGhost>();
+            wallPlaceable.Place();
+            MoneyTracker.Spend(wallPlaceable.TotalCost);   // TODO, also update the UI to indicate this cost
+            TranslateHandle.Instance.SetSelectedObject(wall);
+            return wallPlaceable;
+        }
+
+        //Debug.Log($"Spending {this._objectBeingPlaced.TotalCost} for {this._objectBeingPlaced}");
+        MoneyTracker.Spend(this._objectBeingPlaced.TotalCost);
+        var newObject = Instantiate(this._prefabBeingPlaced, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
+
+        var wallNode = newObject.GetComponentInChildren<WallNode>();
+        if (wallNode != null)
+        {
+            // TODO fix chaninging wall nodes when placing multiple walls in a row.
+            wallNode.ConnectTo(this._lastWallNode);
+            this._lastWallNode = wallNode;
+            this._objectBeingPlaced.GetComponent<WallNode>().ConnectTo(this._lastWallNode); // make the ghost on the handle connect so that it knows where to connect its ghost wall to.
+            TranslateHandle.Instance.SetSelectedObject(wallNode);
+        }
+        else
+        {
+            //Debug.Log("Clearing last wall node because there's no wall node component.");
+            this._lastWallNode = null;
+        }
+
+        newObject.Place();
+
+        // TODO place a wall for the object if it needs one and connect it up correctly and charge the correct price.
+
+        if (parent != null)
+        {
+            // it's being built with a parent already.
+            newObject.transform.parent = parent.transform;
+        }
+
+        return newObject;
     }
 
     private WallNode _lastWallNode = null;

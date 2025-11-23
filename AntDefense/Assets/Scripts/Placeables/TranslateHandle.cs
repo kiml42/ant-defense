@@ -254,8 +254,6 @@ public class TranslateHandle : MonoBehaviour
 
     internal void SetSelectedObject(ISelectableObject objectToSelect)
     {
-        // TODO: fix inconsistent state when building a turret.
-        // TODO: avoid ecessive itterations.
         if (this._selectedObject == objectToSelect) return;
 
         this.DeselectObjects();
