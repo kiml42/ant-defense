@@ -74,7 +74,7 @@ public class ObjectPlacer : MonoBehaviour
 
     public void CancelPlacingObject()
     {
-        if (IsPlacingObject)
+        if (this.IsPlacingObject)
         {
             Destroy(this._objectBeingPlaced.gameObject);
             this._objectBeingPlaced = null;
