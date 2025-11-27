@@ -23,20 +23,26 @@ public abstract class  BaseBuildAnimation : MonoBehaviour
     /// The animation duration in seconds.
     /// </summary>
     public float Duration = 3f;
+    public float StartDelay = 0.5f;
+    private float _delayTimer = 0f;
     protected float _progress = 0f;
     private bool _isRunning = false;
 
     public void StartAnimation()
     {
         this._isRunning = true;
+        this._progress = 0;
+        this.UpdateAnimation();
     }
 
     protected abstract void UpdateAnimation();
 
-
     void FixedUpdate()
     {
-        if(!this._isRunning) return;
+        Debug.Log($"Build animation progress: {_progress}");
+        if (!this._isRunning) return;
+        this._delayTimer += Time.fixedDeltaTime;
+        if(this._delayTimer < this.StartDelay) return;
         this._progress += Time.fixedDeltaTime / Duration;
         if (this._progress > 1f)
         {
