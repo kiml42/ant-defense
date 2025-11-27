@@ -5,8 +5,9 @@ public class RiseUpBuildAnimation : BaseBuildAnimation
     public Vector3 StartOffset;
     private Vector3 EndPosition;
 
-    void Start()
+    protected override void Initilise()
     {
+        //Debug.Log($"Initilise location = {this.transform.localPosition}");
         var localPosition = this.transform.localPosition;
         this.EndPosition = localPosition;
     }
@@ -14,6 +15,7 @@ public class RiseUpBuildAnimation : BaseBuildAnimation
     protected override void UpdateAnimation()
     {
         this.transform.localPosition = Vector3.Lerp(this.EndPosition + StartOffset, this.EndPosition, this._progress);
+        //Debug.Log($"RiseUpBuildAnimation UpdateAnimation progress: {_progress}, End: {EndPosition}, Current: {this.transform.localPosition}");
     }
 }
 
@@ -30,19 +32,22 @@ public abstract class  BaseBuildAnimation : MonoBehaviour
 
     public void StartAnimation()
     {
+        this.Initilise();
         this._isRunning = true;
         this._progress = 0;
         this.UpdateAnimation();
     }
 
+    protected abstract void Initilise();
     protected abstract void UpdateAnimation();
 
     void FixedUpdate()
     {
-        Debug.Log($"Build animation progress: {_progress}");
         if (!this._isRunning) return;
         this._delayTimer += Time.fixedDeltaTime;
+        //Debug.Log($"Build animation delayTimer: {_delayTimer}");
         if(this._delayTimer < this.StartDelay) return;
+        //Debug.Log($"Build animation progress: {_progress}");
         this._progress += Time.fixedDeltaTime / Duration;
         if (this._progress > 1f)
         {
