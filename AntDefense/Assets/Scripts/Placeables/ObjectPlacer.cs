@@ -16,6 +16,7 @@ public class ObjectPlacer : MonoBehaviour
     /// </summary>
     PlaceableObjectOrGhost _prefabBeingPlaced;
     private PlaceableObjectOrGhost _objectBeingPlaced;
+    private WallNode _additionalWallGhost;
 
     private readonly KeyCode[] _quickBarKeys = {
         KeyCode.Alpha1,
@@ -70,6 +71,13 @@ public class ObjectPlacer : MonoBehaviour
         this._objectBeingPlaced = Instantiate(prefab, this.Handle.transform.position - prefab.FloorPoint.position, this.Handle.transform.rotation);
         this._objectBeingPlaced.transform.parent = this.Handle.transform;
         this._objectBeingPlaced.StartPlacing();
+
+        if(this._objectBeingPlaced.WallToBuildOn != null)
+        {
+            this._additionalWallGhost = Instantiate(this._objectBeingPlaced.WallToBuildOn, this.Handle.transform.position, this.Handle.transform.rotation);
+            this._additionalWallGhost.transform.parent = this.Handle.transform;
+            this._additionalWallGhost.GetComponent<PlaceableObjectOrGhost>().StartPlacing();
+        }
     }
 
     public void CancelPlacingObject()
@@ -81,6 +89,11 @@ public class ObjectPlacer : MonoBehaviour
             //Debug.Log("Clearing last wall node because placement is being cancelled.");
             this._lastWallNode = null;
             this._prefabBeingPlaced = null;
+        }
+        if(this._additionalWallGhost != null)
+        {
+            Destroy(this._additionalWallGhost.gameObject);
+            this._additionalWallGhost = null;
         }
     }
 
@@ -149,6 +162,7 @@ public class ObjectPlacer : MonoBehaviour
     }
 
     private float? _costCache;
+
     public float? CostForCurrentObject
     {
         get
