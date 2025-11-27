@@ -106,7 +106,7 @@ public class ObjectPlacer : MonoBehaviour
             var wall = Instantiate(this._prefabBeingPlaced.WallToBuildOn, this._objectBeingPlaced.transform.position, this._objectBeingPlaced.transform.rotation);
             var wallPlaceable = wall.GetComponentInChildren<PlaceableObjectOrGhost>();
             wallPlaceable.Place();
-            MoneyTracker.Spend(wallPlaceable.TotalCost);   // TODO, also update the UI to indicate this cost
+            MoneyTracker.Spend(wallPlaceable.TotalCost);
             TranslateHandle.Instance.SetSelectedObject(wall);
             return wallPlaceable;
         }
@@ -131,8 +131,6 @@ public class ObjectPlacer : MonoBehaviour
         }
 
         newObject.Place();
-
-        // TODO place a wall for the object if it needs one and connect it up correctly and charge the correct price.
 
         if (parent != null)
         {

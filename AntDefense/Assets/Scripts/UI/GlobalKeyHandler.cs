@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class GlobalKeyHandler : MonoBehaviour
 {
-    // TODO: camera doesn't move when paused.
-    // TODO: Bug: walls still look see-through when paused.
     public KeyCode TogglePauseKey = KeyCode.Space;
 
     public KeyCode FastForwardModeKey = KeyCode.F;
