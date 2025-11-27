@@ -76,6 +76,13 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
         this._isPlaced = true;
 
         this.SetNoSpawnZoneEnabled(true);
+
+        var animations = this.GetComponentsInChildren<BaseBuildAnimation>();
+        Debug.Log($"Starting {animations.Length} build animations for {this}");
+        foreach (var animation in animations)
+        {
+            animation.StartAnimation();
+        }
     }
 
     // Update is called once per frame
