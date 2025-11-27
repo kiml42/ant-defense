@@ -29,6 +29,12 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
         public readonly Vector3 Point;
         public readonly PointType Type;
 
+        /// <summary>
+        /// Gets a value indicating whether the current object represents a wall that can be built upon.
+        /// retrns false if it's not a wall, or it is a wall, but it can't be built upon.
+        /// </summary>
+        public virtual bool IsWallToBuildOn => false;
+
         public float SnapPriority
         {
             get
@@ -62,6 +68,8 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
     private class SelectionPoint : AdjustedPoint
     {
         private readonly ISelectableObject _pointObject;
+
+        public override bool IsWallToBuildOn => _pointObject.IsWallToBuildOn;
 
         public SelectionPoint(ISelectableObject point) : base(point.Position, PointType.SelectionPoint)
         {

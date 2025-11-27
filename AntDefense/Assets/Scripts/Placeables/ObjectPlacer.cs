@@ -159,7 +159,14 @@ public class ObjectPlacer : MonoBehaviour
             if (!this._costCache.HasValue)
             {
                 this._costCache = this._objectBeingPlaced == null ? null : (float?)this._objectBeingPlaced.TotalCost;
+                if(this.CanBuildOnWall && !TranslateHandle.IsOnBuildableWall) 
+                {
+                    // need to add the cost of the wall too.
+                    var placeableWallPrefab = this._objectBeingPlaced.WallToBuildOn.GetComponent<PlaceableObjectOrGhost>();
+                    this._costCache += placeableWallPrefab.BaseCost;
+                }
             }
+
             return this._costCache;
         }
     }

@@ -6,6 +6,7 @@ using UnityEngine;
 public interface ISelectableObject : IKnowsPosition
 {
     public bool IsSelected { get; }
+    public bool IsWallToBuildOn { get { return false; } }
     ISelectableObject Select();
     void Deselect();
 }

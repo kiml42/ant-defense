@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePositionValidator, ISelectableObject
@@ -12,6 +10,8 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
     public float CostPerMeter = 1f;
     private SelectableGhostableMonoBehaviour _child;
+
+    public bool IsWallToBuildOn => this._child == null;
 
     public override float AdditionalCost
     {

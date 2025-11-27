@@ -1,11 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TranslateHandle : MonoBehaviour
 {
     public static TranslateHandle Instance { get; private set; }
+    public static bool IsOnBuildableWall
+    {
+        get
+        {
+            return Instance._isOnBuildableWall;
+        }
+    }
+    private bool _isOnBuildableWall;
 
     public int PlaceMouseButton = 0;
     public int CancelMouseButton = 1;
@@ -181,6 +190,7 @@ public class TranslateHandle : MonoBehaviour
             case NoSpawnZone.PointType.SelectionPoint:
                 //Debug.Log($"SelectionPoint position {changedPosition.Point}");
                 this.transform.position = changedPosition.Point;
+                this._isOnBuildableWall = changedPosition.IsWallToBuildOn;
                 break;
             case NoSpawnZone.PointType.Invalid:
                 //Debug.Log($"Invalid position {changedPosition.Point}");
