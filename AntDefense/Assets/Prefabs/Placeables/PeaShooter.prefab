@@ -60,6 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   Duration: 3
+  StartDelay: 0.5
   StartOffset: {x: 0, y: -2, z: 0}
 --- !u!1 &1834373357261692949
 GameObject:
@@ -293,6 +294,7 @@ GameObject:
   - component: {fileID: 6439116401107928745}
   - component: {fileID: 123313315461227101}
   - component: {fileID: 7074144758754950822}
+  - component: {fileID: 46991766913068027}
   m_Layer: 0
   m_Name: barrel
   m_TagString: Untagged
@@ -410,6 +412,21 @@ MonoBehaviour:
   GhostMaterial: {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
   OriginalMaterial: {fileID: 0}
   Renderer: {fileID: 6439116401107928745}
+--- !u!114 &46991766913068027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4797715489487285133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e3d991e298cbf4ebe5e5aeebbca84e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RiseUpBuildAnimation
+  Duration: 1
+  StartDelay: 2.5
+  StartOffset: {x: 0, y: 0, z: -0.5}
 --- !u!1 &5438856199470397677
 GameObject:
   m_ObjectHideFlags: 0
@@ -584,6 +601,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   Duration: 3
+  StartDelay: 0.5
   StartOffset: {x: 0, y: -2, z: 0}
 --- !u!1 &6956860544877528276
 GameObject:
