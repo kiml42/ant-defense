@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IInteractivePosition, ISelectableObject
+public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePositionValidator, ISelectableObject
 {
     public WallNode ConnectedNode;
     public Transform Wall;
@@ -9,6 +9,9 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
     public float MaxLength;
 
     public float CostPerMeter = 1f;
+    private SelectableGhostableMonoBehaviour _child;
+
+    public bool IsWallToBuildOn => this._child == null;
 
     public override float AdditionalCost
     {
@@ -23,20 +26,21 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
         }
     }
 
-    public Vector3 Position => this.transform.position;
+    public override Vector3 Position => this.transform.position;
 
     public override void OnPlace()
     {
         //Debug.Log("WallNode placed, connected to " + this.ConnectedNode);
         this.UpdateWall();
         this.enabled = false;   //disable to prevent updating the wall every frame
-        NoSpawnZone.Register(this); // register this as an interactive point
+        NoSpawnZone.Register(this); // register this as a selection point
     }
 
     internal void ConnectTo(WallNode other)
     {
         //Debug.Log("Connecting WallNode to " + other);
         this.ConnectedNode = other;
+        this.UpdateWall();
     }
 
     public bool PositionIsValid(Vector3 position)
@@ -68,35 +72,52 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
         this.Wall.localScale = Vector3.zero;
     }
 
-    public void Interact()
+    protected override void OnSelect()
     {
-        Debug.Log("Interaction with wall node " + this);
-        TranslateHandle.Instance.SetSelectedObject(this);
+        Debug.Log("WallNode selected: " + this);
+        // TODO have a wall placing mode for placing walls, rather than just relying on selecting wall nodes.
 
-        if (ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null)
+        if (ObjectPlacer.Instance.CanBuildOnWall && this._child == null)
+        {
+            // The object can be placed on a wall, and this wall can have an object placed on top of it.
+            // Place the object on this wall, and set this wall as the parent.
+            var newObject = ObjectPlacer.Instance.PlaceObject(this);
+            if(newObject != null)   // new object will be null if it can't be placed (e.g. too expensive)
+            {
+                this._child = newObject.GetComponent<SelectableGhostableMonoBehaviour>();
+
+                newObject.WallParent = this;
+
+                this.Deselect();
+            }
+            return;
+        }
+
+        if (
+            ObjectPlacer.Instance.WallNodeBeingPlaced != null                   // A wall node is being placed
+            && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null  // It is connected to something
+            && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != this  // It's not connected to this
+            )
         {
             // is currently placing a wall node
             // the wall node that is being placed is already connected to another node
             // So place the new wall node at this location, for the connected wall to be placed correctly, but then hide the new node because it overlaps this node.
             var placedObject = ObjectPlacer.Instance.PlaceObject();
-            placedObject.GetComponent<WallNode>().RemoveNode();
+            if (placedObject != null)   // may not be able to place the object (e.g. too expensive), so do nothing.
+            {
+                placedObject.GetComponent<WallNode>().RemoveNode();
+            }
+            return;
         }
-        else
-        {
+
+        if(!ObjectPlacer.Instance.IsPlacingObject || (ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null))
             // not currently placing a wall node, or the wall node being placed is not yet connected to another node, so start placing a new wall node connected to this one.
             ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
-        }
     }
 
-    public void Select()
+    protected override void OnDeselect()
     {
-        Debug.Log("WallNode selected: " + this);
-        // TODO make selecting the wall node be the trigger for starting to place a wall node connected to this one.
-        // TODO have a wall placing mode for placing walls, rather than just relying on selecting wall nodes.
-    }
-
-    public void Deselect()
-    {
+        // Do nothing
     }
 
     /// <summary>
@@ -114,9 +135,19 @@ public class WallNode : PlaceableMonoBehaviour, IPlaceablePositionValidator, IIn
             c.enabled = false;
         }
     }
+
+    public override void Ghostify()
+    {
+        // Do nothing
+    }
+
+    public override void UnGhostify()
+    {
+        // Do nothing
+    }
 }
 
-public abstract class PlaceableMonoBehaviour : MonoBehaviour
+public abstract class PlaceableSelectableGhostableMonoBehaviour : SelectableGhostableMonoBehaviour
 {
     public virtual float AdditionalCost => 0f;
 

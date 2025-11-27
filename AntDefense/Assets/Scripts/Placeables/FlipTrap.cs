@@ -1,11 +1,12 @@
 using UnityEngine;
 
-public class FlipTrap : Triggerable, IInteractivePosition, ISelectableObject
+public class FlipTrap : Triggerable, ISelectableObject
 {
     public HingeJoint Hinge;
 
     public float FireSpeed = -500;
     public float ResetSpeed = 10;
+    public bool IsSelected { get; private set; }
 
     /// <summary>
     /// Delay before reseeting
@@ -30,7 +31,7 @@ public class FlipTrap : Triggerable, IInteractivePosition, ISelectableObject
     // Start is called before the first frame update
     void Start()
     {
-        NoSpawnZone.Register(this); // register this as an interactive point
+        NoSpawnZone.Register(this); // register this as an selection point
         this.Deselect();
         this._rearmCountdown = this.ReArmDelay;
     }
@@ -63,21 +64,20 @@ public class FlipTrap : Triggerable, IInteractivePosition, ISelectableObject
     }
     public Vector3 Position => this.transform.position;
 
-    public void Interact()
-    {
-        Debug.Log("Interaction with turret " + this);
-        TranslateHandle.Instance.SetSelectedObject(this);
-    }
-
     public MeshRenderer TriggerRenderer;
 
-    public void Select()
+    public ISelectableObject Select()
     {
+        if (this.IsSelected) return this;
         this.TriggerRenderer.enabled = true;
+        this.IsSelected = true;
+        return this;
     }
 
     public void Deselect()
     {
+        if (!this.IsSelected) return;
         this.TriggerRenderer.enabled = false;
+        this.IsSelected = false;
     }
 }

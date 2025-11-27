@@ -8,7 +8,7 @@ public class MaterialGhostable : BaseGhostableMonobehaviour
 
     public override void Ghostify()
     {
-        if (this.Renderer != null)
+        if (this.Renderer != null && this.GhostMaterial != null)
         {
             if (this.OriginalMaterial == null)
             {
@@ -20,7 +20,7 @@ public class MaterialGhostable : BaseGhostableMonobehaviour
 
     public override void UnGhostify()
     {
-        if (this.Renderer != null)
+        if (this.Renderer != null && this.OriginalMaterial != null)
         {
             this.Renderer.material = this.OriginalMaterial;
         }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -7,6 +6,14 @@ using UnityEngine;
 public class TranslateHandle : MonoBehaviour
 {
     public static TranslateHandle Instance { get; private set; }
+    public static bool IsOnBuildableWall
+    {
+        get
+        {
+            return Instance._isOnBuildableWall;
+        }
+    }
+    private bool _isOnBuildableWall;
 
     public int PlaceMouseButton = 0;
     public int CancelMouseButton = 1;
@@ -45,6 +52,7 @@ public class TranslateHandle : MonoBehaviour
     {
         this.HandleCancelButton();
 
+        // TODO: bug when clicking briefy on a quick bar button - it places the object immediately behind the button. Need to enforce some movement to start the drag.
         if (Input.GetMouseButtonDown(this.PlaceMouseButton))
         {
             this.TryActivateQuickBarButton();
@@ -52,7 +60,7 @@ public class TranslateHandle : MonoBehaviour
 
         if (Input.GetMouseButtonUp(this.PlaceMouseButton))
         {
-            this.DeselectObject();
+            this.DeselectObjects();
             this.ActivatePoint();
         }
 
@@ -65,7 +73,7 @@ public class TranslateHandle : MonoBehaviour
             this.transform.rotation = Quaternion.identity;
         }
 
-        if(this.CostText != null)
+        if (this.CostText != null)
         {
             var cost = ObjectPlacer.Instance.CostForCurrentObject;
             this.CostText.gameObject.SetActive(cost.HasValue);
@@ -80,7 +88,7 @@ public class TranslateHandle : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Escape))
         {
-            this.DeselectObject();
+            this.DeselectObjects();
             ObjectPlacer.Instance.CancelPlacingObject();
             this._distanceSinceClick = 0;
             this._lastMousePosition = null;
@@ -98,7 +106,7 @@ public class TranslateHandle : MonoBehaviour
             //Debug.Log("Cancel mouse up after moving " + _distanceSinceClick);
             if (this._distanceSinceClick < this.CancelThreshold)
             {
-                this.DeselectObject();
+                this.DeselectObjects();
                 ObjectPlacer.Instance.CancelPlacingObject();
             }
             this._distanceSinceClick = 0;
@@ -178,10 +186,10 @@ public class TranslateHandle : MonoBehaviour
                 //Debug.Log($"Corrected position {changedPosition.Point}");
                 this.transform.position = changedPosition.Point;
                 break;
-            case NoSpawnZone.PointType.InteractionPoint:
-                //Debug.Log($"InteractionPoint position {changedPosition.Point}");
+            case NoSpawnZone.PointType.SelectionPoint:
+                //Debug.Log($"SelectionPoint position {changedPosition.Point}");
                 this.transform.position = changedPosition.Point;
-                // TODO remember that this is an interactive point.
+                this._isOnBuildableWall = changedPosition.IsWallToBuildOn;
                 break;
             case NoSpawnZone.PointType.Invalid:
                 //Debug.Log($"Invalid position {changedPosition.Point}");
@@ -251,26 +259,44 @@ public class TranslateHandle : MonoBehaviour
         return Quaternion.LookRotation(forward, Vector3.up);
     }
 
-    private ISelectableObject _selectedObject;
-    internal void SetSelectedObject(ISelectableObject activeObject)
+    private ISelectableObject _selectedObject = null;
+
+    internal void SetSelectedObject(ISelectableObject objectToSelect)
     {
-        this.DeselectObject();
-        this._selectedObject = activeObject;
-        this._selectedObject?.Select();
-        if (this.SelectedObjectHighlight != null)
+        if (this._selectedObject == objectToSelect) return;
+
+        this.DeselectObjects();
+        this._selectedObject = objectToSelect.Select();
+
+        if (this._slelectedObjectHighlightInstance != null)
         {
-            Debug.Log("Creating selected object highlight instance");
-            this._slelectedObjectHighlightInstance = Instantiate(this.SelectedObjectHighlight, this._selectedObject.Position, Quaternion.identity);
+            this._slelectedObjectHighlightInstance.transform.position = objectToSelect.Position;
+        }
+        else
+        {
+            if (this.SelectedObjectHighlight != null)
+            {
+                Debug.Log("Creating selected object highlight instance");
+                this._slelectedObjectHighlightInstance = Instantiate(this.SelectedObjectHighlight, objectToSelect.Position, Quaternion.identity);
+            }
         }
     }
 
-    private void DeselectObject()
+    private void DeselectObjects()
+    {
+        this.DestroyHighlightInstance();
+        if (this._selectedObject != null)
+        {
+            this._selectedObject.Deselect();   // deselect any selected object when clicking anywhere.
+        }
+        this._selectedObject = null;
+    }
+
+    private void DestroyHighlightInstance()
     {
         if (this._slelectedObjectHighlightInstance != null)
         {
             Destroy(this._slelectedObjectHighlightInstance.gameObject);
         }
-        this._selectedObject?.Deselect();   // deselect any selected object when clicking anywhere.
-        this._selectedObject = null;
     }
 }

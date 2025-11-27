@@ -1,14 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public interface ISelectableObject : IKnowsPosition
 {
-    void Select();
+    public bool IsSelected { get; }
+    public bool IsWallToBuildOn { get { return false; } }
+    ISelectableObject Select();
     void Deselect();
 }
 
-public class TurretController : BaseGhostableMonobehaviour, IInteractivePosition, ISelectableObject
+public class TurretController : SelectableGhostableMonoBehaviour
 {
     public Rigidbody Projectile;
     public Transform Emitter;
@@ -22,19 +25,21 @@ public class TurretController : BaseGhostableMonobehaviour, IInteractivePosition
     private List<HealthController> _targetsInRange = new();
 
     private float _range;
-    public Vector3 Position => this.transform.position;
+    public override Vector3 Position
+    {
+        get
+        {
+            Debug.Assert(this.transform != null, "TurretController has no transform!");
+            Debug.Assert(!this.IsDestroyed(), "TurretController is destroyed!");
+            return this.transform.position;
+        }
+    }
 
     public MeshRenderer RangeRenderer;
 
     public TurretTrigger Trigger;
 
     private bool _enabled = true;
-
-    public void Interact()
-    {
-        Debug.Log("Interaction with turret " + this);
-        TranslateHandle.Instance.SetSelectedObject(this);
-    }
 
     void Start()
     {
@@ -46,7 +51,6 @@ public class TurretController : BaseGhostableMonobehaviour, IInteractivePosition
         NoSpawnZone.Register(this); // register this as an interactive point
 
         this._range = this.Trigger.TriggerCollider.radius * this.Trigger.TriggerCollider.transform.localScale.x;
-        this.Deselect();
         return;
     }
 
@@ -54,7 +58,6 @@ public class TurretController : BaseGhostableMonobehaviour, IInteractivePosition
     {
         if (!this._enabled)
         {
-            this.Deselect();
             return;
         }
 
@@ -123,13 +126,13 @@ public class TurretController : BaseGhostableMonobehaviour, IInteractivePosition
         this.CleanTargets();
     }
 
-    public void Select()
+    protected override void OnSelect()
     {
         if (this.RangeRenderer != null)
             this.RangeRenderer.enabled = true;
     }
 
-    public void Deselect()
+    protected override void OnDeselect()
     {
         if (this.RangeRenderer != null)
             this.RangeRenderer.enabled = false;
