@@ -312,6 +312,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4e3d991e298cbf4ebe5e5aeebbca84e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  Duration: 3
+  StartOffset: {x: 0, y: -2, z: 0}
 --- !u!1 &5634726112598461944
 GameObject:
   m_ObjectHideFlags: 0
@@ -325,6 +327,7 @@ GameObject:
   - component: {fileID: 6336691038196134746}
   - component: {fileID: 3364657898501686454}
   - component: {fileID: 1078190670684022284}
+  - component: {fileID: 5288493037615253632}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -441,6 +444,20 @@ MonoBehaviour:
   GhostMaterial: {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
   OriginalMaterial: {fileID: 0}
   Renderer: {fileID: 6336691038196134746}
+--- !u!114 &5288493037615253632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5634726112598461944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e3d991e298cbf4ebe5e5aeebbca84e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  Duration: 3
+  StartOffset: {x: 0, y: -2, z: 0}
 --- !u!1 &6148484922465968118
 GameObject:
   m_ObjectHideFlags: 0
