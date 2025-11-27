@@ -72,7 +72,7 @@ public class ObjectPlacer : MonoBehaviour
         this._objectBeingPlaced.transform.parent = this.Handle.transform;
         this._objectBeingPlaced.StartPlacing();
 
-        if(this._objectBeingPlaced.WallToBuildOn != null)
+        if (this._objectBeingPlaced.WallToBuildOn != null)
         {
             this._additionalWallGhost = Instantiate(this._objectBeingPlaced.WallToBuildOn, this.Handle.transform.position, this.Handle.transform.rotation);
             this._additionalWallGhost.transform.parent = this.Handle.transform;
@@ -90,7 +90,7 @@ public class ObjectPlacer : MonoBehaviour
             this._lastWallNode = null;
             this._prefabBeingPlaced = null;
         }
-        if(this._additionalWallGhost != null)
+        if (this._additionalWallGhost != null)
         {
             Destroy(this._additionalWallGhost.gameObject);
             this._additionalWallGhost = null;
@@ -167,11 +167,10 @@ public class ObjectPlacer : MonoBehaviour
     {
         get
         {
-            // TODO account for the wall that will be automatically added if the object being placed comes with a wall, and it's not being placed on a wall.
             if (!this._costCache.HasValue)
             {
                 this._costCache = this._objectBeingPlaced == null ? null : (float?)this._objectBeingPlaced.TotalCost;
-                if(this.CanBuildOnWall && !TranslateHandle.IsOnBuildableWall) 
+                if (this.CanBuildOnWall && !TranslateHandle.IsOnBuildableWall)
                 {
                     // need to add the cost of the wall too.
                     var placeableWallPrefab = this._objectBeingPlaced.WallToBuildOn.GetComponent<PlaceableObjectOrGhost>();
@@ -228,8 +227,6 @@ public class ObjectPlacer : MonoBehaviour
             }
         }
         this._lastWallNode = wallNode;  // this must come after StartPlacingGhost because StartPlacingGhost cancelss teh current placing, and clears the last wall node.
-
-        // TODO check if StartPlacingGhost should clear the last wall node
     }
 
     /// <summary>
