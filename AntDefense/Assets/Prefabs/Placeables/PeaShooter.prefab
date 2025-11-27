@@ -120,7 +120,7 @@ MonoBehaviour:
   BaseCost: 30
   WallToBuildOn: {fileID: 710721694348773487, guid: fc03a1413b4298648ac5624f71573cd1, type: 3}
   WallParent: {fileID: 0}
-  Icon: {fileID: 0}
+  Icon: {fileID: 6761051270729749225, guid: fd14998c1ee98ab42a87fa7acbe143cc, type: 3}
   ScaleForButton: 0.6
   OffsetForButton: {x: 0, y: 0, z: 0}
   RotationForButton: {x: 0.28308818, y: 0.14199114, z: 0.076293215, w: 0.9454517}
