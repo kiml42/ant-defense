@@ -168,6 +168,7 @@ MonoBehaviour:
   MaxHealth: 10
   HealthBar: {fileID: 949351232848168074}
   DeadObject: {fileID: 0}
+  Ouch: {fileID: 3480258754935908128, guid: a001eae3c1a837f4ebaf9a17d2c175ed, type: 3}
 --- !u!1 &2586961702934054646
 GameObject:
   m_ObjectHideFlags: 0
