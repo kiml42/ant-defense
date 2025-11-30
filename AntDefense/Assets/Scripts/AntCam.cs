@@ -8,6 +8,10 @@ public class AntCam : MonoBehaviour
     public float CameraPanSpeed = 0.8f;
     public float MinCameraSpeed = 10f;
     public float MaxCameraSpeed = 50f;
+
+    public float MaxXDeviation = 100f;
+    public float MaxZDeviation = 100f;
+
     private Vector3 _lastMousePosition;
 
     private KeyCode[] _upKeyCodes = new[] { KeyCode.W, KeyCode.UpArrow };
@@ -69,6 +73,9 @@ public class AntCam : MonoBehaviour
             this.ProcessKeys(ref newX, ref newZ);
         }
 
+        newX = Mathf.Clamp(newX, -this.MaxXDeviation, this.MaxXDeviation);
+        newZ = Mathf.Clamp(newZ, -this.MaxZDeviation, this.MaxZDeviation);
+
         this.transform.position = new Vector3(newX, this.transform.position.y, newZ);
     }
 
@@ -95,7 +102,7 @@ public class AntCam : MonoBehaviour
                 {
                     newX -= this.KeyScrollSpeed * this.Speed;
                 }
-                Debug.Log($"New pos {newX}, {newZ} ");
+                //Debug.Log($"New pos {newX}, {newZ} ");
             }
         }
     }
