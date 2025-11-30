@@ -716,6 +716,8 @@ MonoBehaviour:
   CameraPanSpeed: 0.07
   MinCameraSpeed: 6
   MaxCameraSpeed: 40
+  MaxXDeviation: 120
+  MaxZDeviation: 80
   Camera: {fileID: 5620213517466043452}
   KeyScrollSpeed: 1.7
   KeyZoomSpeed: 0.2
