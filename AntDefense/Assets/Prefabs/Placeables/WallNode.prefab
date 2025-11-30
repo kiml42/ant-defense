@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41fa956728f9dc8459bd091749fb823f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ImpactDamageHandler
-  ResistanceImpulse: 15
+  ResistanceImpulse: 0
   DamagePerUnitImpulse: 0.2
   HealthController: {fileID: 5822965201772160874}
   Ouch: {fileID: 3480258754935908128, guid: a001eae3c1a837f4ebaf9a17d2c175ed, type: 3}
@@ -354,6 +354,7 @@ GameObject:
   - component: {fileID: 5712758428748713101}
   - component: {fileID: 2395402121732242385}
   - component: {fileID: 1039662210768527803}
+  - component: {fileID: 7650473417551848698}
   m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
@@ -483,6 +484,22 @@ MonoBehaviour:
   Duration: 3
   StartDelay: 0.5
   StartOffset: {x: 0, y: -2, z: 0}
+--- !u!114 &7650473417551848698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4529891399528907297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41fa956728f9dc8459bd091749fb823f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ImpactDamageHandler
+  ResistanceImpulse: 15
+  DamagePerUnitImpulse: 0.2
+  HealthController: {fileID: 5822965201772160874}
+  Ouch: {fileID: 3480258754935908128, guid: a001eae3c1a837f4ebaf9a17d2c175ed, type: 3}
 --- !u!1 &5055690365835478866
 GameObject:
   m_ObjectHideFlags: 0
@@ -542,6 +559,7 @@ GameObject:
   - component: {fileID: 3364657898501686454}
   - component: {fileID: 1078190670684022284}
   - component: {fileID: 5288493037615253632}
+  - component: {fileID: 2859469740872691902}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -673,6 +691,22 @@ MonoBehaviour:
   Duration: 3
   StartDelay: 0.5
   StartOffset: {x: 0, y: -2, z: 0}
+--- !u!114 &2859469740872691902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5634726112598461944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41fa956728f9dc8459bd091749fb823f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ImpactDamageHandler
+  ResistanceImpulse: 15
+  DamagePerUnitImpulse: 0.2
+  HealthController: {fileID: 5822965201772160874}
+  Ouch: {fileID: 3480258754935908128, guid: a001eae3c1a837f4ebaf9a17d2c175ed, type: 3}
 --- !u!1 &6148484922465968118
 GameObject:
   m_ObjectHideFlags: 0
