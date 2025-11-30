@@ -297,7 +297,7 @@ GameObject:
   - component: {fileID: 3660855418458060726}
   m_Layer: 2
   m_Name: ScoutAnt
-  m_TagString: Untagged
+  m_TagString: Ants1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -499,6 +499,7 @@ MonoBehaviour:
   ResistanceImpulse: 15
   DamagePerUnitImpulse: 0.8
   HealthController: {fileID: 5783434083664333321}
+  Ouch: {fileID: 0}
 --- !u!1 &1309134283868194372
 GameObject:
   m_ObjectHideFlags: 0

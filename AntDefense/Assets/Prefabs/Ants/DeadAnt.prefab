@@ -215,7 +215,7 @@ GameObject:
   - component: {fileID: 6974693750608024528}
   m_Layer: 2
   m_Name: DeadAnt
-  m_TagString: Untagged
+  m_TagString: Ants1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -278,6 +278,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RemainingTime: 120
   ScaleDownTime: 5
+  IsRunning: 1
 --- !u!114 &5218749271345500492
 MonoBehaviour:
   m_ObjectHideFlags: 0

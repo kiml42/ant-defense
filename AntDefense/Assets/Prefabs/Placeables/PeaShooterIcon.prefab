@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6761051270729749225}
   m_Layer: 0
   m_Name: PeaShooterIcon
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -103,6 +103,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6761051270729749225}
     m_Modifications:
+    - target: {fileID: -9012147323840322498, guid: e5e3fc3a01291f9499780177f539e9f5, type: 3}
+      propertyPath: Icon
+      value: 
+      objectReference: {fileID: 6761051270729749225}
     - target: {fileID: 1489239274791151828, guid: e5e3fc3a01291f9499780177f539e9f5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
