@@ -226,7 +226,7 @@ public class AntStateMachine : DeathActionBehaviour
         }
         else
         {
-            Debug.Log("Not checking for barriers. Missing target or viewpoint.");
+            //Debug.Log("Not checking for barriers. Missing target or viewpoint.");
             hasLineOfSight = false;
         }
 
