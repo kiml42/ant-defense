@@ -455,7 +455,6 @@ MonoBehaviour:
   MaxHealth: 10
   HealthBar: {fileID: 8312450896073184057}
   DeadObject: {fileID: 8542657810488951160, guid: 4a96234d00972424d97072ae447b90a2, type: 3}
-  Ouch: {fileID: 3480258754935908128, guid: a001eae3c1a837f4ebaf9a17d2c175ed, type: 3}
 --- !u!114 &1805795825312131026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -501,6 +500,7 @@ MonoBehaviour:
   ResistanceImpulse: 10
   DamagePerUnitImpulse: 0.2
   HealthController: {fileID: 5783434083664333321}
+  Ouch: {fileID: 3480258754935908128, guid: a001eae3c1a837f4ebaf9a17d2c175ed, type: 3}
 --- !u!114 &-5949395364792859796
 MonoBehaviour:
   m_ObjectHideFlags: 0

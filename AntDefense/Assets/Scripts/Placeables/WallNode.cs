@@ -74,7 +74,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
     protected override void OnSelect()
     {
-        Debug.Log("WallNode selected: " + this);
+        //Debug.Log("WallNode selected: " + this);
         // TODO have a wall placing mode for placing walls, rather than just relying on selecting wall nodes.
 
         if (ObjectPlacer.Instance.CanBuildOnWall && this._child == null)

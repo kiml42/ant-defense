@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 public class ImpactDamageHandler : MonoBehaviour
@@ -12,7 +13,7 @@ public class ImpactDamageHandler : MonoBehaviour
 
     public HealthController HealthController;
 
-
+    public Transform Ouch;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -32,7 +33,13 @@ public class ImpactDamageHandler : MonoBehaviour
         if (damage > 0)
         {
             //Debug.Log("Collider = " + collision.collider.gameObject + ", Impulse = " + impulse + ", Damage = " + damage);
+            if (this.Ouch != null)
+            {
+                Instantiate(this.Ouch, collision.contacts.First().point, Quaternion.identity);
+            }
+
             this.HealthController.Injure(damage);
+
         }
     }
 }

@@ -13,7 +13,6 @@ public class HealthController : MonoBehaviour
     public float Damage => this.MaxHealth - this.CurrentHealth;
 
     public Transform DeadObject;
-    public Transform Ouch;
 
     public void Heal(float additionalHealth)
     {
@@ -23,11 +22,6 @@ public class HealthController : MonoBehaviour
 
     public void Injure(float lostHealth)
     {
-        Debug.Log(this.transform + " lost " + lostHealth + " health.");
-        if (this.Ouch != null)
-        {
-            Instantiate(this.Ouch, this.transform.position, Quaternion.identity);
-        }
         this._currentHealth = this.CurrentHealth - lostHealth;
         if (this.CurrentHealth <= 0)
         {
