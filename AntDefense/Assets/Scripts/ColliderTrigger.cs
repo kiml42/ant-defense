@@ -9,7 +9,7 @@ public class ColliderTrigger : MonoBehaviour
     public float TriggerDelay = 0;
     private float _timeToTrigger = 0;
 
-    private HashSet<Collider> _currentTargets = new HashSet<Collider>();
+    private readonly HashSet<Collider> _currentTargets = new();
 
     private void FixedUpdate()
     {
