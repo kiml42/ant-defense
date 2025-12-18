@@ -1,3 +1,4 @@
+using Assets.Scripts.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -18,8 +19,8 @@ public class TranslateHandle : MonoBehaviour
     public int PlaceMouseButton = 0;
     public int CancelMouseButton = 1;
     public float MinRotateMouseDistance = 1f;
-    private int _uiLayermask;
-    private int _groundLayermask;
+    public int UiLayermask;
+    public int GroundLayermask;
     private bool _lastPositionIsGood = false;
     private NoSpawnZone.AdjustedPoint _lastActivateablePoint;
 
@@ -38,8 +39,8 @@ public class TranslateHandle : MonoBehaviour
     {
         Debug.Assert(Instance == null || Instance == this, "Multiple TranslateHandle instances detected!");
         Instance = this;
-        this._uiLayermask = LayerMask.GetMask("UI");
-        this._groundLayermask = LayerMask.GetMask("Ground");
+        this.UiLayermask = LayerMask.GetMask("UI");
+        this.GroundLayermask = LayerMask.GetMask("Ground");
         this._materials = this.GetComponentsInChildren<Renderer>().SelectMany(r => r.materials);
         this._originalColour = this._materials.First().color;
     }
@@ -96,7 +97,7 @@ public class TranslateHandle : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(this.CancelMouseButton))
         {
-            if (this.RaycastToFloor(out var hit))
+            if (MouseHelper.RaycastToFloor(out var hit))
             {
                 this._lastMousePosition = hit.point;
             }
@@ -137,7 +138,7 @@ public class TranslateHandle : MonoBehaviour
     private void HandleMousePosition()
     {
         var previousPosition = this.transform.position;
-        if (this.RaycastToFloor(out var hit))
+        if (MouseHelper.RaycastToFloor(out var hit))
         {
             //Debug.Log("Pointing at: " + hit.transform + " @ " + hit.point);
             if (Input.GetMouseButton(this.PlaceMouseButton) && (ObjectPlacer.Instance.CanRotateCurrentObject() == true))
@@ -211,13 +212,6 @@ public class TranslateHandle : MonoBehaviour
         }
     }
 
-    private bool RaycastToFloor(out RaycastHit hit)
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        return Physics.Raycast(ray, out hit, 500, this._groundLayermask, QueryTriggerInteraction.Ignore);
-    }
-
     private void ActivatePoint()
     {
         if (this._lastActivateablePoint == null) return;
@@ -230,7 +224,7 @@ public class TranslateHandle : MonoBehaviour
     {
         var activated = false;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit, 500, this._uiLayermask, QueryTriggerInteraction.Collide))
+        if (Physics.Raycast(ray, out var hit, 500, this.UiLayermask, QueryTriggerInteraction.Collide))
         {
             var quickBarButton = hit.transform.GetComponentInParent<QuickBarButton>();
             if (quickBarButton != null)
