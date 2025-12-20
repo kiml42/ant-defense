@@ -283,7 +283,6 @@ public class AntStateMachine : DeathActionBehaviour
             // TODO consider a differnt evasion approach for other ants.
             return; // ignore collisions with rigidbodies (other ants, moving objects, etc)
         }
-
         if (@object.layer == GroundLayer)
         {
             // collided with the ground
@@ -301,9 +300,31 @@ public class AntStateMachine : DeathActionBehaviour
         // allow more time going for the same target as the obstacle avoidence will hopefully be helping the ant work towards this target.
         this._timeSinceTargetAquisition -= this.CollisionTargetBonus;
 
-        // TODO consider only detecting collisions at the front of the ant for this so it doesn't try to avoid things hitting it from behind.
-        this.PositionProvider.AvoidObstacle(collision);
+        // TODO: keep trying to attack while still colliding with the wall.
+        var didAttack = false;
+        if (this.AttackController != null)
+        {
+            if (UnityEngine.Random.Range(0, 100) <= this.AttackController.AttackChance)
+            {
+                var damageHandler = @object.GetComponentInParent<ImpactDamageHandler>();
+                if (damageHandler != null)
+                {
+                    if (damageHandler.HealthController.tag != this.tag)
+                    {
+                        didAttack = this.AttackController.AttackObstable(collision, damageHandler);
+                    }
+                }
+            }
+        }
+
+
+        if (!didAttack)
+        {
+            this.PositionProvider.AvoidObstacle(collision);
+        }
     }
+
+    public AttackController AttackController;
 
     /// <summary>
     /// Scouts only look for new food and leave trails to show where it is, they never actually carry it themselves.

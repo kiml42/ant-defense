@@ -274,6 +274,7 @@ GameObject:
   - component: {fileID: 4623527012709452741}
   - component: {fileID: -8912878286020707997}
   - component: {fileID: -5949395364792859796}
+  - component: {fileID: 6534811060856755521}
   m_Layer: 2
   m_Name: Ant
   m_TagString: Ants1
@@ -329,6 +330,8 @@ MonoBehaviour:
   TrailController: {fileID: 1089436927646635733}
   CarryPoint: {fileID: 4482761779144621289}
   GoHomeTime: 2
+  AttackController: {fileID: 6534811060856755521}
+  AttackChance: 50
   IsScout: 0
   Digestion: {fileID: 1805795825312131026}
 --- !u!114 &2951773968300769007
@@ -493,6 +496,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ValueWeighting: 0.75
   ValueWeightingRandomisation: 0.4
+--- !u!114 &6534811060856755521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180791391076224223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a3c6ee90c2d9614abc8cfbdb60c4c7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AttackController
 --- !u!1 &1309134283868194372
 GameObject:
   m_ObjectHideFlags: 0
