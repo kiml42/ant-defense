@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePositionValidator, ISelectableObject
 {
+    // TODO: handle the connected wall node getting destroyed. (especially while placing this wall.
+    // TODO: make the wall a separate object to the node with its own health (possibly make the wall out of many sections with stubs connected to each wall node.
     public WallNode ConnectedNode;
     public Transform Wall;
     public Transform Node;
