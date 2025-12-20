@@ -20,7 +20,6 @@ public class TranslateHandle : MonoBehaviour
     public int CancelMouseButton = 1;
     public float MinRotateMouseDistance = 1f;
     public int UiLayermask;
-    public int GroundLayermask;
     private bool _lastPositionIsGood = false;
     private NoSpawnZone.AdjustedPoint _lastActivateablePoint;
 
@@ -40,7 +39,6 @@ public class TranslateHandle : MonoBehaviour
         Debug.Assert(Instance == null || Instance == this, "Multiple TranslateHandle instances detected!");
         Instance = this;
         this.UiLayermask = LayerMask.GetMask("UI");
-        this.GroundLayermask = LayerMask.GetMask("Ground");
         this._materials = this.GetComponentsInChildren<Renderer>().SelectMany(r => r.materials);
         this._originalColour = this._materials.First().color;
     }
@@ -97,7 +95,7 @@ public class TranslateHandle : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(this.CancelMouseButton))
         {
-            if (MouseHelper.RaycastToFloor(out var hit))
+            if (MouseHelper.RaycastToMouse(out var hit))
             {
                 this._lastMousePosition = hit.point;
             }
@@ -138,7 +136,7 @@ public class TranslateHandle : MonoBehaviour
     private void HandleMousePosition()
     {
         var previousPosition = this.transform.position;
-        if (MouseHelper.RaycastToFloor(out var hit))
+        if (MouseHelper.RaycastToMouse(out var hit))
         {
             //Debug.Log("Pointing at: " + hit.transform + " @ " + hit.point);
             if (Input.GetMouseButton(this.PlaceMouseButton) && (ObjectPlacer.Instance.CanRotateCurrentObject() == true))

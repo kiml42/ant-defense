@@ -1303,8 +1303,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   ShootKey: 122
   ProjectilePrefab: {fileID: 1648208231890218872, guid: 8b0362ac82dc89c4097c7c23374620d0, type: 3}
-  ShootSpeed: 3
+  ShootSpeed: 1
   ReloadTime: 0.1
+  StartOffset: 3
 --- !u!1001 &2065153177
 PrefabInstance:
   m_ObjectHideFlags: 0

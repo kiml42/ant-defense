@@ -12,7 +12,7 @@ public class ButtonShooter : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(this.ShootKey) && this._reloadTimer <= 0 && MouseHelper.RaycastToFloor(out var hit))
+        if (Input.GetKey(this.ShootKey) && this._reloadTimer <= 0 && MouseHelper.RaycastToMouse(out var hit))
         {
             var vectorToHit = hit.point - this.transform.position;
             var projectile = Instantiate(this.ProjectilePrefab, this.transform.position + (vectorToHit.normalized * this.StartOffset), this.transform.rotation);
