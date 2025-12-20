@@ -56,7 +56,6 @@ GameObject:
   - component: {fileID: 7097807282167532978}
   - component: {fileID: 1570217691707493871}
   - component: {fileID: 4031721891506388386}
-  - component: {fileID: 5307813035937641018}
   m_Layer: 2
   m_Name: Head
   m_TagString: Untagged
@@ -135,27 +134,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &5307813035937641018
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 284848783100478577}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &468133131230412953
 GameObject:
   m_ObjectHideFlags: 0
@@ -1057,7 +1035,6 @@ GameObject:
   - component: {fileID: 4683317224963617907}
   - component: {fileID: 7261486764860900}
   - component: {fileID: 1154551350630234889}
-  - component: {fileID: 6338482109050181370}
   m_Layer: 2
   m_Name: Abdomen
   m_TagString: Untagged
@@ -1136,29 +1113,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &6338482109050181370
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3601661763206370005}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4364768699579849720
 GameObject:
   m_ObjectHideFlags: 0
@@ -1940,7 +1894,6 @@ GameObject:
   - component: {fileID: 5098442422274348985}
   - component: {fileID: 3408374246648038583}
   - component: {fileID: 7346739294271771502}
-  - component: {fileID: 7831737495937524892}
   m_Layer: 2
   m_Name: Thorax
   m_TagString: Untagged
@@ -2019,27 +1972,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &7831737495937524892
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8381922313051198197}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8534422162452681317
 GameObject:
   m_ObjectHideFlags: 0
