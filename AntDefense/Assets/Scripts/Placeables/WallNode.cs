@@ -57,6 +57,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
     private void UpdateWall()
     {
+        //TODO - move the health bar to over the middle of the wall.
         Debug.Assert(this.Wall != null, "WallNode has no Wall assigned.");
         //Debug.Log("Updating WallNode. Connected to " + ConnectedNode);
         if (this.ConnectedNode != null)

@@ -168,6 +168,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7326354589473913043}
+  - {fileID: 7827909923194852027}
   - {fileID: 1347924309845364681}
   - {fileID: 5782363422508442936}
   m_Father: {fileID: 0}
@@ -271,7 +272,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7827909923194852027}
   - {fileID: 636286619638464923}
   - {fileID: 1406079791709674247}
   m_Father: {fileID: 1489239274791151828}
@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthController
   MaxHealth: 120
-  HealthBar: {fileID: 949351232848168074}
+  HealthBar: {fileID: 2787060379202377622}
 --- !u!1 &3476161968164061267
 GameObject:
   m_ObjectHideFlags: 0
@@ -633,7 +633,7 @@ GameObject:
   - component: {fileID: 4410074869817148378}
   - component: {fileID: 949351232848168074}
   m_Layer: 2
-  m_Name: HealthBar
+  m_Name: NodeHealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -678,7 +678,7 @@ GameObject:
   - component: {fileID: 2129264480617686851}
   - component: {fileID: 2787060379202377622}
   m_Layer: 2
-  m_Name: HealthBar
+  m_Name: WallHealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1011,7 +1011,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2129264480617686851}
-  m_Father: {fileID: 1347924309845364681}
+  m_Father: {fileID: 1489239274791151828}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3295362741583541732
 MonoBehaviour:
