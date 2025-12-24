@@ -12,8 +12,6 @@ public class HealthController : MonoBehaviour
 
     public float Damage => this.MaxHealth - this.CurrentHealth;
 
-    public Transform DeadObject;
-
     public void Heal(float additionalHealth)
     {
         this._currentHealth = Mathf.Min(this.MaxHealth, this.CurrentHealth + additionalHealth);
@@ -34,12 +32,6 @@ public class HealthController : MonoBehaviour
     private void Die()
     {
         //Debug.Log(this.transform + " has died");
-        if (this.DeadObject != null)
-        {
-            var deadObject = Instantiate(this.DeadObject);
-            this.DeadObject = null; // prevent duplicate instanciation.
-            deadObject.transform.position = this.transform.position;
-        }
         var deathActions = this.GetComponentsInChildren<DeathActionBehaviour>();
         foreach (var action in deathActions)
         {
