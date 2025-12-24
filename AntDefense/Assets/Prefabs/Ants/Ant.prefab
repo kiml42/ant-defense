@@ -331,7 +331,6 @@ MonoBehaviour:
   CarryPoint: {fileID: 4482761779144621289}
   GoHomeTime: 2
   AttackController: {fileID: 6534811060856755521}
-  AttackChance: 50
   IsScout: 0
   Digestion: {fileID: 1805795825312131026}
 --- !u!114 &2951773968300769007
@@ -508,6 +507,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3c6ee90c2d9614abc8cfbdb60c4c7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttackController
+  ResetTime: 1
+  AttackDamage: 10
+  AttackChance: 50
 --- !u!1 &1309134283868194372
 GameObject:
   m_ObjectHideFlags: 0

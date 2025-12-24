@@ -1457,10 +1457,6 @@ PrefabInstance:
       propertyPath: DecelerateTimeKey
       value: 110
       objectReference: {fileID: 0}
-    - target: {fileID: 1368963618295754453, guid: 671a2805116037f4aadc102530200391, type: 3}
-      propertyPath: ShootSpeed
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 6583085279849142699, guid: 671a2805116037f4aadc102530200391, type: 3}
       propertyPath: m_LocalPosition.x
       value: 22.8

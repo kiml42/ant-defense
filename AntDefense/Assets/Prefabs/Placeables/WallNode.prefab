@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2abdf667d98ed945a87f8153b6967e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthController
-  MaxHealth: 80
+  MaxHealth: 120
   HealthBar: {fileID: 949351232848168074}
   DeadObject: {fileID: 0}
 --- !u!114 &4563681996597256127
@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41fa956728f9dc8459bd091749fb823f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ImpactDamageHandler
-  ResistanceImpulse: 0
+  ResistanceImpulse: 30
   DamagePerUnitImpulse: 0.2
   HealthController: {fileID: 5822965201772160874}
   Ouch: {fileID: 3480258754935908128, guid: a001eae3c1a837f4ebaf9a17d2c175ed, type: 3}
