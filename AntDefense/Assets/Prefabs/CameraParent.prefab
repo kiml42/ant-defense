@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8325540124463243235}
   - component: {fileID: 5620213517466043452}
   - component: {fileID: 2258350819031767444}
+  - component: {fileID: 1368963618295754453}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -93,6 +94,23 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 380321149305873043}
   m_Enabled: 1
+--- !u!114 &1368963618295754453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 380321149305873043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fef72d62a70854147b78f721dec9884a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  ShootKey: 122
+  ProjectilePrefab: {fileID: 1648208231890218872, guid: 8b0362ac82dc89c4097c7c23374620d0, type: 3}
+  ShootSpeed: 3
+  ReloadTime: 0.1
+  StartOffset: 3
 --- !u!1 &394325472077672642
 GameObject:
   m_ObjectHideFlags: 0
