@@ -151,6 +151,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PeaShooter
       objectReference: {fileID: 0}
+    - target: {fileID: 2128912281162687408, guid: e5e3fc3a01291f9499780177f539e9f5, type: 3}
+      propertyPath: StartOffset.y
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6035011622852726416, guid: e5e3fc3a01291f9499780177f539e9f5, type: 3}
+      propertyPath: StartOffset.y
+      value: -3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

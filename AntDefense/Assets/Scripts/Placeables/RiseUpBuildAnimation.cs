@@ -26,6 +26,11 @@ public abstract class  BaseBuildAnimation : DeathActionBehaviour
     /// The animation duration in seconds.
     /// </summary>
     public float Duration = 3f;
+
+    /// <summary>
+    /// the animation duration in seconds when reversing on death.
+    /// </summary>
+    public float DeathAnimationDuration = 1f;
     public float StartDelay = 0.5f;
     private float _delayTimer = 0f;
     protected float _progress = 0f;
@@ -63,7 +68,7 @@ public abstract class  BaseBuildAnimation : DeathActionBehaviour
 
         if(this._hasDied)
         {
-            this._progress -= Time.fixedDeltaTime / Duration;
+            this._progress -= Time.fixedDeltaTime / DeathAnimationDuration;
             if (this._progress < 0f)
             {
                 this._progress = 0f;

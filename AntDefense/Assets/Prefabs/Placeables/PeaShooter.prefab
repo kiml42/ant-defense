@@ -60,8 +60,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   Duration: 3
-  StartDelay: 0.5
-  StartOffset: {x: 0, y: -2, z: 0}
+  DeathAnimationDuration: 1
+  StartDelay: 0
+  ReverseOnDeath: 1
+  StartOffset: {x: 0, y: -4, z: 0}
 --- !u!1 &1834373357261692949
 GameObject:
   m_ObjectHideFlags: 0
@@ -425,7 +427,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RiseUpBuildAnimation
   Duration: 1
+  DeathAnimationDuration: 1
   StartDelay: 2.5
+  ReverseOnDeath: 1
   StartOffset: {x: 0, y: 0, z: -0.5}
 --- !u!1 &5438856199470397677
 GameObject:
@@ -601,8 +605,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   Duration: 3
-  StartDelay: 0.5
-  StartOffset: {x: 0, y: -2, z: 0}
+  DeathAnimationDuration: 1
+  StartDelay: 0
+  ReverseOnDeath: 1
+  StartOffset: {x: 0, y: -4, z: 0}
 --- !u!1 &6956860544877528276
 GameObject:
   m_ObjectHideFlags: 0

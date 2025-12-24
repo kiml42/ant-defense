@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using System;
 using UnityEngine;
 
@@ -12,6 +13,21 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
     private SelectableGhostableMonoBehaviour _child;
 
     public bool IsWallToBuildOn => this._child == null;
+
+    /// <summary>
+    /// Calls on death action for the turret connected to this wall node, if any.
+    /// </summary>
+    public void OnDeath()
+    {
+        if(this._child != null)
+        {
+            var actions = this._child.GetComponentsInChildren<DeathActionBehaviour>();
+            foreach(var action in actions)
+            {
+                action.OnDeath();
+            }
+        }
+    }
 
     public override float AdditionalCost
     {
