@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using UnityEngine;
 
 public class RiseUpBuildAnimation : BaseBuildAnimation
@@ -19,7 +20,7 @@ public class RiseUpBuildAnimation : BaseBuildAnimation
     }
 }
 
-public abstract class  BaseBuildAnimation : MonoBehaviour
+public abstract class  BaseBuildAnimation : DeathActionBehaviour
 {
     /// <summary>
     /// The animation duration in seconds.
@@ -30,6 +31,17 @@ public abstract class  BaseBuildAnimation : MonoBehaviour
     protected float _progress = 0f;
     private bool _isRunning = false;
 
+    public bool ReverseOnDeath = true;
+    private bool _hasDied = false;
+    public override void OnDeath()
+    {
+        if (this.ReverseOnDeath)
+        {
+            this._hasDied = true;
+            this._isRunning = true;
+            enabled = true;
+        }
+    }
     public void StartAnimation()
     {
         this.Initilise();
@@ -44,9 +56,23 @@ public abstract class  BaseBuildAnimation : MonoBehaviour
     void FixedUpdate()
     {
         if (!this._isRunning) return;
+
         this._delayTimer += Time.fixedDeltaTime;
         //Debug.Log($"Build animation delayTimer: {_delayTimer}");
         if(this._delayTimer < this.StartDelay) return;
+
+        if(this._hasDied)
+        {
+            this._progress -= Time.fixedDeltaTime / Duration;
+            if (this._progress < 0f)
+            {
+                this._progress = 0f;
+                enabled = false;
+            }
+            this.UpdateAnimation();
+            return;
+        }
+
         //Debug.Log($"Build animation progress: {_progress}");
         this._progress += Time.fixedDeltaTime / Duration;
         if (this._progress > 1f)
