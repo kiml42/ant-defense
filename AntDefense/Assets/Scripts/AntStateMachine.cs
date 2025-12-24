@@ -300,7 +300,6 @@ public class AntStateMachine : DeathActionBehaviour
         // allow more time going for the same target as the obstacle avoidence will hopefully be helping the ant work towards this target.
         this._timeSinceTargetAquisition -= this.CollisionTargetBonus;
 
-        // TODO: keep trying to attack while still colliding with the wall.
         var didAttack = false;
         if (this.AttackController != null)
         {
@@ -317,11 +316,8 @@ public class AntStateMachine : DeathActionBehaviour
             }
         }
 
-
-        if (!didAttack)
-        {
-            this.PositionProvider.AvoidObstacle(collision);
-        }
+        // try to avoid the obstacle regardless.
+        this.PositionProvider.AvoidObstacle(collision);
     }
 
     public AttackController AttackController;
