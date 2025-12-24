@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class AntNest : MonoBehaviour
@@ -62,6 +61,7 @@ public class AntNest : MonoBehaviour
                 var rotation = Quaternion.LookRotation(new Vector3(randomLookTarget.x, 0, randomLookTarget.y), Vector3.up);
                 var prefab = this.PickPrefab();
                 var instance = Instantiate(prefab.transform, position, rotation, antParent.transform);
+                instance.tag = this.tag;
                 this.Digestion.UseFood(prefab.Cost);
 
                 instance.GetComponent<Rigidbody>().linearVelocity = this.SpawnVelocity;

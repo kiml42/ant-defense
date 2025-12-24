@@ -56,7 +56,6 @@ GameObject:
   - component: {fileID: 7097807282167532978}
   - component: {fileID: 1570217691707493871}
   - component: {fileID: 4031721891506388386}
-  - component: {fileID: 5307813035937641018}
   m_Layer: 2
   m_Name: Head
   m_TagString: Untagged
@@ -135,27 +134,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &5307813035937641018
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 284848783100478577}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &468133131230412953
 GameObject:
   m_ObjectHideFlags: 0
@@ -296,9 +274,12 @@ GameObject:
   - component: {fileID: 4623527012709452741}
   - component: {fileID: -8912878286020707997}
   - component: {fileID: -5949395364792859796}
+  - component: {fileID: 6534811060856755521}
+  - component: {fileID: -5722455832609024656}
+  - component: {fileID: 3045428083773665096}
   m_Layer: 2
   m_Name: Ant
-  m_TagString: Untagged
+  m_TagString: Ants1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -351,6 +332,7 @@ MonoBehaviour:
   TrailController: {fileID: 1089436927646635733}
   CarryPoint: {fileID: 4482761779144621289}
   GoHomeTime: 2
+  AttackController: {fileID: 6534811060856755521}
   IsScout: 0
   Digestion: {fileID: 1805795825312131026}
 --- !u!114 &2951773968300769007
@@ -500,6 +482,7 @@ MonoBehaviour:
   ResistanceImpulse: 10
   DamagePerUnitImpulse: 0.2
   HealthController: {fileID: 5783434083664333321}
+  Ouch: {fileID: 3480258754935908128, guid: a001eae3c1a837f4ebaf9a17d2c175ed, type: 3}
 --- !u!114 &-5949395364792859796
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -514,6 +497,46 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ValueWeighting: 0.75
   ValueWeightingRandomisation: 0.4
+--- !u!114 &6534811060856755521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180791391076224223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a3c6ee90c2d9614abc8cfbdb60c4c7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AttackController
+  ResetTime: 1
+  AttackDamage: 10
+  AttackChance: 50
+--- !u!114 &-5722455832609024656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180791391076224223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f838fdfc0c7e964d88c87d5fb7c49fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+--- !u!114 &3045428083773665096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180791391076224223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 190ba608936f19e4c8dd7a16dc78ca6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  DeadObject: {fileID: 8542657810488951160, guid: 4a96234d00972424d97072ae447b90a2, type: 3}
 --- !u!1 &1309134283868194372
 GameObject:
   m_ObjectHideFlags: 0
@@ -1056,7 +1079,6 @@ GameObject:
   - component: {fileID: 4683317224963617907}
   - component: {fileID: 7261486764860900}
   - component: {fileID: 1154551350630234889}
-  - component: {fileID: 6338482109050181370}
   m_Layer: 2
   m_Name: Abdomen
   m_TagString: Untagged
@@ -1135,29 +1157,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &6338482109050181370
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3601661763206370005}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4364768699579849720
 GameObject:
   m_ObjectHideFlags: 0
@@ -1939,7 +1938,6 @@ GameObject:
   - component: {fileID: 5098442422274348985}
   - component: {fileID: 3408374246648038583}
   - component: {fileID: 7346739294271771502}
-  - component: {fileID: 7831737495937524892}
   m_Layer: 2
   m_Name: Thorax
   m_TagString: Untagged
@@ -2018,27 +2016,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &7831737495937524892
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8381922313051198197}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8534422162452681317
 GameObject:
   m_ObjectHideFlags: 0

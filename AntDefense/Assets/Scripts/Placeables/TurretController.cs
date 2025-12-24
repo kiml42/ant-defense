@@ -98,7 +98,7 @@ public class TurretController : SelectableGhostableMonoBehaviour
     {
         if (collision.isTrigger) { return; }
         var healthController = collision.gameObject.GetComponentInParent<HealthController>();
-        if (healthController != null)
+        if (healthController != null && !healthController.CompareTag(this.tag))
         {
             this._targetsInRange.Add(healthController);
         }

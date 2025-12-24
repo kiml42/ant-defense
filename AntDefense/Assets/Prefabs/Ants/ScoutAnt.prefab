@@ -295,9 +295,10 @@ GameObject:
   - component: {fileID: 1805795825312131026}
   - component: {fileID: -5929916296373731318}
   - component: {fileID: 3660855418458060726}
+  - component: {fileID: -4996180160508391160}
   m_Layer: 2
   m_Name: ScoutAnt
-  m_TagString: Untagged
+  m_TagString: Ants1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -350,6 +351,7 @@ MonoBehaviour:
   TrailController: {fileID: 1089436927646635733}
   CarryPoint: {fileID: 4482761779144621289}
   GoHomeTime: 2
+  AttackController: {fileID: 0}
   IsScout: 1
   Digestion: {fileID: 1805795825312131026}
 --- !u!114 &2951773968300769007
@@ -499,6 +501,19 @@ MonoBehaviour:
   ResistanceImpulse: 15
   DamagePerUnitImpulse: 0.8
   HealthController: {fileID: 5783434083664333321}
+  Ouch: {fileID: 0}
+--- !u!114 &-4996180160508391160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180791391076224223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f838fdfc0c7e964d88c87d5fb7c49fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DestroyOnDeath
 --- !u!1 &1309134283868194372
 GameObject:
   m_ObjectHideFlags: 0

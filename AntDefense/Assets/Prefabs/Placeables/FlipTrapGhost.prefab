@@ -483,7 +483,7 @@ GameObject:
   - component: {fileID: 321340684212379770}
   m_Layer: 0
   m_Name: FlipTrapGhost
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -522,6 +522,8 @@ MonoBehaviour:
   FloorPoint: {fileID: 3718810060759407500}
   Rotatable: 1
   BaseCost: 10
+  WallToBuildOn: {fileID: 0}
+  WallParent: {fileID: 0}
   Icon: {fileID: 3718810060759407500, guid: 654ef4f10c4d2324a8087c5098f43256, type: 3}
   ScaleForButton: 0.3
   OffsetForButton: {x: 0, y: 0, z: 0}

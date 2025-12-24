@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5547485908265407466}
   m_Layer: 0
   m_Name: PlaceableBerry
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -54,12 +54,15 @@ MonoBehaviour:
   FloorPoint: {fileID: 374015092026775150}
   Rotatable: 0
   BaseCost: 0.2
+  WallToBuildOn: {fileID: 0}
+  WallParent: {fileID: 0}
   Icon: {fileID: 0}
   ScaleForButton: 1
   OffsetForButton: {x: 0, y: 0, z: 0}
   RotationForButton: {x: 0, y: 0, z: 0, w: 1}
   TimeOut: 0
   SpawnOffset: {x: 0, y: 2, z: 0}
+  ObjectToDeselectWhenPlaced: {fileID: 0}
 --- !u!114 &4735118555562144494
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using System;
 using UnityEngine;
 
@@ -12,6 +13,21 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
     private SelectableGhostableMonoBehaviour _child;
 
     public bool IsWallToBuildOn => this._child == null;
+
+    /// <summary>
+    /// Calls on death action for the turret connected to this wall node, if any.
+    /// </summary>
+    public void OnDeath()
+    {
+        if(this._child != null)
+        {
+            var actions = this._child.GetComponentsInChildren<DeathActionBehaviour>();
+            foreach(var action in actions)
+            {
+                action.OnDeath();
+            }
+        }
+    }
 
     public override float AdditionalCost
     {
@@ -55,6 +71,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
     private void UpdateWall()
     {
+        //TODO - move the health bar to over the middle of the wall.
         Debug.Assert(this.Wall != null, "WallNode has no Wall assigned.");
         //Debug.Log("Updating WallNode. Connected to " + ConnectedNode);
         if (this.ConnectedNode != null)
@@ -74,7 +91,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
     protected override void OnSelect()
     {
-        Debug.Log("WallNode selected: " + this);
+        //Debug.Log("WallNode selected: " + this);
         // TODO have a wall placing mode for placing walls, rather than just relying on selecting wall nodes.
 
         if (ObjectPlacer.Instance.CanBuildOnWall && this._child == null)
