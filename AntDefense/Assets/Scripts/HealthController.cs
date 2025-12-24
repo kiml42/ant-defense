@@ -45,7 +45,6 @@ public class HealthController : MonoBehaviour
         {
             action.OnDeath();
         }
-        Destroy(this.gameObject);
     }
 
     private void UpdateBar()
