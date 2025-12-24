@@ -620,7 +620,7 @@ MonoBehaviour:
   DeathAnimationDuration: 1
   StartDelay: 0.5
   ReverseOnDeath: 1
-  StartOffset: {x: 0, y: -2, z: 0}
+  StartOffset: {x: 0, y: -2.2, z: 0}
 --- !u!114 &7650473417551848698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -874,7 +874,7 @@ MonoBehaviour:
   DeathAnimationDuration: 1
   StartDelay: 0.5
   ReverseOnDeath: 1
-  StartOffset: {x: 0, y: -2, z: 0}
+  StartOffset: {x: 0, y: -2.2, z: 0}
 --- !u!114 &2859469740872691902
 MonoBehaviour:
   m_ObjectHideFlags: 0
