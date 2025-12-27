@@ -10,7 +10,6 @@ public class ScoreGenerator : MonoBehaviour
 
     private float currentDelay;
 
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -30,14 +29,5 @@ public class ScoreGenerator : MonoBehaviour
             ScoreTracker.AddScore(this.ScoreIncrement);
             this.currentDelay = this.IncrementTime;
         }
-    }
-}
-
-public static class ScoreTracker
-{
-    public static int Score { get; private set; } = 0;
-    public static void AddScore(int score)
-    {
-        Score += score;
     }
 }
