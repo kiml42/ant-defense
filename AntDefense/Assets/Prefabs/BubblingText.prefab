@@ -61,6 +61,7 @@ MonoBehaviour:
   Text: {fileID: 3825002109839860510}
   Velocity: {x: 0, y: 1.5, z: 0}
   Lifetime: 1
+  FadeDuration: 0.8
 --- !u!1 &4702214352546071406
 GameObject:
   m_ObjectHideFlags: 0
