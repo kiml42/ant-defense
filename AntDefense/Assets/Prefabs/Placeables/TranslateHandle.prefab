@@ -882,6 +882,7 @@ Transform:
   - {fileID: 8225258648184652563}
   - {fileID: 8504177399452585287}
   - {fileID: 7608579844199207778}
+  - {fileID: 578631899045928552}
   m_Father: {fileID: 1388316768231289819}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3577384801371285430
@@ -1680,6 +1681,7 @@ MonoBehaviour:
   PlaceMouseButton: 0
   CancelMouseButton: 1
   MinRotateMouseDistance: 1
+  UiLayermask: 0
   DisabledColour: {r: 0.7075472, g: 0.07008722, b: 0.07008722, a: 0.46666667}
   CostText: {fileID: 2668488614391271967}
   SelectedObjectHighlight: {fileID: 3718810060759407500, guid: 5d925c7ba5e0ace4999444cba20ab5dc, type: 3}
@@ -2219,3 +2221,65 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 3914787581262997203}
   m_maskType: 0
+--- !u!1001 &8938989984458395004
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 7589486153762582375}
+    m_Modifications:
+    - target: {fileID: 409808873190858975, guid: a2e55e018a8ff444693b1a5316cac479, type: 3}
+      propertyPath: m_Name
+      value: CostTextCamerFacer (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8361524944680342292, guid: a2e55e018a8ff444693b1a5316cac479, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8361524944680342292, guid: a2e55e018a8ff444693b1a5316cac479, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.39
+      objectReference: {fileID: 0}
+    - target: {fileID: 8361524944680342292, guid: a2e55e018a8ff444693b1a5316cac479, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8361524944680342292, guid: a2e55e018a8ff444693b1a5316cac479, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8361524944680342292, guid: a2e55e018a8ff444693b1a5316cac479, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8361524944680342292, guid: a2e55e018a8ff444693b1a5316cac479, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8361524944680342292, guid: a2e55e018a8ff444693b1a5316cac479, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8361524944680342292, guid: a2e55e018a8ff444693b1a5316cac479, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8361524944680342292, guid: a2e55e018a8ff444693b1a5316cac479, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8361524944680342292, guid: a2e55e018a8ff444693b1a5316cac479, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a2e55e018a8ff444693b1a5316cac479, type: 3}
+--- !u!4 &578631899045928552 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8361524944680342292, guid: a2e55e018a8ff444693b1a5316cac479, type: 3}
+  m_PrefabInstance: {fileID: 8938989984458395004}
+  m_PrefabAsset: {fileID: 0}

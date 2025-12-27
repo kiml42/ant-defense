@@ -14,7 +14,6 @@ public class ScoreGenerator : MonoBehaviour
     void Start()
     {
         this.currentDelay = (this.IncrementTime / this.NumberOfOffsets) * index;
-        Debug.Log($"ScoreGenerator starting with delay of {this.currentDelay} seconds.");
         index++;
         index = index % this.NumberOfOffsets;
     }
@@ -25,8 +24,7 @@ public class ScoreGenerator : MonoBehaviour
         this.currentDelay -= Time.fixedDeltaTime;
         if (this.currentDelay <= 0)
         {
-            Debug.Log($"ScoreGenerator adding {this.ScoreIncrement} points.");
-            ScoreTracker.AddScore(this.ScoreIncrement);
+            ScoreTracker.Instance.AddScore(this.ScoreIncrement, this.transform.position);
             this.currentDelay = this.IncrementTime;
         }
     }

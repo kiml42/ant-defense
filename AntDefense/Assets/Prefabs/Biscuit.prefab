@@ -360,6 +360,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fb34cc856058cd4f8da35ef477d26b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  ScoreIncrement: 10
+  IncrementTime: 10
+  NumberOfOffsets: 20
+  BubblingTextPrefab: {fileID: 2571941884320154293, guid: a2e55e018a8ff444693b1a5316cac479, type: 3}
+  BubblingTextOffset: {x: 0, y: 2, z: 0}
 --- !u!1 &8231156571418064166
 GameObject:
   m_ObjectHideFlags: 0
