@@ -253,6 +253,7 @@ GameObject:
   - component: {fileID: -1660252677447704835}
   - component: {fileID: -7787467255086631614}
   - component: {fileID: 5374799313423710275}
+  - component: {fileID: 2802363743386237110}
   m_Layer: 0
   m_Name: Biscuit
   m_TagString: Player
@@ -347,6 +348,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a77045a3dd4c51c4cbd73a7c522cfe15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2802363743386237110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7350191694905341667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fb34cc856058cd4f8da35ef477d26b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &8231156571418064166
 GameObject:
   m_ObjectHideFlags: 0
