@@ -23,8 +23,8 @@ public class BubblingText : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.transform.position += this.Velocity * Time.deltaTime;
-        this.Lifetime -= Time.deltaTime;
+        this.transform.position += this.Velocity * Time.unscaledDeltaTime;
+        this.Lifetime -= Time.unscaledDeltaTime;
 
         this.Text.alpha = Mathf.Clamp01(this.Lifetime / this.FadeDuration);
 
