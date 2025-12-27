@@ -10,10 +10,10 @@ public class BubblingText : MonoBehaviour
     public void Initialise(string text, Color? colour = null)
     {
         this.Text.text = text;
-        if(colour.HasValue)
+        if (colour.HasValue)
         {
             Debug.Log("Setting bubbling text colour to " + colour.Value);
-            this.Text.material.color = colour.Value;
+            this.Text.color = colour.Value;
             return;
         }
     }

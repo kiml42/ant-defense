@@ -13,11 +13,18 @@ public class ScoreTracker : ValueTracker<int>
 
     public static ScoreTracker Instance { get; private set; }
 
+    public Color ScoreTextColor = Color.purple;
+
     // TODO: add base class for singleton monobehaviours
     private void Awake()
     {
         Debug.Assert(Instance == null || Instance == this, "There should not be multiple score trackers!");
         Instance = this;
+    }
+
+    private void Start()
+    {
+        this.Text.color = this.ScoreTextColor;
     }
 
     public void AddScore(int score, Vector3? location)
@@ -28,8 +35,7 @@ public class ScoreTracker : ValueTracker<int>
             var text = Instantiate(this.BubblingTextPrefab);
             text.transform.position = location.Value + this.BubblingTextOffset;
 
-            // TODO: work out how to read and writhe the colour from TextMeshPro component
-            text.Initialise($"+{score}{ScoreSymbol}", this.Text.material.color);
+            text.Initialise($"+{score}{ScoreSymbol}", this.ScoreTextColor);
         }
     }
 }
