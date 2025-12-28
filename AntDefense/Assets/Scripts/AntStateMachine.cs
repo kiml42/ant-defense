@@ -14,7 +14,7 @@ public class AntStateMachine : DeathActionBehaviour
 
     public Transform ViewPoint;
 
-    public readonly List<GameObject> Obstacles = new();
+    //public readonly List<GameObject> Obstacles = new();
 
     public AntTargetPositionProvider PositionProvider;
 
@@ -300,7 +300,6 @@ public class AntStateMachine : DeathActionBehaviour
         // allow more time going for the same target as the obstacle avoidence will hopefully be helping the ant work towards this target.
         this._timeSinceTargetAquisition -= this.CollisionTargetBonus;
 
-        var didAttack = false;
         if (this.AttackController != null)
         {
             if (UnityEngine.Random.Range(0, 100) <= this.AttackController.AttackChance)
@@ -310,7 +309,7 @@ public class AntStateMachine : DeathActionBehaviour
                 {
                     if (damageHandler.HealthController.tag != this.tag)
                     {
-                        didAttack = this.AttackController.AttackObstable(collision, damageHandler);
+                        this.AttackController.AttackObstable(collision, damageHandler);
                     }
                 }
             }
