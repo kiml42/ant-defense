@@ -4,6 +4,7 @@ public class AntMoveController : MonoBehaviour
 {
     public float TorqueMultiplier = 10;
     public float ForceMultiplier = 0.1f;
+
     private AntTargetPositionProvider _positionProvider;
 
     private Rigidbody _rigidbody;
@@ -46,7 +47,7 @@ public class AntMoveController : MonoBehaviour
                 // less than 90 degrees off, torque should be correlated with the angle.
                 //Debug.DrawRay(transform.position, direction, Color.blue);
 
-                headingError = Vector3.Cross(this.transform.forward, this._positionProvider.DirectionToMove).normalized;
+                headingError += Vector3.Cross(this.transform.forward, this._positionProvider.DirectionToMove).normalized;
             }
         }
 

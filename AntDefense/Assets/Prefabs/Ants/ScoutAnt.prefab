@@ -386,7 +386,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aacac913ab312e34b9ccda7eee5f2b7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TorqueMultiplier: 30
+  TorqueMultiplier: 10
   ForceMultiplier: 0.6
   SidewaysForceMultiplier: 0.2
   BackwardForceMultiplier: 0.6
