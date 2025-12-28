@@ -18,8 +18,6 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
     float _height;
     float _width;
 
-    public static UiPlane Instance { get; private set; }
-
     private void Start()
     {
         this.InitialiseQuickBar();
