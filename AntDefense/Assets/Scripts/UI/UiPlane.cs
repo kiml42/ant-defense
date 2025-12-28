@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class UiPlane : MonoBehaviour
+public class UiPlane : SingletonMonoBehaviour<UiPlane>
 {
     public QuickBarButton QuickBarButton;
     public Transform QuickBarCenter;
@@ -18,14 +18,10 @@ public class UiPlane : MonoBehaviour
     float _height;
     float _width;
 
-    private static readonly List<ProtectMeBarObject> ProtectMes = new List<ProtectMeBarObject>();
-
     public static UiPlane Instance { get; private set; }
 
     private void Start()
     {
-        Debug.Assert(Instance == null || Instance == this, "There should not be multiple UI planes!");
-        Instance = this;
         this.InitialiseQuickBar();
     }
 
