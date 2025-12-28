@@ -16,9 +16,7 @@ public class CameraDistanceScaler : MonoBehaviour
     {
         if(ScaleWithDistanceFactor != 0f)
         {
-            float distance = ;
-            float scale = 1 + distance * this.ScaleWithDistanceFactor;
-            scale = Mathf.Clamp(scale, this.MinScale, this.MaxScale);
+            scale = MathfGetDistanceToCameraScaleFactor;
             this.transform.localScale = new Vector3(scale, scale, scale);
         }
     }
