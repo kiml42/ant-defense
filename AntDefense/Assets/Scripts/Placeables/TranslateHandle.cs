@@ -119,7 +119,7 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
                 // mous button is down, and the object is rotatable, so rotate it to face the mouse.
                 var vectorToHit = hit.point - this.transform.position;
 
-                if (vectorToHit.magnitude < this.MinRotateMouseDistance * this.GetDistanceToCameraScaleFactor())
+                if (vectorToHit.magnitude < this.MinRotateMouseDistance)
                 {
                     return;
                 }

@@ -16,7 +16,7 @@ public class CameraDistanceScaler : MonoBehaviour
     {
         if(ScaleWithDistanceFactor != 0f)
         {
-            scale = MathfGetDistanceToCameraScaleFactor;
+            var scale = GetDistanceToCameraScaleFactor();
             this.transform.localScale = new Vector3(scale, scale, scale);
         }
     }
