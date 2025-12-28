@@ -4,15 +4,9 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class TrailPointManager : MonoBehaviour
+public class TrailPointManager : SingletonMonoBehaviour<TrailPointManager>
 {
-    public static TrailPointManager Instance { get; private set; }
     private static readonly Queue<TrailPointController> _trailPoints = new();
-    private void Awake()
-    {
-        Debug.Assert(Instance == null || Instance == this, "There should not be multiple TrailPointManagers!");
-        Instance = this;
-    }
 
     public static Smell[] VisibleTrailSmells
     {

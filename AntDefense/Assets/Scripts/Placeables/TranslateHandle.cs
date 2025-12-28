@@ -4,9 +4,8 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-public class TranslateHandle : MonoBehaviour
+public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
 {
-    public static TranslateHandle Instance { get; private set; }
     public static bool IsOnBuildableWall
     {
         get
@@ -36,8 +35,6 @@ public class TranslateHandle : MonoBehaviour
 
     private void Start()
     {
-        Debug.Assert(Instance == null || Instance == this, "Multiple TranslateHandle instances detected!");
-        Instance = this;
         this.UiLayermask = LayerMask.GetMask("UI");
         this._materials = this.GetComponentsInChildren<Renderer>().SelectMany(r => r.materials);
         this._originalColour = this._materials.First().color;

@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPlacer : MonoBehaviour
+public class ObjectPlacer : SingletonMonoBehaviour<ObjectPlacer>
 {
-    public static ObjectPlacer Instance { get; private set; }
     public static List<PlaceableObjectOrGhost> StaticQuickBarObjects;
 
     public TranslateHandle Handle;
@@ -32,10 +31,8 @@ public class ObjectPlacer : MonoBehaviour
     };
     public bool IsPlacingObject => this._objectBeingPlaced != null;
 
-    private void Awake()
+    protected override void OnAwake()
     {
-        Debug.Assert(Instance == null || Instance == this, "There should not be multiple Object Placers!");
-        Instance = this;
         StaticQuickBarObjects = this.QuickBarObjects;
     }
 
