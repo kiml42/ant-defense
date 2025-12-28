@@ -75,6 +75,8 @@ public class AntMoveController : MonoBehaviour
     /// </summary>
     public float BackwardForceMultiplier = 0.8f;
 
+    public float MaxSpeed = 20f;
+
     private void ApplyForce(float signedAngle)
     {
         if (!this.IsUpright)
@@ -90,7 +92,11 @@ public class AntMoveController : MonoBehaviour
         // further reduce the force when going backwards.
         var forwardsOrBackwardsMultiplier = GetShiftedScaledCosine(unsignedAngle, this.BackwardForceMultiplier);
 
-        var force = this._positionProvider.DirectionToMove.normalized * forceDirectionMultiplier * this.ForceMultiplier * forwardsOrBackwardsMultiplier;
+        var velocityAngle = Vector3.Angle(this._rigidbody.linearVelocity, this._positionProvider.DirectionToMove); // angle between the the current velocity and desired direction.
+        var proportionOfMaxSpeed = Mathf.Clamp01(this._rigidbody.linearVelocity.magnitude / this.MaxSpeed);
+        var velocityAngleMultiplier = 1 - (GetShiftedScaledCosine(velocityAngle, 0.5f) * proportionOfMaxSpeed); // reduce force when the ant is already moving in the desired direction.
+
+        var force = this._positionProvider.DirectionToMove.normalized * forceDirectionMultiplier * this.ForceMultiplier * forwardsOrBackwardsMultiplier * velocityAngleMultiplier;
 
         //force.y = 0;
         this._rigidbody.AddForce(force, ForceMode.Impulse);

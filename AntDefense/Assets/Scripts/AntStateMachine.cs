@@ -328,7 +328,7 @@ public class AntStateMachine : DeathActionBehaviour
 
     private readonly HashSet<Food> _knownNearbyFood = new HashSet<Food>();
 
-    public void ProcessSmell(Smellable smellable)
+    public void ProcessSmell(Smellable smellable, string debugString)
     {
         if ((smellable != null && smellable.IsDestroyed() == true) || !smellable.IsSmellable)
             return;
@@ -358,10 +358,10 @@ public class AntStateMachine : DeathActionBehaviour
                         }
                         this._maxTargetPriority = null;
                         this.ClearTarget();
-                        this.RegisterPotentialTarget(smellable);
+                        this.RegisterPotentialTarget(smellable, debugString);
                         return;
                     case AntState.ReturningToFood:
-                        this.RegisterPotentialTarget(smellable);
+                        this.RegisterPotentialTarget(smellable, debugString);
                         // in the Returning to food state, maintain the state until the food is actually collided with.
                         return;
                 }
@@ -372,7 +372,7 @@ public class AntStateMachine : DeathActionBehaviour
                     case AntState.ReturningHome:
                     case AntState.ReportingFood:
                     case AntState.CarryingFood:
-                        this.RegisterPotentialTarget(smellable);
+                        this.RegisterPotentialTarget(smellable, debugString);
 
                         return;
                 }
@@ -387,7 +387,7 @@ public class AntStateMachine : DeathActionBehaviour
         this.PositionProvider.SetTarget(this.CurrentTarget);
     }
 
-    private void RegisterPotentialTarget(Smellable smellable)
+    private void RegisterPotentialTarget(Smellable smellable, string debugString)
     {
         Debug.Assert(this.State != AntState.ReportingFood || smellable.Smell != Smell.Food, $"State is {this.State} so {smellable} should not be being considered as a possible target.");
 
@@ -406,6 +406,7 @@ public class AntStateMachine : DeathActionBehaviour
         if (this.IsBetterThanCurrent(smellable))
         {
             Debug.Assert(!this.IsScout || smellable.IsActual || smellable.Smell != Smell.Food);
+            Debug.Log("Switched Smell Target - " + debugString);
             this._newBetterTargets.Add(smellable);
 
             //// TODO thoroughly test this and refactor it to be neater if it works.
@@ -515,14 +516,14 @@ public class AntStateMachine : DeathActionBehaviour
                         this._maxTargetPriority = null;
                         this.ClearTarget();
                         this.State = AntState.ReturningToFood;
-                        this.RegisterPotentialTarget(this.LastTrailPoint);
+                        this.RegisterPotentialTarget(this.LastTrailPoint, "Collided with smell");
                         return;
                     case AntState.CarryingFood:
                         this._disableTrail = false;
                         this.State = AntState.ReturningToFood;
                         this._maxTargetPriority = null;
                         this.ClearTarget();
-                        this.RegisterPotentialTarget(this.LastTrailPoint);
+                        this.RegisterPotentialTarget(this.LastTrailPoint, "Collided with smell");
                         this.DropOffFood(smellable);
                         return;
                     case AntState.ReturningHome:
@@ -546,7 +547,7 @@ public class AntStateMachine : DeathActionBehaviour
     {
         this._maxTargetPriority = null;
         this.ClearTarget();
-        this.RegisterPotentialTarget(this.LastTrailPoint);
+        this.RegisterPotentialTarget(this.LastTrailPoint, "Collected smell");
         this.UpdateTrailValueForKnownFood();
         this.PickUpFood(smellable);
     }
@@ -562,7 +563,7 @@ public class AntStateMachine : DeathActionBehaviour
         this._maxTargetPriority = null;
         this._disableTrail = false;
         this.ClearTarget();
-        this.RegisterPotentialTarget(this.LastTrailPoint);
+        this.RegisterPotentialTarget(this.LastTrailPoint, "ReportFoodWithoutCarryingIt");
     }
 
     private void UpdateTrailValueForKnownFood()
