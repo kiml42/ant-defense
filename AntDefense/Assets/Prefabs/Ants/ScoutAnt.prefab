@@ -388,6 +388,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TorqueMultiplier: 30
   ForceMultiplier: 0.6
+  SidewaysForceMultiplier: 0.2
+  BackwardForceMultiplier: 0.6
 --- !u!114 &1089436927646635733
 MonoBehaviour:
   m_ObjectHideFlags: 0
