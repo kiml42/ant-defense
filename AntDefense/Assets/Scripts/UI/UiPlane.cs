@@ -18,6 +18,8 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
     float _height;
     float _width;
 
+    private static readonly List<ProtectMeBarObject> ProtectMes = new List<ProtectMeBarObject>();
+
     private void Start()
     {
         this.InitialiseQuickBar();
