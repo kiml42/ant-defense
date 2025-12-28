@@ -1,9 +1,15 @@
 using UnityEngine;
 
-public class ScoreGenerator : MonoBehaviour
+public class RepeatedScoreGenerator : ScoreGenerator
 {
-    public float ScoreIncrement = 10;
+    /// <summary>
+    /// Delay between incrementing the score
+    /// </summary>
     public float IncrementTime = 10;
+
+    /// <summary>
+    /// The total number of time offsets within <see cref="IncrementTime"/> to spread out multiple generators
+    /// </summary>
     public int NumberOfOffsets = 10;
 
     private static int index;
@@ -24,7 +30,7 @@ public class ScoreGenerator : MonoBehaviour
         this.currentDelay -= Time.fixedDeltaTime;
         if (this.currentDelay <= 0)
         {
-            ScoreTracker.Instance.AddScore(this.ScoreIncrement, this.transform.position);
+            this.IncrementScore();
             this.currentDelay = this.IncrementTime;
         }
     }

@@ -296,6 +296,8 @@ GameObject:
   - component: {fileID: -5929916296373731318}
   - component: {fileID: 3660855418458060726}
   - component: {fileID: -4996180160508391160}
+  - component: {fileID: 3519004465094634648}
+  - component: {fileID: 5096153481373808172}
   m_Layer: 2
   m_Name: ScoutAnt
   m_TagString: Ants1
@@ -455,7 +457,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 3
   HealthBar: {fileID: 8312450896073184057}
-  DeadObject: {fileID: 0}
 --- !u!114 &1805795825312131026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -514,6 +515,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f838fdfc0c7e964d88c87d5fb7c49fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DestroyOnDeath
+--- !u!114 &3519004465094634648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180791391076224223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37c72ed1a5f01ab4da489aa2c8569f72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScoreGenerator
+  ScoreIncrement: 1
+--- !u!114 &5096153481373808172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180791391076224223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77d3bee8bf083b54ab51e35e1d4e1caf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GenrateScoreOnDeathBehaviour
+  ScoreGenerator: {fileID: 3519004465094634648}
 --- !u!1 &1309134283868194372
 GameObject:
   m_ObjectHideFlags: 0
