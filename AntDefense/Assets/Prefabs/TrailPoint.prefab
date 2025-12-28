@@ -176,7 +176,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraDistanceScaler
   UseActualDistance: 0
-  ScaleWithDistanceFactor: 1
+  ScaleWithDistanceFactor: 1.5
   MinScale: 1
   MaxScale: 10
-  DefaultCameraDistance: 30
+  DefaultCameraDistance: 40
