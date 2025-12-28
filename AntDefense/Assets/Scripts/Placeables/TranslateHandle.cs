@@ -62,8 +62,6 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
 
         this.HandleMousePosition();
 
-        this.ScaleForDistanceToCamera();
-
         if (ObjectPlacer.Instance.CanRotateCurrentObject() == false)
         {
             this.transform.rotation = Quaternion.identity;
@@ -110,26 +108,6 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
         }
     }
 
-    public Transform UiObjectsToScale;
-    public float DefaultCameraDistance = 30f;
-
-    private void ScaleForDistanceToCamera()
-    {
-        var scale = this.GetDistanceToCameraScaleFactor();
-
-        this.UiObjectsToScale.localScale = Vector3.one * scale;
-    }
-
-    private float GetDistanceToCameraScaleFactor()
-    {
-        var distance = Camera.main.transform.position.y;
-
-        var excessDistance = distance - this.DefaultCameraDistance;
-
-        var scale = (excessDistance / this.DefaultCameraDistance / 1.5f) + 1;
-        return Mathf.Max(scale, this.MinScale);
-    }
-
     private void HandleMousePosition()
     {
         var previousPosition = this.transform.position;
@@ -141,7 +119,7 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
                 // mous button is down, and the object is rotatable, so rotate it to face the mouse.
                 var vectorToHit = hit.point - this.transform.position;
 
-                if (vectorToHit.magnitude < this.MinRotateMouseDistance * this.GetDistanceToCameraScaleFactor())
+                if (vectorToHit.magnitude < this.MinRotateMouseDistance)
                 {
                     return;
                 }

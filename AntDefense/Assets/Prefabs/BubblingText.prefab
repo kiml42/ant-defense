@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8361524944680342292}
   - component: {fileID: 7567185229914428243}
   - component: {fileID: 2571941884320154293}
+  - component: {fileID: 2820917525340481212}
   m_Layer: 0
   m_Name: BubblingText
   m_TagString: Untagged
@@ -62,6 +63,23 @@ MonoBehaviour:
   Velocity: {x: 0, y: 1.5, z: 0}
   Lifetime: 1
   FadeDuration: 0.8
+--- !u!114 &2820917525340481212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 409808873190858975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a1861a8a3a9f847bba9336b01d019a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraDistanceScaler
+  UseActualDistance: 1
+  ScaleWithDistanceFactor: 1.2
+  MinScale: 0.1
+  MaxScale: 10
+  DefaultCameraDistance: 40
 --- !u!1 &4702214352546071406
 GameObject:
   m_ObjectHideFlags: 0
@@ -89,7 +107,7 @@ RectTransform:
   m_GameObject: {fileID: 4702214352546071406}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8361524944680342292}

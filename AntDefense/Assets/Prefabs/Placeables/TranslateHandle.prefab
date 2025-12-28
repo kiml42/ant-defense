@@ -859,6 +859,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7589486153762582375}
+  - component: {fileID: 4977441262822830217}
   m_Layer: 0
   m_Name: UiObjects
   m_TagString: Untagged
@@ -884,6 +885,23 @@ Transform:
   - {fileID: 7608579844199207778}
   m_Father: {fileID: 1388316768231289819}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4977441262822830217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3545003552867723420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a1861a8a3a9f847bba9336b01d019a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraDistanceScaler
+  UseActualDistance: 0
+  ScaleWithDistanceFactor: 1
+  MinScale: 0.1
+  MaxScale: 10
+  DefaultCameraDistance: 30
 --- !u!1 &3577384801371285430
 GameObject:
   m_ObjectHideFlags: 0
@@ -1686,8 +1704,6 @@ MonoBehaviour:
   SelectedObjectHighlight: {fileID: 3718810060759407500, guid: 5d925c7ba5e0ace4999444cba20ab5dc, type: 3}
   MinScale: 1
   CancelThreshold: 0.1
-  UiObjectsToScale: {fileID: 7589486153762582375}
-  DefaultCameraDistance: 30
 --- !u!114 &1861382615584135130
 MonoBehaviour:
   m_ObjectHideFlags: 0

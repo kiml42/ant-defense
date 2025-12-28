@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6772722220670976624}
   - component: {fileID: 5935715402221547576}
+  - component: {fileID: 1615993767147555237}
   m_Layer: 0
   m_Name: CameraFacer
   m_TagString: Untagged
@@ -26,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 184553544348982516}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 3.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -45,6 +46,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8371852064e867c4a954afcf81398947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFacer
+--- !u!114 &1615993767147555237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184553544348982516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a1861a8a3a9f847bba9336b01d019a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraDistanceScaler
+  UseActualDistance: 1
+  ScaleWithDistanceFactor: 1
+  MinScale: 0.1
+  MaxScale: 10
+  DefaultCameraDistance: 20
 --- !u!1 &418307386763769695
 GameObject:
   m_ObjectHideFlags: 0
@@ -72,7 +90,7 @@ Transform:
   m_GameObject: {fileID: 418307386763769695}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.2, y: 0.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -208,7 +226,7 @@ MonoBehaviour:
   WallToBuildOn: {fileID: 0}
   WallParent: {fileID: 0}
   Icon: {fileID: 0}
-  ScaleForButton: 0.6
+  ScaleForButton: 0.5
   OffsetForButton: {x: 0, y: 0, z: 0}
   RotationForButton: {x: 0.28308818, y: 0.14199114, z: 0.076293215, w: 0.9454517}
   TimeOut: 5
@@ -413,7 +431,7 @@ Transform:
   m_GameObject: {fileID: 4084784945709091931}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.2, y: 0.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -663,7 +681,7 @@ Transform:
   m_GameObject: {fileID: 5055690365835478866}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 3.45, z: 0.25}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -708,7 +726,7 @@ Transform:
   m_GameObject: {fileID: 5542910396867154319}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 3.45, z: 0.25}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1006,6 +1024,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7827909923194852027}
   - component: {fileID: 3295362741583541732}
+  - component: {fileID: 9168880202148528402}
   m_Layer: 0
   m_Name: CameraFacer
   m_TagString: Untagged
@@ -1022,7 +1041,7 @@ Transform:
   m_GameObject: {fileID: 7756574587278942893}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1041,6 +1060,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8371852064e867c4a954afcf81398947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFacer
+--- !u!114 &9168880202148528402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7756574587278942893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a1861a8a3a9f847bba9336b01d019a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraDistanceScaler
+  UseActualDistance: 1
+  ScaleWithDistanceFactor: 1
+  MinScale: 0.1
+  MaxScale: 10
+  DefaultCameraDistance: 20
 --- !u!1 &8126956777207597614
 GameObject:
   m_ObjectHideFlags: 0
