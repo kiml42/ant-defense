@@ -1,12 +1,21 @@
 using TMPro;
 using UnityEngine;
 
-public class MoneyTracker : ValueTracker<float>
+public class MoneyTracker : NumberTracker
 {
     public float InitialMoney = 100f;
     public float IncomePerSecond = 0.1f;
 
     public override string FormattedValue => $"£{CurrentValue:F2}";
+
+    public static ScoreTracker Instance { get; private set; }
+
+    // TODO: add base class for singleton monobehaviours
+    private void Awake()
+    {
+        Debug.Assert(Instance == null || Instance == this, "There should not be multiple money trackers!");
+        Instance = this;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -30,6 +39,8 @@ public class MoneyTracker : ValueTracker<float>
         return CurrentValue >= cost;
     }
 }
+
+public abstract class NumberTracker : ValueTracker<float> { }
 
 public abstract class ValueTracker<T> : MonoBehaviour
 {

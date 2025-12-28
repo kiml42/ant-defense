@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class ScoreTracker : ValueTracker<int>
+public class ScoreTracker : NumberTracker
 {
     private const char ScoreSymbol = '*';
     public override string FormattedValue => $"Score: {CurrentValue}{ScoreSymbol}";
@@ -27,7 +27,7 @@ public class ScoreTracker : ValueTracker<int>
         this.Text.color = this.ScoreTextColor;
     }
 
-    public void AddScore(int score, Vector3? location)
+    public void AddScore(float score, Vector3? location)
     {
         CurrentValue += score;
         if (location.HasValue && this.BubblingTextPrefab != null)

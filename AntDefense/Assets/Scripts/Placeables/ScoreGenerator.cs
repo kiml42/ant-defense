@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ScoreGenerator : MonoBehaviour
 {
-    public int ScoreIncrement = 10;
+    public float ScoreIncrement = 10;
     public float IncrementTime = 10;
     public int NumberOfOffsets = 10;
 
