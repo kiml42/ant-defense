@@ -13,7 +13,6 @@ public class BubblingText : MonoBehaviour
         this.Text.text = text;
         if (colour.HasValue)
         {
-            Debug.Log("Setting bubbling text colour to " + colour.Value);
             this.Text.color = colour.Value;
             return;
         }

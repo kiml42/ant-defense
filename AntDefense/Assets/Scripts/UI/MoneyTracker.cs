@@ -1,21 +1,12 @@
 using TMPro;
 using UnityEngine;
 
-public class MoneyTracker : NumberTracker
+public class MoneyTracker : NumberTracker<MoneyTracker>
 {
     public float InitialMoney = 100f;
     public float IncomePerSecond = 0.1f;
 
     public override string FormattedValue => $"£{CurrentValue:F2}";
-
-    public static ScoreTracker Instance { get; private set; }
-
-    // TODO: add base class for singleton monobehaviours
-    private void Awake()
-    {
-        Debug.Assert(Instance == null || Instance == this, "There should not be multiple money trackers!");
-        Instance = this;
-    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -40,14 +31,25 @@ public class MoneyTracker : NumberTracker
     }
 }
 
-public abstract class NumberTracker : ValueTracker<float> { }
+public abstract class NumberTracker<TSelf> : ValueTracker<float, TSelf> where TSelf : NumberTracker<TSelf>
+{ }
 
-public abstract class ValueTracker<T> : MonoBehaviour
+public abstract class ValueTracker<TValue, TSelf> : MonoBehaviour where TSelf : ValueTracker<TValue, TSelf>
 {
     public TextMeshProUGUI Text;
-    public static T CurrentValue { get; protected set; }
+    public static TValue CurrentValue { get; protected set; }
 
     public abstract string FormattedValue { get; }
+
+    public static TSelf Instance { get; private set; }
+
+    // TODO: add base class for singleton monobehaviours
+    private void Awake()
+    {
+        Debug.Assert(Instance == null || Instance == this, $"There should not be multiple {typeof(TSelf).Name}!");
+        Debug.Assert(this is TSelf, $"{typeof(TSelf).Name} should only be attached to {typeof(TSelf).Name} instances!");
+        Instance = (TSelf)this;
+    }
 
     // Update is called once per frame
     void Update()
