@@ -8,12 +8,7 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
     public QuickBarButton QuickBarButton;
     public Transform QuickBarCenter;
     public float QuickBarSpacing = 0.1f;
-    public float ProtectMesSpacing = 0.1f;
     private List<QuickBarButton> _buttons = null;
-
-    public Transform ProtectMesCenter;
-    public float ProtectMeScale = 0.1f;
-    public Vector3 ProtectMeRotation;
 
     float _height;
     float _width;
@@ -27,14 +22,8 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
 
     private void Update()
     {
-        if (ProtectMes.Any(p => p.UiObject == null))
+        foreach (var p in ProtectMes.Where(p => p.ProtectMe == null).ToArray())
         {
-            this.InitialiseProtectMes();
-        }
-
-        foreach (var p in ProtectMes.Where(p => p.ProtectMe == null && p.UiObject != null).ToArray())
-        {
-            Destroy(p.UiObject.gameObject);
             ProtectMes.Remove(p);
         }
         if(ProtectMes.Count == 0)
@@ -46,29 +35,6 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #endif
-        }
-    }
-
-    private void InitialiseProtectMes()
-    {
-        // TODO : calculate spacing based on available space.
-        // TODO : improve positioning & rotation of the objects
-        var leftOffset = -this.ProtectMesSpacing * (ProtectMes.Count - 1) / 2;
-
-        // foreach with index
-
-        var i = 0;
-        foreach (var p in ProtectMes)
-        {
-            var offset = leftOffset + (i * this.ProtectMesSpacing);
-            if (p.UiObject == null)
-            {
-                p.UiObject = Instantiate(p.ProtectMe.transform, this.ProtectMesCenter.position + new Vector3(offset, 0, 0), Quaternion.Euler(this.ProtectMeRotation));
-                p.UiObject.parent = this.transform;
-                p.UiObject.localScale *= this.ProtectMeScale;
-                Dummyise(p.UiObject);
-            }
-            i++;
         }
     }
 
@@ -146,7 +112,6 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
 
     private class ProtectMeBarObject
     {
-        public Transform UiObject;
         public ProtectMe ProtectMe;
         public ProtectMeBarObject(ProtectMe protectMe)
         {
