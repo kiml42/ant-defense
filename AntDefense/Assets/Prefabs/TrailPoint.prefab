@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1285689940523424235}
   - component: {fileID: 5890833577106334138}
   - component: {fileID: 5091190672173903247}
+  - component: {fileID: 579203444421937220}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -89,6 +90,23 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &579203444421937220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1785008887133676627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a1861a8a3a9f847bba9336b01d019a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraDistanceScaler
+  UseActualDistance: 0
+  ScaleWithDistanceFactor: 1.5
+  MinScale: 1
+  MaxScale: 10
+  DefaultCameraDistance: 40
 --- !u!1 &5733006374893028221
 GameObject:
   m_ObjectHideFlags: 0
@@ -100,7 +118,6 @@ GameObject:
   - component: {fileID: 4304061794554422484}
   - component: {fileID: 4054594821476032866}
   - component: {fileID: 2858440292616079122}
-  - component: {fileID: 2952584211046988216}
   m_Layer: 0
   m_Name: TrailPoint
   m_TagString: Untagged
@@ -163,20 +180,3 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.26
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2952584211046988216
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5733006374893028221}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92a1861a8a3a9f847bba9336b01d019a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CameraDistanceScaler
-  UseActualDistance: 0
-  ScaleWithDistanceFactor: 1.5
-  MinScale: 1
-  MaxScale: 10
-  DefaultCameraDistance: 40
