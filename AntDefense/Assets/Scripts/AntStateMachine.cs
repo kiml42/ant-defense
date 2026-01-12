@@ -643,7 +643,7 @@ public class AntStateMachine : DeathActionBehaviour
         {
             return this.TrailController == null || this.TrailController.gameObject == null
                 ? null
-                : this.TrailController.LastTrailPoint;
+                : this.TrailController.LastTrailPointController;
         }
     }
 }
