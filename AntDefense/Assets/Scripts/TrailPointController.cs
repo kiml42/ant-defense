@@ -58,6 +58,9 @@ public class TrailPointController : Smellable
 
     public float RemainingTime => this._smellComponents.Any() ? this._smellComponents.Max(c => c.RemainingTime) : 0;
 
+    // TODO: Just for debugging right now, remove later.
+    public Smellable Previous;
+
     public override float GetPriority(ITargetPriorityCalculator priorityCalculator)
     {
         // return the component with the best priotity, if priorityCalculator is null, just return the closest.
@@ -124,6 +127,8 @@ public class TrailPointController : Smellable
             this.DestroyThis();
             return;
         }
+
+        this.Previous = previous;
 
         //Debug.Log("Added smell component to self: " + this);
         if (this.Material != null)
