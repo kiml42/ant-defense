@@ -116,7 +116,7 @@ public class AntStateMachine : DeathActionBehaviour
             this.ClearTarget();
         }
 
-        if (this.LastTrailPoint != null && this.LastTrailPoint.RemainingTime < this.GoHomeTime)
+        if (this.LastTrailDroppedPoint != null && this.LastTrailDroppedPoint.RemainingTime < this.GoHomeTime)
         {
             //Debug.Log($"Ant {this} last trail point {this.LastTrailPoint} has only {this.LastTrailPoint.RemainingTime} time remaining, going home.");
             this.GiveUpAndReturnHome();
@@ -253,12 +253,12 @@ public class AntStateMachine : DeathActionBehaviour
     {
         //Debug.Log($"Ant {this} giving up and returning home from state {this.State}");
         this.State = AntState.ReturningHome;
-        if (this.LastTrailPoint == null || this.LastTrailPoint.Smell != Smell.Home)
+        if (this.LastTrailDroppedPoint == null || this.LastTrailDroppedPoint.Smell != Smell.Home)
         {
             // not leaving a trail towards home, so can't use it to go home.
             return;
         }
-        this.SetTarget(this.LastTrailPoint);
+        this.SetTarget(this.LastTrailDroppedPoint);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -516,14 +516,14 @@ public class AntStateMachine : DeathActionBehaviour
                         this._maxTargetPriority = null;
                         this.ClearTarget();
                         this.State = AntState.ReturningToFood;
-                        this.RegisterPotentialTarget(this.LastTrailPoint, "Collided with smell");
+                        this.RegisterPotentialTarget(this.LastTrailDroppedPoint, "Collided with smell");
                         return;
                     case AntState.CarryingFood:
                         this._disableTrail = false;
                         this.State = AntState.ReturningToFood;
                         this._maxTargetPriority = null;
                         this.ClearTarget();
-                        this.RegisterPotentialTarget(this.LastTrailPoint, "Collided with smell");
+                        this.RegisterPotentialTarget(this.LastTrailDroppedPoint, "Collided with smell");
                         this.DropOffFood(smellable);
                         return;
                     case AntState.ReturningHome:
@@ -547,7 +547,7 @@ public class AntStateMachine : DeathActionBehaviour
     {
         this._maxTargetPriority = null;
         this.ClearTarget();
-        this.RegisterPotentialTarget(this.LastTrailPoint, "Collected smell");
+        this.RegisterPotentialTarget(this.LastTrailDroppedPoint, "Collected smell");
         this.UpdateTrailValueForKnownFood();
         this.PickUpFood(smellable);
     }
@@ -563,7 +563,7 @@ public class AntStateMachine : DeathActionBehaviour
         this._maxTargetPriority = null;
         this._disableTrail = false;
         this.ClearTarget();
-        this.RegisterPotentialTarget(this.LastTrailPoint, "ReportFoodWithoutCarryingIt");
+        this.RegisterPotentialTarget(this.LastTrailDroppedPoint, "ReportFoodWithoutCarryingIt");
     }
 
     private void UpdateTrailValueForKnownFood()
@@ -637,7 +637,7 @@ public class AntStateMachine : DeathActionBehaviour
         }
     }
 
-    private TrailPointController LastTrailPoint
+    private TrailPointController LastTrailDroppedPoint
     {
         get
         {
