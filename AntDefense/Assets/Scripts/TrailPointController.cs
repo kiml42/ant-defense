@@ -100,6 +100,8 @@ public class TrailPointController : Smellable
 
         if (!this._smellComponents.Any())
         {
+            // Mark as no longer smellable before destruction so ants stop trying to follow it
+            this.IsSmellable = false;
             //Debug.Log("Destroyin because No remaining smells");
             this.DestroyThis();
             return;
