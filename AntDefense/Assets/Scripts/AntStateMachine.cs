@@ -149,15 +149,10 @@ public class AntStateMachine : DeathActionBehaviour
         // Workaround for unreliable smell detection - if the ant gets too close to a trail point, it automatically finds the next point in the trail chain.
         if (this.CurrentTarget != null && !this.CurrentTarget.IsDestroyed() && Vector3.Distance(this.transform.position, this.CurrentTarget.transform.position) < this.AutomaticallyFindPreviousTrailPointDistance)
         {
-            var currentTrailPoint = this.CurrentTarget as TrailPointController;
-            if (currentTrailPoint != null)
+            var nextPoint = this.GetNextTrailPoint(this.CurrentTarget as TrailPointController);
+            if (nextPoint != null)
             {
-                // Get the best previous point for this ant's priority system
-                var bestPrevious = currentTrailPoint.GetBestPrevious(this._priorityCalculator);
-                if (bestPrevious != null)
-                {
-                    this.RegisterPotentialTarget(bestPrevious, "automatically finding next trail point in chain.");
-                }
+                this.RegisterPotentialTarget(nextPoint, "automatically finding next trail point in chain.");
             }
         }
 
@@ -188,16 +183,12 @@ public class AntStateMachine : DeathActionBehaviour
             if (!this.CurrentTarget.IsActual && this._timeSinceTargetAquisition > this.MaxTimeGoingForTrailPoint)
             {
                 // Before giving up, try to find the next point in the trail to avoid spinning
-                var currentTrailPoint = this.CurrentTarget as TrailPointController;
-                if (currentTrailPoint != null)
+                var nextPoint = this.GetNextTrailPoint(this.CurrentTarget as TrailPointController);
+                if (nextPoint != null)
                 {
-                    var bestPrevious = currentTrailPoint.GetBestPrevious(this._priorityCalculator);
-                    if (bestPrevious != null && !bestPrevious.IsDestroyed() && bestPrevious.IsSmellable)
-                    {
-                        // Switch to the next point rather than timing out
-                        this.SetTarget(bestPrevious);
-                        return; // Skip the normal timeout logic
-                    }
+                    // Switch to the next point rather than timing out
+                    this.SetTarget(nextPoint);
+                    return; // Skip the normal timeout logic
                 }
                 
                 // No next point found, give up normally
@@ -262,6 +253,23 @@ public class AntStateMachine : DeathActionBehaviour
         }
 
         return hasLineOfSight;
+    }
+
+    /// <summary>
+    /// Gets the next trail point in the chain for a given trail point, based on this ant's priority system.
+    /// </summary>
+    private Smellable GetNextTrailPoint(TrailPointController currentTrailPoint)
+    {
+        if (currentTrailPoint == null)
+            return null;
+
+        var nextPoint = currentTrailPoint.GetBestPrevious(this._priorityCalculator);
+        if (nextPoint != null && !nextPoint.IsDestroyed() && nextPoint.IsSmellable)
+        {
+            return nextPoint;
+        }
+
+        return null;
     }
 
     private void OnCollisionExit(Collision collision)
