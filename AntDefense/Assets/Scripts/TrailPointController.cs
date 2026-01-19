@@ -8,7 +8,7 @@ public class TrailPointController : Smellable
 {
     // TODO make the trail points bigger/bolder when zoomed out to keep trails visible.
 
-    private class SmellComponent
+    public class SmellComponent
     {
         public readonly float DistanceFromTarget;
 
