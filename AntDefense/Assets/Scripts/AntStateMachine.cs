@@ -187,6 +187,20 @@ public class AntStateMachine : DeathActionBehaviour
             Debug.DrawLine(this.transform.position, this.CurrentTarget.TargetPoint.position, Color.cyan);
             if (!this.CurrentTarget.IsActual && this._timeSinceTargetAquisition > this.MaxTimeGoingForTrailPoint)
             {
+                // Before giving up, try to find the next point in the trail to avoid spinning
+                var currentTrailPoint = this.CurrentTarget as TrailPointController;
+                if (currentTrailPoint != null)
+                {
+                    var bestPrevious = currentTrailPoint.GetBestPrevious(this._priorityCalculator);
+                    if (bestPrevious != null && !bestPrevious.IsDestroyed() && bestPrevious.IsSmellable)
+                    {
+                        // Switch to the next point rather than timing out
+                        this.SetTarget(bestPrevious);
+                        return; // Skip the normal timeout logic
+                    }
+                }
+                
+                // No next point found, give up normally
                 this._maxTargetPriority = this.CurrentTarget.Smell == Smell.Home
                     ? null  // Continue to accept any home smell after forgetting this one.
                     : this.CurrentTarget.GetPriority(this._priorityCalculator) - this.GiveUpPenalty; // Only accept better food smells after forgetting this one.
