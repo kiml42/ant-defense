@@ -32,22 +32,26 @@ public class AntMoveController : MonoBehaviour
         if (this.IsUpright)
         {
             // only turn towards the target if upright
-            if(signedAngle >= 90)
+            // Use smooth interpolation instead of hard cutoffs to avoid oscillation/spinning at ±90 degrees
+            var absAngle = Mathf.Abs(signedAngle);
+            
+            // Create smooth weighting: 0 at 0°, 1 at 90°+
+            // Use a smoother transition around 75-105° to avoid rapid switching
+            var sharpTurnWeight = Mathf.Clamp01((absAngle - 75f) / 30f);
+            
+            if(signedAngle > 0)
             {
-                // over 90 degrees off, full torque to turn towards forwards
-                headingError += this.transform.up;
-            }
-            else if(signedAngle <= -90)
-            {
-                // over 90 degrees off, full torque to turn towards forwards
-                headingError -= this.transform.up;
+                // Turn right
+                headingError += this.transform.up * sharpTurnWeight;
+                // Add smooth turning for smaller angles
+                headingError += Vector3.Cross(this.transform.forward, this._positionProvider.DirectionToMove).normalized * (1 - sharpTurnWeight);
             }
             else
             {
-                // less than 90 degrees off, torque should be correlated with the angle.
-                //Debug.DrawRay(transform.position, direction, Color.blue);
-
-                headingError += Vector3.Cross(this.transform.forward, this._positionProvider.DirectionToMove).normalized;
+                // Turn left
+                headingError -= this.transform.up * sharpTurnWeight;
+                // Add smooth turning for smaller angles
+                headingError += Vector3.Cross(this.transform.forward, this._positionProvider.DirectionToMove).normalized * (1 - sharpTurnWeight);
             }
         }
 
