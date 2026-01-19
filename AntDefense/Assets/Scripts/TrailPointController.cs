@@ -69,6 +69,26 @@ public class TrailPointController : Smellable
             : float.MaxValue;
     }
 
+    /// <summary>
+    /// Gets the best SmellComponent based on priority, used to find the next point in the trail.
+    /// </summary>
+    public SmellComponent GetBestSmellComponent(ITargetPriorityCalculator priorityCalculator)
+    {
+        if (!this._smellComponents.Any()) return null;
+        
+        // Return the component with the best (lowest) priority
+        return this._smellComponents.OrderBy(s => priorityCalculator?.CalculatePriority(s.DistanceFromTarget, s.TargetValue) ?? s.DistanceFromTarget).First();
+    }
+
+    /// <summary>
+    /// Gets the previous point in the trail according to the best priority path through this point.
+    /// </summary>
+    public Smellable GetBestPrevious(ITargetPriorityCalculator priorityCalculator)
+    {
+        var bestComponent = this.GetBestSmellComponent(priorityCalculator);
+        return bestComponent?.PreviousPoint;
+    }
+
     public void UpdateVisibility()
     {
         if (TrailPointManager.VisibleTrailSmells.Contains(this.Smell))

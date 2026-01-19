@@ -146,13 +146,18 @@ public class AntStateMachine : DeathActionBehaviour
         //    Debug.Log("Not checking for barriers " + (this == null) + " - " + (ViewPoint == null));
         //}
 
-        // Woraround for unreliable smell detection - if the ant gets too close to a trail point, it automatically finds the previous smell in the trail.
+        // Workaround for unreliable smell detection - if the ant gets too close to a trail point, it automatically finds the next point in the trail chain.
         if (this.CurrentTarget != null && !this.CurrentTarget.IsDestroyed() && Vector3.Distance(this.transform.position, this.CurrentTarget.transform.position) < this.AutomaticallyFindPreviousTrailPointDistance)
         {
             var currentTrailPoint = this.CurrentTarget as TrailPointController;
-            if (currentTrailPoint != null && currentTrailPoint.Previous != null)
+            if (currentTrailPoint != null)
             {
-                this.RegisterPotentialTarget(currentTrailPoint.Previous, "automatically finding previous.");   // TODO: need a better way to know which trail point is the previous for the best smell on this trail pont.
+                // Get the best previous point for this ant's priority system
+                var bestPrevious = currentTrailPoint.GetBestPrevious(this._priorityCalculator);
+                if (bestPrevious != null)
+                {
+                    this.RegisterPotentialTarget(bestPrevious, "automatically finding next trail point in chain.");
+                }
             }
         }
 
