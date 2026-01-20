@@ -143,6 +143,13 @@ public class ObjectPlacer : SingletonMonoBehaviour<ObjectPlacer>
         {
             //Debug.Log("Clearing last wall node because there's no wall node component.");
             this._lastWallNode = null;
+            
+            // Select the newly placed object if it's selectable
+            var selectableObject = newObject.GetComponent<ISelectableObject>();
+            if (selectableObject != null)
+            {
+                TranslateHandle.Instance.SetSelectedObject(selectableObject);
+            }
         }
 
         newObject.Place();
