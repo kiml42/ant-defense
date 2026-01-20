@@ -71,13 +71,11 @@ public class QuickBarButton : ClickableButton
 
     private void OnMouseEnterButton()
     {
-        Debug.Log("Mouse Enter QuickBarButton");
         _targetScale = _originalScale * this.MouseoverScale;
     }
 
     private void OnMouseExitButton()
     {
-        Debug.Log("Mouse Exit QuickBarButton");
         _targetScale = _originalScale;
     }
 }
