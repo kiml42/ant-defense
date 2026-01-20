@@ -36,10 +36,13 @@ public class TurretController : SelectableGhostableMonoBehaviour
     }
 
     public MeshRenderer RangeRenderer;
+    public float RangeIndicatorFadeDuration = 3f; // How long the range indicator stays visible after placement
 
     public TurretTrigger Trigger;
 
     private bool _enabled = true;
+    private float _rangeFadeTimer = 0f;
+    private bool _shouldShowRangeFromFade = false;
 
     void Start()
     {
@@ -52,6 +55,20 @@ public class TurretController : SelectableGhostableMonoBehaviour
 
         this._range = this.Trigger.TriggerCollider.radius * this.Trigger.TriggerCollider.transform.localScale.x;
         return;
+    }
+
+    void Update()
+    {
+        // Handle range indicator fade
+        if (this._shouldShowRangeFromFade)
+        {
+            this._rangeFadeTimer -= Time.deltaTime;
+            if (this._rangeFadeTimer <= 0)
+            {
+                this._shouldShowRangeFromFade = false;
+                this.UpdateRangeRendererVisibility();
+            }
+        }
     }
 
     void FixedUpdate()
@@ -128,14 +145,29 @@ public class TurretController : SelectableGhostableMonoBehaviour
 
     protected override void OnSelect()
     {
-        if (this.RangeRenderer != null)
-            this.RangeRenderer.enabled = true;
+        this.UpdateRangeRendererVisibility();
     }
 
     protected override void OnDeselect()
     {
+        this.UpdateRangeRendererVisibility();
+    }
+
+    public void ShowRangeIndicator()
+    {
+        // Show the range indicator and start fade timer
+        this._shouldShowRangeFromFade = true;
+        this._rangeFadeTimer = this.RangeIndicatorFadeDuration;
+        this.UpdateRangeRendererVisibility();
+    }
+
+    private void UpdateRangeRendererVisibility()
+    {
         if (this.RangeRenderer != null)
-            this.RangeRenderer.enabled = false;
+        {
+            // Show if selected OR if fade timer is active
+            this.RangeRenderer.enabled = this.IsSelected || this._shouldShowRangeFromFade;
+        }
     }
 
     public override void Ghostify()

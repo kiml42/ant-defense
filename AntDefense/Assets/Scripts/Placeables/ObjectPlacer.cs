@@ -143,13 +143,6 @@ public class ObjectPlacer : SingletonMonoBehaviour<ObjectPlacer>
         {
             //Debug.Log("Clearing last wall node because there's no wall node component.");
             this._lastWallNode = null;
-            
-            // Select the newly placed object if it's selectable
-            var selectableObject = newObject.GetComponent<ISelectableObject>();
-            if (selectableObject != null)
-            {
-                TranslateHandle.Instance.SetSelectedObject(selectableObject);
-            }
         }
 
         newObject.Place();
@@ -158,6 +151,13 @@ public class ObjectPlacer : SingletonMonoBehaviour<ObjectPlacer>
         {
             // it's being built with a parent already.
             newObject.transform.parent = parent.transform;
+        }
+
+        // Show range indicator for turrets
+        var turretController = newObject.GetComponent<TurretController>();
+        if (turretController != null)
+        {
+            turretController.ShowRangeIndicator();
         }
 
         return newObject;
