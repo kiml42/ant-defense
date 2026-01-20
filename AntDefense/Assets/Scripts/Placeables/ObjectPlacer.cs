@@ -75,6 +75,12 @@ public class ObjectPlacer : SingletonMonoBehaviour<ObjectPlacer>
             this._additionalWallGhost.transform.parent = this.Handle.transform;
             this._additionalWallGhost.GetComponent<PlaceableObjectOrGhost>().StartPlacing();
         }
+
+        var turretController = this._objectBeingPlaced.GetComponentInChildren<TurretController>();
+        if (turretController != null)
+        {
+            Debug.Log("Starting placing turret " + turretController);
+        }
     }
 
     public void CancelPlacingObject()
@@ -151,13 +157,6 @@ public class ObjectPlacer : SingletonMonoBehaviour<ObjectPlacer>
         {
             // it's being built with a parent already.
             newObject.transform.parent = parent.transform;
-        }
-
-        // Show range indicator for turrets
-        var turretController = newObject.GetComponent<TurretController>();
-        if (turretController != null)
-        {
-            turretController.ShowRangeIndicator();
         }
 
         return newObject;

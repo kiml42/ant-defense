@@ -41,59 +41,81 @@ public class TurretController : SelectableGhostableMonoBehaviour
     public TurretTrigger Trigger;
 
     private bool _enabled = true;
-    private float _rangeFadeTimer = 0f;
-    private bool _shouldShowRangeFromFade = false;
     private Material _rangeRendererMaterial;
     private Color _originalRangeColor;
 
-    void Start()
+    private bool TargetRangeRentererVisibility
     {
+        get
+        {
+            return this.IsSelected || !this._enabled;
+        }
+    } // either it's selected, or it's a ghost.
+
+    //void Start()
+    //{
+    //    this.Init();
+    //}
+
+
+    private void Init()
+    {
+        if(this.instanceNumber != -1)
+        {
+            // already initialised
+            return;
+        }
+        instanceCount++;
+        instanceNumber = instanceCount;
+
         Debug.Assert(this.Emitter != null, "TurretController requires an Emitter transform to fire projectiles from.");
         Debug.Assert(this.Turner != null, "TurretController requires a TurretTurner to aim the turret.");
         Debug.Assert(this.Projectile != null, "TurretController requires a Projectile to fire.");
         Debug.Assert(this.Trigger != null, "TurretController requires a TurretTrigger to determine its range.");
 
-        NoSpawnZone.Register(this); // register this as an interactive point
-
         this._range = this.Trigger.TriggerCollider.radius * this.Trigger.TriggerCollider.transform.localScale.x;
-        
+
         // Cache the range renderer material
         if (this.RangeRenderer != null)
         {
             this._rangeRendererMaterial = this.RangeRenderer.material;
             this._originalRangeColor = this._rangeRendererMaterial.color;
         }
-        
-        return;
     }
 
     void Update()
     {
-        // Handle range indicator fade
-        if (this._shouldShowRangeFromFade)
+        this.Init();
+        if (this._rangeRendererMaterial != null)
         {
-            this._rangeFadeTimer -= Time.deltaTime;
-            
-            // Calculate alpha (fade from 1 to 0)
-            float alpha = Mathf.Max(0f, this._rangeFadeTimer / this.RangeIndicatorFadeDuration) * this._originalRangeColor.a;
-            
-            if (this._rangeRendererMaterial != null)
+            Color newColor = this._originalRangeColor;
+            if (this.TargetRangeRentererVisibility && this._rangeRendererMaterial.color.a < this._originalRangeColor.a)
             {
-                Color newColor = this._originalRangeColor;
-                newColor.a = alpha;
+
+                Debug.Log(this + " IsSelected = " + this.IsSelected + ", Enabled = " + this._enabled + " becoming visible");
+                // instantly make it completely visible.
+                newColor.a = this._originalRangeColor.a;
                 this._rangeRendererMaterial.color = newColor;
             }
-            
-            if (this._rangeFadeTimer <= 0)
+            if (!this.TargetRangeRentererVisibility && this._rangeRendererMaterial.color.a > 0)
             {
-                this._shouldShowRangeFromFade = false;
-                this.UpdateRangeRendererVisibility();
+                Debug.Log(this + " IsSelected = " + this.IsSelected + ", Enabled = " + this._enabled + " fading out");
+                // fading out
+
+                // proportion of the fade time times the original alpha.
+                var step = Time.deltaTime / this.RangeIndicatorFadeDuration * this._originalRangeColor.a;
+
+                float alpha = Mathf.Max(0f, this._rangeRendererMaterial.color.a - step);
+
+                newColor.a = alpha;
+                this._rangeRendererMaterial.color = newColor;
             }
         }
     }
 
     void FixedUpdate()
     {
+        this.Init();
         if (!this._enabled)
         {
             return;
@@ -166,54 +188,32 @@ public class TurretController : SelectableGhostableMonoBehaviour
 
     protected override void OnSelect()
     {
-        this.UpdateRangeRendererVisibility();
     }
 
     protected override void OnDeselect()
     {
-        this.UpdateRangeRendererVisibility();
-    }
-
-    public void ShowRangeIndicator()
-    {
-        // Show the range indicator and start fade timer
-        this._shouldShowRangeFromFade = true;
-        this._rangeFadeTimer = this.RangeIndicatorFadeDuration;
-        
-        // Restore full alpha immediately
-        if (this._rangeRendererMaterial != null)
-        {
-            Color newColor = this._originalRangeColor;
-            newColor.a = this._originalRangeColor.a;
-            this._rangeRendererMaterial.color = newColor;
-        }
-        
-        this.UpdateRangeRendererVisibility();
-    }
-
-    private void UpdateRangeRendererVisibility()
-    {
-        if (this.RangeRenderer != null)
-        {
-            // Show if selected OR if fade timer is active
-            bool shouldShow = this.IsSelected || this._shouldShowRangeFromFade;
-            this.RangeRenderer.enabled = shouldShow;
-            
-            // When becoming invisible, restore original alpha
-            if (!shouldShow && this._rangeRendererMaterial != null)
-            {
-                this._rangeRendererMaterial.color = this._originalRangeColor;
-            }
-        }
     }
 
     public override void Ghostify()
     {
+        this.Init();
+        Debug.Log("Ghostifying " + this);
         this._enabled = false;
     }
 
     public override void UnGhostify()
     {
+        this.Init();
+        Debug.Log("UnGhostifying " + this);
         this._enabled = true;
+        NoSpawnZone.Register(this); // register this as an interactive point
+    }
+
+    static int instanceCount = 0;
+    private int instanceNumber = -1;
+
+    public override string ToString()
+    {
+        return base.ToString() + "i" + this.instanceNumber;
     }
 }
