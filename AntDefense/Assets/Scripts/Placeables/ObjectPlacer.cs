@@ -100,6 +100,11 @@ public class ObjectPlacer : SingletonMonoBehaviour<ObjectPlacer>
     /// <returns>The object that was placed</returns>
     public PlaceableObjectOrGhost PlaceObject(WallNode parent = null)
     {
+        if (TranslateHandle.IsMouseOverQuickBarButton)
+        {
+            Debug.LogWarning("Cannot place object while mouse is over a quick bar button.");
+            return null;
+        }
         if (this._objectBeingPlaced == null)
         {
             Debug.LogWarning("No object is being placed, so cannot place anything.");
