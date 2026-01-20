@@ -43,6 +43,8 @@ public class TurretController : SelectableGhostableMonoBehaviour
     private bool _enabled = true;
     private float _rangeFadeTimer = 0f;
     private bool _shouldShowRangeFromFade = false;
+    private Material _rangeRendererMaterial;
+    private Color _originalRangeColor;
 
     void Start()
     {
@@ -54,6 +56,14 @@ public class TurretController : SelectableGhostableMonoBehaviour
         NoSpawnZone.Register(this); // register this as an interactive point
 
         this._range = this.Trigger.TriggerCollider.radius * this.Trigger.TriggerCollider.transform.localScale.x;
+        
+        // Cache the range renderer material
+        if (this.RangeRenderer != null)
+        {
+            this._rangeRendererMaterial = this.RangeRenderer.material;
+            this._originalRangeColor = this._rangeRendererMaterial.color;
+        }
+        
         return;
     }
 
@@ -63,6 +73,17 @@ public class TurretController : SelectableGhostableMonoBehaviour
         if (this._shouldShowRangeFromFade)
         {
             this._rangeFadeTimer -= Time.deltaTime;
+            
+            // Calculate alpha (fade from 1 to 0)
+            float alpha = Mathf.Max(0f, this._rangeFadeTimer / this.RangeIndicatorFadeDuration);
+            
+            if (this._rangeRendererMaterial != null)
+            {
+                Color newColor = this._originalRangeColor;
+                newColor.a = alpha;
+                this._rangeRendererMaterial.color = newColor;
+            }
+            
             if (this._rangeFadeTimer <= 0)
             {
                 this._shouldShowRangeFromFade = false;
@@ -158,6 +179,15 @@ public class TurretController : SelectableGhostableMonoBehaviour
         // Show the range indicator and start fade timer
         this._shouldShowRangeFromFade = true;
         this._rangeFadeTimer = this.RangeIndicatorFadeDuration;
+        
+        // Restore full alpha immediately
+        if (this._rangeRendererMaterial != null)
+        {
+            Color newColor = this._originalRangeColor;
+            newColor.a = this._originalRangeColor.a;
+            this._rangeRendererMaterial.color = newColor;
+        }
+        
         this.UpdateRangeRendererVisibility();
     }
 
@@ -166,7 +196,14 @@ public class TurretController : SelectableGhostableMonoBehaviour
         if (this.RangeRenderer != null)
         {
             // Show if selected OR if fade timer is active
-            this.RangeRenderer.enabled = this.IsSelected || this._shouldShowRangeFromFade;
+            bool shouldShow = this.IsSelected || this._shouldShowRangeFromFade;
+            this.RangeRenderer.enabled = shouldShow;
+            
+            // When becoming invisible, restore original alpha
+            if (!shouldShow && this._rangeRendererMaterial != null)
+            {
+                this._rangeRendererMaterial.color = this._originalRangeColor;
+            }
         }
     }
 
