@@ -54,6 +54,7 @@ public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehavi
         {
             // Defer selection to parent.
             parent.OnDeselect();
+            this.OnDeselect(); // Also deselect this child
             return;
         }
 
