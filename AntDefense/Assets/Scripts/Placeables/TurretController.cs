@@ -75,7 +75,7 @@ public class TurretController : SelectableGhostableMonoBehaviour
             this._rangeFadeTimer -= Time.deltaTime;
             
             // Calculate alpha (fade from 1 to 0)
-            float alpha = Mathf.Max(0f, this._rangeFadeTimer / this.RangeIndicatorFadeDuration);
+            float alpha = Mathf.Max(0f, this._rangeFadeTimer / this.RangeIndicatorFadeDuration) * this._originalRangeColor.a;
             
             if (this._rangeRendererMaterial != null)
             {
