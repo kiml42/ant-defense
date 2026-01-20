@@ -96,6 +96,8 @@ public class AntStateMachine : DeathActionBehaviour
     /// </summary>
     public float GoHomeTime = 2f;
 
+    public float AutomaticallyFindPreviousTrailPointDistance = 0.75f;
+
     private void Start()
     {
         this.ViewPoint = this.ViewPoint != null ? this.ViewPoint : this.transform;
@@ -116,7 +118,7 @@ public class AntStateMachine : DeathActionBehaviour
             this.ClearTarget();
         }
 
-        if (this.LastTrailPoint != null && this.LastTrailPoint.RemainingTime < this.GoHomeTime)
+        if (this.LastTrailDroppedPoint != null && this.LastTrailDroppedPoint.RemainingTime < this.GoHomeTime)
         {
             //Debug.Log($"Ant {this} last trail point {this.LastTrailPoint} has only {this.LastTrailPoint.RemainingTime} time remaining, going home.");
             this.GiveUpAndReturnHome();
@@ -144,6 +146,16 @@ public class AntStateMachine : DeathActionBehaviour
         //    Debug.Log("Not checking for barriers " + (this == null) + " - " + (ViewPoint == null));
         //}
 
+        // Workaround for unreliable smell detection - if the ant gets too close to a trail point, it automatically finds the next point in the trail chain.
+        if (this.CurrentTarget != null && !this.CurrentTarget.IsDestroyed() && Vector3.Distance(this.transform.position, this.CurrentTarget.transform.position) < this.AutomaticallyFindPreviousTrailPointDistance)
+        {
+            var nextPoint = this.GetNextTrailPoint(this.CurrentTarget as TrailPointController);
+            if (nextPoint != null)
+            {
+                this.RegisterPotentialTarget(nextPoint, "automatically finding next trail point in chain.");
+            }
+        }
+
         foreach (var potentialTarget in this._newBetterTargets)
         {
             if (this.IsBetterThanCurrent(potentialTarget))
@@ -170,11 +182,24 @@ public class AntStateMachine : DeathActionBehaviour
             Debug.DrawLine(this.transform.position, this.CurrentTarget.TargetPoint.position, Color.cyan);
             if (!this.CurrentTarget.IsActual && this._timeSinceTargetAquisition > this.MaxTimeGoingForTrailPoint)
             {
-                this._maxTargetPriority = this.CurrentTarget.Smell == Smell.Home
-                    ? null  // Continue to accept any home smell after forgetting this one.
-                    : this.CurrentTarget.GetPriority(this._priorityCalculator) - this.GiveUpPenalty; // Only accept better food smells after forgetting this one.
-                //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
-                this.ClearTarget();
+                // Before giving up, try to find the next point in the trail to avoid spinning
+                var nextPoint = this.GetNextTrailPoint(this.CurrentTarget as TrailPointController);
+                if (nextPoint != null)
+                {
+                    //Debug.Log("Switching to next trail point @" + nextPoint.transform.position + " rather than timing out on " + this.CurrentTarget.transform.position);
+                    // Switch to the next point rather than timing out
+                    this.RegisterPotentialTarget(nextPoint, "Switching to next trail point " + nextPoint + " rather than timing out on " + this.CurrentTarget);
+                }
+                else
+                {
+                    // No next point found, give up normally
+                    Debug.Log("Hasn't found a better target in " + this._timeSinceTargetAquisition + " forgetting " + this.CurrentTarget + ". MaxTargetPriority = " + this._maxTargetPriority);
+                    this._maxTargetPriority = this.CurrentTarget.Smell == Smell.Home
+                        ? null  // Continue to accept any home smell after forgetting this one.
+                        : this.CurrentTarget.GetPriority(this._priorityCalculator) - this.GiveUpPenalty; // Only accept better food smells after forgetting this one.
+                                                                                                         //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
+                    this.ClearTarget();
+                }
             }
             else if (!this.CheckLineOfSight(this.CurrentTarget))
             {
@@ -233,6 +258,23 @@ public class AntStateMachine : DeathActionBehaviour
         return hasLineOfSight;
     }
 
+    /// <summary>
+    /// Gets the next trail point in the chain for a given trail point, based on this ant's priority system.
+    /// </summary>
+    private Smellable GetNextTrailPoint(TrailPointController currentTrailPoint)
+    {
+        if (currentTrailPoint == null)
+            return null;
+
+        var nextPoint = currentTrailPoint.GetBestPrevious(this._priorityCalculator);
+        if (nextPoint != null && !nextPoint.IsDestroyed() && nextPoint.IsSmellable)
+        {
+            return nextPoint;
+        }
+
+        return null;
+    }
+
     private void OnCollisionExit(Collision collision)
     {
         this.PositionProvider.NoLongerTouching(collision.transform);
@@ -253,12 +295,12 @@ public class AntStateMachine : DeathActionBehaviour
     {
         //Debug.Log($"Ant {this} giving up and returning home from state {this.State}");
         this.State = AntState.ReturningHome;
-        if (this.LastTrailPoint == null || this.LastTrailPoint.Smell != Smell.Home)
+        if (this.LastTrailDroppedPoint == null || this.LastTrailDroppedPoint.Smell != Smell.Home)
         {
             // not leaving a trail towards home, so can't use it to go home.
             return;
         }
-        this.SetTarget(this.LastTrailPoint);
+        this.SetTarget(this.LastTrailDroppedPoint);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -328,7 +370,7 @@ public class AntStateMachine : DeathActionBehaviour
 
     private readonly HashSet<Food> _knownNearbyFood = new HashSet<Food>();
 
-    public void ProcessSmell(Smellable smellable)
+    public void ProcessSmell(Smellable smellable, string debugString)
     {
         if ((smellable != null && smellable.IsDestroyed() == true) || !smellable.IsSmellable)
             return;
@@ -358,10 +400,10 @@ public class AntStateMachine : DeathActionBehaviour
                         }
                         this._maxTargetPriority = null;
                         this.ClearTarget();
-                        this.RegisterPotentialTarget(smellable);
+                        this.RegisterPotentialTarget(smellable, debugString);
                         return;
                     case AntState.ReturningToFood:
-                        this.RegisterPotentialTarget(smellable);
+                        this.RegisterPotentialTarget(smellable, debugString);
                         // in the Returning to food state, maintain the state until the food is actually collided with.
                         return;
                 }
@@ -372,7 +414,7 @@ public class AntStateMachine : DeathActionBehaviour
                     case AntState.ReturningHome:
                     case AntState.ReportingFood:
                     case AntState.CarryingFood:
-                        this.RegisterPotentialTarget(smellable);
+                        this.RegisterPotentialTarget(smellable, debugString);
 
                         return;
                 }
@@ -387,7 +429,7 @@ public class AntStateMachine : DeathActionBehaviour
         this.PositionProvider.SetTarget(this.CurrentTarget);
     }
 
-    private void RegisterPotentialTarget(Smellable smellable)
+    private void RegisterPotentialTarget(Smellable smellable, string debugString)
     {
         Debug.Assert(this.State != AntState.ReportingFood || smellable.Smell != Smell.Food, $"State is {this.State} so {smellable} should not be being considered as a possible target.");
 
@@ -406,6 +448,7 @@ public class AntStateMachine : DeathActionBehaviour
         if (this.IsBetterThanCurrent(smellable))
         {
             Debug.Assert(!this.IsScout || smellable.IsActual || smellable.Smell != Smell.Food);
+            //Debug.Log("Switched Smell Target - " + debugString);
             this._newBetterTargets.Add(smellable);
 
             //// TODO thoroughly test this and refactor it to be neater if it works.
@@ -515,14 +558,14 @@ public class AntStateMachine : DeathActionBehaviour
                         this._maxTargetPriority = null;
                         this.ClearTarget();
                         this.State = AntState.ReturningToFood;
-                        this.RegisterPotentialTarget(this.LastTrailPoint);
+                        this.RegisterPotentialTarget(this.LastTrailDroppedPoint, "Collided with smell");
                         return;
                     case AntState.CarryingFood:
                         this._disableTrail = false;
                         this.State = AntState.ReturningToFood;
                         this._maxTargetPriority = null;
                         this.ClearTarget();
-                        this.RegisterPotentialTarget(this.LastTrailPoint);
+                        this.RegisterPotentialTarget(this.LastTrailDroppedPoint, "Collided with smell");
                         this.DropOffFood(smellable);
                         return;
                     case AntState.ReturningHome:
@@ -546,7 +589,7 @@ public class AntStateMachine : DeathActionBehaviour
     {
         this._maxTargetPriority = null;
         this.ClearTarget();
-        this.RegisterPotentialTarget(this.LastTrailPoint);
+        this.RegisterPotentialTarget(this.LastTrailDroppedPoint, "Collected smell");
         this.UpdateTrailValueForKnownFood();
         this.PickUpFood(smellable);
     }
@@ -562,7 +605,7 @@ public class AntStateMachine : DeathActionBehaviour
         this._maxTargetPriority = null;
         this._disableTrail = false;
         this.ClearTarget();
-        this.RegisterPotentialTarget(this.LastTrailPoint);
+        this.RegisterPotentialTarget(this.LastTrailDroppedPoint, "ReportFoodWithoutCarryingIt");
     }
 
     private void UpdateTrailValueForKnownFood()
@@ -636,13 +679,13 @@ public class AntStateMachine : DeathActionBehaviour
         }
     }
 
-    private TrailPointController LastTrailPoint
+    private TrailPointController LastTrailDroppedPoint
     {
         get
         {
             return this.TrailController == null || this.TrailController.gameObject == null
                 ? null
-                : this.TrailController.LastTrailPoint;
+                : this.TrailController.LastTrailPointController;
         }
     }
 }

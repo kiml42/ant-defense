@@ -23,12 +23,17 @@ public class TargetPriorityCalculator : MonoBehaviour, ITargetPriorityCalculator
     /// </summary>
     public float ValueWeightingRandomisation = 0.1f;
 
-    private float _actualValueWeighting;
+    public float MaxValueWeighting = 0.95f;
+
+    /// <summary>
+    /// Made public just for debugging
+    /// </summary>
+    public float _actualValueWeighting;
 
     private void Start()
     {
         this._actualValueWeighting = this.ValueWeighting + Random.Range(-this.ValueWeightingRandomisation, this.ValueWeightingRandomisation);
-        this._actualValueWeighting = Mathf.Clamp01(this._actualValueWeighting);   // ensure it's still between 0 and 1, below 0 will actually prefer lower value targets, and above 1 will prefer more distant targets.
+        this._actualValueWeighting = Mathf.Clamp(this._actualValueWeighting, 0 , this.MaxValueWeighting);   // ensure it's still between 0 and 1, below 0 will actually prefer lower value targets, and above 1 will prefer more distant targets.
     }
 
     /// <summary>
