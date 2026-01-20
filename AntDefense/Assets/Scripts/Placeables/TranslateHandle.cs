@@ -13,6 +13,15 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
             return Instance._isOnBuildableWall;
         }
     }
+
+    public static bool IsMouseOverQuickBarButton
+    {
+        get
+        {
+            return Instance._mouseOverQuickBarButton;
+        }
+    }
+
     private bool _isOnBuildableWall;
 
     public int PlaceMouseButton = 0;
@@ -43,9 +52,14 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
     private Vector3? _lastMousePosition;
     private float _distanceSinceClick;
     public float CancelThreshold = 0.1f;
+
+    private bool _mouseOverQuickBarButton = false;
+
     // Update is called once per frame
     void Update()
     {
+        this.UpdateMouseOverQuickBarButton();
+        this.UpdateHandleVisibility();
         this.HandleCancelButton();
 
         // TODO: bug when clicking briefy on a quick bar button - it places the object immediately behind the button. Need to enforce some movement to start the drag.
@@ -73,7 +87,7 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
             this.CostText.gameObject.SetActive(cost.HasValue);
             if (cost.HasValue)
             {
-                this.CostText.text = $"£{cost:F2}";
+                this.CostText.text = $"ï¿½{cost:F2}";
             }
         }
     }
@@ -208,6 +222,29 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
         }
 
         return activated;
+    }
+
+    private void UpdateMouseOverQuickBarButton()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out var hit, 500, this.UiLayermask, QueryTriggerInteraction.Collide))
+        {
+            var quickBarButton = hit.transform.GetComponentInParent<QuickBarButton>();
+            this._mouseOverQuickBarButton = quickBarButton != null;
+        }
+        else
+        {
+            this._mouseOverQuickBarButton = false;
+        }
+    }
+
+    private void UpdateHandleVisibility()
+    {
+        // Hide the handle if the mouse is over a quick bar button
+        foreach (var renderer in this.GetComponentsInChildren<Renderer>())
+        {
+            renderer.enabled = !this._mouseOverQuickBarButton;
+        }
     }
 
     private Quaternion AdjustYUp(Quaternion originalRotation)
