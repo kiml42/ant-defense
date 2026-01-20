@@ -336,6 +336,7 @@ MonoBehaviour:
   TrailController: {fileID: 1089436927646635733}
   CarryPoint: {fileID: 4482761779144621289}
   GoHomeTime: 2
+  AutomaticallyFindPreviousTrailPointDistance: 2
   AttackController: {fileID: 6534811060856755521}
   IsScout: 0
   Digestion: {fileID: 1805795825312131026}

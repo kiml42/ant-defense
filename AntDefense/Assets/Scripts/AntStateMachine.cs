@@ -186,17 +186,20 @@ public class AntStateMachine : DeathActionBehaviour
                 var nextPoint = this.GetNextTrailPoint(this.CurrentTarget as TrailPointController);
                 if (nextPoint != null)
                 {
+                    //Debug.Log("Switching to next trail point @" + nextPoint.transform.position + " rather than timing out on " + this.CurrentTarget.transform.position);
                     // Switch to the next point rather than timing out
-                    this.SetTarget(nextPoint);
-                    return; // Skip the normal timeout logic
+                    this.RegisterPotentialTarget(nextPoint, "Switching to next trail point " + nextPoint + " rather than timing out on " + this.CurrentTarget);
                 }
-                
-                // No next point found, give up normally
-                this._maxTargetPriority = this.CurrentTarget.Smell == Smell.Home
-                    ? null  // Continue to accept any home smell after forgetting this one.
-                    : this.CurrentTarget.GetPriority(this._priorityCalculator) - this.GiveUpPenalty; // Only accept better food smells after forgetting this one.
-                //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
-                this.ClearTarget();
+                else
+                {
+                    // No next point found, give up normally
+                    Debug.Log("Hasn't found a better target in " + this._timeSinceTargetAquisition + " forgetting " + this.CurrentTarget + ". MaxTargetPriority = " + this._maxTargetPriority);
+                    this._maxTargetPriority = this.CurrentTarget.Smell == Smell.Home
+                        ? null  // Continue to accept any home smell after forgetting this one.
+                        : this.CurrentTarget.GetPriority(this._priorityCalculator) - this.GiveUpPenalty; // Only accept better food smells after forgetting this one.
+                                                                                                         //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
+                    this.ClearTarget();
+                }
             }
             else if (!this.CheckLineOfSight(this.CurrentTarget))
             {
@@ -445,7 +448,7 @@ public class AntStateMachine : DeathActionBehaviour
         if (this.IsBetterThanCurrent(smellable))
         {
             Debug.Assert(!this.IsScout || smellable.IsActual || smellable.Smell != Smell.Food);
-            Debug.Log("Switched Smell Target - " + debugString);
+            //Debug.Log("Switched Smell Target - " + debugString);
             this._newBetterTargets.Add(smellable);
 
             //// TODO thoroughly test this and refactor it to be neater if it works.
