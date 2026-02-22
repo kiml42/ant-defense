@@ -24,11 +24,14 @@ public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehavi
     /// <returns>The top-level selected object.</returns>
     public ISelectableObject Select()
     {
-        var parent = this.GetComponentInParent<SelectableGhostableMonoBehaviour>();
-        if (parent != null && parent != this)
+        var parents = this.GetComponentsInParent<SelectableGhostableMonoBehaviour>();
+        foreach (var parent in parents)
         {
-            // Defer selection to parent.
-            return parent.Select();
+            if (parent != this)
+            {
+                // Defer selection to parent.
+                return parent.Select();
+            }
         }
 
         // this is the top-level selectable
@@ -49,8 +52,9 @@ public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehavi
 
     public void Deselect()
     {
+        // TODO consider if this should be getting multiple components instead.
         var parent = this.GetComponentInParent<SelectableGhostableMonoBehaviour>();
-        if (parent != null)
+        if (parent != null && parent != this)
         {
             // Defer selection to parent.
             parent.OnDeselect();
