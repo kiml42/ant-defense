@@ -113,7 +113,6 @@ public class ObjectPlacer : SingletonMonoBehaviour<ObjectPlacer>
         }
         if (this._objectBeingPlaced == null)
         {
-            Debug.LogWarning("No object is being placed, so cannot place anything.");
             return null;
         }
         if (!this.CanPlaceAt(this._objectBeingPlaced.transform.position))

@@ -99,7 +99,7 @@ public class TurretController : SelectableGhostableMonoBehaviour
             }
             if (!this.TargetRangeRentererVisibility && this._rangeRendererMaterial.color.a > 0)
             {
-                Debug.Log(this + " IsSelected = " + this.IsSelected + ", Enabled = " + this._enabled + " fading out");
+                //Debug.Log(this + " IsSelected = " + this.IsSelected + ", Enabled = " + this._enabled + " fading out");
                 // fading out
 
                 // proportion of the fade time times the original alpha.
