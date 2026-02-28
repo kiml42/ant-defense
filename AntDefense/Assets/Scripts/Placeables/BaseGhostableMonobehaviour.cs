@@ -45,35 +45,48 @@ public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehavi
                 child.OnSelect();
             }
         }
-
-        this._isSelected = true; // Make sure this is set before calling Select on the connected selectable to avoid infinite recursion.
         return this;
     }
 
     public void Deselect()
     {
-        // TODO consider if this should be getting multiple components instead.
-        var parent = this.GetComponentInParent<SelectableGhostableMonoBehaviour>();
-        if (parent != null && parent != this)
+        var parents = this.GetComponentsInParent<SelectableGhostableMonoBehaviour>();
+        foreach (var parent in parents)
         {
-            // Defer selection to parent.
-            parent.OnDeselect();
-            this.OnDeselect(); // Also deselect this child
-            return;
+            if (parent != null && parent != this)
+            {
+                // Defer de-selection to parent
+                parent.Deselect();
+                return;
+            }
         }
 
         // this is the top-level selectable
         this.OnDeselect();
-        this._isSelected = false;    // Make sure this is unset before calling Deselect on the connected selectable to avoid infinite recursion.
+
+        var children = this.GetComponentsInChildren<SelectableGhostableMonoBehaviour>();
+        foreach (var child in children)
+        {
+            if (child != this)
+            {
+                child.OnDeselect();
+            }
+        }
     }
 
     /// <summary>
     /// Additional action to perform when this object is selected, or when this is a child object of the selected object.
     /// </summary>
-    protected abstract void OnSelect();
+    protected virtual void OnSelect()
+    {
+        this._isSelected = true;
+    }
 
     /// <summary>
     /// Additional action to perform when this object is deselected, or when this is a child object of the deselected object.
     /// </summary>
-    protected abstract void OnDeselect();
+    protected virtual void OnDeselect()
+    {
+        this._isSelected = false;
+    }
 }

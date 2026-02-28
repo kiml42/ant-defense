@@ -92,6 +92,8 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
     protected override void OnSelect()
     {
+        base.OnSelect();
+
         //Debug.Log("WallNode selected: " + this);
         // TODO have a wall placing mode for placing walls, rather than just relying on selecting wall nodes.
 
@@ -131,11 +133,6 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
         if(!ObjectPlacer.Instance.IsPlacingObject || (ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null))
             // not currently placing a wall node, or the wall node being placed is not yet connected to another node, so start placing a new wall node connected to this one.
             ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
-    }
-
-    protected override void OnDeselect()
-    {
-        // Do nothing
     }
 
     /// <summary>

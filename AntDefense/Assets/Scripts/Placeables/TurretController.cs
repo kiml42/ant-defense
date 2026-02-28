@@ -48,7 +48,10 @@ public class TurretController : SelectableGhostableMonoBehaviour
     {
         get
         {
-            return this.IsSelected || !this._enabled;
+            // Show the range either
+            // When this is currently selected
+            // or when this is not enabled (i.e. while it's being placed)
+            return this.IsSelected == true || !this._enabled;
         }
     } // either it's selected, or it's a ghost.
 
@@ -184,14 +187,6 @@ public class TurretController : SelectableGhostableMonoBehaviour
             this._targetsInRange.Remove(healthController);
         }
         this.CleanTargets();
-    }
-
-    protected override void OnSelect()
-    {
-    }
-
-    protected override void OnDeselect()
-    {
     }
 
     public override void Ghostify()
