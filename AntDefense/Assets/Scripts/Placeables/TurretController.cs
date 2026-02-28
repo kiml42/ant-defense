@@ -162,7 +162,6 @@ public class TurretController : SelectableGhostableMonoBehaviour
         var healthController = collision.gameObject.GetComponentInParent<HealthController>();
         if (healthController != null && !healthController.CompareTag(this.tag) && !this._targetsInRange.Contains(healthController))
         {
-            Debug.Log(healthController.name + " entered turret trigger.");
             this._targetsInRange.Add(healthController);
         }
     }
@@ -180,7 +179,6 @@ public class TurretController : SelectableGhostableMonoBehaviour
         }
         if((t.transform.position - this.Trigger.TriggerCollider.transform.position).magnitude > this._range)
         {
-            Debug.Log(t + " is out of range of " + this);
             return false;
         }
         return true;
