@@ -36,26 +36,85 @@ public class TurretController : SelectableGhostableMonoBehaviour
     }
 
     public MeshRenderer RangeRenderer;
+    public float RangeIndicatorFadeDuration = 3f; // How long the range indicator stays visible after placement
 
     public TurretTrigger Trigger;
 
     private bool _enabled = true;
+    private Material _rangeRendererMaterial;
+    private Color _originalRangeColor;
 
-    void Start()
+    private bool TargetRangeRentererVisibility
     {
+        get
+        {
+            // Show the range either
+            // When this is currently selected
+            // or when this is not enabled (i.e. while it's being placed)
+            return this.IsSelected == true || !this._enabled;
+        }
+    } // either it's selected, or it's a ghost.
+
+    //void Start()
+    //{
+    //    this.Init();
+    //}
+
+
+    private void Init()
+    {
+        if(this.instanceNumber != -1)
+        {
+            // already initialised
+            return;
+        }
+        instanceCount++;
+        instanceNumber = instanceCount;
+
         Debug.Assert(this.Emitter != null, "TurretController requires an Emitter transform to fire projectiles from.");
         Debug.Assert(this.Turner != null, "TurretController requires a TurretTurner to aim the turret.");
         Debug.Assert(this.Projectile != null, "TurretController requires a Projectile to fire.");
         Debug.Assert(this.Trigger != null, "TurretController requires a TurretTrigger to determine its range.");
 
-        NoSpawnZone.Register(this); // register this as an interactive point
-
         this._range = this.Trigger.TriggerCollider.radius * this.Trigger.TriggerCollider.transform.localScale.x;
-        return;
+
+        // Cache the range renderer material
+        if (this.RangeRenderer != null)
+        {
+            this._rangeRendererMaterial = this.RangeRenderer.material;
+            this._originalRangeColor = this._rangeRendererMaterial.color;
+        }
+    }
+
+    void Update()
+    {
+        this.Init();
+        if (this._rangeRendererMaterial != null)
+        {
+            Color newColor = this._originalRangeColor;
+            if (this.TargetRangeRentererVisibility && this._rangeRendererMaterial.color.a < this._originalRangeColor.a)
+            {
+                // instantly make it completely visible.
+                newColor.a = this._originalRangeColor.a;
+                this._rangeRendererMaterial.color = newColor;
+            }
+            if (!this.TargetRangeRentererVisibility && this._rangeRendererMaterial.color.a > 0)
+            {
+                // fading out
+                // proportion of the fade time times the original alpha.
+                var step = Time.deltaTime / this.RangeIndicatorFadeDuration * this._originalRangeColor.a;
+
+                float alpha = Mathf.Max(0f, this._rangeRendererMaterial.color.a - step);
+
+                newColor.a = alpha;
+                this._rangeRendererMaterial.color = newColor;
+            }
+        }
     }
 
     void FixedUpdate()
     {
+        this.Init();
         if (!this._enabled)
         {
             return;
@@ -126,25 +185,32 @@ public class TurretController : SelectableGhostableMonoBehaviour
         this.CleanTargets();
     }
 
-    protected override void OnSelect()
-    {
-        if (this.RangeRenderer != null)
-            this.RangeRenderer.enabled = true;
-    }
-
-    protected override void OnDeselect()
-    {
-        if (this.RangeRenderer != null)
-            this.RangeRenderer.enabled = false;
-    }
-
     public override void Ghostify()
     {
+        this.Init();
         this._enabled = false;
     }
 
     public override void UnGhostify()
     {
+        this.Init();
         this._enabled = true;
+        NoSpawnZone.Register(this); // register this as an interactive point
+    }
+
+    private void OnDestroy()
+    {
+        if (this._rangeRendererMaterial != null)
+        {
+            Destroy(this._rangeRendererMaterial);
+        }
+    }
+
+    static int instanceCount = 0;
+    private int instanceNumber = -1;
+
+    public override string ToString()
+    {
+        return base.ToString() + "i" + this.instanceNumber;
     }
 }
