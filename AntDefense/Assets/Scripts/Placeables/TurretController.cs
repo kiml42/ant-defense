@@ -198,6 +198,14 @@ public class TurretController : SelectableGhostableMonoBehaviour
         NoSpawnZone.Register(this); // register this as an interactive point
     }
 
+    private void OnDestroy()
+    {
+        if (this._rangeRendererMaterial != null)
+        {
+            Destroy(this._rangeRendererMaterial);
+        }
+    }
+
     static int instanceCount = 0;
     private int instanceNumber = -1;
 
