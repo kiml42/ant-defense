@@ -46,9 +46,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
     public override void OnPlace()
     {
-        //Debug.Log("WallNode placed, connected to " + this.ConnectedNode);
         this.UpdateWall();
-        // disabled in case thsis is why clicking on a turret on a wall doesn't find the wall node correctly.
         this.enabled = false;   //disable to prevent updating the wall every frame
         NoSpawnZone.Register(this); // register this as a selection point
     }
