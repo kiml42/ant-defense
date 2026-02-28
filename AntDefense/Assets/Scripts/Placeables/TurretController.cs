@@ -76,7 +76,10 @@ public class TurretController : SelectableGhostableMonoBehaviour
         Debug.Assert(this.Projectile != null, "TurretController requires a Projectile to fire.");
         Debug.Assert(this.Trigger != null, "TurretController requires a TurretTrigger to determine its range.");
 
-        this._range = this.Trigger.TriggerCollider.radius * this.Trigger.TriggerCollider.transform.localScale.x;
+        this._range = this.Trigger.TriggerCollider.radius * Mathf.Max(
+            this.Trigger.TriggerCollider.transform.lossyScale.x,
+            this.Trigger.TriggerCollider.transform.lossyScale.y,
+            this.Trigger.TriggerCollider.transform.lossyScale.z);
 
         // Cache the range renderer material
         if (this.RangeRenderer != null)
@@ -171,7 +174,7 @@ public class TurretController : SelectableGhostableMonoBehaviour
 
     private bool IsValudTarget(HealthController t)
     {
-        return t != null && t.transform != null && (t.transform.position - this.transform.position).magnitude <= this._range;
+        return t != null && t.transform != null && (t.transform.position - this.Trigger.TriggerCollider.transform.position).magnitude <= this._range;
     }
 
     internal void DeregisterTarget(Collider collision)
