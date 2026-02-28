@@ -77,3 +77,6 @@ crashlytics-build.properties
 # Ignore all files in CompressedBuilds folder except .zip files
 /CompressedBuilds/**/*
 !CompressedBuilds/*.zip
+
+# Claude Code
+AntDefense/.claude/settings.local.json
