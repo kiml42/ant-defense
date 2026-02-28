@@ -160,8 +160,9 @@ public class TurretController : SelectableGhostableMonoBehaviour
     {
         if (collision.isTrigger) { return; }
         var healthController = collision.gameObject.GetComponentInParent<HealthController>();
-        if (healthController != null && !healthController.CompareTag(this.tag))
+        if (healthController != null && !healthController.CompareTag(this.tag) && !this._targetsInRange.Contains(healthController))
         {
+            Debug.Log(healthController.name + " entered turret trigger.");
             this._targetsInRange.Add(healthController);
         }
         this.CleanTargets();
@@ -169,12 +170,21 @@ public class TurretController : SelectableGhostableMonoBehaviour
 
     private void CleanTargets()
     {
-        this._targetsInRange = this._targetsInRange.Where(this.IsValudTarget).ToList();
+        this._targetsInRange = this._targetsInRange.Where(this.IsValudTarget).Distinct().ToList();
     }
 
     private bool IsValudTarget(HealthController t)
     {
-        return t != null && t.transform != null && (t.transform.position - this.Trigger.TriggerCollider.transform.position).magnitude <= this._range;
+        if(t == null || t.transform == null)
+        {
+            return false;
+        }
+        if((t.transform.position - this.Trigger.TriggerCollider.transform.position).magnitude > this._range)
+        {
+            Debug.Log(t + " is out of range of " + this);
+            return false;
+        }
+        return true;
     }
 
     internal void DeregisterTarget(Collider collision)
