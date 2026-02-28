@@ -94,17 +94,13 @@ public class TurretController : SelectableGhostableMonoBehaviour
             Color newColor = this._originalRangeColor;
             if (this.TargetRangeRentererVisibility && this._rangeRendererMaterial.color.a < this._originalRangeColor.a)
             {
-
-                Debug.Log(this + " IsSelected = " + this.IsSelected + ", Enabled = " + this._enabled + " becoming visible");
                 // instantly make it completely visible.
                 newColor.a = this._originalRangeColor.a;
                 this._rangeRendererMaterial.color = newColor;
             }
             if (!this.TargetRangeRentererVisibility && this._rangeRendererMaterial.color.a > 0)
             {
-                //Debug.Log(this + " IsSelected = " + this.IsSelected + ", Enabled = " + this._enabled + " fading out");
                 // fading out
-
                 // proportion of the fade time times the original alpha.
                 var step = Time.deltaTime / this.RangeIndicatorFadeDuration * this._originalRangeColor.a;
 
@@ -192,14 +188,12 @@ public class TurretController : SelectableGhostableMonoBehaviour
     public override void Ghostify()
     {
         this.Init();
-        Debug.Log("Ghostifying " + this);
         this._enabled = false;
     }
 
     public override void UnGhostify()
     {
         this.Init();
-        Debug.Log("UnGhostifying " + this);
         this._enabled = true;
         NoSpawnZone.Register(this); // register this as an interactive point
     }

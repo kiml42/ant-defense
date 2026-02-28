@@ -75,12 +75,6 @@ public class ObjectPlacer : SingletonMonoBehaviour<ObjectPlacer>
             this._additionalWallGhost.transform.parent = this.Handle.transform;
             this._additionalWallGhost.GetComponent<PlaceableObjectOrGhost>().StartPlacing();
         }
-
-        var turretController = this._objectBeingPlaced.GetComponentInChildren<TurretController>();
-        if (turretController != null)
-        {
-            Debug.Log("Starting placing turret " + turretController);
-        }
     }
 
     public void CancelPlacingObject()
