@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Ant Defense** is a Unity strategy/tower-defense game where players manage an ant colony defending against threats. Ants autonomously forage for food via pheromone-like scent trails; players place defensive structures (turrets, walls, traps).
+**Ant Defense** is a Unity tower-defense game where players defend a picnic from attacking ants. Ants autonomously forage for food via pheromone-like scent trails; players place defensive structures (turrets, walls, traps) to stop them.
 
 **Environment:** Unity 6000.3.9f1, C#, physics-based 3D gameplay. No formal test suite — behavior is validated via play-testing.
 

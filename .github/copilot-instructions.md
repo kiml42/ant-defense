@@ -1,7 +1,7 @@
 # Ant Defense - Copilot Instructions
 
 ## Project Overview
-**Ant Defense** is a Unity strategy/tower-defense game where players manage an ant colony defending against threats. Ants autonomously forage for food, communicate via scent trails, and the player places defensive structures (turrets, walls).
+**Ant Defense** is a Unity tower-defense game where players defend a picnic from attacking ants. Ants autonomously forage for food, communicate via scent trails, and the player places defensive structures (turrets, walls) to stop them.
 
 **Environment:** Unity 6000.2.8f1 (2024), C#, Physics-based 3D gameplay
 
