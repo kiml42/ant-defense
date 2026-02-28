@@ -165,7 +165,6 @@ public class TurretController : SelectableGhostableMonoBehaviour
             Debug.Log(healthController.name + " entered turret trigger.");
             this._targetsInRange.Add(healthController);
         }
-        this.CleanTargets();
     }
 
     private void CleanTargets()
@@ -195,7 +194,6 @@ public class TurretController : SelectableGhostableMonoBehaviour
         {
             this._targetsInRange.Remove(healthController);
         }
-        this.CleanTargets();
     }
 
     public override void Ghostify()
