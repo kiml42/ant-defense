@@ -136,7 +136,7 @@ public class TurretController : SelectableGhostableMonoBehaviour
                 return;
             }
             var direction = bestTarget.transform.position - this.Turner.transform.position;
-            //Debug.DrawRay(this.Turner.transform.position, direction);
+            Debug.DrawRay(this.Turner.transform.position, direction, Color.red);
 
             this.Turner.TurnTo(direction);
 
