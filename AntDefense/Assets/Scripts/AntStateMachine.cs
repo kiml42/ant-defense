@@ -96,7 +96,7 @@ public class AntStateMachine : DeathActionBehaviour
     /// </summary>
     public float GoHomeTime = 2f;
 
-    public float AutomaticallyFindPreviousTrailPointDistance = 0.75f;
+    public float AutomaticallyFindPreviousTrailPointDistance = 2f;
 
     private void Start()
     {
