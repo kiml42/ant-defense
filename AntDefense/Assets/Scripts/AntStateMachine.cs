@@ -194,9 +194,7 @@ public class AntStateMachine : DeathActionBehaviour
                 {
                     // No next point found, give up normally
                     Debug.Log("Hasn't found a better target in " + this._timeSinceTargetAquisition + " forgetting " + this.CurrentTarget + ". MaxTargetPriority = " + this._maxTargetPriority);
-                    this._maxTargetPriority = this.CurrentTarget.Smell == Smell.Home
-                        ? null  // Continue to accept any home smell after forgetting this one.
-                        : this.CurrentTarget.GetPriority(this._priorityCalculator) - this.GiveUpPenalty; // Only accept better food smells after forgetting this one.
+                    this._maxTargetPriority =  this.CurrentTarget.GetPriority(this._priorityCalculator) - this.GiveUpPenalty; // Only accept better smells after forgetting this one.
                                                                                                          //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
                     this.ClearTarget();
                 }

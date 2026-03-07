@@ -33,7 +33,7 @@ public class TrailPointController : Smellable
 
         public override string ToString()
         {
-            return this.DistanceFromTarget + ":" + this.RemainingTime;
+            return this.DistanceFromTarget.ToString("0") + ":" + this.RemainingTime.ToString("0");
         }
     }
 
