@@ -232,7 +232,7 @@ public class AntStateMachine : DeathActionBehaviour
             {
                 //Debug.Log("Test ray hit: " + hit.transform.name);
 
-                if (hit.transform != this.transform)
+                if (hit.transform != this.transform && hit.transform != potentialTarget.transform)
                 {
                     //Debug.Log("It's an obstacle!");
                     hasLineOfSight = false;
