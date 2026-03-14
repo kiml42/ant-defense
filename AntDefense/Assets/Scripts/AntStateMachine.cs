@@ -6,12 +6,14 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(AntTargetSelector))]
 [RequireComponent(typeof(AntFoodHandler))]
+[RequireComponent(typeof(AntFoodHandler))]
 public class AntStateMachine : DeathActionBehaviour
 {
     public AntState State = AntState.SeekingFood;
 
     public AntTargetSelector TargetSelector;
     public AntFoodHandler FoodHandler;
+    public CarriedObjectHandler CarriedObjectHandler;
     public AntTargetPositionProvider PositionProvider;
     public AntTrailController TrailController;
     public AttackController AttackController;
@@ -188,7 +190,7 @@ public class AntStateMachine : DeathActionBehaviour
         switch (smellable.Smell)
         {
             case Smell.Food:
-                if (FoodHandler.IsCarryingFood) return;
+                if (this.CarriedObjectHandler != null && this.CarriedObjectHandler.IsCarryingFood) return;
                 if (IsScout)
                 {
                     if (State == AntState.ReportingFood) return;
@@ -196,7 +198,7 @@ public class AntStateMachine : DeathActionBehaviour
                     return;
                 }
                 var canPickUpFoodFromThisState = State == AntState.SeekingFood || State == AntState.ReturningToFood || State == AntState.ReturningHome;
-                if (FoodHandler.IsSmallQuantityOfFood && canPickUpFoodFromThisState)
+                if (FoodHandler.IsSmallQuantityOfFood && canPickUpFoodFromThisState && this.CarriedObjectHandler != null)
                 {
                     CollectKnownFood(smellable);
                     _disableTrail = true;
@@ -235,7 +237,12 @@ public class AntStateMachine : DeathActionBehaviour
                         TargetSelector.ResetMaxPriority();
                         TargetSelector.ClearTarget();
                         TargetSelector.RegisterPotentialTarget(LastTrailDroppedPoint, "Collided with smell");
-                        FoodHandler.DropOff(smellable);
+
+                        if (this.CarriedObjectHandler != null)
+                        {
+                            this.CarriedObjectHandler.DropOff(smellable);
+                        }
+
                         return;
                     case AntState.ReturningHome:
                         GoBackToSeekingFood();
@@ -260,7 +267,11 @@ public class AntStateMachine : DeathActionBehaviour
         TargetSelector.ClearTarget();
         TargetSelector.RegisterPotentialTarget(LastTrailDroppedPoint, "Collected smell");
         FoodHandler.UpdateTrailValueForKnownFood();
-        FoodHandler.PickUp(smellable);
+
+        if (this.CarriedObjectHandler != null)
+        {
+            this.CarriedObjectHandler.PickUp(smellable);
+        }
     }
 
     private void ReportFoodWithoutCarryingIt(Smellable smellable)
@@ -282,7 +293,10 @@ public class AntStateMachine : DeathActionBehaviour
 
     public override void OnDeath()
     {
-        FoodHandler.ReleaseCarriedFood();
+        if (this.CarriedObjectHandler != null)
+        {
+            this.CarriedObjectHandler.ReleaseCarriedFood();
+        }
     }
 
     private TrailPointController LastTrailDroppedPoint =>
