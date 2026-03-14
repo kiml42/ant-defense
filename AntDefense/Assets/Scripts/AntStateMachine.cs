@@ -7,6 +7,7 @@ using UnityEngine;
 
 // TODO split this up into multiple classes, it's getting a bit too big and complicated.
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(AntTargetSelector))]
 public class AntStateMachine : DeathActionBehaviour
 {
     public Smellable _currentTarget;
@@ -59,6 +60,7 @@ public class AntStateMachine : DeathActionBehaviour
     /// The idea is to prioritise summoning more ants if there's a larger amount of food, but to just get the food home now if it's a smaller amount.
     /// </summary>
     public float LimitForReporitingOnly = 50;
+    public AntTargetSelector TargetSelector;
     public AntTrailController TrailController;
 
     public Transform CarryPoint;
