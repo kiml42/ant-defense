@@ -98,7 +98,8 @@ public class AntStateMachine : DeathActionBehaviour
     /// </summary>
     public float GoHomeTime = 2f;
 
-    public float AutomaticallyFindPreviousTrailPointDistance = 2f;
+    // TODO check if this mechanism is stll useful now I've fixed the LOS check issues.
+    public float AutomaticallyFindPreviousTrailPointDistance = 1f;
 
     private void Log(string message, bool force = false)
     {
