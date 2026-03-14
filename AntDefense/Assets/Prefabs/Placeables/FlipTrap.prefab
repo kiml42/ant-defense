@@ -88,6 +88,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1000614096399417006
 GameObject:
@@ -178,6 +179,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &8014026784855207981
 BoxCollider:
@@ -212,7 +214,7 @@ GameObject:
   - component: {fileID: 4068133393120959025}
   - component: {fileID: 7140897263308503763}
   - component: {fileID: 768439330299558025}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: NoSpawnZone-RealFlipTrap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -281,6 +283,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &7140897263308503763
 MonoBehaviour:
@@ -592,6 +595,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &8079819013140023947
 GameObject:
@@ -683,6 +687,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7874122585425370653
 BoxCollider:
@@ -808,6 +813,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &5833696214928251714
 BoxCollider:
