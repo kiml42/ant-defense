@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 
+[RequireComponent(typeof(HealthController))]
 public class ImpactDamageHandler : MonoBehaviour
 {
     /// <summary>

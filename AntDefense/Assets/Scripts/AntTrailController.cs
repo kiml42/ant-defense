@@ -2,6 +2,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class AntTrailController : MonoBehaviour
 {
     private static GameObject TrailParent;

@@ -1,5 +1,7 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(AntTargetPositionProvider))]
 public class AntMoveController : MonoBehaviour
 {
     public float TorqueMultiplier = 10;

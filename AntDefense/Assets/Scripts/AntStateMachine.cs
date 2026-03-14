@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 // TODO split this up into multiple classes, it's getting a bit too big and complicated.
+[RequireComponent(typeof(Rigidbody))]
 public class AntStateMachine : DeathActionBehaviour
 {
     public Smellable _currentTarget;
