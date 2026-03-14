@@ -7,11 +7,13 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(AntTargetSelector))]
+[RequireComponent(typeof(AntFoodHandler))]
 public class AntStateMachine : DeathActionBehaviour
 {
     public AntState State = AntState.SeekingFood;
 
     public AntTargetSelector TargetSelector;
+    public AntFoodHandler FoodHandler;
     public AntTargetPositionProvider PositionProvider;
     public AntTrailController TrailController;
     public Transform CarryPoint;

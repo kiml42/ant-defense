@@ -301,6 +301,7 @@ GameObject:
   - component: {fileID: -4996180160508391160}
   - component: {fileID: 3519004465094634648}
   - component: {fileID: 5096153481373808172}
+  - component: {fileID: 419783794837196473}
   m_Layer: 2
   m_Name: ScoutAnt
   m_TagString: Ants1
@@ -343,18 +344,19 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 63f7aae77b641f04a87fd0f5d14fa0f8, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   State: 0
-  PositionProvider: {fileID: 2951773968300769007}
-  LimitForReporitingOnly: 50
-  GoHomeTime: 2
   TargetSelector: {fileID: 4192788728019816669}
+  FoodHandler: {fileID: 419783794837196473}
+  PositionProvider: {fileID: 2951773968300769007}
   TrailController: {fileID: 1089436927646635733}
   CarryPoint: {fileID: 4482761779144621289}
   AttackController: {fileID: 0}
+  Digestion: {fileID: 1805795825312131026}
+  LimitForReporitingOnly: 50
+  GoHomeTime: 2
   IsScout: 1
   FullDebugLogs: 0
-  Digestion: {fileID: 1805795825312131026}
 --- !u!114 &4192788728019816669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -365,8 +367,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ed41755cec19c124b8bf4b23e7bcc0fe, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   _currentTarget: {fileID: 0}
   ViewPoint: {fileID: 9217438795446165722}
   MaxTimeGoingForTrailPoint: 3
@@ -563,6 +565,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GenrateScoreOnDeathBehaviour
   ScoreGenerator: {fileID: 3519004465094634648}
+--- !u!114 &419783794837196473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180791391076224223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9ce4e22350df4a479c3a9c786f3bf70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AntFoodHandler
 --- !u!1 &1992728922116126997
 GameObject:
   m_ObjectHideFlags: 0

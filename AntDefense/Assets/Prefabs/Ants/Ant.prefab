@@ -282,6 +282,7 @@ GameObject:
   - component: {fileID: 3045428083773665096}
   - component: {fileID: 7119081587662888743}
   - component: {fileID: 9069885828725248891}
+  - component: {fileID: 419783794837196473}
   m_Layer: 2
   m_Name: Ant
   m_TagString: Ants1
@@ -324,18 +325,19 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 63f7aae77b641f04a87fd0f5d14fa0f8, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   State: 0
-  PositionProvider: {fileID: 2951773968300769007}
-  LimitForReporitingOnly: 50
-  GoHomeTime: 2
   TargetSelector: {fileID: 4192788728019816669}
+  FoodHandler: {fileID: 419783794837196473}
+  PositionProvider: {fileID: 2951773968300769007}
   TrailController: {fileID: 1089436927646635733}
   CarryPoint: {fileID: 4482761779144621289}
   AttackController: {fileID: 6534811060856755521}
+  Digestion: {fileID: 1805795825312131026}
+  LimitForReporitingOnly: 50
+  GoHomeTime: 2
   IsScout: 0
   FullDebugLogs: 0
-  Digestion: {fileID: 1805795825312131026}
 --- !u!114 &4192788728019816669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -346,8 +348,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ed41755cec19c124b8bf4b23e7bcc0fe, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   _currentTarget: {fileID: 0}
   ViewPoint: {fileID: 9217438795446165722}
   MaxTimeGoingForTrailPoint: 3
@@ -588,6 +590,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreGenerator
   ScoreIncrement: 2
+--- !u!114 &419783794837196473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180791391076224223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9ce4e22350df4a479c3a9c786f3bf70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AntFoodHandler
 --- !u!1 &1309134283868194372
 GameObject:
   m_ObjectHideFlags: 0
