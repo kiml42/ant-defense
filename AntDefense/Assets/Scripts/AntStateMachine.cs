@@ -35,7 +35,7 @@ public class AntStateMachine : DeathActionBehaviour
     /// If it takes longer than this it'll give up and look for a better trail point.
     /// </summary>
     public float MaxTimeGoingForTrailPoint = 4;
-    private float _timeSinceTargetAquisition;
+    public float _timeSinceTargetAquisition;
     private float? _maxTargetPriority;
 
     /// <summary>
@@ -61,6 +61,8 @@ public class AntStateMachine : DeathActionBehaviour
     public AntTrailController TrailController;
 
     public Transform CarryPoint;
+
+    public bool FullDebugLogs = false;
 
     public Smell? TrailSmell
     {
@@ -96,7 +98,16 @@ public class AntStateMachine : DeathActionBehaviour
     /// </summary>
     public float GoHomeTime = 2f;
 
-    public float AutomaticallyFindPreviousTrailPointDistance = 0.75f;
+    // TODO check if this mechanism is stll useful now I've fixed the LOS check issues.
+    public float AutomaticallyFindPreviousTrailPointDistance = 1f;
+
+    private void Log(string message, bool force = false)
+    {
+        if (this.FullDebugLogs || force)
+        {
+            Debug.Log(message);
+        }
+    }
 
     private void Start()
     {
@@ -115,12 +126,13 @@ public class AntStateMachine : DeathActionBehaviour
 
         if (this._currentTarget.IsDestroyed() || (this.CurrentTarget != null && this.CurrentTarget.IsSmellable == false))
         {
+            this.Log("Current target is no longer valid, clearing target.");
             this.ClearTarget();
         }
 
         if (this.LastTrailDroppedPoint != null && this.LastTrailDroppedPoint.RemainingTime < this.GoHomeTime)
         {
-            //Debug.Log($"Ant {this} last trail point {this.LastTrailPoint} has only {this.LastTrailPoint.RemainingTime} time remaining, going home.");
+            this.Log($"Ant {this} last trail point {this.LastTrailDroppedPoint} has only {this.LastTrailDroppedPoint.RemainingTime} time remaining, going home.");
             this.GiveUpAndReturnHome();
         }
 
@@ -134,10 +146,10 @@ public class AntStateMachine : DeathActionBehaviour
             var isHit = Physics.Raycast(start, end - start, out var hit, (end - start).magnitude);
             if (isHit)
             {
-                //Debug.Log("1. Test ray Hit " + hit.transform);
+                this.Log("1. Test ray Hit " + hit.transform);
                 if (hit.transform != this.transform)
                 {
-                    //Debug.Log("1. It's an obstacle!");
+                    this.Log("1. It's an obstacle!");
                 }
             }
         }
@@ -153,8 +165,13 @@ public class AntStateMachine : DeathActionBehaviour
             if (nextPoint != null)
             {
                 this.RegisterPotentialTarget(nextPoint, "automatically finding next trail point in chain.");
+            } else
+            {
+                this.DrawLineToTarget(this.CurrentTarget, Color.gray);
             }
         }
+
+        this.Log($"****Current target: {this.CurrentTarget}, State: {this.State}, MaxTargetPriority: {this._maxTargetPriority}, TimeSinceTargetAquisition: {this._timeSinceTargetAquisition}. Checking new targets...");
 
         foreach (var potentialTarget in this._newBetterTargets)
         {
@@ -168,49 +185,69 @@ public class AntStateMachine : DeathActionBehaviour
 
                 if (hasLineOfSight)
                 {
+                    this.Log($"Switching to {potentialTarget} because it's better than current target {this.CurrentTarget} and has line of sight.");
                     this.SetTarget(potentialTarget);
                 }
+                else
+                {
+                    this.Log($"Not switching to {potentialTarget} because even though it's better than current target {this.CurrentTarget}, it doesn't have line of sight.");
+
+                    this.DrawLineToTarget(potentialTarget, Color.red);
+                }
+            }
+            else
+            {
+                this.Log($"Not switching to {potentialTarget} because it's not better than current target {this.CurrentTarget}");
+                this.DrawLineToTarget(potentialTarget, Color.orange);
             }
         }
         this._newBetterTargets.Clear();
+
+        this.Log($"****Finished checking new targets. Current target: {this.CurrentTarget}, State: {this.State}, MaxTargetPriority: {this._maxTargetPriority}, TimeSinceTargetAquisition: {this._timeSinceTargetAquisition}.");
 
         Debug.Assert(this.State != AntState.ReportingFood || this.CurrentTarget == null || this.CurrentTarget.Smell != Smell.Food, $"State is {this.State} so the currnet target should not be food, but it is {this.CurrentTarget}");
 
         this._timeSinceTargetAquisition += Time.deltaTime;
         if (this.CurrentTarget != null)
         {
-            Debug.DrawLine(this.transform.position, this.CurrentTarget.TargetPoint.position, Color.cyan);
+            this.DrawLineToTarget(this.CurrentTarget, Color.cyan, true);
             if (!this.CurrentTarget.IsActual && this._timeSinceTargetAquisition > this.MaxTimeGoingForTrailPoint)
             {
                 // Before giving up, try to find the next point in the trail to avoid spinning
                 var nextPoint = this.GetNextTrailPoint(this.CurrentTarget as TrailPointController);
                 if (nextPoint != null)
                 {
-                    //Debug.Log("Switching to next trail point @" + nextPoint.transform.position + " rather than timing out on " + this.CurrentTarget.transform.position);
+                    this.Log("Switching to next trail point @" + nextPoint.transform.position + " rather than timing out on " + this.CurrentTarget.transform.position);
                     // Switch to the next point rather than timing out
                     this.RegisterPotentialTarget(nextPoint, "Switching to next trail point " + nextPoint + " rather than timing out on " + this.CurrentTarget);
                 }
                 else
                 {
                     // No next point found, give up normally
-                    Debug.Log("Hasn't found a better target in " + this._timeSinceTargetAquisition + " forgetting " + this.CurrentTarget + ". MaxTargetPriority = " + this._maxTargetPriority);
-                    this._maxTargetPriority = this.CurrentTarget.Smell == Smell.Home
-                        ? null  // Continue to accept any home smell after forgetting this one.
-                        : this.CurrentTarget.GetPriority(this._priorityCalculator) - this.GiveUpPenalty; // Only accept better food smells after forgetting this one.
-                                                                                                         //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
+                    this.Log("Hasn't found a better target in " + this._timeSinceTargetAquisition + " forgetting " + this.CurrentTarget + ". MaxTargetPriority = " + this._maxTargetPriority);
+                    this._maxTargetPriority = this.CurrentTarget.GetPriority(this._priorityCalculator) - this.GiveUpPenalty; // Only accept better smells after forgetting this one.
+                                                                                                                             //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
                     this.ClearTarget();
                 }
             }
             else if (!this.CheckLineOfSight(this.CurrentTarget))
             {
-                //Debug.Log("Lost sight of current target!");
+                this.Log("Lost sight of current target!");
                 this.ClearTarget();
             }
         }
         if (this._maxTargetPriority.HasValue)
         {
-            //Debug.Log($"MaxTargetTime {_maxTargetTime}");
+            this.Log($"Adjusting _maxTargetPriority from {_maxTargetPriority} to {_maxTargetPriority + Time.deltaTime * this.GiveUpRecoveryMultiplier}");
             this._maxTargetPriority += Time.deltaTime * this.GiveUpRecoveryMultiplier;
+        }
+    }
+
+    private void DrawLineToTarget(Smellable target, Color colour, bool force = false)
+    {
+        if (this.FullDebugLogs || force)
+        {
+            Debug.DrawLine(this.transform.position, target.TargetPoint.position, colour);
         }
     }
 
@@ -234,9 +271,14 @@ public class AntStateMachine : DeathActionBehaviour
             {
                 //Debug.Log("Test ray hit: " + hit.transform.name);
 
-                if (hit.transform != this.transform)
+                if (hit.transform != this.transform && hit.transform != potentialTarget.transform)
                 {
-                    //Debug.Log("It's an obstacle!");
+                    this.Log("It's an obstacle! " + hit.transform);
+                    if (this.FullDebugLogs)
+                    {
+                        Debug.DrawLine(start, hit.point, Color.white);
+                        Debug.DrawLine(start, end, Color.gray);
+                    }
                     hasLineOfSight = false;
                 }
                 else
@@ -441,14 +483,14 @@ public class AntStateMachine : DeathActionBehaviour
 
         if (this._maxTargetPriority.HasValue && smellable.GetPriority(this._priorityCalculator) > this._maxTargetPriority)
         {
-            //Debug.Log("Ignoring " + smellable + " because it's more than " + _maxTargetTime + " from the target.");
+            this.Log("Ignoring " + smellable + " because it's more than " + _maxTargetPriority + " priority.");
             return;
         }
 
         if (this.IsBetterThanCurrent(smellable))
         {
             Debug.Assert(!this.IsScout || smellable.IsActual || smellable.Smell != Smell.Food);
-            //Debug.Log("Switched Smell Target - " + debugString);
+            this.Log("Switched Smell Target - " + debugString);
             this._newBetterTargets.Add(smellable);
 
             //// TODO thoroughly test this and refactor it to be neater if it works.

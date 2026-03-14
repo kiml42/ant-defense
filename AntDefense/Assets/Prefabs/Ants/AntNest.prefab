@@ -135,6 +135,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &1289983323271490273
 CapsuleCollider:
@@ -273,7 +274,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 100
   HealthBar: {fileID: 7005894058745215926}
-  DeadObject: {fileID: 0}
 --- !u!114 &-93735916950290573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -378,6 +378,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &4469306870535474989
 GameObject:
@@ -500,6 +501,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &8869448057287460055
 SphereCollider:
@@ -549,7 +551,7 @@ GameObject:
   - component: {fileID: 7259624313801286750}
   - component: {fileID: 6566579845095372846}
   - component: {fileID: 2213446875903576245}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: NoSpawnZone-AntNest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -626,6 +628,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &6566579845095372846
 SphereCollider:
@@ -749,6 +752,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &8985245278781174896
 GameObject:
