@@ -5,78 +5,49 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
-// TODO split this up into multiple classes, it's getting a bit too big and complicated.
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(AntTargetSelector))]
 public class AntStateMachine : DeathActionBehaviour
 {
-    public Smellable _currentTarget;
-    private Food _carriedFood;
     public AntState State = AntState.SeekingFood;
 
-    public Transform ViewPoint;
-
-    //public readonly List<GameObject> Obstacles = new();
-
+    public AntTargetSelector TargetSelector;
     public AntTargetPositionProvider PositionProvider;
-
-    public Smellable CurrentTarget
-    {
-        get
-        {
-            if (this._currentTarget == null || this._currentTarget.gameObject == null || this._currentTarget.transform == null)
-            {
-                this._currentTarget = null;
-            }
-            return this._currentTarget;
-        }
-    }
+    public AntTrailController TrailController;
+    public Transform CarryPoint;
+    public AttackController AttackController;
+    public Digestion Digestion;
 
     /// <summary>
-    /// The maximum time an ant is allowed to try to move towards a single trail point.
-    /// If it takes longer than this it'll give up and look for a better trail point.
-    /// </summary>
-    public float MaxTimeGoingForTrailPoint = 4;
-    public float _timeSinceTargetAquisition;
-    private float? _maxTargetPriority;
-
-    /// <summary>
-    /// Amount to decrace the max target time by if no better target has been found in <see cref="MaxTimeGoingForTrailPoint"/> seconds.
-    /// </summary>
-    public float GiveUpPenalty = 0.1f;
-
-    /// <summary>
-    /// Extra time to be allowed to go for a given target if the ant collides with an obstacle.
-    /// Intended to allow it to keep going for the same target for longer while bouncing round the obstacle.
-    /// </summary>
-    public float CollisionTargetBonus = 0.5f;
-
-    public float GiveUpRecoveryMultiplier = 4f;
-
-    public const int GroundLayer = 3;
-
-    /// <summary>
-    /// If the ant has found a total food value less than or equal to this amount, it will just carry the food home while reporting it, instead of just reporting it.
-    /// The idea is to prioritise summoning more ants if there's a larger amount of food, but to just get the food home now if it's a smaller amount.
+    /// If the ant has found a total food value less than or equal to this amount, it will just carry the food home
+    /// while reporting it, instead of just reporting it.
     /// </summary>
     public float LimitForReporitingOnly = 50;
-    public AntTargetSelector TargetSelector;
-    public AntTrailController TrailController;
 
-    public Transform CarryPoint;
+    /// <summary>
+    /// If the last trail point has this much time or less remaining when it is placed, the ant will give up and return home.
+    /// </summary>
+    public float GoHomeTime = 2f;
+
+    /// <summary>
+    /// Scouts only look for new food and leave trails to show where it is, they never actually carry it themselves.
+    /// </summary>
+    public bool IsScout = false;
 
     public bool FullDebugLogs = false;
+
+    public const int GroundLayer = 3;
 
     public Smell? TrailSmell
     {
         get
         {
-            if (this._disableTrail) return null;
-            switch (this.State)
+            if (_disableTrail) return null;
+            switch (State)
             {
                 case AntState.SeekingFood:
                 case AntState.ReturningToFood:
-                    this.TrailTargetValue = null; // no target value for trails to home.
+                    TrailTargetValue = null;
                     return Smell.Home;
                 case AntState.ReportingFood:
                 case AntState.CarryingFood:
@@ -84,268 +55,63 @@ public class AntStateMachine : DeathActionBehaviour
                 case AntState.ReturningHome:
                     return null;
                 default:
-                    throw new Exception("Unknown state " + this.State);
+                    throw new Exception("Unknown state " + State);
             }
         }
     }
 
     public float? TrailTargetValue { get; private set; }
 
-    private readonly HashSet<Smellable> _newBetterTargets = new();
+    public ITargetPriorityCalculator PriorityCalculator { get; private set; }
 
+    private Food _carriedFood;
+    private bool _disableTrail;
     private Rigidbody _rigidbody;
-    private ITargetPriorityCalculator _priorityCalculator;
+    private readonly HashSet<Food> _knownNearbyFood = new HashSet<Food>();
 
-    /// <summary>
-    /// If the last trail point has this much time or less remaining when it is placed, the ant will give up and return home.
-    /// </summary>
-    public float GoHomeTime = 2f;
-
-    // TODO check if this mechanism is stll useful now I've fixed the LOS check issues.
-    public float AutomaticallyFindPreviousTrailPointDistance = 1f;
-
-    private void Log(string message, bool force = false)
+    private void Awake()
     {
-        if (this.FullDebugLogs || force)
-        {
-            Debug.Log(message);
-        }
-    }
-
-    private void Start()
-    {
-        this.ViewPoint = this.ViewPoint != null ? this.ViewPoint : this.transform;
-        this._rigidbody = this.GetComponent<Rigidbody>();
-        this._priorityCalculator = this.GetComponent<ITargetPriorityCalculator>();
+        _rigidbody = GetComponent<Rigidbody>();
+        PriorityCalculator = GetComponent<ITargetPriorityCalculator>();
     }
 
     private void FixedUpdate()
     {
-        if (this.transform.position.y < -10)
+        if (transform.position.y < -10)
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
             return;
         }
 
-        if (this._currentTarget.IsDestroyed() || (this.CurrentTarget != null && this.CurrentTarget.IsSmellable == false))
+        if (LastTrailDroppedPoint != null && LastTrailDroppedPoint.RemainingTime < GoHomeTime)
         {
-            this.Log("Current target is no longer valid, clearing target.");
-            this.ClearTarget();
+            if (this.FullDebugLogs)
+                Debug.Log($"Ant {this} last trail point {LastTrailDroppedPoint} has only {LastTrailDroppedPoint.RemainingTime} time remaining, going home.");
+            GiveUpAndReturnHome();
         }
 
-        if (this.LastTrailDroppedPoint != null && this.LastTrailDroppedPoint.RemainingTime < this.GoHomeTime)
-        {
-            this.Log($"Ant {this} last trail point {this.LastTrailDroppedPoint} has only {this.LastTrailDroppedPoint.RemainingTime} time remaining, going home.");
-            this.GiveUpAndReturnHome();
-        }
-
-        //test ray -This is successfully detecting obstacles between the ant and the current target!
-        if (this.CurrentTarget != null && this.ViewPoint != null)
-        {
-            var end = this.ViewPoint.position;
-            var start = this.CurrentTarget.transform.position;
-
-            //Debug.DrawRay(start, end - start, Color.magenta);
-            var isHit = Physics.Raycast(start, end - start, out var hit, (end - start).magnitude);
-            if (isHit)
-            {
-                this.Log("1. Test ray Hit " + hit.transform);
-                if (hit.transform != this.transform)
-                {
-                    this.Log("1. It's an obstacle!");
-                }
-            }
-        }
-        //else
-        //{
-        //    Debug.Log("Not checking for barriers " + (this == null) + " - " + (ViewPoint == null));
-        //}
-
-        // Workaround for unreliable smell detection - if the ant gets too close to a trail point, it automatically finds the next point in the trail chain.
-        if (this.CurrentTarget != null && !this.CurrentTarget.IsDestroyed() && Vector3.Distance(this.transform.position, this.CurrentTarget.transform.position) < this.AutomaticallyFindPreviousTrailPointDistance)
-        {
-            var nextPoint = this.GetNextTrailPoint(this.CurrentTarget as TrailPointController);
-            if (nextPoint != null)
-            {
-                this.RegisterPotentialTarget(nextPoint, "automatically finding next trail point in chain.");
-            } else
-            {
-                this.DrawLineToTarget(this.CurrentTarget, Color.gray);
-            }
-        }
-
-        this.Log($"****Current target: {this.CurrentTarget}, State: {this.State}, MaxTargetPriority: {this._maxTargetPriority}, TimeSinceTargetAquisition: {this._timeSinceTargetAquisition}. Checking new targets...");
-
-        foreach (var potentialTarget in this._newBetterTargets)
-        {
-            if (this.IsBetterThanCurrent(potentialTarget))
-            {
-                //if (!potentialTarget.IsActual && CurrentTarget != null && potentialTarget.DistanceFromTarget > CurrentTarget.DistanceFromTarget)
-                //{
-                //    Debug.Log($"considering {potentialTarget} even though it has a greater distance than {CurrentTarget} because it has a higher priority.");
-                //}
-                var hasLineOfSight = this.CheckLineOfSight(potentialTarget);
-
-                if (hasLineOfSight)
-                {
-                    this.Log($"Switching to {potentialTarget} because it's better than current target {this.CurrentTarget} and has line of sight.");
-                    this.SetTarget(potentialTarget);
-                }
-                else
-                {
-                    this.Log($"Not switching to {potentialTarget} because even though it's better than current target {this.CurrentTarget}, it doesn't have line of sight.");
-
-                    this.DrawLineToTarget(potentialTarget, Color.red);
-                }
-            }
-            else
-            {
-                this.Log($"Not switching to {potentialTarget} because it's not better than current target {this.CurrentTarget}");
-                this.DrawLineToTarget(potentialTarget, Color.orange);
-            }
-        }
-        this._newBetterTargets.Clear();
-
-        this.Log($"****Finished checking new targets. Current target: {this.CurrentTarget}, State: {this.State}, MaxTargetPriority: {this._maxTargetPriority}, TimeSinceTargetAquisition: {this._timeSinceTargetAquisition}.");
-
-        Debug.Assert(this.State != AntState.ReportingFood || this.CurrentTarget == null || this.CurrentTarget.Smell != Smell.Food, $"State is {this.State} so the currnet target should not be food, but it is {this.CurrentTarget}");
-
-        this._timeSinceTargetAquisition += Time.deltaTime;
-        if (this.CurrentTarget != null)
-        {
-            this.DrawLineToTarget(this.CurrentTarget, Color.cyan, true);
-            if (!this.CurrentTarget.IsActual && this._timeSinceTargetAquisition > this.MaxTimeGoingForTrailPoint)
-            {
-                // Before giving up, try to find the next point in the trail to avoid spinning
-                var nextPoint = this.GetNextTrailPoint(this.CurrentTarget as TrailPointController);
-                if (nextPoint != null)
-                {
-                    this.Log("Switching to next trail point @" + nextPoint.transform.position + " rather than timing out on " + this.CurrentTarget.transform.position);
-                    // Switch to the next point rather than timing out
-                    this.RegisterPotentialTarget(nextPoint, "Switching to next trail point " + nextPoint + " rather than timing out on " + this.CurrentTarget);
-                }
-                else
-                {
-                    // No next point found, give up normally
-                    this.Log("Hasn't found a better target in " + this._timeSinceTargetAquisition + " forgetting " + this.CurrentTarget + ". MaxTargetPriority = " + this._maxTargetPriority);
-                    this._maxTargetPriority = this.CurrentTarget.GetPriority(this._priorityCalculator) - this.GiveUpPenalty; // Only accept better smells after forgetting this one.
-                                                                                                                             //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
-                    this.ClearTarget();
-                }
-            }
-            else if (!this.CheckLineOfSight(this.CurrentTarget))
-            {
-                this.Log("Lost sight of current target!");
-                this.ClearTarget();
-            }
-        }
-        if (this._maxTargetPriority.HasValue)
-        {
-            this.Log($"Adjusting _maxTargetPriority from {_maxTargetPriority} to {_maxTargetPriority + Time.deltaTime * this.GiveUpRecoveryMultiplier}");
-            this._maxTargetPriority += Time.deltaTime * this.GiveUpRecoveryMultiplier;
-        }
-    }
-
-    private void DrawLineToTarget(Smellable target, Color colour, bool force = false)
-    {
-        if (this.FullDebugLogs || force)
-        {
-            Debug.DrawLine(this.transform.position, target.TargetPoint.position, colour);
-        }
-    }
-
-    private bool CheckLineOfSight(Smellable potentialTarget)
-    {
-        // TODO This is working!!!! make it neat.
-        bool hasLineOfSight;
-        if (potentialTarget != null && this.ViewPoint != null)
-        {
-            Vector3 start = potentialTarget.transform.position;
-            Vector3 end = this.ViewPoint.position;
-            Vector3 direction = (end - start).normalized;
-            float distance = Vector3.Distance(start, end);
-
-            // Offset to avoid self-collision
-            Vector3 startOffset = start - (direction * 0.1f);
-
-            //Debug.DrawRay(startOffset, direction * distance, Color.magenta);
-            int layerMask = ~LayerMask.GetMask(LayerMask.LayerToName(2));
-            if (Physics.Raycast(startOffset, direction, out RaycastHit hit, distance, layerMask))
-            {
-                //Debug.Log("Test ray hit: " + hit.transform.name);
-
-                if (hit.transform != this.transform && hit.transform != potentialTarget.transform)
-                {
-                    this.Log("It's an obstacle! " + hit.transform);
-                    if (this.FullDebugLogs)
-                    {
-                        Debug.DrawLine(start, hit.point, Color.white);
-                        Debug.DrawLine(start, end, Color.gray);
-                    }
-                    hasLineOfSight = false;
-                }
-                else
-                {
-                    hasLineOfSight = true;
-                }
-            }
-            else
-            {
-                hasLineOfSight = true; // No obstacle in the way
-            }
-        }
-        else
-        {
-            //Debug.Log("Not checking for barriers. Missing target or viewpoint.");
-            hasLineOfSight = false;
-        }
-
-        return hasLineOfSight;
-    }
-
-    /// <summary>
-    /// Gets the next trail point in the chain for a given trail point, based on this ant's priority system.
-    /// </summary>
-    private Smellable GetNextTrailPoint(TrailPointController currentTrailPoint)
-    {
-        if (currentTrailPoint == null)
-            return null;
-
-        var nextPoint = currentTrailPoint.GetBestPrevious(this._priorityCalculator);
-        if (nextPoint != null && !nextPoint.IsDestroyed() && nextPoint.IsSmellable)
-        {
-            return nextPoint;
-        }
-
-        return null;
+        Debug.Assert(State != AntState.ReportingFood || TargetSelector.CurrentTarget == null || TargetSelector.CurrentTarget.Smell != Smell.Food,
+            $"State is {State} so the current target should not be food, but it is {TargetSelector.CurrentTarget}");
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        this.PositionProvider.NoLongerTouching(collision.transform);
+        PositionProvider.NoLongerTouching(collision.transform);
     }
 
     private void OnTriggerExit(Collider other)
     {
         var world = other.GetComponent<WorldZone>();
-        if (world != null /*&& State == AntState.SeekingFood*/)
-        {
-            // TODO work out how well this works from all states. (particularly when not leaving a trail from home)
-            //Debug.Log($"State {State} -> ReturningHome");
-            this.GiveUpAndReturnHome();
-        }
+        if (world != null)
+            GiveUpAndReturnHome();
     }
 
     private void GiveUpAndReturnHome()
     {
-        //Debug.Log($"Ant {this} giving up and returning home from state {this.State}");
-        this.State = AntState.ReturningHome;
-        if (this.LastTrailDroppedPoint == null || this.LastTrailDroppedPoint.Smell != Smell.Home)
-        {
-            // not leaving a trail towards home, so can't use it to go home.
+        State = AntState.ReturningHome;
+        if (LastTrailDroppedPoint == null || LastTrailDroppedPoint.Smell != Smell.Home)
             return;
-        }
-        this.SetTarget(this.LastTrailDroppedPoint);
+        TargetSelector.SetTarget(LastTrailDroppedPoint);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -354,66 +120,36 @@ public class AntStateMachine : DeathActionBehaviour
 
         if (@object.TryGetComponent<Smellable>(out var smellable))
         {
-            //Debug.Log($"Collided With {@object} smellable: {smellable}");
-            this.ProcessCollisionWithSmell(smellable);
+            ProcessCollisionWithSmell(smellable);
             if (smellable.Smell == Smell.Home)
-            {
-                return; // never consider home smells as obstacles.
-            }
-            if (this.State == AntState.SeekingFood || this.State == AntState.ReturningToFood)
-            {
-                return; // while seeking or returning to food, ignore collisions with smellables that aren't the target.
-            }
+                return;
+            if (State == AntState.SeekingFood || State == AntState.ReturningToFood)
+                return;
         }
-        if (@object.TryGetComponent<Rigidbody>(out var rigidbody))
-        {
-            // TODO consider a differnt evasion approach for other ants.
-            return; // ignore collisions with rigidbodies (other ants, moving objects, etc)
-        }
-        if (@object.layer == GroundLayer)
-        {
-            // collided with the ground
-            //Debug.Log($"Collided With ground: {@object}");
+
+        if (@object.TryGetComponent<Rigidbody>(out _))
             return;
-        }
 
-        //Debug.Log($"Collided With obstacle {@object}");
+        if (@object.layer == GroundLayer)
+            return;
 
-        // TODO test this more.
-        // This sort of works, but it often leaves ants stuck on a wall when there are too many of them for them to move freely round it with their obstacle avoidance.
-        // Possibly try considering the distance travelled, or the moving average speed, or something like that to detect when the ant is actually stuck and hasn't moved much in the last couple of seconds.
-        // Also, make it only work for barriers, not other ants, so you don't get many ants going for a dead trail point and bumping each other forever.
+        TargetSelector.OnObstacleCollision();
 
-        // allow more time going for the same target as the obstacle avoidence will hopefully be helping the ant work towards this target.
-        this._timeSinceTargetAquisition -= this.CollisionTargetBonus;
-
-        if (this.AttackController != null)
+        if (AttackController != null)
         {
-            if (UnityEngine.Random.Range(0, 100) <= this.AttackController.AttackChance)
+            if (UnityEngine.Random.Range(0, 100) <= AttackController.AttackChance)
             {
                 var damageHandler = @object.GetComponentInParent<ImpactDamageHandler>();
                 if (damageHandler != null)
                 {
-                    if (damageHandler.HealthController.tag != this.tag)
-                    {
-                        this.AttackController.AttackObstable(collision, damageHandler);
-                    }
+                    if (damageHandler.HealthController.tag != tag)
+                        AttackController.AttackObstable(collision, damageHandler);
                 }
             }
         }
 
-        // try to avoid the obstacle regardless.
-        this.PositionProvider.AvoidObstacle(collision);
+        PositionProvider.AvoidObstacle(collision);
     }
-
-    public AttackController AttackController;
-
-    /// <summary>
-    /// Scouts only look for new food and leave trails to show where it is, they never actually carry it themselves.
-    /// </summary>
-    public bool IsScout = false;
-
-    private readonly HashSet<Food> _knownNearbyFood = new HashSet<Food>();
 
     public void ProcessSmell(Smellable smellable, string debugString)
     {
@@ -423,137 +159,40 @@ public class AntStateMachine : DeathActionBehaviour
         switch (smellable.Smell)
         {
             case Smell.Food:
-                if ((smellable.IsActual && this.State == AntState.SeekingFood) || this.State == AntState.ReturningToFood)
+                if ((smellable.IsActual && State == AntState.SeekingFood) || State == AntState.ReturningToFood)
                 {
-                    this._maxTargetPriority = null;
-                    // When seeking or returning to food, rember smelled foods to know how much is in the area when setting the trail back home.
-                    this._knownNearbyFood.Add(smellable.GetComponent<Food>());
+                    TargetSelector.ResetMaxPriority();
+                    _knownNearbyFood.Add(smellable.GetComponent<Food>());
                 }
-                switch (this.State)
+                switch (State)
                 {
                     case AntState.SeekingFood:
-                        // has smelled a food or a food trail, follow the trail, or move towards the food!
                         if (!smellable.IsActual)
                         {
-                            if (this.IsScout)
-                            {
-                                // Scouts always ignore food smells except actual food.
+                            if (IsScout)
                                 return;
-                            }
-                            // has found an existing trail, so retrn to the food and pick it up.
-                            this.State = AntState.ReturningToFood;
+                            State = AntState.ReturningToFood;
                         }
-                        this._maxTargetPriority = null;
-                        this.ClearTarget();
-                        this.RegisterPotentialTarget(smellable, debugString);
+                        TargetSelector.ResetMaxPriority();
+                        TargetSelector.ClearTarget();
+                        TargetSelector.RegisterPotentialTarget(smellable, debugString);
                         return;
                     case AntState.ReturningToFood:
-                        this.RegisterPotentialTarget(smellable, debugString);
-                        // in the Returning to food state, maintain the state until the food is actually collided with.
+                        TargetSelector.RegisterPotentialTarget(smellable, debugString);
                         return;
                 }
                 return;
             case Smell.Home:
-                switch (this.State)
+                switch (State)
                 {
                     case AntState.ReturningHome:
                     case AntState.ReportingFood:
                     case AntState.CarryingFood:
-                        this.RegisterPotentialTarget(smellable, debugString);
-
+                        TargetSelector.RegisterPotentialTarget(smellable, debugString);
                         return;
                 }
                 return;
         }
-    }
-
-    private void ClearTarget()
-    {
-        this._newBetterTargets.Clear();
-        this._currentTarget = null;
-        this.PositionProvider.SetTarget(this.CurrentTarget);
-    }
-
-    private void RegisterPotentialTarget(Smellable smellable, string debugString)
-    {
-        Debug.Assert(this.State != AntState.ReportingFood || smellable.Smell != Smell.Food, $"State is {this.State} so {smellable} should not be being considered as a possible target.");
-
-        if (this.CurrentTarget != null && this.CurrentTarget.IsActual == true)
-        {
-            // Always stick with an actual smell
-            return;
-        }
-
-        if (this._maxTargetPriority.HasValue && smellable.GetPriority(this._priorityCalculator) > this._maxTargetPriority)
-        {
-            this.Log("Ignoring " + smellable + " because it's more than " + _maxTargetPriority + " priority.");
-            return;
-        }
-
-        if (this.IsBetterThanCurrent(smellable))
-        {
-            Debug.Assert(!this.IsScout || smellable.IsActual || smellable.Smell != Smell.Food);
-            this.Log("Switched Smell Target - " + debugString);
-            this._newBetterTargets.Add(smellable);
-
-            //// TODO thoroughly test this and refactor it to be neater if it works.
-            //bool hasLineOfSight;
-            //Debug.Log("Checking for obstacles betwen " + this + " and " + smellable);
-            //if (smellable != null && ViewPoint != null)
-            //{
-            //    var end = ViewPoint.position;
-            //    var start = smellable.transform.position;
-
-            //    Debug.DrawRay(start, end - start, Color.magenta);
-            //    var isHit = Physics.Raycast(start, end - start, out var hit, (end - start).magnitude);
-            //    if (isHit)
-            //    {
-            //        Debug.Log("Test2 ray Hit " + hit.transform);
-            //        if (hit.transform != this.transform)
-            //        {
-            //            hasLineOfSight = false;
-            //            Debug.Log("It's an obstacle!");
-            //        }
-            //        else
-            //        {
-            //            hasLineOfSight = true;
-            //            Debug.Log("Wasn't an obstacle");
-            //        }
-            //    }
-            //    else
-            //    {
-            //        hasLineOfSight = true;
-            //        Debug.Log("Didn't hit anything");
-            //    }
-            //}
-            //else
-            //{
-            //    hasLineOfSight = false;
-            //    Debug.Log("Not checking for barriers");
-            //}
-
-
-            //var hasLineOfSight = HasLineOfSight(smellable);
-            //if (hasLineOfSight)
-            //{
-            //    // either there is no hit (no rigidbody int he way) or the hit is the thing we're trying to move towards.
-            //    SetTarget(smellable);
-            //}
-        }
-    }
-
-    private bool IsBetterThanCurrent(Smellable smellable)
-    {
-        return this.CurrentTarget == null    // there is no current target
-            || (smellable.IsActual && !this.CurrentTarget.IsActual)  // the new one is actual and the current one isn't
-            || smellable.GetPriority(this._priorityCalculator) < this.CurrentTarget.GetPriority(this._priorityCalculator); // the new one has a better priority than the current one
-    }
-
-    private void SetTarget(Smellable smellable)
-    {
-        this._currentTarget = smellable;
-        this.PositionProvider.SetTarget(this.CurrentTarget);
-        this._timeSinceTargetAquisition = 0;
     }
 
     private void ProcessCollisionWithSmell(Smellable smellable)
@@ -561,60 +200,58 @@ public class AntStateMachine : DeathActionBehaviour
         switch (smellable.Smell)
         {
             case Smell.Food:
-
-                if (this._carriedFood != null) return;   // ignore all other food if already carrying
-                if (this.IsScout)
+                if (_carriedFood != null) return;
+                if (IsScout)
                 {
-                    if (this.State == AntState.ReportingFood) return;
-                    this.ReportFoodWithoutCarryingIt(smellable);
+                    if (State == AntState.ReportingFood) return;
+                    ReportFoodWithoutCarryingIt(smellable);
                     return;
                 }
-                var isSmallQuantityOfFood = this._knownNearbyFood.Count == 1 || this.KnownFoodValue <= LimitForReporitingOnly;
-                var CanPickUpFoodFromThisState = this.State == AntState.SeekingFood || this.State == AntState.ReturningToFood || this.State == AntState.ReturningHome;
-                if (isSmallQuantityOfFood && CanPickUpFoodFromThisState)
+                var isSmallQuantityOfFood = _knownNearbyFood.Count == 1 || KnownFoodValue <= LimitForReporitingOnly;
+                var canPickUpFoodFromThisState = State == AntState.SeekingFood || State == AntState.ReturningToFood || State == AntState.ReturningHome;
+                if (isSmallQuantityOfFood && canPickUpFoodFromThisState)
                 {
-                    // it's a one-off, so just take it home.
-                    this.CollectKnownFood(smellable);
-                    this._disableTrail = true;
+                    CollectKnownFood(smellable);
+                    _disableTrail = true;
                     return;
                 }
-                switch (this.State)
+                switch (State)
                 {
                     case AntState.SeekingFood:
-                        this.ReportFoodWithoutCarryingIt(smellable);
+                        ReportFoodWithoutCarryingIt(smellable);
                         return;
                     case AntState.ReturningToFood:
-                        this.CollectKnownFood(smellable);
-                        this._disableTrail = false;
+                        CollectKnownFood(smellable);
+                        _disableTrail = false;
                         return;
                 }
                 return;
             case Smell.Home:
-                this.EatFoodAtHome(smellable);
-                if (this.IsScout)
+                EatFoodAtHome(smellable);
+                if (IsScout)
                 {
-                    this.GoBackToSeekingFood();
+                    GoBackToSeekingFood();
                     return;
                 }
-                switch (this.State)
+                switch (State)
                 {
                     case AntState.ReportingFood:
-                        this._disableTrail = false;
-                        this._maxTargetPriority = null;
-                        this.ClearTarget();
-                        this.State = AntState.ReturningToFood;
-                        this.RegisterPotentialTarget(this.LastTrailDroppedPoint, "Collided with smell");
+                        _disableTrail = false;
+                        TargetSelector.ResetMaxPriority();
+                        TargetSelector.ClearTarget();
+                        State = AntState.ReturningToFood;
+                        TargetSelector.RegisterPotentialTarget(LastTrailDroppedPoint, "Collided with smell");
                         return;
                     case AntState.CarryingFood:
-                        this._disableTrail = false;
-                        this.State = AntState.ReturningToFood;
-                        this._maxTargetPriority = null;
-                        this.ClearTarget();
-                        this.RegisterPotentialTarget(this.LastTrailDroppedPoint, "Collided with smell");
-                        this.DropOffFood(smellable);
+                        _disableTrail = false;
+                        State = AntState.ReturningToFood;
+                        TargetSelector.ResetMaxPriority();
+                        TargetSelector.ClearTarget();
+                        TargetSelector.RegisterPotentialTarget(LastTrailDroppedPoint, "Collided with smell");
+                        DropOffFood(smellable);
                         return;
                     case AntState.ReturningHome:
-                        this.GoBackToSeekingFood();
+                        GoBackToSeekingFood();
                         return;
                 }
                 return;
@@ -623,80 +260,66 @@ public class AntStateMachine : DeathActionBehaviour
 
     private void GoBackToSeekingFood()
     {
-        this.PositionProvider.RandomiseVector();
-        this._disableTrail = false;
-        this.State = AntState.SeekingFood;
-        this._maxTargetPriority = null;
-        this.ClearTarget();
+        PositionProvider.RandomiseVector();
+        _disableTrail = false;
+        State = AntState.SeekingFood;
+        TargetSelector.ResetMaxPriority();
+        TargetSelector.ClearTarget();
     }
 
     private void CollectKnownFood(Smellable smellable)
     {
-        this._maxTargetPriority = null;
-        this.ClearTarget();
-        this.RegisterPotentialTarget(this.LastTrailDroppedPoint, "Collected smell");
-        this.UpdateTrailValueForKnownFood();
-        this.PickUpFood(smellable);
+        TargetSelector.ResetMaxPriority();
+        TargetSelector.ClearTarget();
+        TargetSelector.RegisterPotentialTarget(LastTrailDroppedPoint, "Collected smell");
+        UpdateTrailValueForKnownFood();
+        PickUpFood(smellable);
     }
 
     private void ReportFoodWithoutCarryingIt(Smellable smellable)
     {
-        //var food = smellable.GetComponentInParent<Food>();
-
-        this.UpdateTrailValueForKnownFood();
-
-        //Debug.Log($"State Seeking -> Reporting");
-        this.State = AntState.ReportingFood;
-        this._maxTargetPriority = null;
-        this._disableTrail = false;
-        this.ClearTarget();
-        this.RegisterPotentialTarget(this.LastTrailDroppedPoint, "ReportFoodWithoutCarryingIt");
+        UpdateTrailValueForKnownFood();
+        State = AntState.ReportingFood;
+        TargetSelector.ResetMaxPriority();
+        _disableTrail = false;
+        TargetSelector.ClearTarget();
+        TargetSelector.RegisterPotentialTarget(LastTrailDroppedPoint, "ReportFoodWithoutCarryingIt");
     }
 
     private void UpdateTrailValueForKnownFood()
     {
-        // Leave a trail indicating how much food has been found at this location.
-        var remainingFoodValue = this.KnownFoodValue;
-        this.TrailTargetValue = remainingFoodValue;
-        this._knownNearbyFood.Clear();   // Forget about all the food now it knows what value to use for the trail.
+        TrailTargetValue = KnownFoodValue;
+        _knownNearbyFood.Clear();
     }
 
-    private float KnownFoodValue => this._knownNearbyFood.Sum(f => f != null ? f.FoodValue : 0);
-
-    public Digestion Digestion;
-    private bool _disableTrail;
+    private float KnownFoodValue => _knownNearbyFood.Sum(f => f != null ? f.FoodValue : 0);
 
     private void EatFoodAtHome(Smellable smellable)
     {
-        if (this.Digestion == null) return;
+        if (Digestion == null) return;
         var home = smellable.GetComponentInParent<AntNest>();
-
-        this.Digestion.EatFoodFrom(home);
+        Digestion.EatFoodFrom(home);
     }
 
     private void DropOffFood(Smellable smellable)
     {
-        if (this._carriedFood == null || this._carriedFood.gameObject == null || this._carriedFood.gameObject.IsDestroyed())
+        if (_carriedFood == null || _carriedFood.gameObject == null || _carriedFood.gameObject.IsDestroyed())
         {
-            this._carriedFood = null;
+            _carriedFood = null;
             return;
         }
         var home = smellable.GetComponentInParent<AntNest>();
-
-        home.AddFood(this._carriedFood.FoodValue);
-
-        this._carriedFood.Destroy();
-        this._carriedFood = null;
+        home.AddFood(_carriedFood.FoodValue);
+        _carriedFood.Destroy();
+        _carriedFood = null;
     }
 
     private void PickUpFood(Smellable smellable)
     {
-        Debug.Assert(this.CarryPoint != null, "Cannot carry food with no carry point");
+        Debug.Assert(CarryPoint != null, "Cannot carry food with no carry point");
 
         var food = smellable.GetComponentInParent<Food>();
-
-        // adjust the trail target value to account for this food being removed.
-        this.TrailTargetValue -= food.FoodValue;
+        TrailTargetValue -= food.FoodValue;
 
         if (food.TryGetComponent<LifetimeController>(out var lifetime))
         {
@@ -704,35 +327,27 @@ public class AntStateMachine : DeathActionBehaviour
             lifetime.IsRunning = false;
         }
 
-        this._carriedFood = food;
-        food.transform.position = this.CarryPoint.position;
-        food.Attach(this._rigidbody);
-
-        this.State = AntState.CarryingFood;
+        _carriedFood = food;
+        food.transform.position = CarryPoint.position;
+        food.Attach(_rigidbody);
+        State = AntState.CarryingFood;
     }
 
     public override void OnDeath()
     {
-        if (this._carriedFood != null)
+        if (_carriedFood != null)
         {
-            this._carriedFood.Detach();
-            if (this._carriedFood.TryGetComponent<LifetimeController>(out var lifetime))
-            {
+            _carriedFood.Detach();
+            if (_carriedFood.TryGetComponent<LifetimeController>(out var lifetime))
                 lifetime.IsRunning = true;
-            }
-            this._carriedFood = null;
+            _carriedFood = null;
         }
     }
 
-    private TrailPointController LastTrailDroppedPoint
-    {
-        get
-        {
-            return this.TrailController == null || this.TrailController.gameObject == null
-                ? null
-                : this.TrailController.LastTrailPointController;
-        }
-    }
+    private TrailPointController LastTrailDroppedPoint =>
+        TrailController == null || TrailController.gameObject == null
+            ? null
+            : TrailController.LastTrailPointController;
 }
 
 public enum AntState
