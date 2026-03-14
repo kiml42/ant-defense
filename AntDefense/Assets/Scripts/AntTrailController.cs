@@ -1,7 +1,9 @@
+using System;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class AntTrailController : MonoBehaviour
 {
     private static GameObject TrailParent;
@@ -31,6 +33,31 @@ public class AntTrailController : MonoBehaviour
 
     private Rigidbody _rigidbody;
 
+    private bool trailDisabled;
+
+
+    public Smell? TrailSmell
+    {
+        get
+        {
+            if (this.trailDisabled) return null;
+            switch (this.AntStateMachine.State)
+            {
+                case AntState.SeekingFood:
+                case AntState.ReturningToFood:
+                    this.AntStateMachine.TrailTargetValue = null;
+                    return Smell.Home;
+                case AntState.ReportingFood:
+                case AntState.CarryingFood:
+                    return Smell.Food;
+                case AntState.ReturningHome:
+                    return null;
+                default:
+                    throw new Exception("Unknown state " + this.AntStateMachine.State);
+            }
+        }
+    }
+
     void Start()
     {
         this.AntStateMachine = this.GetComponentInChildren<AntStateMachine>();
@@ -47,10 +74,10 @@ public class AntTrailController : MonoBehaviour
     void FixedUpdate()
     {
         // TODO might be best to have an explicit method instead of just spying on the ASM.
-        if (this._lastSmell != this.AntStateMachine.TrailSmell)
+        if (this._lastSmell != this.TrailSmell)
         {
             // The smell has changed, so reset the trail.
-            this._lastSmell = this.AntStateMachine.TrailSmell;
+            this._lastSmell = this.TrailSmell;
             this.LastTrailPointSmellable = null;    // TODO this should probably be set to the new real object a trail is being left to.
             this._distanceSinceTarget = 0;
             this._targetValue = this.AntStateMachine.TrailTargetValue;
@@ -61,9 +88,19 @@ public class AntTrailController : MonoBehaviour
         this.LeaveTrail();
     }
 
+    public void DisableTrail()
+    {
+        this.trailDisabled = true;
+    }
+
+    public void EnableTrail()
+    {
+        this.trailDisabled = false;
+    }
+
     private void LeaveTrail()
     {
-        if (!this.AntStateMachine.TrailSmell.HasValue || this._targetValue <= 0) return;
+        if (!this.TrailSmell.HasValue || this._targetValue <= 0) return;
         var hasPreviousTrailPoint = this.LastTrailPointSmellable != null && !this.LastTrailPointSmellable.IsDestroyed();
         var distanceToLastPoint = hasPreviousTrailPoint
             ? (this.LastTrailPointSmellable.transform.position - this.transform.position).magnitude
@@ -76,7 +113,7 @@ public class AntTrailController : MonoBehaviour
             var relevantOverlaps = overlaps
                 .Where(overlap => !overlap.IsDestroyed())
                 .Select(overlap => overlap.GetComponent<TrailPointController>())
-                .Where(otherTrailPoint => otherTrailPoint != null && !otherTrailPoint.IsDestroyed() && otherTrailPoint.Smell == this.AntStateMachine.TrailSmell);
+                .Where(otherTrailPoint => otherTrailPoint != null && !otherTrailPoint.IsDestroyed() && otherTrailPoint.Smell == this.TrailSmell);
 
             if (relevantOverlaps.Any())
             {
@@ -92,7 +129,7 @@ public class AntTrailController : MonoBehaviour
             {
                 // none are close enough, so create a new one.
                 var newPoint = Instantiate(this.TrailPoint, this.transform.position, Quaternion.identity, TrailParent.transform);
-                newPoint.SetSmell(this.AntStateMachine.TrailSmell.Value, this._distanceSinceTarget, this._targetValue, this.LastTrailPointSmellable);
+                newPoint.SetSmell(this.TrailSmell.Value, this._distanceSinceTarget, this._targetValue, this.LastTrailPointSmellable);
                 newPoint.gameObject.layer = 2;
                 //Debug.Log("Leaving trail with smell: " + newPoint.GetComponent<TrailPointController>().Smell);
 

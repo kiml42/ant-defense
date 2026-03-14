@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class StayUpright : MonoBehaviour
 {
     public float TorqueMultiplier = 10;
