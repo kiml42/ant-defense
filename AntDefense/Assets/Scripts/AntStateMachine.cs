@@ -164,6 +164,9 @@ public class AntStateMachine : DeathActionBehaviour
             if (nextPoint != null)
             {
                 this.RegisterPotentialTarget(nextPoint, "automatically finding next trail point in chain.");
+            } else
+            {
+                this.DrawLineToTarget(this.CurrentTarget, Color.gray);
             }
         }
 
@@ -187,11 +190,14 @@ public class AntStateMachine : DeathActionBehaviour
                 else
                 {
                     this.Log($"Not switching to {potentialTarget} because even though it's better than current target {this.CurrentTarget}, it doesn't have line of sight.");
+
+                    this.DrawLineToTarget(potentialTarget, Color.red);
                 }
             }
             else
             {
                 this.Log($"Not switching to {potentialTarget} because it's not better than current target {this.CurrentTarget}");
+                this.DrawLineToTarget(potentialTarget, Color.orange);
             }
         }
         this._newBetterTargets.Clear();
@@ -203,7 +209,7 @@ public class AntStateMachine : DeathActionBehaviour
         this._timeSinceTargetAquisition += Time.deltaTime;
         if (this.CurrentTarget != null)
         {
-            Debug.DrawLine(this.transform.position, this.CurrentTarget.TargetPoint.position, Color.cyan);
+            this.DrawLineToTarget(this.CurrentTarget, Color.cyan, true);
             if (!this.CurrentTarget.IsActual && this._timeSinceTargetAquisition > this.MaxTimeGoingForTrailPoint)
             {
                 // Before giving up, try to find the next point in the trail to avoid spinning
@@ -218,8 +224,8 @@ public class AntStateMachine : DeathActionBehaviour
                 {
                     // No next point found, give up normally
                     this.Log("Hasn't found a better target in " + this._timeSinceTargetAquisition + " forgetting " + this.CurrentTarget + ". MaxTargetPriority = " + this._maxTargetPriority);
-                    this._maxTargetPriority =  this.CurrentTarget.GetPriority(this._priorityCalculator) - this.GiveUpPenalty; // Only accept better smells after forgetting this one.
-                                                                                                         //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
+                    this._maxTargetPriority = this.CurrentTarget.GetPriority(this._priorityCalculator) - this.GiveUpPenalty; // Only accept better smells after forgetting this one.
+                                                                                                                             //Debug.Log("Hasn't found a better target in " + _timeSinceTargetAquisition + " forgetting " + CurrentTarget + ". MaxTargetTime = " + _maxTargetTime);
                     this.ClearTarget();
                 }
             }
@@ -233,6 +239,14 @@ public class AntStateMachine : DeathActionBehaviour
         {
             this.Log($"Adjusting _maxTargetPriority from {_maxTargetPriority} to {_maxTargetPriority + Time.deltaTime * this.GiveUpRecoveryMultiplier}");
             this._maxTargetPriority += Time.deltaTime * this.GiveUpRecoveryMultiplier;
+        }
+    }
+
+    private void DrawLineToTarget(Smellable target, Color colour, bool force = false)
+    {
+        if (this.FullDebugLogs || force)
+        {
+            Debug.DrawLine(this.transform.position, target.TargetPoint.position, colour);
         }
     }
 
@@ -258,7 +272,12 @@ public class AntStateMachine : DeathActionBehaviour
 
                 if (hit.transform != this.transform && hit.transform != potentialTarget.transform)
                 {
-                    //Debug.Log("It's an obstacle!");
+                    this.Log("It's an obstacle! " + hit.transform);
+                    if (this.FullDebugLogs)
+                    {
+                        Debug.DrawLine(start, hit.point, Color.white);
+                        Debug.DrawLine(start, end, Color.gray);
+                    }
                     hasLineOfSight = false;
                 }
                 else
