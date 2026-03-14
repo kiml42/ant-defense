@@ -1,7 +1,5 @@
 using Assets.Scripts;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -16,15 +14,8 @@ public class AntStateMachine : DeathActionBehaviour
     public AntFoodHandler FoodHandler;
     public AntTargetPositionProvider PositionProvider;
     public AntTrailController TrailController;
-    public Transform CarryPoint;
     public AttackController AttackController;
     public Digestion Digestion;
-
-    /// <summary>
-    /// If the ant has found a total food value less than or equal to this amount, it will just carry the food home
-    /// while reporting it, instead of just reporting it.
-    /// </summary>
-    public float LimitForReporitingOnly = 50;
 
     /// <summary>
     /// If the last trail point has this much time or less remaining when it is placed, the ant will give up and return home.
@@ -62,18 +53,13 @@ public class AntStateMachine : DeathActionBehaviour
         }
     }
 
-    public float? TrailTargetValue { get; private set; }
-
+    public float? TrailTargetValue { get; set; }
     public ITargetPriorityCalculator PriorityCalculator { get; private set; }
 
-    private Food _carriedFood;
     private bool _disableTrail;
-    private Rigidbody _rigidbody;
-    private readonly HashSet<Food> _knownNearbyFood = new HashSet<Food>();
 
     private void Awake()
     {
-        _rigidbody = GetComponent<Rigidbody>();
         PriorityCalculator = GetComponent<ITargetPriorityCalculator>();
     }
 
@@ -87,7 +73,7 @@ public class AntStateMachine : DeathActionBehaviour
 
         if (LastTrailDroppedPoint != null && LastTrailDroppedPoint.RemainingTime < GoHomeTime)
         {
-            if (this.FullDebugLogs)
+            if (FullDebugLogs)
                 Debug.Log($"Ant {this} last trail point {LastTrailDroppedPoint} has only {LastTrailDroppedPoint.RemainingTime} time remaining, going home.");
             GiveUpAndReturnHome();
         }
@@ -164,7 +150,7 @@ public class AntStateMachine : DeathActionBehaviour
                 if ((smellable.IsActual && State == AntState.SeekingFood) || State == AntState.ReturningToFood)
                 {
                     TargetSelector.ResetMaxPriority();
-                    _knownNearbyFood.Add(smellable.GetComponent<Food>());
+                    FoodHandler.RememberNearbyFood(smellable.GetComponent<Food>());
                 }
                 switch (State)
                 {
@@ -202,16 +188,15 @@ public class AntStateMachine : DeathActionBehaviour
         switch (smellable.Smell)
         {
             case Smell.Food:
-                if (_carriedFood != null) return;
+                if (FoodHandler.IsCarryingFood) return;
                 if (IsScout)
                 {
                     if (State == AntState.ReportingFood) return;
                     ReportFoodWithoutCarryingIt(smellable);
                     return;
                 }
-                var isSmallQuantityOfFood = _knownNearbyFood.Count == 1 || KnownFoodValue <= LimitForReporitingOnly;
                 var canPickUpFoodFromThisState = State == AntState.SeekingFood || State == AntState.ReturningToFood || State == AntState.ReturningHome;
-                if (isSmallQuantityOfFood && canPickUpFoodFromThisState)
+                if (FoodHandler.IsSmallQuantityOfFood && canPickUpFoodFromThisState)
                 {
                     CollectKnownFood(smellable);
                     _disableTrail = true;
@@ -229,7 +214,7 @@ public class AntStateMachine : DeathActionBehaviour
                 }
                 return;
             case Smell.Home:
-                EatFoodAtHome(smellable);
+                EatAtHome(smellable);
                 if (IsScout)
                 {
                     GoBackToSeekingFood();
@@ -250,7 +235,7 @@ public class AntStateMachine : DeathActionBehaviour
                         TargetSelector.ResetMaxPriority();
                         TargetSelector.ClearTarget();
                         TargetSelector.RegisterPotentialTarget(LastTrailDroppedPoint, "Collided with smell");
-                        DropOffFood(smellable);
+                        FoodHandler.DropOff(smellable);
                         return;
                     case AntState.ReturningHome:
                         GoBackToSeekingFood();
@@ -274,13 +259,13 @@ public class AntStateMachine : DeathActionBehaviour
         TargetSelector.ResetMaxPriority();
         TargetSelector.ClearTarget();
         TargetSelector.RegisterPotentialTarget(LastTrailDroppedPoint, "Collected smell");
-        UpdateTrailValueForKnownFood();
-        PickUpFood(smellable);
+        FoodHandler.UpdateTrailValueForKnownFood();
+        FoodHandler.PickUp(smellable);
     }
 
     private void ReportFoodWithoutCarryingIt(Smellable smellable)
     {
-        UpdateTrailValueForKnownFood();
+        FoodHandler.UpdateTrailValueForKnownFood();
         State = AntState.ReportingFood;
         TargetSelector.ResetMaxPriority();
         _disableTrail = false;
@@ -288,62 +273,16 @@ public class AntStateMachine : DeathActionBehaviour
         TargetSelector.RegisterPotentialTarget(LastTrailDroppedPoint, "ReportFoodWithoutCarryingIt");
     }
 
-    private void UpdateTrailValueForKnownFood()
-    {
-        TrailTargetValue = KnownFoodValue;
-        _knownNearbyFood.Clear();
-    }
-
-    private float KnownFoodValue => _knownNearbyFood.Sum(f => f != null ? f.FoodValue : 0);
-
-    private void EatFoodAtHome(Smellable smellable)
+    private void EatAtHome(Smellable smellable)
     {
         if (Digestion == null) return;
         var home = smellable.GetComponentInParent<AntNest>();
         Digestion.EatFoodFrom(home);
     }
 
-    private void DropOffFood(Smellable smellable)
-    {
-        if (_carriedFood == null || _carriedFood.gameObject == null || _carriedFood.gameObject.IsDestroyed())
-        {
-            _carriedFood = null;
-            return;
-        }
-        var home = smellable.GetComponentInParent<AntNest>();
-        home.AddFood(_carriedFood.FoodValue);
-        _carriedFood.Destroy();
-        _carriedFood = null;
-    }
-
-    private void PickUpFood(Smellable smellable)
-    {
-        Debug.Assert(CarryPoint != null, "Cannot carry food with no carry point");
-
-        var food = smellable.GetComponentInParent<Food>();
-        TrailTargetValue -= food.FoodValue;
-
-        if (food.TryGetComponent<LifetimeController>(out var lifetime))
-        {
-            lifetime.Reset();
-            lifetime.IsRunning = false;
-        }
-
-        _carriedFood = food;
-        food.transform.position = CarryPoint.position;
-        food.Attach(_rigidbody);
-        State = AntState.CarryingFood;
-    }
-
     public override void OnDeath()
     {
-        if (_carriedFood != null)
-        {
-            _carriedFood.Detach();
-            if (_carriedFood.TryGetComponent<LifetimeController>(out var lifetime))
-                lifetime.IsRunning = true;
-            _carriedFood = null;
-        }
+        FoodHandler.ReleaseCarriedFood();
     }
 
     private TrailPointController LastTrailDroppedPoint =>
