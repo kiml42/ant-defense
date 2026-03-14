@@ -32,32 +32,8 @@ public class AntStateMachine : DeathActionBehaviour
 
     public const int GroundLayer = 3;
 
-    public Smell? TrailSmell
-    {
-        get
-        {
-            if (_disableTrail) return null;
-            switch (State)
-            {
-                case AntState.SeekingFood:
-                case AntState.ReturningToFood:
-                    TrailTargetValue = null;
-                    return Smell.Home;
-                case AntState.ReportingFood:
-                case AntState.CarryingFood:
-                    return Smell.Food;
-                case AntState.ReturningHome:
-                    return null;
-                default:
-                    throw new Exception("Unknown state " + State);
-            }
-        }
-    }
-
     public float? TrailTargetValue { get; set; }
     public ITargetPriorityCalculator PriorityCalculator { get; private set; }
-
-    private bool _disableTrail;
 
     private void Awake()
     {
@@ -200,7 +176,7 @@ public class AntStateMachine : DeathActionBehaviour
                 if (FoodTracker.IsSmallQuantityOfFood && canPickUpFoodFromThisState && this.CarriedObjectHandler != null)
                 {
                     CollectKnownFood(smellable);
-                    _disableTrail = true;
+                    this.TrailController.DisableTrail();
                     return;
                 }
                 switch (State)
@@ -210,7 +186,7 @@ public class AntStateMachine : DeathActionBehaviour
                         return;
                     case AntState.ReturningToFood:
                         CollectKnownFood(smellable);
-                        _disableTrail = false;
+                        this.TrailController.EnableTrail();
                         return;
                 }
                 return;
@@ -224,14 +200,14 @@ public class AntStateMachine : DeathActionBehaviour
                 switch (State)
                 {
                     case AntState.ReportingFood:
-                        _disableTrail = false;
+                        this.TrailController.EnableTrail();
                         TargetSelector.ResetMaxPriority();
                         TargetSelector.ClearTarget();
                         State = AntState.ReturningToFood;
                         TargetSelector.RegisterPotentialTarget(LastTrailDroppedPoint, "Collided with smell");
                         return;
                     case AntState.CarryingFood:
-                        _disableTrail = false;
+                        this.TrailController.EnableTrail();
                         State = AntState.ReturningToFood;
                         TargetSelector.ResetMaxPriority();
                         TargetSelector.ClearTarget();
@@ -254,7 +230,7 @@ public class AntStateMachine : DeathActionBehaviour
     private void GoBackToSeekingFood()
     {
         PositionProvider.RandomiseVector();
-        _disableTrail = false;
+        this.TrailController.EnableTrail();
         State = AntState.SeekingFood;
         TargetSelector.ResetMaxPriority();
         TargetSelector.ClearTarget();
@@ -278,7 +254,7 @@ public class AntStateMachine : DeathActionBehaviour
         FoodTracker.UpdateTrailValueForKnownFood();
         State = AntState.ReportingFood;
         TargetSelector.ResetMaxPriority();
-        _disableTrail = false;
+        this.TrailController.EnableTrail();
         TargetSelector.ClearTarget();
         TargetSelector.RegisterPotentialTarget(LastTrailDroppedPoint, "ReportFoodWithoutCarryingIt");
     }
