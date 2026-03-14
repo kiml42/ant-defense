@@ -347,7 +347,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   State: 0
   TargetSelector: {fileID: 4192788728019816669}
-  FoodHandler: {fileID: 419783794837196473}
+  FoodTracker: {fileID: 419783794837196473}
   CarriedObjectHandler: {fileID: 0}
   PositionProvider: {fileID: 2951773968300769007}
   TrailController: {fileID: 1089436927646635733}

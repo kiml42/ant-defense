@@ -329,7 +329,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   State: 0
   TargetSelector: {fileID: 4192788728019816669}
-  FoodHandler: {fileID: 419783794837196473}
+  FoodTracker: {fileID: 419783794837196473}
   CarriedObjectHandler: {fileID: 2891582671329376272}
   PositionProvider: {fileID: 2951773968300769007}
   TrailController: {fileID: 1089436927646635733}
@@ -602,7 +602,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9ce4e22350df4a479c3a9c786f3bf70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CarryPoint: {fileID: 4482761779144621289}
   LimitForReporitingOnly: 50
 --- !u!114 &2891582671329376272
 MonoBehaviour:

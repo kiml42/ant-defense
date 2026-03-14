@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class AntFoodHandler : MonoBehaviour
+public class CollectableFoodTracker : MonoBehaviour
 {
-    public Transform CarryPoint;
-
     /// <summary>
     /// If the ant has found a total food value less than or equal to this amount, it will just carry the food home
     /// while reporting it, instead of just reporting it.

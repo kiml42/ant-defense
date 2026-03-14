@@ -5,14 +5,13 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(AntTargetSelector))]
-[RequireComponent(typeof(AntFoodHandler))]
-[RequireComponent(typeof(AntFoodHandler))]
+[RequireComponent(typeof(CollectableFoodTracker))]
 public class AntStateMachine : DeathActionBehaviour
 {
     public AntState State = AntState.SeekingFood;
 
     public AntTargetSelector TargetSelector;
-    public AntFoodHandler FoodHandler;
+    public CollectableFoodTracker FoodTracker;
     public CarriedObjectHandler CarriedObjectHandler;
     public AntTargetPositionProvider PositionProvider;
     public AntTrailController TrailController;
@@ -152,7 +151,7 @@ public class AntStateMachine : DeathActionBehaviour
                 if ((smellable.IsActual && State == AntState.SeekingFood) || State == AntState.ReturningToFood)
                 {
                     TargetSelector.ResetMaxPriority();
-                    FoodHandler.RememberNearbyFood(smellable.GetComponent<Food>());
+                    FoodTracker.RememberNearbyFood(smellable.GetComponent<Food>());
                 }
                 switch (State)
                 {
@@ -198,7 +197,7 @@ public class AntStateMachine : DeathActionBehaviour
                     return;
                 }
                 var canPickUpFoodFromThisState = State == AntState.SeekingFood || State == AntState.ReturningToFood || State == AntState.ReturningHome;
-                if (FoodHandler.IsSmallQuantityOfFood && canPickUpFoodFromThisState && this.CarriedObjectHandler != null)
+                if (FoodTracker.IsSmallQuantityOfFood && canPickUpFoodFromThisState && this.CarriedObjectHandler != null)
                 {
                     CollectKnownFood(smellable);
                     _disableTrail = true;
@@ -266,7 +265,7 @@ public class AntStateMachine : DeathActionBehaviour
         TargetSelector.ResetMaxPriority();
         TargetSelector.ClearTarget();
         TargetSelector.RegisterPotentialTarget(LastTrailDroppedPoint, "Collected smell");
-        FoodHandler.UpdateTrailValueForKnownFood();
+        FoodTracker.UpdateTrailValueForKnownFood();
 
         if (this.CarriedObjectHandler != null)
         {
@@ -276,7 +275,7 @@ public class AntStateMachine : DeathActionBehaviour
 
     private void ReportFoodWithoutCarryingIt(Smellable smellable)
     {
-        FoodHandler.UpdateTrailValueForKnownFood();
+        FoodTracker.UpdateTrailValueForKnownFood();
         State = AntState.ReportingFood;
         TargetSelector.ResetMaxPriority();
         _disableTrail = false;
