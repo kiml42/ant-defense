@@ -15,7 +15,7 @@ public class HealthController : MonoBehaviour
     public void Heal(float additionalHealth)
     {
         this._currentHealth = Mathf.Min(this.MaxHealth, this.CurrentHealth + additionalHealth);
-        this.UpdateBar();
+        this.ShowDamage();
     }
 
     public void Injure(float lostHealth)
@@ -26,7 +26,7 @@ public class HealthController : MonoBehaviour
             this.Die();
             return;
         }
-        this.UpdateBar();
+        this.ShowDamage();
     }
 
     private void Die()
@@ -39,7 +39,7 @@ public class HealthController : MonoBehaviour
         }
     }
 
-    private void UpdateBar()
+    private void ShowDamage()
     {
         if (this.HealthBar != null)
         {
