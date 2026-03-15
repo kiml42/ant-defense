@@ -8,7 +8,7 @@ public class HealthController : MonoBehaviour
 
     private float CurrentHealth => this._currentHealth ?? this.MaxHealth;
 
-    public ProgressBar[] HealthIndicators;
+    public ProgressIndicatorBehaviour[] HealthIndicators;
 
     public float Damage => this.MaxHealth - this.CurrentHealth;
 
