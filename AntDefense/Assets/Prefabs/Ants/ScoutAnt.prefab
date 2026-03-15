@@ -479,7 +479,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHealth: 3
-  HealthBar: {fileID: 8312450896073184057}
+  HealthIndicators:
+  - {fileID: 8312450896073184057}
 --- !u!114 &1805795825312131026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -576,7 +577,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9ce4e22350df4a479c3a9c786f3bf70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CarryPoint: {fileID: 4482761779144621289}
   LimitForReporitingOnly: 50
 --- !u!1 &1992728922116126997
 GameObject:
