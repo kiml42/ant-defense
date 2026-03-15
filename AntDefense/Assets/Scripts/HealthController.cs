@@ -8,7 +8,7 @@ public class HealthController : MonoBehaviour
 
     private float CurrentHealth => this._currentHealth ?? this.MaxHealth;
 
-    public ProgressBar HealthBar;
+    public ProgressBar[] HealthIndicators;
 
     public float Damage => this.MaxHealth - this.CurrentHealth;
 
@@ -41,9 +41,12 @@ public class HealthController : MonoBehaviour
 
     private void ShowDamage()
     {
-        if (this.HealthBar != null)
+        if (this.HealthIndicators != null)
         {
-            this.HealthBar.AdjustProgress(this.CurrentHealth, this.MaxHealth);
+            foreach (var indicator in this.HealthIndicators)
+            {
+                indicator.AdjustProgress(this.CurrentHealth, this.MaxHealth);
+            }
         }
     }
 }
