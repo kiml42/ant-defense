@@ -69,6 +69,9 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
     {
         private readonly ISelectableObject _pointObject;
 
+        public bool IsAlive => (UnityEngine.Object)_pointObject != null;
+        public bool IsFor(ISelectableObject obj) => ReferenceEquals(this._pointObject, obj);
+
         public override bool IsWallToBuildOn => _pointObject.IsWallToBuildOn;
 
         public SelectionPoint(ISelectableObject point) : base(point.Position, PointType.SelectionPoint)
@@ -159,7 +162,7 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
 
         var pointsToCheck = transgressedZones.Select(z => GetClosestPointOnEdge(position, z, PointType.Corrected)).ToList();
         pointsToCheck.AddRange(_intersectionPoints.Where(p => p.IsOnEdge == true));
-        pointsToCheck.AddRange(SelectionPoints);
+        pointsToCheck.AddRange(SelectionPoints.Where(p => p.IsAlive));
 
         foreach (var point in pointsToCheck)
         {
@@ -372,6 +375,11 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
     internal static void Register(ISelectableObject point)
     {
         SelectionPoints.Add(new SelectionPoint(point));
+    }
+
+    internal static void Unregister(ISelectableObject point)
+    {
+        SelectionPoints.RemoveAll(p => p.IsFor(point));
     }
 
     private class IntersectionPoint : AdjustedPoint

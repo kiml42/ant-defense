@@ -5,12 +5,16 @@ public class RiseUpBuildAnimation : BaseBuildAnimation
 {
     public Vector3 StartOffset;
     private Vector3 EndPosition;
+    private bool _endPositionCaptured = false;
 
     protected override void Initilise()
     {
-        //Debug.Log($"Initilise location = {this.transform.localPosition}");
-        var localPosition = this.transform.localPosition;
-        this.EndPosition = localPosition;
+        if (!this._endPositionCaptured)
+        {
+            //Debug.Log($"Initilise location = {this.transform.localPosition}");
+            this.EndPosition = this.transform.localPosition;
+            this._endPositionCaptured = true;
+        }
     }
 
     protected override void UpdateAnimation()
@@ -51,8 +55,10 @@ public abstract class  BaseBuildAnimation : DeathActionBehaviour
     {
         this.Initilise();
         this._isRunning = true;
+        this._hasDied = false;
         this._progress = 0;
         this.UpdateAnimation();
+        enabled = true;
     }
 
     protected abstract void Initilise();

@@ -111,6 +111,13 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
             return;
         }
 
+        if (ObjectPlacer.Instance.WallNodeBeingPlaced != null
+            && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode == null)  // placing a disconnected wall node
+        {
+            ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
+            return;
+        }
+
         if (
             ObjectPlacer.Instance.WallNodeBeingPlaced != null                   // A wall node is being placed
             && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null  // It is connected to something
@@ -124,13 +131,9 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
             if (placedObject != null)   // may not be able to place the object (e.g. too expensive), so do nothing.
             {
                 placedObject.GetComponent<WallNode>().RemoveNode();
+                ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
             }
-            return;
         }
-
-        if(!ObjectPlacer.Instance.IsPlacingObject || (ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null))
-            // not currently placing a wall node, or the wall node being placed is not yet connected to another node, so start placing a new wall node connected to this one.
-            ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
     }
 
     /// <summary>

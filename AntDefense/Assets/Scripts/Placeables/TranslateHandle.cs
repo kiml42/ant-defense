@@ -70,8 +70,11 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
 
         if (Input.GetMouseButtonUp(this.PlaceMouseButton))
         {
-            this.DeselectObjects();
-            this.ActivatePoint();
+            if (!this.TryActivateSelectionActionButton())
+            {
+                this.DeselectObjects();
+                this.ActivatePoint();
+            }
         }
 
         this.HandleMousePosition();
@@ -229,13 +232,27 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit, 500, this.UiLayermask, QueryTriggerInteraction.Collide))
         {
-            var quickBarButton = hit.transform.GetComponentInParent<QuickBarButton>();
-            this._mouseOverQuickBarButton = quickBarButton != null;
+            this._mouseOverQuickBarButton = hit.transform.GetComponentInParent<ClickableButton>() != null;
         }
         else
         {
             this._mouseOverQuickBarButton = false;
         }
+    }
+
+    private bool TryActivateSelectionActionButton()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out var hit, 500, this.UiLayermask, QueryTriggerInteraction.Collide))
+        {
+            var button = hit.transform.GetComponentInParent<SelectionActionButton>();
+            if (button != null)
+            {
+                button.Execute();
+                return true;
+            }
+        }
+        return false;
     }
 
     private void UpdateHandleVisibility()
@@ -286,7 +303,7 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
         }
     }
 
-    private void DeselectObjects()
+    public void DeselectObjects()
     {
         this.DestroyHighlightInstance();
         if (this._selectedObject != null)

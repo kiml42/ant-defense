@@ -37,7 +37,7 @@ public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehavi
         // this is the top-level selectable
         this.OnSelect();
 
-        var children = this.GetComponentsInChildren<SelectableGhostableMonoBehaviour>();
+        var children = this.GetComponentsInChildren<SelectableGhostableMonoBehaviour>(includeInactive: true);
         foreach (var child in children)
         {
             if (child != this)
@@ -64,7 +64,7 @@ public abstract class SelectableGhostableMonoBehaviour : BaseGhostableMonobehavi
         // this is the top-level selectable
         this.OnDeselect();
 
-        var children = this.GetComponentsInChildren<SelectableGhostableMonoBehaviour>();
+        var children = this.GetComponentsInChildren<SelectableGhostableMonoBehaviour>(includeInactive: true);
         foreach (var child in children)
         {
             if (child != this)
