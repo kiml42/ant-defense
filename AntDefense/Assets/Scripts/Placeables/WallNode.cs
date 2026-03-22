@@ -125,12 +125,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
             {
                 placedObject.GetComponent<WallNode>().RemoveNode();
             }
-            return;
         }
-
-        if(!ObjectPlacer.Instance.IsPlacingObject || (ObjectPlacer.Instance.WallNodeBeingPlaced != null && ObjectPlacer.Instance.WallNodeBeingPlaced.ConnectedNode != null))
-            // not currently placing a wall node, or the wall node being placed is not yet connected to another node, so start placing a new wall node connected to this one.
-            ObjectPlacer.Instance.StartPlacingWallConnectedTo(this);
     }
 
     /// <summary>
