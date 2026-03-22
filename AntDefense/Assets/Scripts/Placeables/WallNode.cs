@@ -106,6 +106,12 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
                 newObject.WallParent = this;
 
+                float wallDuration = 0f;
+                foreach (var anim in this.GetComponentsInChildren<BaseBuildAnimation>())
+                    wallDuration = Mathf.Max(wallDuration, anim.Duration);
+                foreach (var anim in newObject.GetComponentsInChildren<BaseBuildAnimation>())
+                    anim.AddStartDelay(wallDuration);
+
                 this.Deselect();
             }
             return;

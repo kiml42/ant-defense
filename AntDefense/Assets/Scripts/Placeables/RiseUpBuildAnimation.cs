@@ -57,8 +57,18 @@ public abstract class  BaseBuildAnimation : DeathActionBehaviour
         this._isRunning = true;
         this._hasDied = false;
         this._progress = 0;
+        this._delayTimer = 0;
         this.UpdateAnimation();
         enabled = true;
+    }
+
+    /// <summary>
+    /// Pushes the animation start back by <paramref name="delay"/> seconds.
+    /// Must be called after StartAnimation.
+    /// </summary>
+    public void AddStartDelay(float delay)
+    {
+        this._delayTimer -= delay;
     }
 
     protected abstract void Initilise();
