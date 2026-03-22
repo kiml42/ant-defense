@@ -162,7 +162,13 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
 
         var pointsToCheck = transgressedZones.Select(z => GetClosestPointOnEdge(position, z, PointType.Corrected)).ToList();
         pointsToCheck.AddRange(_intersectionPoints.Where(p => p.IsOnEdge == true));
-        pointsToCheck.AddRange(SelectionPoints.Where(p => p.IsAlive));
+
+        bool snapToWallNodes = ObjectPlacer.Instance != null
+            && (!ObjectPlacer.Instance.IsPlacingObject
+                || ObjectPlacer.Instance.WallNodeBeingPlaced != null
+                || ObjectPlacer.Instance.CanBuildOnWall);
+        if (snapToWallNodes)
+            pointsToCheck.AddRange(SelectionPoints.Where(p => p.IsAlive));
 
         foreach (var point in pointsToCheck)
         {
