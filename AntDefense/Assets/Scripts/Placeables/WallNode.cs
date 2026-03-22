@@ -97,20 +97,28 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
         if (ObjectPlacer.Instance.CanBuildOnWall && this._child == null)
         {
+            // Calculate wall duration before placing the child, so the turret isn't a child yet.
+            float wallDuration = 0f;
+            foreach (var anim in this.GetComponentsInChildren<BaseBuildAnimation>())
+                wallDuration = Mathf.Max(wallDuration, anim.Duration);
+
             // The object can be placed on a wall, and this wall can have an object placed on top of it.
             // Place the object on this wall, and set this wall as the parent.
             var newObject = ObjectPlacer.Instance.PlaceObject(this);
             if(newObject != null)   // new object will be null if it can't be placed (e.g. too expensive)
             {
                 this._child = newObject.GetComponent<SelectableGhostableMonoBehaviour>();
-
                 newObject.WallParent = this;
 
-                float wallDuration = 0f;
-                foreach (var anim in this.GetComponentsInChildren<BaseBuildAnimation>())
-                    wallDuration = Mathf.Max(wallDuration, anim.Duration);
-                foreach (var anim in newObject.GetComponentsInChildren<BaseBuildAnimation>())
-                    anim.AddStartDelay(wallDuration);
+                if (wallDuration > 0f)
+                {
+                    foreach (var anim in newObject.GetComponentsInChildren<BaseBuildAnimation>())
+                        anim.AddStartDelay(wallDuration);
+
+                    newObject.gameObject.AddComponent<GhostUntilBuildAnimationStart>();
+                    foreach (var ghostable in newObject.GetComponentsInChildren<BaseGhostableMonobehaviour>(includeInactive: true))
+                        ghostable.Ghostify();
+                }
 
                 this.Deselect();
             }

@@ -258,6 +258,7 @@ GameObject:
   - component: {fileID: -9012147323840322498}
   - component: {fileID: 6453981498242109298}
   - component: {fileID: 5082983854264493738}
+  - component: {fileID: -8650259402686695788}
   m_Layer: 0
   m_Name: PeaShooter
   m_TagString: Player
@@ -354,6 +355,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Sellable
   SellValue: 0
+--- !u!114 &-8650259402686695788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1834373357261692949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 205e1ac66d51c264686a6be8fed9858a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostUntilBuildAnimationStart
 --- !u!1 &3289086478874433627
 GameObject:
   m_ObjectHideFlags: 0
