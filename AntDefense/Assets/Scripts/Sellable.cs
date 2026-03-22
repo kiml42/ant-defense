@@ -6,6 +6,7 @@ public class Sellable : MonoBehaviour
 
     public void Sell()
     {
+        TranslateHandle.Instance.DeselectObjects();
         MoneyTracker.Earn(this.SellValue);
 
         float destroyDelay = 0f;

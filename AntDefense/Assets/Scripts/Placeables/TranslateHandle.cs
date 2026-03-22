@@ -303,7 +303,7 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
         }
     }
 
-    private void DeselectObjects()
+    public void DeselectObjects()
     {
         this.DestroyHighlightInstance();
         if (this._selectedObject != null)
