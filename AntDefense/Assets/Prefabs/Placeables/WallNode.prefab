@@ -326,6 +326,7 @@ MonoBehaviour:
   MaxHealth: 120
   HealthIndicators:
   - {fileID: 2787060379202377622}
+  - {fileID: 5260719727157488304}
 --- !u!1 &3476161968164061267
 GameObject:
   m_ObjectHideFlags: 0
@@ -394,6 +395,7 @@ MonoBehaviour:
   MaxHealth: 120
   HealthIndicators:
   - {fileID: 949351232848168074}
+  - {fileID: 6819999521266004232}
 --- !u!114 &3963066099262168501
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -513,6 +515,7 @@ GameObject:
   - component: {fileID: 1039662210768527803}
   - component: {fileID: 7650473417551848698}
   - component: {fileID: 4287356509228269367}
+  - component: {fileID: 5260719727157488304}
   m_Layer: 0
   m_Name: WallGeometry
   m_TagString: Untagged
@@ -675,6 +678,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HealthController
   MaxHealth: 10
   HealthIndicators: []
+--- !u!114 &5260719727157488304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4529891399528907297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c4423150ff425143bdad79efc3e176e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TintingProgressIndicator
+  Tint: {r: 0, g: 0, b: 0, a: 0}
+  TintPoint: 0
+  NormalPoint: 1
 --- !u!1 &5055690365835478866
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,6 +799,7 @@ GameObject:
   - component: {fileID: 5288493037615253632}
   - component: {fileID: 2859469740872691902}
   - component: {fileID: 112183878567665827}
+  - component: {fileID: 6819999521266004232}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -945,6 +964,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HealthController
   MaxHealth: 10
   HealthIndicators: []
+--- !u!114 &6819999521266004232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5634726112598461944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c4423150ff425143bdad79efc3e176e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TintingProgressIndicator
+  Tint: {r: 0, g: 0, b: 0, a: 0}
+  TintPoint: 0
+  NormalPoint: 1
 --- !u!1 &6148484922465968118
 GameObject:
   m_ObjectHideFlags: 0

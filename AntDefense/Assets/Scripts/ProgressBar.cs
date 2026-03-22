@@ -1,19 +1,7 @@
 using UnityEngine;
 
-public abstract class ProgressIndicatorBehaviour : MonoBehaviour
-{
-    public abstract void AdjustProgress(float currentValue, float MaxValue);
-
-    public abstract void AdjustProgress(float progress);
-}
-
 public class ProgressBar : ProgressIndicatorBehaviour
 {
-    public override void AdjustProgress(float currentValue, float MaxValue)
-    {
-        this.AdjustProgress(currentValue / MaxValue);
-    }
-
     public override void AdjustProgress(float progress)
     {
         this.transform.localScale = progress > 0
