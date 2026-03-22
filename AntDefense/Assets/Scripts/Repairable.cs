@@ -15,7 +15,15 @@ public class Repairable : MonoBehaviour
         if (this.Health == null) return;
         var cost = this.RepairCost;
         if (!MoneyTracker.CanAfford(cost)) return;
+
+        bool wasDestroyed = this.Health.Damage >= this.Health.MaxHealth;
         MoneyTracker.Spend(cost);
         this.Health.Heal(this.Health.Damage);
+
+        if (wasDestroyed)
+        {
+            foreach (var anim in this.GetComponentsInChildren<BaseBuildAnimation>())
+                anim.StartAnimation();
+        }
     }
 }
