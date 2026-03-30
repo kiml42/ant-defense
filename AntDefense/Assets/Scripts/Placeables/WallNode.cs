@@ -5,7 +5,7 @@ using UnityEngine;
 public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePositionValidator, ISelectableObject
 {
     public WallNode ConnectedNode;
-    public Transform Wall;
+    public Transform WallStump;
     public Transform Node;
     public float MaxLength;
 
@@ -84,7 +84,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
             Instantiate(this.SectionPrefab, pos, rotation, this.transform);
         }
 
-        this.Wall.gameObject.SetActive(false);
+        this.WallStump.gameObject.SetActive(false);
     }
 
     internal void ConnectTo(WallNode other)
@@ -107,7 +107,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
     private void UpdateWall()
     {
         //TODO - move the health bar to over the middle of the wall.
-        Debug.Assert(this.Wall != null, "WallNode has no Wall assigned.");
+        Debug.Assert(this.WallStump != null, "WallNode has no Wall assigned.");
         //Debug.Log("Updating WallNode. Connected to " + ConnectedNode);
         if (this.ConnectedNode != null)
         {
@@ -115,13 +115,13 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
             if (direction.magnitude > 0.01f)
             {
                 var midpoint = this.transform.position + (direction * 0.5f);
-                this.Wall.position = midpoint;
-                this.Wall.localScale = new Vector3(1, 1, direction.magnitude);
-                this.Wall.rotation = Quaternion.LookRotation(direction, Vector3.up);
+                this.WallStump.position = midpoint;
+                this.WallStump.localScale = new Vector3(1, 1, direction.magnitude);
+                this.WallStump.rotation = Quaternion.LookRotation(direction, Vector3.up);
                 return;
             }
         }
-        this.Wall.localScale = Vector3.zero;
+        this.WallStump.localScale = Vector3.zero;
     }
 
     protected override void OnSelect()

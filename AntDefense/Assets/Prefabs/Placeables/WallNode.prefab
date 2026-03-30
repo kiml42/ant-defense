@@ -730,7 +730,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ConnectedNode: {fileID: 0}
-  Wall: {fileID: 1347924309845364681}
+  WallStump: {fileID: 1347924309845364681}
   Node: {fileID: 5782363422508442936}
   MaxLength: 50
   CostPerMeter: 1
