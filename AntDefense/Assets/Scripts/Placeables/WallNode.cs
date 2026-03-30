@@ -85,7 +85,9 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
         for (int i = 0; i < sectionCount; i++)
         {
             Vector3 pos = start + (halfGap + (i + 0.5f) * this.SectionLength) * dirNorm;
-            Instantiate(this.SectionPrefab, pos, rotation, this.transform);
+            var section = Instantiate(this.SectionPrefab, pos, rotation, this.transform);
+
+            // TODO make the section animate building.
         }
 
         if (halfGap > 0.001f && this.StumpPrefab != null)
