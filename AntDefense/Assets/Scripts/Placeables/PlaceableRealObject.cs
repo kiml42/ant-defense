@@ -26,6 +26,10 @@ public class PlaceableRealObject : PlaceableObjectOrGhost
             //Debug.Log("Unghostifying " + ghostable);
             ghostable.UnGhostify();
         }
+        foreach (var placeable in this.GetComponents<PlaceableSelectableGhostableMonoBehaviour>())
+        {
+            placeable.OnBuildStart();
+        }
         if(this.ObjectToDeselectWhenPlaced != null)
         {
             this.ObjectToDeselectWhenPlaced.Deselect();

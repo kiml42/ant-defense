@@ -52,12 +52,15 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
     public override Vector3 Position => this.transform.position;
 
+    public override void OnBuildStart()
+    {
+        this.SpawnSections();
+        this.enabled = false;   // disable to prevent UpdateWallGhost() asserting on the destroyed ghost
+    }
+
     public override void OnPlace()
     {
-        this.UpdateWallGhost();
-        this.SpawnSections();
-        this.enabled = false;   //disable to prevent updating the wall every frame
-        NoSpawnZone.Register(this); // register this as a selection point
+        NoSpawnZone.Register(this);
     }
 
     private void SpawnSections()
@@ -226,7 +229,12 @@ public abstract class PlaceableSelectableGhostableMonoBehaviour : SelectableGhos
     public virtual float AdditionalCost => 0f;
 
     /// <summary>
-    /// Called when the object is placed to start whatever spawn behaviour it has defined.
+    /// Called at the moment the object is placed (when the build animation begins).
+    /// </summary>
+    public virtual void OnBuildStart() { }
+
+    /// <summary>
+    /// Called when the object finishes being built (after the build animation completes).
     /// </summary>
     public abstract void OnPlace();
 }
