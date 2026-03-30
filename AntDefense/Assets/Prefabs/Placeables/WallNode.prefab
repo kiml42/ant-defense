@@ -892,7 +892,7 @@ MonoBehaviour:
   MaxHealth: 120
   HealthIndicators:
   - {fileID: 6819999521266004232}
-  - {fileID: 5260719727157488304}
+  - {fileID: 0}
 --- !u!114 &3963066099262168501
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -944,11 +944,6 @@ GameObject:
   - component: {fileID: 7470243927961247771}
   - component: {fileID: 6018007928291524577}
   - component: {fileID: 5712758428748713101}
-  - component: {fileID: 2395402121732242385}
-  - component: {fileID: 1039662210768527803}
-  - component: {fileID: 7650473417551848698}
-  - component: {fileID: 4287356509228269367}
-  - component: {fileID: 5260719727157488304}
   m_Layer: 0
   m_Name: WallGeometry
   m_TagString: Untagged
@@ -1004,7 +999,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e47d00c3dc5220a4f9d7ac5acf62369e, type: 2}
+  - {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1049,83 +1044,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2395402121732242385
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4529891399528907297}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 808a9ed0a4c799245adda16d685b0ffe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GhostMaterial: {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
-  OriginalMaterial: {fileID: 0}
-  Renderer: {fileID: 6018007928291524577}
---- !u!114 &1039662210768527803
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4529891399528907297}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4e3d991e298cbf4ebe5e5aeebbca84e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  Duration: 3
-  DeathAnimationDuration: 1
-  StartDelay: 0.5
-  ReverseOnDeath: 1
-  StartOffset: {x: 0, y: -2.2, z: 0}
---- !u!114 &7650473417551848698
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4529891399528907297}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41fa956728f9dc8459bd091749fb823f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ImpactDamageHandler
-  ResistanceImpulse: 15
-  DamagePerUnitImpulse: 0.2
-  HealthController: {fileID: 2837045977547282873}
-  Ouch: {fileID: 3480258754935908128, guid: a001eae3c1a837f4ebaf9a17d2c175ed, type: 3}
---- !u!114 &4287356509228269367
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4529891399528907297}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2abdf667d98ed945a87f8153b6967e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthController
-  MaxHealth: 10
-  HealthIndicators: []
---- !u!114 &5260719727157488304
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4529891399528907297}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c4423150ff425143bdad79efc3e176e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TintingProgressIndicator
-  Tint: {r: 0.38431373, g: 0.14509805, b: 0.13333334, a: 0}
-  TintPoint: 0
-  NormalPoint: 1
 --- !u!1 &4905828061972249742
 GameObject:
   m_ObjectHideFlags: 0
@@ -1568,7 +1486,6 @@ GameObject:
   - component: {fileID: 1406079791709674247}
   - component: {fileID: 6362116471079575269}
   - component: {fileID: 9108290167319995534}
-  - component: {fileID: 2713515833197474066}
   m_Layer: 0
   m_Name: WallFoot
   m_TagString: Untagged
@@ -1624,7 +1541,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e47d00c3dc5220a4f9d7ac5acf62369e, type: 2}
+  - {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1648,21 +1565,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &2713515833197474066
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8126956777207597614}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 808a9ed0a4c799245adda16d685b0ffe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GhostMaterial: {fileID: 2100000, guid: 039c2f15d7b18454f8e3758e5defac0a, type: 2}
-  OriginalMaterial: {fileID: 0}
-  Renderer: {fileID: 9108290167319995534}
 --- !u!1 &8695381186053062238
 GameObject:
   m_ObjectHideFlags: 0
