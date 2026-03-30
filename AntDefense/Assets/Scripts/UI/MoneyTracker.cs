@@ -5,7 +5,7 @@ public class MoneyTracker : NumberTracker<MoneyTracker>
     public float InitialMoney = 100f;
     public float IncomePerSecond = 0.1f;
 
-    public override string FormattedValue => $"�{CurrentValue:F2}";
+    public override string FormattedValue => $"£{CurrentValue:F2}";
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

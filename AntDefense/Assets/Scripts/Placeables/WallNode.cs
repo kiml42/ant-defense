@@ -5,7 +5,7 @@ using UnityEngine;
 public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePositionValidator, ISelectableObject
 {
     public WallNode ConnectedNode;
-    public Transform WallStump;
+    public Transform WallGhost;
     public Transform Node;
     public float MaxLength;
 
@@ -13,9 +13,10 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
     private SelectableGhostableMonoBehaviour _child;
 
     public GameObject SectionPrefab;
+    public GameObject StumpPrefab;
     /// <summary>
     /// Length of each wall section in world units. The total number of sections is floor(distance / SectionLength).
-    /// Any remaining distance is left as a gap for now.
+    /// Any remaining distance is covered by a stump at each node end.
     /// </summary>
     public float SectionLength = 1f;
 
@@ -53,7 +54,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
     public override void OnPlace()
     {
-        this.UpdateWall();
+        this.UpdateWallGhost();
         this.SpawnSections();
         this.enabled = false;   //disable to prevent updating the wall every frame
         NoSpawnZone.Register(this); // register this as a selection point
@@ -84,14 +85,21 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
             Instantiate(this.SectionPrefab, pos, rotation, this.transform);
         }
 
-        this.WallStump.gameObject.SetActive(false);
+        if (halfGap > 0.001f && this.StumpPrefab != null)
+        {
+            var stump = Instantiate(this.StumpPrefab, start + (halfGap / 2f) * dirNorm, rotation, this.transform);
+            stump.transform.localScale = new Vector3(1, 1, halfGap);
+        }
+
+        Debug.Log("Destroying the wall ghost");
+        Destroy(this.WallGhost.gameObject);
     }
 
     internal void ConnectTo(WallNode other)
     {
         //Debug.Log("Connecting WallNode to " + other);
         this.ConnectedNode = other;
-        this.UpdateWall();
+        this.UpdateWallGhost();
     }
 
     public bool PositionIsValid(Vector3 position)
@@ -101,13 +109,13 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
     private void Update()
     {
-        this.UpdateWall();
+        this.UpdateWallGhost();
     }
 
-    private void UpdateWall()
+    private void UpdateWallGhost()
     {
         //TODO - move the health bar to over the middle of the wall.
-        Debug.Assert(this.WallStump != null, "WallNode has no Wall assigned.");
+        Debug.Assert(this.WallGhost != null, "WallNode has no Wall Ghost assigned.");
         //Debug.Log("Updating WallNode. Connected to " + ConnectedNode);
         if (this.ConnectedNode != null)
         {
@@ -115,13 +123,13 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
             if (direction.magnitude > 0.01f)
             {
                 var midpoint = this.transform.position + (direction * 0.5f);
-                this.WallStump.position = midpoint;
-                this.WallStump.localScale = new Vector3(1, 1, direction.magnitude);
-                this.WallStump.rotation = Quaternion.LookRotation(direction, Vector3.up);
+                this.WallGhost.position = midpoint;
+                this.WallGhost.localScale = new Vector3(1, 1, direction.magnitude);
+                this.WallGhost.rotation = Quaternion.LookRotation(direction, Vector3.up);
                 return;
             }
         }
-        this.WallStump.localScale = Vector3.zero;
+        this.WallGhost.localScale = Vector3.zero;
     }
 
     protected override void OnSelect()
