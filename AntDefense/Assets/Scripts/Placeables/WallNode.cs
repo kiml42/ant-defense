@@ -12,6 +12,13 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
     public float CostPerMeter = 1f;
     private SelectableGhostableMonoBehaviour _child;
 
+    public GameObject SectionPrefab;
+    /// <summary>
+    /// Length of each wall section in world units. The total number of sections is floor(distance / SectionLength).
+    /// Any remaining distance is left as a gap for now.
+    /// </summary>
+    public float SectionLength = 1f;
+
     public bool IsWallToBuildOn => this._child == null;
 
     /// <summary>
@@ -47,8 +54,35 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
     public override void OnPlace()
     {
         this.UpdateWall();
+        this.SpawnSections();
         this.enabled = false;   //disable to prevent updating the wall every frame
         NoSpawnZone.Register(this); // register this as a selection point
+    }
+
+    private void SpawnSections()
+    {
+        if (this.ConnectedNode == null || this.SectionPrefab == null) return;
+
+        Vector3 start = this.transform.position;
+        Vector3 end = this.ConnectedNode.transform.position;
+        Vector3 direction = end - start;
+        float distance = direction.magnitude;
+
+        if (distance < 0.01f) return;
+
+        int sectionCount = Mathf.FloorToInt(distance / this.SectionLength);
+        if (sectionCount == 0) return;
+
+        Vector3 dirNorm = direction.normalized;
+        Quaternion rotation = Quaternion.LookRotation(dirNorm, Vector3.up);
+
+        for (int i = 0; i < sectionCount; i++)
+        {
+            Vector3 pos = start + (i + 0.5f) * this.SectionLength * dirNorm;
+            Instantiate(this.SectionPrefab, pos, rotation, this.transform);
+        }
+
+        this.Wall.gameObject.SetActive(false);
     }
 
     internal void ConnectTo(WallNode other)
