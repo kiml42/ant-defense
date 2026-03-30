@@ -735,7 +735,7 @@ MonoBehaviour:
   MaxLength: 50
   CostPerMeter: 1
   SectionPrefab: {fileID: 1834373357261692949, guid: c06b93488dc62e241a8b2456364acc44, type: 3}
-  SectionLength: 4
+  SectionLength: 5
 --- !u!114 &8092417670727731202
 MonoBehaviour:
   m_ObjectHideFlags: 0
