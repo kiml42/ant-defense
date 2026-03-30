@@ -18,7 +18,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
     /// Length of each wall section in world units. The total number of sections is floor(distance / SectionLength).
     /// Any remaining distance is covered by a stump at each node end.
     /// </summary>
-    public float SectionLength = 1f;
+    public float SectionLength => this.SectionPrefab.SectionLength;
 
     public bool IsWallToBuildOn => this._child == null;
 

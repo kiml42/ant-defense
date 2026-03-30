@@ -136,7 +136,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   EndNodes: []
   Cost: 1
-  SectionLength: 1
+  SectionLength: 4
 --- !u!1 &4529891399528907297
 GameObject:
   m_ObjectHideFlags: 0
