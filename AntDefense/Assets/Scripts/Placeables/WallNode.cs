@@ -76,9 +76,11 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
         Vector3 dirNorm = direction.normalized;
         Quaternion rotation = Quaternion.LookRotation(dirNorm, Vector3.up);
 
+        float halfGap = (distance - sectionCount * this.SectionLength) / 2f;
+
         for (int i = 0; i < sectionCount; i++)
         {
-            Vector3 pos = start + (i + 0.5f) * this.SectionLength * dirNorm;
+            Vector3 pos = start + (halfGap + (i + 0.5f) * this.SectionLength) * dirNorm;
             Instantiate(this.SectionPrefab, pos, rotation, this.transform);
         }
 
