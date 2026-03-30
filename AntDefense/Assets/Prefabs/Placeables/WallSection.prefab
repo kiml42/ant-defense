@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 380059699532123661}
   - component: {fileID: 4020537241223760462}
   - component: {fileID: 3594588177945191901}
+  - component: {fileID: 1706110702494142215}
   m_Layer: 0
   m_Name: WallSection
   m_TagString: Player
@@ -121,6 +122,18 @@ MonoBehaviour:
   DamagePerUnitImpulse: 0.2
   HealthController: {fileID: 0}
   Ouch: {fileID: 3480258754935908128, guid: a001eae3c1a837f4ebaf9a17d2c175ed, type: 3}
+--- !u!114 &1706110702494142215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1834373357261692949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81d647fb8992cc8419cb1cf48b506b06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &4529891399528907297
 GameObject:
   m_ObjectHideFlags: 0

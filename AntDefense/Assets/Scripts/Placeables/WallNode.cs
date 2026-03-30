@@ -12,7 +12,7 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
     public float CostPerMeter = 1f;
     private SelectableGhostableMonoBehaviour _child;
 
-    public GameObject SectionPrefab;
+    public WallSection SectionPrefab;
     public GameObject StumpPrefab;
     /// <summary>
     /// Length of each wall section in world units. The total number of sections is floor(distance / SectionLength).
