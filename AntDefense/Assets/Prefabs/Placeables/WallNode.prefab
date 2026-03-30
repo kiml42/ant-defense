@@ -714,7 +714,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7326354589473913043}
-  - {fileID: 1347924309845364681}
   - {fileID: 5782363422508442936}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -797,10 +796,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1347924309845364681}
-  - component: {fileID: 4534426401282437190}
-  - component: {fileID: 2805463838044641075}
   m_Layer: 0
-  m_Name: Wall
+  m_Name: WallStub
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -821,39 +818,8 @@ Transform:
   m_Children:
   - {fileID: 636286619638464923}
   - {fileID: 1406079791709674247}
-  m_Father: {fileID: 1489239274791151828}
+  m_Father: {fileID: 5782363422508442936}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4534426401282437190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2586961702934054646}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41fa956728f9dc8459bd091749fb823f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ImpactDamageHandler
-  ResistanceImpulse: 30
-  DamagePerUnitImpulse: 0.2
-  HealthController: {fileID: 2805463838044641075}
-  Ouch: {fileID: 3480258754935908128, guid: a001eae3c1a837f4ebaf9a17d2c175ed, type: 3}
---- !u!114 &2805463838044641075
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2586961702934054646}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2abdf667d98ed945a87f8153b6967e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthController
-  MaxHealth: 120
-  HealthIndicators:
-  - {fileID: 5260719727157488304}
 --- !u!1 &3476161968164061267
 GameObject:
   m_ObjectHideFlags: 0
@@ -888,6 +854,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1347924309845364681}
   - {fileID: 8682232835320825726}
   - {fileID: 1893413522949566791}
   - {fileID: 4396860933733006496}
@@ -924,6 +891,7 @@ MonoBehaviour:
   MaxHealth: 120
   HealthIndicators:
   - {fileID: 6819999521266004232}
+  - {fileID: 5260719727157488304}
 --- !u!114 &3963066099262168501
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1126,7 +1094,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ImpactDamageHandler
   ResistanceImpulse: 15
   DamagePerUnitImpulse: 0.2
-  HealthController: {fileID: 2805463838044641075}
+  HealthController: {fileID: 2837045977547282873}
   Ouch: {fileID: 3480258754935908128, guid: a001eae3c1a837f4ebaf9a17d2c175ed, type: 3}
 --- !u!114 &4287356509228269367
 MonoBehaviour:

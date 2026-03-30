@@ -102,7 +102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2abdf667d98ed945a87f8153b6967e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthController
-  MaxHealth: 120
+  MaxHealth: 100
   HealthIndicators:
   - {fileID: 5260719727157488304}
 --- !u!114 &3594588177945191901
