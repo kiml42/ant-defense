@@ -134,6 +134,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81d647fb8992cc8419cb1cf48b506b06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  EndNodes: []
+  Cost: 1
+  SectionLength: 1
 --- !u!1 &4529891399528907297
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,7 +300,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ImpactDamageHandler
   ResistanceImpulse: 15
   DamagePerUnitImpulse: 0.2
-  HealthController: {fileID: 0}
+  HealthController: {fileID: 4020537241223760462}
   Ouch: {fileID: 3480258754935908128, guid: a001eae3c1a837f4ebaf9a17d2c175ed, type: 3}
 --- !u!114 &4287356509228269367
 MonoBehaviour:
