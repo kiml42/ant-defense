@@ -1,4 +1,4 @@
 ﻿<Solution>
   <Project Path="AntDefense.csproj" />
-  <Project Path="Tests.csproj" />
+  <Project Path="Tests.EditMode.csproj" />
 </Solution>
