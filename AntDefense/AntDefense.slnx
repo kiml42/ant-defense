@@ -1,3 +1,5 @@
 ﻿<Solution>
-  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="AntDefense.csproj" />
+  <Project Path="Tests.EditMode.csproj" />
+  <Project Path="PlayMode.csproj" />
 </Solution>

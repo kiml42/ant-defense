@@ -8,22 +8,22 @@ MonoBehaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
-  m_EditorHideFlags: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 12004, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: UnityEditor.dll::UnityEditor.ContainerWindow
   m_PixelRect:
     serializedVersion: 2
-    x: 0
-    y: 43.2
-    width: 1536
-    height: 868.8
+    x: 1
+    y: 51
+    width: 1918
+    height: 1100
   m_ShowMode: 4
-  m_Title: Hierarchy
+  m_Title: Test Runner
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
-  m_Maximized: 1
+  m_Maximized: 0
 --- !u!114 &2
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -43,12 +43,12 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 36
-    width: 1536
-    height: 812.8
+    width: 1918
+    height: 1044
   m_MinSize: {x: 300, y: 112}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 16
+  controlID: 125
   draggingID: 0
 --- !u!114 &3
 MonoBehaviour:
@@ -65,10 +65,10 @@ MonoBehaviour:
   m_Children: []
   m_Position:
     serializedVersion: 2
-    x: 1132.8
+    x: 1415
     y: 0
-    width: 403.19995
-    height: 812.8
+    width: 503
+    height: 1044
   m_MinSize: {x: 276, y: 76}
   m_MaxSize: {x: 4001, y: 4026}
   m_ActualView: {fileID: 15}
@@ -93,8 +93,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 308.8
-    height: 519.2
+    width: 386
+    height: 666
   m_MinSize: {x: 201, y: 226}
   m_MaxSize: {x: 4001, y: 4026}
   m_ActualView: {fileID: 16}
@@ -118,9 +118,9 @@ MonoBehaviour:
   m_Position:
     serializedVersion: 2
     x: 0
-    y: 519.2
-    width: 1132.8
-    height: 293.59998
+    y: 666
+    width: 1415
+    height: 378
   m_MinSize: {x: 231, y: 276}
   m_MaxSize: {x: 10001, y: 10026}
   m_ActualView: {fileID: 14}
@@ -149,8 +149,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1536
-    height: 868.8
+    width: 1918
+    height: 1100
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
   m_UseTopView: 1
@@ -174,7 +174,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1536
+    width: 1918
     height: 36
   m_MinSize: {x: 50, y: 50}
   m_MaxSize: {x: 4000, y: 4000}
@@ -195,8 +195,8 @@ MonoBehaviour:
   m_Position:
     serializedVersion: 2
     x: 0
-    y: 848.8
-    width: 1536
+    y: 1080
+    width: 1918
     height: 20
   m_MinSize: {x: 0, y: 0}
   m_MaxSize: {x: 0, y: 0}
@@ -219,12 +219,12 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1132.8
-    height: 812.8
+    width: 1415
+    height: 1044
   m_MinSize: {x: 200, y: 112}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 17
+  controlID: 212
   draggingID: 0
 --- !u!114 &10
 MonoBehaviour:
@@ -245,12 +245,12 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1132.8
-    height: 519.2
+    width: 1415
+    height: 666
   m_MinSize: {x: 200, y: 56}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 18
+  controlID: 213
   draggingID: 0
 --- !u!114 &11
 MonoBehaviour:
@@ -262,24 +262,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: SceneView
+  m_Name: TestRunnerWindow
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
     serializedVersion: 2
-    x: 308.8
+    x: 386
     y: 0
-    width: 824.00006
-    height: 519.2
-  m_MinSize: {x: 202, y: 226}
+    width: 1029
+    height: 666
+  m_MinSize: {x: 52, y: 76}
   m_MaxSize: {x: 4002, y: 4026}
-  m_ActualView: {fileID: 17}
+  m_ActualView: {fileID: 13}
   m_Panes:
   - {fileID: 17}
   - {fileID: 19}
   - {fileID: 13}
-  m_Selected: 0
-  m_LastSelected: 1
+  m_Selected: 2
+  m_LastSelected: 0
 --- !u!114 &12
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -303,7 +303,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1536
+    width: 1918
     height: 36
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -568,10 +568,10 @@ MonoBehaviour:
     m_TextWithWhitespace: "Test Runner\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 386
-    y: 79
-    width: 1032
-    height: 543
+    x: 387
+    y: 24
+    width: 1027
+    height: 640
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -586,12 +586,12 @@ MonoBehaviour:
     m_OverlaysVisible: 1
     m_DynamicPanelBehavior: 0
   m_Spl:
-    ID: 147
+    ID: 254
     splitterInitialOffset: 0
     currentActiveSplitter: -1
     realSizes:
-    - 355
-    - 118
+    - 427
+    - 143
     relativeSizes:
     - 0.75
     - 0.25
@@ -601,7 +601,7 @@ MonoBehaviour:
     maxSizes:
     - 0
     - 0
-    lastTotalSize: 473
+    lastTotalSize: 570
     splitSize: 6
     xOffset: 0
     m_Version: 1
@@ -613,7 +613,7 @@ MonoBehaviour:
   m_TestListGUIs:
   - m_Window: {fileID: 13}
     runProgress:
-      RunGuid: 02b3b3b4-06e7-45de-a9e3-ae73dd5f4da7
+      RunGuid: c703e5bf-e09a-41cf-9836-b6509c1f21cb
       ExecutionSettings:
         m_TargetPlatform: 0
         m_HasTargetPlatform: 0
@@ -624,7 +624,7 @@ MonoBehaviour:
           categoryNames: []
           assemblyNames: []
         filters:
-        - testMode: 2
+        - testMode: 1
           testNames: []
           groupNames: []
           categoryNames: []
@@ -640,16 +640,16 @@ MonoBehaviour:
           disableNestedEnumeratorBugfix: 0
         randomOrderSeed: 0
       HasFinished: 1
-      Progress: 0.9999999
+      Progress: 0.99999976
       CurrentStepName: Unlock Reload Assemblies
       CurrentStageName: 
     m_NewResultList:
-    - id: 1000
+    - id: 1003
       uniqueId: '[AntDefense][suite]'
       name: AntDefense
       fullName: AntDefense
-      resultStatus: 0
-      duration: 0
+      resultStatus: 1
+      duration: 0.023747101
       messages: 
       output: 
       stacktrace: 
@@ -660,13 +660,349 @@ MonoBehaviour:
       categories: []
       parentId: 
       parentUniqueId: 
-    m_ResultText: 
+    - id: 1023
+      uniqueId: '[Tests.EditMode][C:/Projects/ant-defense/AntDefense/Library/ScriptAssemblies/Tests.EditMode.dll][suite]'
+      name: Tests.EditMode.dll
+      fullName: C:/Projects/ant-defense/AntDefense/Library/ScriptAssemblies/Tests.EditMode.dll
+      resultStatus: 1
+      duration: 0.023747101
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1029
+      parentUniqueId: '[AntDefense][suite]'
+    - id: 1004
+      uniqueId: 'Tests.EditMode.dll/[Tests.EditMode][DigesionTests][suite]'
+      name: DigesionTests
+      fullName: DigesionTests
+      resultStatus: 1
+      duration: 0.016460901
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1023
+      parentUniqueId: '[Tests.EditMode][C:/Projects/ant-defense/AntDefense/Library/ScriptAssemblies/Tests.EditMode.dll][suite]'
+    - id: 1007
+      uniqueId: 'Tests.EditMode.dll/DigesionTests/[Tests.EditMode][DigesionTests.AddAndUseFoodAreSymmetric]'
+      name: AddAndUseFoodAreSymmetric
+      fullName: DigesionTests.AddAndUseFoodAreSymmetric
+      resultStatus: 1
+      duration: 0.0136513
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1004
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][DigesionTests][suite]'
+    - id: 1005
+      uniqueId: 'Tests.EditMode.dll/DigesionTests/[Tests.EditMode][DigesionTests.AddFoodIncreasesCurrentFood]'
+      name: AddFoodIncreasesCurrentFood
+      fullName: DigesionTests.AddFoodIncreasesCurrentFood
+      resultStatus: 1
+      duration: 0.0003769
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1004
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][DigesionTests][suite]'
+    - id: 1008
+      uniqueId: 'Tests.EditMode.dll/DigesionTests/[Tests.EditMode][DigesionTests.UseFoodCanGoBelowZero]'
+      name: UseFoodCanGoBelowZero
+      fullName: DigesionTests.UseFoodCanGoBelowZero
+      resultStatus: 1
+      duration: 0.0022058
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1004
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][DigesionTests][suite]'
+    - id: 1006
+      uniqueId: 'Tests.EditMode.dll/DigesionTests/[Tests.EditMode][DigesionTests.UseFoodDecreasesCurrentFood]'
+      name: UseFoodDecreasesCurrentFood
+      fullName: DigesionTests.UseFoodDecreasesCurrentFood
+      resultStatus: 1
+      duration: 0.0002269
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1004
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][DigesionTests][suite]'
+    - id: 1009
+      uniqueId: 'Tests.EditMode.dll/[Tests.EditMode][HealthControllerTests][suite]'
+      name: HealthControllerTests
+      fullName: HealthControllerTests
+      resultStatus: 1
+      duration: 0.0052554
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1023
+      parentUniqueId: '[Tests.EditMode][C:/Projects/ant-defense/AntDefense/Library/ScriptAssemblies/Tests.EditMode.dll][suite]'
+    - id: 1016
+      uniqueId: 'Tests.EditMode.dll/HealthControllerTests/[Tests.EditMode][HealthControllerTests.DeathDoesNotThrowWithNoDeathActions]'
+      name: DeathDoesNotThrowWithNoDeathActions
+      fullName: HealthControllerTests.DeathDoesNotThrowWithNoDeathActions
+      resultStatus: 1
+      duration: 0.0023183
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1009
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][HealthControllerTests][suite]'
+    - id: 1015
+      uniqueId: 'Tests.EditMode.dll/HealthControllerTests/[Tests.EditMode][HealthControllerTests.FullHealClearsDamage]'
+      name: FullHealClearsDamage
+      fullName: HealthControllerTests.FullHealClearsDamage
+      resultStatus: 1
+      duration: 0.0006175
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1009
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][HealthControllerTests][suite]'
+    - id: 1013
+      uniqueId: 'Tests.EditMode.dll/HealthControllerTests/[Tests.EditMode][HealthControllerTests.HealCannotExceedMaxHealth]'
+      name: HealCannotExceedMaxHealth
+      fullName: HealthControllerTests.HealCannotExceedMaxHealth
+      resultStatus: 1
+      duration: 0.001156
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1009
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][HealthControllerTests][suite]'
+    - id: 1012
+      uniqueId: 'Tests.EditMode.dll/HealthControllerTests/[Tests.EditMode][HealthControllerTests.HealRestoresDamage]'
+      name: HealRestoresDamage
+      fullName: HealthControllerTests.HealRestoresDamage
+      resultStatus: 1
+      duration: 0.0003239
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1009
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][HealthControllerTests][suite]'
+    - id: 1011
+      uniqueId: 'Tests.EditMode.dll/HealthControllerTests/[Tests.EditMode][HealthControllerTests.InjureReducesHealth]'
+      name: InjureReducesHealth
+      fullName: HealthControllerTests.InjureReducesHealth
+      resultStatus: 1
+      duration: 0.000281
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1009
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][HealthControllerTests][suite]'
+    - id: 1014
+      uniqueId: 'Tests.EditMode.dll/HealthControllerTests/[Tests.EditMode][HealthControllerTests.MultipleInjuriesAccumulate]'
+      name: MultipleInjuriesAccumulate
+      fullName: HealthControllerTests.MultipleInjuriesAccumulate
+      resultStatus: 1
+      duration: 0.0003024
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1009
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][HealthControllerTests][suite]'
+    - id: 1010
+      uniqueId: 'Tests.EditMode.dll/HealthControllerTests/[Tests.EditMode][HealthControllerTests.StartsAtFullHealth]'
+      name: StartsAtFullHealth
+      fullName: HealthControllerTests.StartsAtFullHealth
+      resultStatus: 1
+      duration: 0.0002563
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1009
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][HealthControllerTests][suite]'
+    - id: 1017
+      uniqueId: 'Tests.EditMode.dll/[Tests.EditMode][TargetPriorityCalculatorTests][suite]'
+      name: TargetPriorityCalculatorTests
+      fullName: TargetPriorityCalculatorTests
+      resultStatus: 1
+      duration: 0.0020308
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1023
+      parentUniqueId: '[Tests.EditMode][C:/Projects/ant-defense/AntDefense/Library/ScriptAssemblies/Tests.EditMode.dll][suite]'
+    - id: 1021
+      uniqueId: 'Tests.EditMode.dll/TargetPriorityCalculatorTests/[Tests.EditMode][TargetPriorityCalculatorTests.EqualWeighting_CloserAndHigherValueBalances]'
+      name: EqualWeighting_CloserAndHigherValueBalances
+      fullName: TargetPriorityCalculatorTests.EqualWeighting_CloserAndHigherValueBalances
+      resultStatus: 1
+      duration: 0.0009262
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1017
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][TargetPriorityCalculatorTests][suite]'
+    - id: 1020
+      uniqueId: 'Tests.EditMode.dll/TargetPriorityCalculatorTests/[Tests.EditMode][TargetPriorityCalculatorTests.NullValue_TreatedAsZero]'
+      name: NullValue_TreatedAsZero
+      fullName: TargetPriorityCalculatorTests.NullValue_TreatedAsZero
+      resultStatus: 1
+      duration: 0.0002917
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1017
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][TargetPriorityCalculatorTests][suite]'
+    - id: 1018
+      uniqueId: 'Tests.EditMode.dll/TargetPriorityCalculatorTests/[Tests.EditMode][TargetPriorityCalculatorTests.PureDistanceWeighting_CloserTargetHasLowerPriority]'
+      name: PureDistanceWeighting_CloserTargetHasLowerPriority
+      fullName: TargetPriorityCalculatorTests.PureDistanceWeighting_CloserTargetHasLowerPriority
+      resultStatus: 1
+      duration: 0.0002731
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1017
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][TargetPriorityCalculatorTests][suite]'
+    - id: 1019
+      uniqueId: 'Tests.EditMode.dll/TargetPriorityCalculatorTests/[Tests.EditMode][TargetPriorityCalculatorTests.PureValueWeighting_HigherValueHasLowerPriority]'
+      name: PureValueWeighting_HigherValueHasLowerPriority
+      fullName: TargetPriorityCalculatorTests.PureValueWeighting_HigherValueHasLowerPriority
+      resultStatus: 1
+      duration: 0.0003084
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1017
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][TargetPriorityCalculatorTests][suite]'
+    - id: 1022
+      uniqueId: 'Tests.EditMode.dll/TargetPriorityCalculatorTests/[Tests.EditMode][TargetPriorityCalculatorTests.ZeroDistanceZeroValue_ReturnsZero]'
+      name: ZeroDistanceZeroValue_ReturnsZero
+      fullName: TargetPriorityCalculatorTests.ZeroDistanceZeroValue_ReturnsZero
+      resultStatus: 1
+      duration: 0.0002314
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1017
+      parentUniqueId: 'Tests.EditMode.dll/[Tests.EditMode][TargetPriorityCalculatorTests][suite]'
+    m_ResultText: Tests.EditMode.dll (16 tests) (0.024s)
     m_ResultStacktrace: 
     m_TestListState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
-      m_LastClickedID: 0
-      m_ExpandedIDs: 232b878cffffff7f
+      m_SelectedIDs: 322033cf
+      m_LastClickedID: -818733006
+      m_ExpandedIDs: 232b878c322033cfacbae1e9ffffff7f
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -696,7 +1032,7 @@ MonoBehaviour:
     m_SelectedOption: 0
   - m_Window: {fileID: 13}
     runProgress:
-      RunGuid: 02b3b3b4-06e7-45de-a9e3-ae73dd5f4da7
+      RunGuid: c703e5bf-e09a-41cf-9836-b6509c1f21cb
       ExecutionSettings:
         m_TargetPlatform: 0
         m_HasTargetPlatform: 0
@@ -707,7 +1043,7 @@ MonoBehaviour:
           categoryNames: []
           assemblyNames: []
         filters:
-        - testMode: 2
+        - testMode: 1
           testNames: []
           groupNames: []
           categoryNames: []
@@ -723,7 +1059,7 @@ MonoBehaviour:
           disableNestedEnumeratorBugfix: 0
         randomOrderSeed: 0
       HasFinished: 1
-      Progress: 0.9999999
+      Progress: 0.99999976
       CurrentStepName: Unlock Reload Assemblies
       CurrentStageName: 
     m_NewResultList:
@@ -779,7 +1115,7 @@ MonoBehaviour:
     m_SelectedOption: 0
   - m_Window: {fileID: 13}
     runProgress:
-      RunGuid: 02b3b3b4-06e7-45de-a9e3-ae73dd5f4da7
+      RunGuid: c703e5bf-e09a-41cf-9836-b6509c1f21cb
       ExecutionSettings:
         m_TargetPlatform: 0
         m_HasTargetPlatform: 0
@@ -790,7 +1126,7 @@ MonoBehaviour:
           categoryNames: []
           assemblyNames: []
         filters:
-        - testMode: 2
+        - testMode: 1
           testNames: []
           groupNames: []
           categoryNames: []
@@ -806,7 +1142,7 @@ MonoBehaviour:
           disableNestedEnumeratorBugfix: 0
         randomOrderSeed: 0
       HasFinished: 1
-      Progress: 0.9999999
+      Progress: 0.99999976
       CurrentStepName: Unlock Reload Assemblies
       CurrentStageName: 
     m_NewResultList:
@@ -876,15 +1212,15 @@ MonoBehaviour:
   m_MaxSize: {x: 10000, y: 10000}
   m_TitleContent:
     m_Text: Project
-    m_Image: {fileID: -5179483145760003458, guid: 0000000000000000d000000000000000, type: 0}
+    m_Image: {fileID: -5467254957812901981, guid: 0000000000000000d000000000000000, type: 0}
     m_Tooltip: 
     m_TextWithWhitespace: "Project\u200B"
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 543.2
-    width: 1131.8
-    height: 267.59998
+    y: 690
+    width: 1414
+    height: 352
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -909,7 +1245,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Prefabs/Ants
+    - Assets/Tests/PlayMode
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -919,7 +1255,7 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 85
   m_LastFolders:
-  - Assets/Prefabs/Ants
+  - Assets/Tests/PlayMode
   m_LastFoldersGridSize: 85
   m_LastProjectPath: C:\Projects\ant-defense\AntDefense
   m_LockTracker:
@@ -928,12 +1264,12 @@ MonoBehaviour:
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs:
-    - m_Data: 55984
+    - m_Data: 57732
     m_LastClickedID:
-      m_Data: 55984
+      m_Data: 57732
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 55840
+    - m_Data: 56018
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -966,7 +1302,7 @@ MonoBehaviour:
       m_Data: 0
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 55840
+    - m_Data: 56018
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -993,9 +1329,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs:
-    - m_Data: 86272
-    m_LastClickedInstanceID: 86272
+    m_SelectedInstanceIDs: []
+    m_LastClickedInstanceID: 0
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: []
     m_RenameOverlay:
@@ -1043,15 +1378,15 @@ MonoBehaviour:
   m_MaxSize: {x: 4000, y: 4000}
   m_TitleContent:
     m_Text: Inspector
-    m_Image: {fileID: -440750813802333266, guid: 0000000000000000d000000000000000, type: 0}
+    m_Image: {fileID: -2667387946076563598, guid: 0000000000000000d000000000000000, type: 0}
     m_Tooltip: 
     m_TextWithWhitespace: "Inspector\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1133.8
+    x: 1416
     y: 24
-    width: 402.19995
-    height: 786.8
+    width: 502
+    height: 1018
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -1094,15 +1429,15 @@ MonoBehaviour:
   m_MaxSize: {x: 4000, y: 4000}
   m_TitleContent:
     m_Text: Hierarchy
-    m_Image: {fileID: -3734745235275155857, guid: 0000000000000000d000000000000000, type: 0}
+    m_Image: {fileID: 7966133145522015247, guid: 0000000000000000d000000000000000, type: 0}
     m_Tooltip: 
     m_TextWithWhitespace: "Hierarchy\u200B"
   m_Pos:
     serializedVersion: 2
     x: 0
     y: 24
-    width: 307.8
-    height: 493.2
+    width: 385
+    height: 640
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -1123,10 +1458,9 @@ MonoBehaviour:
       m_LastClickedID:
         m_Data: 0
       m_ExpandedIDs:
-      - m_Data: -885126
-      - m_Data: 86248
-      - m_Data: 86272
-      - m_Data: 86312
+      - m_Data: -5020
+      - m_Data: -3684
+      - m_Data: -2706
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1168,15 +1502,15 @@ MonoBehaviour:
   m_MaxSize: {x: 4000, y: 4000}
   m_TitleContent:
     m_Text: Scene
-    m_Image: {fileID: 8634526014445323508, guid: 0000000000000000d000000000000000, type: 0}
+    m_Image: {fileID: 2593428753322112591, guid: 0000000000000000d000000000000000, type: 0}
     m_Tooltip: 
     m_TextWithWhitespace: "Scene\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 309.8
-    y: 24
-    width: 822.00006
-    height: 493.2
+    x: 387
+    y: 87
+    width: 1027
+    height: 640
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -1233,11 +1567,11 @@ MonoBehaviour:
       displayed: 0
       id: unity-search-toolbar
       index: 2
-      contents: '{"m_Layout":1,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":24.799999237060548},"m_FloatingSnapCorner":1,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":1,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":1,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 0
       collapsed: 0
       snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: 0, y: 24.8}
+      snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 1
       layout: 1
       size: {x: 0, y: 0}
@@ -1289,11 +1623,11 @@ MonoBehaviour:
       displayed: 0
       id: Scene View/Light Settings
       index: 0
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":24.799999237060548},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 0
       collapsed: 0
       snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: 0, y: 24.8}
+      snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       layout: 4
       size: {x: 0, y: 0}
@@ -1317,11 +1651,11 @@ MonoBehaviour:
       displayed: 0
       id: Scene View/Cloth Constraints
       index: 2
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":24.799999237060548},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 0
       collapsed: 0
       snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: 0, y: 24.8}
+      snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       layout: 4
       size: {x: 0, y: 0}
@@ -1331,11 +1665,11 @@ MonoBehaviour:
       displayed: 0
       id: Scene View/Cloth Collisions
       index: 3
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":24.799999237060548},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 0
       collapsed: 0
       snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: 0, y: 24.8}
+      snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       layout: 4
       size: {x: 0, y: 0}
@@ -1387,11 +1721,11 @@ MonoBehaviour:
       displayed: 0
       id: Scene View/Occlusion Culling
       index: 4
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":24.799999237060548},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 0
       collapsed: 0
       snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: 0, y: 24.8}
+      snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       layout: 4
       size: {x: 0, y: 0}
@@ -1401,11 +1735,11 @@ MonoBehaviour:
       displayed: 0
       id: Scene View/Physics Debugger
       index: 5
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":24.799999237060548},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 0
       collapsed: 0
       snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: 0, y: 24.8}
+      snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       layout: 4
       size: {x: 0, y: 0}
@@ -1415,11 +1749,11 @@ MonoBehaviour:
       displayed: 0
       id: Scene View/Scene Visibility
       index: 6
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":24.799999237060548},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 0
       collapsed: 0
       snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: 0, y: 24.8}
+      snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       layout: 4
       size: {x: 0, y: 0}
@@ -1513,11 +1847,11 @@ MonoBehaviour:
       displayed: 0
       id: Brush Attributes
       index: 0
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":24.799999237060548},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 0
       collapsed: 0
       snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: 0, y: 24.8}
+      snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       layout: 4
       size: {x: 0, y: 0}
@@ -1541,11 +1875,11 @@ MonoBehaviour:
       displayed: 0
       id: Terrain Tools
       index: 0
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":24.799999237060548},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 0
       collapsed: 0
       snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: 0, y: 24.8}
+      snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       layout: 4
       size: {x: 0, y: 0}
@@ -1555,11 +1889,11 @@ MonoBehaviour:
       displayed: 0
       id: Brush Masks
       index: 1
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":24.799999237060548},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 0
       collapsed: 0
       snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: 0, y: 24.8}
+      snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       layout: 4
       size: {x: 0, y: 0}
@@ -1569,11 +1903,11 @@ MonoBehaviour:
       displayed: 0
       id: Scene View/Lighting Visualization Colors
       index: 0
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":24.799999237060548},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 0
       collapsed: 0
       snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: 0, y: 24.8}
+      snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       layout: 4
       size: {x: 0, y: 0}
@@ -1597,11 +1931,11 @@ MonoBehaviour:
       displayed: 0
       id: Scene View/PBR Validation Settings
       index: 1
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":24.799999237060548},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 0
       collapsed: 0
       snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: 0, y: 24.8}
+      snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       layout: 4
       size: {x: 0, y: 0}
@@ -1625,11 +1959,11 @@ MonoBehaviour:
       displayed: 0
       id: unity-tool-contexts-toolbar
       index: 1
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":24.799999237060548},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":0,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 0
       collapsed: 0
       snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: 0, y: 24.8}
+      snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       layout: 4
       size: {x: 0, y: 0}
@@ -1677,9 +2011,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: -71.933846, y: -7.7555127, z: -26.59316}
+    m_Target: {x: 64.12554, y: 2.4249382, z: 39.74327}
     speed: 2
-    m_Value: {x: 0, y: 1.4500008, z: 0}
+    m_Value: {x: 64.12554, y: 2.4249382, z: 39.74327}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1725,13 +2059,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+    m_Target: {x: 0.3363197, y: 0.14608736, z: -0.052895788, w: 0.9288491}
     speed: 2
-    m_Value: {x: -0.7071068, y: 0, z: -0, w: -0.7071068}
+    m_Value: {x: -0.3363197, y: -0.14608736, z: 0.052895784, w: -0.9288491}
   m_Size:
-    m_Target: 10.460408
+    m_Target: 8.650946
     speed: 2
-    m_Value: 43.30127
+    m_Value: 8.650946
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1781,15 +2115,15 @@ MonoBehaviour:
   m_MaxSize: {x: 4000, y: 4000}
   m_TitleContent:
     m_Text: Console
-    m_Image: {fileID: -4950941429401207979, guid: 0000000000000000d000000000000000, type: 0}
+    m_Image: {fileID: -4327648978806127646, guid: 0000000000000000d000000000000000, type: 0}
     m_Tooltip: 
     m_TextWithWhitespace: "Console\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 0
-    y: 598.4
-    width: 1131.8
-    height: 267.59998
+    x: 1
+    y: 753
+    width: 1414
+    height: 352
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -1819,7 +2153,7 @@ MonoBehaviour:
   m_MaxSize: {x: 4000, y: 4000}
   m_TitleContent:
     m_Text: Game
-    m_Image: {fileID: 4621777727084837110, guid: 0000000000000000d000000000000000, type: 0}
+    m_Image: {fileID: -6423792434712278376, guid: 0000000000000000d000000000000000, type: 0}
     m_Tooltip: 
     m_TextWithWhitespace: "Game\u200B"
   m_Pos:
@@ -1849,7 +2183,7 @@ MonoBehaviour:
   m_ShowGizmos: 0
   m_TargetDisplay: 0
   m_ClearColor: {r: 0, g: 0, b: 0, a: 0}
-  m_TargetSize: {x: 1027.5001, y: 590.25}
+  m_TargetSize: {x: 822.00006, y: 472.2}
   m_TextureFilterMode: 0
   m_TextureHideFlags: 61
   m_RenderIMGUI: 1
@@ -1864,8 +2198,8 @@ MonoBehaviour:
     m_VRangeLocked: 0
     hZoomLockedByDefault: 0
     vZoomLockedByDefault: 0
-    m_HBaseRangeMin: -411.00006
-    m_HBaseRangeMax: 411.00006
+    m_HBaseRangeMin: -411.00003
+    m_HBaseRangeMax: 411.00003
     m_VBaseRangeMin: -236.1
     m_VBaseRangeMax: 236.1
     m_HAllowExceedBaseRangeMin: 1
@@ -1887,7 +2221,7 @@ MonoBehaviour:
       y: 21
       width: 822.00006
       height: 472.2
-    m_Scale: {x: 0.99999994, y: 0.99999994}
+    m_Scale: {x: 1, y: 1}
     m_Translation: {x: 411.00003, y: 236.1}
     m_MarginLeft: 0
     m_MarginRight: 0
@@ -1895,13 +2229,13 @@ MonoBehaviour:
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -411.00006
-      y: -236.10002
-      width: 822.0001
-      height: 472.20004
+      x: -411.00003
+      y: -236.1
+      width: 822.00006
+      height: 472.2
     m_MinimalGUI: 1
-  m_defaultScale: 0.99999994
-  m_LastWindowPixelSize: {x: 1027.5001, y: 616.5}
+  m_defaultScale: 1
+  m_LastWindowPixelSize: {x: 822.00006, y: 493.2}
   m_ClearInEditMode: 1
   m_NoCameraWarning: 1
   m_LowResolutionForAspectRatios: 00000000000000000000

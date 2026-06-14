@@ -59,19 +59,19 @@ public class Digestion : MonoBehaviour
         this.FoodBar?.AdjustProgress(this.CurrentFood, this.MaxFood);
     }
 
-    internal void EatFoodFrom(AntNest home)
+    public void EatFoodFrom(AntNest home)
     {
         var foodToEat = MathF.Min(this._requiredFood, home.CurrentFood);
         home.UseFood(foodToEat);
         this.AddFood(foodToEat);
     }
 
-    internal void AddFood(float additionalFood)
+    public void AddFood(float additionalFood)
     {
         this.CurrentFood += additionalFood;
     }
 
-    internal void UseFood(float cost)
+    public void UseFood(float cost)
     {
         this.CurrentFood -= cost;
     }
