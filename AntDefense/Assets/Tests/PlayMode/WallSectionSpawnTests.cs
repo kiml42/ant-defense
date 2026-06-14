@@ -230,7 +230,7 @@ public class WallSectionSpawnTests
     [UnityTest]
     public IEnumerator SpawnSections_SpawnsStump_WhenRemainderExistsAndPrefabSet()
     {
-        // 7 units → halfGap = 0.5, stump should be spawned
+        // 7 units → halfGap = 0.5, one stump at each end (nodeA and nodeB sides)
         var wallNode = CreateWallSetup(Vector3.zero, new Vector3(0, 0, 7f), withStumpPrefab: true);
         wallNode.OnBuildStart();
         yield return null;
@@ -238,7 +238,8 @@ public class WallSectionSpawnTests
         int sectionCount = GetSpawnedSections(wallNode).Count;
         int totalChildren = wallNode.transform.childCount;
 
-        Assert.Greater(totalChildren, sectionCount, "Expected at least one stump child in addition to sections");
+        // TODO: currently only one stump is spawned (at nodeA end); spawn one at nodeB end too
+        Assert.AreEqual(sectionCount + 2, totalChildren, "Expected one stump at each end of the wall");
     }
 
     [UnityTest]
