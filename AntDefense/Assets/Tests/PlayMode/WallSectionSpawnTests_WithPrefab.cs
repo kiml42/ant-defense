@@ -1,25 +1,31 @@
-using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Runs the full spawn test suite using hand-built GameObjects with known values,
-/// making the tests independent of any particular prefab configuration.
+/// Runs the full spawn test suite using the real WallSection prefab as the section source.
+/// SectionLength is read from the prefab, so these tests stay in sync with the asset
+/// automatically — if the prefab's SectionLength changes, the expected counts and positions
+/// update without any edits to the test code.
 /// </summary>
-public class WallSectionSpawnTests : WallSectionSpawnTestsBase
+public class WallSectionSpawnTests_WithPrefab : WallSectionSpawnTestsBase
 {
+    private const string WallSectionPrefabPath = "Assets/Prefabs/Placeables/WallSection.prefab";
+
+    private WallSection _sectionPrefab;
+
     protected override void SetUpFixture()
     {
-        SectionLength = 2f;
+        var prefabGO = AssetDatabase.LoadAssetAtPath<GameObject>(WallSectionPrefabPath);
+        Assert.IsNotNull(prefabGO, $"Could not load WallSection prefab at {WallSectionPrefabPath}");
+
+        _sectionPrefab = prefabGO.GetComponentInChildren<WallSection>(includeInactive: true);
+        Assert.IsNotNull(_sectionPrefab, "WallSection prefab has no WallSection component");
+
+        SectionLength = _sectionPrefab.SectionLength;
     }
 
     protected override WallNode CreateWallSetup(Vector3 start, Vector3 end, bool withStumpPrefab = false)
     {
-        var sectionPrefabGO = new GameObject("SectionPrefab");
-        var sectionComp = sectionPrefabGO.AddComponent<WallSection>();
-        sectionComp.SectionLength = SectionLength;
-        sectionPrefabGO.AddComponent<PlaceableRealObject>();
-        ToDestroy.Add(sectionPrefabGO);
-
         var connectedGO = new GameObject("ConnectedNode");
         connectedGO.transform.position = end;
         var connectedNode = connectedGO.AddComponent<WallNode>();
@@ -34,7 +40,7 @@ public class WallSectionSpawnTests : WallSectionSpawnTestsBase
         var wallNodeGO = new GameObject("WallNode");
         wallNodeGO.transform.position = start;
         var wallNode = wallNodeGO.AddComponent<WallNode>();
-        wallNode.SectionPrefab = sectionComp;
+        wallNode.SectionPrefab = _sectionPrefab;
         wallNode.ConnectedNode = connectedNode;
         wallNode.WallGhost = ghostGO.transform;
         ToDestroy.Add(wallNodeGO);
