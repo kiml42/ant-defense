@@ -1,6 +1,8 @@
 using NUnit.Framework;
-using UnityEditor;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
 /// Runs the full spawn test suite using the real WallSection prefab as the section source.
@@ -16,6 +18,7 @@ public class WallSectionSpawnTests_WithPrefab : WallSectionSpawnTestsBase
 
     protected override void SetUpFixture()
     {
+#if UNITY_EDITOR
         var prefabGO = AssetDatabase.LoadAssetAtPath<GameObject>(WallSectionPrefabPath);
         Assert.IsNotNull(prefabGO, $"Could not load WallSection prefab at {WallSectionPrefabPath}");
 
@@ -23,6 +26,7 @@ public class WallSectionSpawnTests_WithPrefab : WallSectionSpawnTestsBase
         Assert.IsNotNull(_sectionPrefab, "WallSection prefab has no WallSection component");
 
         SectionLength = _sectionPrefab.SectionLength;
+#endif
     }
 
     protected override WallNode CreateWallSetup(Vector3 start, Vector3 end, bool withStumpPrefab = false)
