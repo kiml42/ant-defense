@@ -1,0 +1,20 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.9f1 (7a9955a4f2fa) revision 8034645'; Using compiler version '194234433'; Build Type 'Release'
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-richard2" at "2026-06-14T21:09:14.8077635Z"
+OS: 'Windows 11  (10.0.26200) Professional' Language: 'en' Physical Memory: 61077 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+Process architecture: x64
+Date: 2026-06-14T21:09:14Z
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.9f1\Editor\Unity.exe
+-batchmode
+-quit
+-projectPath
+C:/Projects/ant-defense/AntDefense
+-logFile
+C:/Projects/ant-defense/compile_log.txt
+Successfully changed project path to: C:/Projects/ant-defense/AntDefense
+C:/Projects/ant-defense/AntDefense
+Exiting without the bug reporter. Application will terminate with return code 1
