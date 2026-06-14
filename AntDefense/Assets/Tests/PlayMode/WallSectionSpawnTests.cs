@@ -33,13 +33,16 @@ public class WallSectionSpawnTests
         sectionPrefabGO.AddComponent<PlaceableRealObject>();
         _toDestroy.Add(sectionPrefabGO);
 
-        // Connected node
+        // Connected node — also needs a WallGhost so its own Update() doesn't assert
         var connectedGO = new GameObject("ConnectedNode");
         connectedGO.transform.position = end;
         var connectedNode = connectedGO.AddComponent<WallNode>();
+        var connectedGhostGO = new GameObject("ConnectedWallGhost");
+        connectedNode.WallGhost = connectedGhostGO.transform;
         _toDestroy.Add(connectedGO);
+        _toDestroy.Add(connectedGhostGO);
 
-        // Wall ghost — child of wall node so its lifetime is managed alongside it
+        // Wall ghost for the main node
         var ghostGO = new GameObject("WallGhost");
         _toDestroy.Add(ghostGO);
 
