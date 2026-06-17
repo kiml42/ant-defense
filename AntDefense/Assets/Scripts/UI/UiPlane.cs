@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class UiPlane : SingletonMonoBehaviour<UiPlane>
@@ -22,10 +20,7 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
 
     private void Update()
     {
-        foreach (var p in ProtectMes.Where(p => p.ProtectMe == null).ToArray())
-        {
-            ProtectMes.Remove(p);
-        }
+        ProtectMes.RemoveAll(p => p.ProtectMe == null);
         if(ProtectMes.Count == 0)
         { 
             Debug.Log("All protectMes are gone!");
@@ -64,7 +59,7 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
             newButton.transform.parent = this.transform;
             newButton.Ghost = ghost;
 
-            newButton.CostText.text = $"£{ghost.BaseCost:F2}";
+            newButton.CostText.text = $"ï¿½{ghost.BaseCost:F2}";
             CreateDummy(ghost, newButton);
 
             this._buttons.Add(newButton);
