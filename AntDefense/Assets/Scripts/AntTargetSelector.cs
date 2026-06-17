@@ -34,6 +34,10 @@ public class AntTargetSelector : MonoBehaviour
     private readonly HashSet<Smellable> _newBetterTargets = new();
     private AntStateMachine _antStateMachine;
 
+    public float LosCheckInterval = 0.1f;
+    private float _losCheckTimer = 0f;
+    private bool _cachedLosResult = true;
+
     private AntTargetPositionProvider PositionProvider => _antStateMachine.PositionProvider;
     private ITargetPriorityCalculator PriorityCalculator => _antStateMachine.PriorityCalculator;
     private bool FullDebugLogs => _antStateMachine != null && _antStateMachine.FullDebugLogs;
@@ -120,7 +124,7 @@ public class AntTargetSelector : MonoBehaviour
                     ClearTarget();
                 }
             }
-            else if (!CheckLineOfSight(CurrentTarget))
+            else if (!CachedCheckLineOfSight(CurrentTarget))
             {
                 Log("Lost sight of current target!");
                 ClearTarget();
@@ -157,6 +161,8 @@ public class AntTargetSelector : MonoBehaviour
         _currentTarget = smellable;
         PositionProvider.SetTarget(CurrentTarget);
         _timeSinceTargetAquisition = 0;
+        _losCheckTimer = 0f;
+        _cachedLosResult = true;
     }
 
     public void ClearTarget()
@@ -164,6 +170,8 @@ public class AntTargetSelector : MonoBehaviour
         _newBetterTargets.Clear();
         _currentTarget = null;
         PositionProvider.SetTarget(CurrentTarget);
+        _losCheckTimer = 0f;
+        _cachedLosResult = true;
     }
 
     public void ResetMaxPriority()
@@ -181,6 +189,17 @@ public class AntTargetSelector : MonoBehaviour
         return CurrentTarget == null
             || (smellable.IsActual && !CurrentTarget.IsActual)
             || smellable.GetPriority(PriorityCalculator) < CurrentTarget.GetPriority(PriorityCalculator);
+    }
+
+    private bool CachedCheckLineOfSight(Smellable target)
+    {
+        _losCheckTimer -= Time.deltaTime;
+        if (_losCheckTimer <= 0f)
+        {
+            _losCheckTimer = LosCheckInterval;
+            _cachedLosResult = CheckLineOfSight(target);
+        }
+        return _cachedLosResult;
     }
 
     private bool CheckLineOfSight(Smellable potentialTarget)
