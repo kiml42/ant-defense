@@ -168,7 +168,7 @@ public class TurretController : SelectableGhostableMonoBehaviour
 
     private void CleanTargets()
     {
-        this._targetsInRange = this._targetsInRange.Where(this.IsValudTarget).Distinct().ToList();
+        this._targetsInRange.RemoveAll(t => !this.IsValudTarget(t));
     }
 
     private bool IsValudTarget(HealthController t)

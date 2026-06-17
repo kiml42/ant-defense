@@ -18,17 +18,7 @@ public class AntCam : MonoBehaviour
     private KeyCode[] _leftKeyCodes = new[] { KeyCode.A, KeyCode.LeftArrow };
     private KeyCode[] _downKeyCodes = new[] { KeyCode.S, KeyCode.DownArrow };
     private KeyCode[] _rightKeyCodes = new[] { KeyCode.D, KeyCode.RightArrow };
-    private KeyCode[] _directionKeys
-    {
-        get
-        {
-            var all = this._upKeyCodes.ToList();
-            all.AddRange(this._leftKeyCodes);
-            all.AddRange(this._downKeyCodes);
-            all.AddRange(this._rightKeyCodes);
-            return all.ToArray();
-        }
-    }
+    private KeyCode[] _directionKeys;
 
     public Camera Camera;
 
@@ -39,6 +29,12 @@ public class AntCam : MonoBehaviour
     private void Start()
     {
         this._targetXRotation = this.transform.rotation.x;
+
+        var all = new System.Collections.Generic.List<KeyCode>(_upKeyCodes);
+        all.AddRange(_leftKeyCodes);
+        all.AddRange(_downKeyCodes);
+        all.AddRange(_rightKeyCodes);
+        _directionKeys = all.ToArray();
     }
 
     private float Speed => GetProportionOfRange(this.GetZoomProportion(this.CurrentY), this.MinCameraSpeed, this.MaxCameraSpeed) * Time.unscaledDeltaTime;

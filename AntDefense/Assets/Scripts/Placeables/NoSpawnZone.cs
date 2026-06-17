@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class NoSpawnZone : BaseGhostableMonobehaviour
@@ -134,8 +133,17 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
             previousGoodPosition = null;    // the position isn't good anymore.
         }
 
-        var transgressedZones = AllNoSpawnZones.Where(z => z.IsInNoSpawnZone(position, leeway));
-        if (!transgressedZones.Any())
+        // Collect transgressed zones without LINQ allocation
+        List<NoSpawnZone> transgressedZones = null;
+        foreach (var z in AllNoSpawnZones)
+        {
+            if (z.IsInNoSpawnZone(position, leeway))
+            {
+                if (transgressedZones == null) transgressedZones = new List<NoSpawnZone>();
+                transgressedZones.Add(z);
+            }
+        }
+        if (transgressedZones == null)
         {
             // Not in any no spawn zone
             // move into the allowed area if there is one
@@ -160,15 +168,25 @@ public class NoSpawnZone : BaseGhostableMonobehaviour
             }
         }
 
-        var pointsToCheck = transgressedZones.Select(z => GetClosestPointOnEdge(position, z, PointType.Corrected)).ToList();
-        pointsToCheck.AddRange(_intersectionPoints.Where(p => p.IsOnEdge == true));
+        var pointsToCheck = new List<AdjustedPoint>(transgressedZones.Count + _intersectionPoints.Count);
+        for (int i = 0; i < transgressedZones.Count; i++)
+            pointsToCheck.Add(GetClosestPointOnEdge(position, transgressedZones[i], PointType.Corrected));
+        for (int i = 0; i < _intersectionPoints.Count; i++)
+        {
+            if (_intersectionPoints[i].IsOnEdge == true) pointsToCheck.Add(_intersectionPoints[i]);
+        }
 
         bool snapToWallNodes = ObjectPlacer.Instance != null
             && (!ObjectPlacer.Instance.IsPlacingObject
                 || ObjectPlacer.Instance.WallNodeBeingPlaced != null
                 || ObjectPlacer.Instance.CanBuildOnWall);
         if (snapToWallNodes)
-            pointsToCheck.AddRange(SelectionPoints.Where(p => p.IsAlive));
+        {
+            for (int i = 0; i < SelectionPoints.Count; i++)
+            {
+                if (SelectionPoints[i].IsAlive) pointsToCheck.Add(SelectionPoints[i]);
+            }
+        }
 
         foreach (var point in pointsToCheck)
         {

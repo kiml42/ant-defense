@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -49,21 +48,23 @@ public class TrailPointManager : SingletonMonoBehaviour<TrailPointManager>
                     break;
             }
             // update all.
-            foreach (var trailPoint in _trailPoints.Where(t => !t.IsDestroyed()))
+            foreach (var trailPoint in _trailPoints)
             {
-                trailPoint.UpdateVisibility();
+                if (!trailPoint.IsDestroyed())
+                    trailPoint.UpdateVisibility();
             }
         }
         else if (_currentTrailDisplayMode != TrailDisplayMode.None)
         {
-            var includedPoints = _trailPoints.Where(t => !t.IsDestroyed());
-            if (_currentTrailDisplayMode != TrailDisplayMode.All)
+            var visibleSmells = VisibleTrailSmells;
+            int count = 0;
+            foreach (var trailPoint in _trailPoints)
             {
-                includedPoints = includedPoints.Where(t => VisibleTrailSmells.Contains(t.Smell));
-            }
-            foreach (var trailPoint in includedPoints.Take(this.MaxTrailPointsPurUiFrame))
-            {
+                if (count >= this.MaxTrailPointsPurUiFrame) break;
+                if (trailPoint.IsDestroyed()) continue;
+                if (_currentTrailDisplayMode != TrailDisplayMode.All && Array.IndexOf(visibleSmells, trailPoint.Smell) < 0) continue;
                 trailPoint.UpdateScale();
+                count++;
             }
         }
     }

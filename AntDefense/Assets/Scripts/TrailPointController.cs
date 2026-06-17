@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -56,17 +55,34 @@ public class TrailPointController : Smellable
     public float ScaleDownTime = 4;
     public float DefaultLifetime = 80;
 
-    public float RemainingTime => this._smellComponents.Any() ? this._smellComponents.Max(c => c.RemainingTime) : 0;
+    public float RemainingTime
+    {
+        get
+        {
+            float max = 0;
+            for (int i = 0; i < _smellComponents.Count; i++)
+            {
+                float t = _smellComponents[i].RemainingTime;
+                if (t > max) max = t;
+            }
+            return max;
+        }
+    }
 
     // TODO: Just for debugging right now, remove later.
     public Smellable Previous;
 
     public override float GetPriority(ITargetPriorityCalculator priorityCalculator)
     {
-        // return the component with the best priotity, if priorityCalculator is null, just return the closest.
-        return this._smellComponents.Any()
-            ? this._smellComponents.Min(s => priorityCalculator?.CalculatePriority(s.DistanceFromTarget, s.TargetValue) ?? s.DistanceFromTarget)
-            : float.MaxValue;
+        if (_smellComponents.Count == 0) return float.MaxValue;
+        float min = float.MaxValue;
+        for (int i = 0; i < _smellComponents.Count; i++)
+        {
+            var s = _smellComponents[i];
+            float p = priorityCalculator?.CalculatePriority(s.DistanceFromTarget, s.TargetValue) ?? s.DistanceFromTarget;
+            if (p < min) min = p;
+        }
+        return min;
     }
 
     /// <summary>
@@ -74,10 +90,16 @@ public class TrailPointController : Smellable
     /// </summary>
     public SmellComponent GetBestSmellComponent(ITargetPriorityCalculator priorityCalculator)
     {
-        if (!this._smellComponents.Any()) return null;
-        
-        // Return the component with the best (lowest) priority
-        return this._smellComponents.OrderBy(s => priorityCalculator?.CalculatePriority(s.DistanceFromTarget, s.TargetValue) ?? s.DistanceFromTarget).First();
+        if (_smellComponents.Count == 0) return null;
+        SmellComponent best = null;
+        float bestPriority = float.MaxValue;
+        for (int i = 0; i < _smellComponents.Count; i++)
+        {
+            var s = _smellComponents[i];
+            float p = priorityCalculator?.CalculatePriority(s.DistanceFromTarget, s.TargetValue) ?? s.DistanceFromTarget;
+            if (p < bestPriority) { bestPriority = p; best = s; }
+        }
+        return best;
     }
 
     /// <summary>
@@ -91,14 +113,13 @@ public class TrailPointController : Smellable
 
     public void UpdateVisibility()
     {
-        if (TrailPointManager.VisibleTrailSmells.Contains(this.Smell))
+        var visibleSmells = TrailPointManager.VisibleTrailSmells;
+        bool visible = false;
+        for (int i = 0; i < visibleSmells.Length; i++)
         {
-            this.Material.enabled = true;
+            if (visibleSmells[i] == this.Smell) { visible = true; break; }
         }
-        else
-        {
-            this.Material.enabled = false;
-        }
+        this.Material.enabled = visible;
         this.UpdateScale();
     }
 
@@ -113,12 +134,13 @@ public class TrailPointController : Smellable
 
     public void UpdateTrailPoint()
     {
-        foreach (var component in this._smellComponents.Where(c => c.ExpirationTime < Time.fixedTime).ToArray())
+        for (int i = _smellComponents.Count - 1; i >= 0; i--)
         {
-            this._smellComponents.Remove(component);
+            if (_smellComponents[i].ExpirationTime < Time.fixedTime)
+                _smellComponents.RemoveAt(i);
         }
 
-        if (!this._smellComponents.Any())
+        if (_smellComponents.Count == 0)
         {
             // Mark as no longer smellable before destruction so ants stop trying to follow it
             this.IsSmellable = false;

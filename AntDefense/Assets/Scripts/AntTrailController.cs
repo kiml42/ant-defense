@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -110,20 +109,25 @@ public class AntTrailController : MonoBehaviour
             // TODO consider if there is a lighter method for this just seeing the location of the center Possibly by keeping an octree index for the locations of all trail points
             Collider[] overlaps = Physics.OverlapSphere(this.transform.position, OverlapRadius);
 
-            var relevantOverlaps = overlaps
-                .Where(overlap => !overlap.IsDestroyed())
-                .Select(overlap => overlap.GetComponent<TrailPointController>())
-                .Where(otherTrailPoint => otherTrailPoint != null && !otherTrailPoint.IsDestroyed() && otherTrailPoint.Smell == this.TrailSmell);
+            TrailPointController closest = null;
+            float closestDist = float.MaxValue;
+            for (int i = 0; i < overlaps.Length; i++)
+            {
+                var overlap = overlaps[i];
+                if (overlap.IsDestroyed()) continue;
+                var tpc = overlap.GetComponent<TrailPointController>();
+                if (tpc == null || tpc.IsDestroyed() || tpc.Smell != this.TrailSmell) continue;
+                float dist = (tpc.transform.position - this.transform.position).sqrMagnitude;
+                if (dist < closestDist) { closestDist = dist; closest = tpc; }
+            }
 
-            if (relevantOverlaps.Any())
+            if (closest != null)
             {
                 // there's one close enough, use that.
-                var best = relevantOverlaps.OrderBy(o => (o.transform.position - this.transform.position).magnitude).First();
+                closest.AddSmellComponent(this._distanceSinceTarget, this._targetValue, this.LastTrailPointSmellable);
+                //Debug.Log("Added smell component to other: " + closest + ". distance = " + Mathf.Sqrt(closestDist));
 
-                best.AddSmellComponent(this._distanceSinceTarget, this._targetValue, this.LastTrailPointSmellable);
-                //Debug.Log("Added smell component to other: " + best + ". distance = " + (best.transform.position - transform.position).magnitude);
-
-                this.LastTrailPointController = best;
+                this.LastTrailPointController = closest;
             }
             else
             {

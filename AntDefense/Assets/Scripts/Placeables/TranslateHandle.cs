@@ -54,10 +54,13 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
     public float CancelThreshold = 0.1f;
 
     private bool _mouseOverQuickBarButton = false;
+    private bool _uiRaycastHit;
+    private RaycastHit _uiRaycastHitInfo;
 
     // Update is called once per frame
     void Update()
     {
+        this.PerformUiRaycast();
         this.UpdateMouseOverQuickBarButton();
         this.UpdateHandleVisibility();
         this.HandleCancelButton();
@@ -210,42 +213,36 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
         this._lastActivateablePoint.Activate();
     }
 
+    private void PerformUiRaycast()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        _uiRaycastHit = Physics.Raycast(ray, out _uiRaycastHitInfo, 500, this.UiLayermask, QueryTriggerInteraction.Collide);
+    }
+
     private bool TryActivateQuickBarButton()
     {
-        var activated = false;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit, 500, this.UiLayermask, QueryTriggerInteraction.Collide))
+        if (_uiRaycastHit)
         {
-            var quickBarButton = hit.transform.GetComponentInParent<QuickBarButton>();
+            var quickBarButton = _uiRaycastHitInfo.transform.GetComponentInParent<QuickBarButton>();
             if (quickBarButton != null)
             {
                 ObjectPlacer.Instance.StartPlacingGhost(quickBarButton.Ghost);
-                activated = true;
+                return true;
             }
         }
-
-        return activated;
+        return false;
     }
 
     private void UpdateMouseOverQuickBarButton()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit, 500, this.UiLayermask, QueryTriggerInteraction.Collide))
-        {
-            this._mouseOverQuickBarButton = hit.transform.GetComponentInParent<ClickableButton>() != null;
-        }
-        else
-        {
-            this._mouseOverQuickBarButton = false;
-        }
+        this._mouseOverQuickBarButton = _uiRaycastHit && _uiRaycastHitInfo.transform.GetComponentInParent<ClickableButton>() != null;
     }
 
     private bool TryActivateSelectionActionButton()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit, 500, this.UiLayermask, QueryTriggerInteraction.Collide))
+        if (_uiRaycastHit)
         {
-            var button = hit.transform.GetComponentInParent<SelectionActionButton>();
+            var button = _uiRaycastHitInfo.transform.GetComponentInParent<SelectionActionButton>();
             if (button != null)
             {
                 button.Execute();
