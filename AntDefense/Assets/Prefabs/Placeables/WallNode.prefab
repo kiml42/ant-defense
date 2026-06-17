@@ -891,7 +891,7 @@ MonoBehaviour:
   MaxHealth: 120
   HealthIndicators:
   - {fileID: 6819999521266004232}
-  - {fileID: 0}
+  AdditionalDeathActions: []
 --- !u!114 &3963066099262168501
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1353,6 +1353,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HealthController
   MaxHealth: 10
   HealthIndicators: []
+  AdditionalDeathActions: []
 --- !u!114 &6819999521266004232
 MonoBehaviour:
   m_ObjectHideFlags: 0
