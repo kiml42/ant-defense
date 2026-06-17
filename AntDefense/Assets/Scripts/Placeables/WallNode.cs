@@ -91,10 +91,10 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
         if (halfGap > 0.001f && this.StumpPrefab != null)
         {
-            var stumpA = Instantiate(this.StumpPrefab, start + (halfGap / 2f) * dirNorm, rotation, this.transform);
+            var stumpA = Instantiate(this.StumpPrefab, start, rotation, this.transform);
             stumpA.transform.localScale = new Vector3(1, 1, halfGap);
 
-            var stumpB = Instantiate(this.StumpPrefab, end - (halfGap / 2f) * dirNorm, rotation, this.transform);
+            var stumpB = Instantiate(this.StumpPrefab, end, Quaternion.LookRotation(-dirNorm, Vector3.up), this.transform);
             stumpB.transform.localScale = new Vector3(1, 1, halfGap);
         }
 

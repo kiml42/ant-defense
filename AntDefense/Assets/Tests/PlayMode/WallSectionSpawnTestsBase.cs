@@ -204,8 +204,10 @@ public abstract class WallSectionSpawnTestsBase
     [UnityTest]
     public IEnumerator SpawnSections_SpawnsStump_WhenRemainderExistsAndPrefabSet()
     {
+        Vector3 start = Vector3.zero;
         float distance = SectionLength * 3 + SectionLength * 0.5f;
-        var wallNode = CreateWallSetup(Vector3.zero, new Vector3(0, 0, distance), withStumpPrefab: true);
+        Vector3 end = new Vector3(0, 0, distance);
+        var wallNode = CreateWallSetup(start, end, withStumpPrefab: true);
         wallNode.OnBuildStart();
         yield return null;
 
@@ -219,6 +221,17 @@ public abstract class WallSectionSpawnTestsBase
 
         Assert.AreEqual(3, sections.Count, "Expected 3 full wall sections");
         Assert.AreEqual(2, stumps.Count, "Expected one stump at each end of the wall");
+
+        float expectedGap = (distance - 3 * SectionLength) / 2f;
+
+        stumps.Sort((a, b) => a.position.z.CompareTo(b.position.z));
+        Transform stumpA = stumps[0];
+        Transform stumpB = stumps[1];
+
+        Assert.AreEqual(start, stumpA.position, "StumpA must be placed at the start node position");
+        Assert.AreEqual(end,   stumpB.position, "StumpB must be placed at the end node position");
+        Assert.AreEqual(expectedGap, stumpA.localScale.z, 0.001f, "StumpA Z scale must equal the gap size");
+        Assert.AreEqual(expectedGap, stumpB.localScale.z, 0.001f, "StumpB Z scale must equal the gap size");
     }
 
     [UnityTest]
