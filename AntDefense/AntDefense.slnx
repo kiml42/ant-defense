@@ -1,5 +1,5 @@
 ﻿<Solution>
+  <Project Path="PlayMode.csproj" />
   <Project Path="AntDefense.csproj" />
   <Project Path="Tests.EditMode.csproj" />
-  <Project Path="PlayMode.csproj" />
 </Solution>

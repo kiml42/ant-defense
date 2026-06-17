@@ -5,12 +5,20 @@ using UnityEngine;
 public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePositionValidator, ISelectableObject
 {
     public WallNode ConnectedNode;
-    public Transform Wall;
+    public Transform WallGhost;
     public Transform Node;
     public float MaxLength;
 
     public float CostPerMeter = 1f;
     private SelectableGhostableMonoBehaviour _child;
+
+    public WallSection SectionPrefab;
+    public GameObject StumpPrefab;
+    /// <summary>
+    /// Length of each wall section in world units. The total number of sections is floor(distance / SectionLength).
+    /// Any remaining distance is covered by a stump at each node end.
+    /// </summary>
+    public float SectionLength => this.SectionPrefab.SectionLength;
 
     public bool IsWallToBuildOn => this._child == null;
 
@@ -44,18 +52,71 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
     public override Vector3 Position => this.transform.position;
 
+    public override void OnBuildStart()
+    {
+        this.SpawnSections();
+        this.enabled = false;   // disable to prevent UpdateWallGhost() asserting on the destroyed ghost
+    }
+
     public override void OnPlace()
     {
-        this.UpdateWall();
-        this.enabled = false;   //disable to prevent updating the wall every frame
-        NoSpawnZone.Register(this); // register this as a selection point
+        NoSpawnZone.Register(this);
+    }
+
+    private void SpawnSections()
+    {
+        if (this.ConnectedNode == null || this.SectionPrefab == null) return;
+
+        Vector3 start = this.transform.position;
+        Vector3 end = this.ConnectedNode.transform.position;
+        Vector3 direction = end - start;
+        float distance = direction.magnitude;
+
+        if (distance < 0.01f) return;
+
+        int sectionCount = Mathf.FloorToInt(distance / this.SectionLength);
+        if (sectionCount == 0) return;
+
+        Vector3 dirNorm = direction.normalized;
+        Quaternion rotation = Quaternion.LookRotation(dirNorm, Vector3.up);
+
+        float halfGap = (distance - sectionCount * this.SectionLength) / 2f;
+
+        for (int i = 0; i < sectionCount; i++)
+        {
+            Vector3 pos = start + (halfGap + (i + 0.5f) * this.SectionLength) * dirNorm;
+            var section = Instantiate(this.SectionPrefab, pos, rotation, this.transform);
+            section.GetComponent<PlaceableObjectOrGhost>().Place();
+        }
+
+        if (halfGap > 0.001f && this.StumpPrefab != null)
+        {
+            var stumpA = Instantiate(this.StumpPrefab, start, rotation, this.transform);
+            stumpA.transform.localScale = new Vector3(1, 1, halfGap);
+            this.SetupStump(stumpA, this);
+
+            var stumpB = Instantiate(this.StumpPrefab, end, Quaternion.LookRotation(-dirNorm, Vector3.up), this.ConnectedNode.transform);
+            stumpB.transform.localScale = new Vector3(1, 1, halfGap);
+            this.SetupStump(stumpB, this.ConnectedNode);
+        }
+
+        Debug.Log("Destroying the wall ghost");
+        Destroy(this.WallGhost.gameObject);
+    }
+
+    private void SetupStump(GameObject stump, WallNode parentNode)
+    {
+        var forwarder = stump.GetComponent<ForwardDamageToParent>();
+        if (forwarder != null)
+            forwarder.Target = parentNode.GetComponentInChildren<HealthController>();
+        stump.GetComponent<PlaceableObjectOrGhost>()?.Place();
     }
 
     internal void ConnectTo(WallNode other)
     {
         //Debug.Log("Connecting WallNode to " + other);
         this.ConnectedNode = other;
-        this.UpdateWall();
+        this.UpdateWallGhost();
     }
 
     public bool PositionIsValid(Vector3 position)
@@ -65,13 +126,13 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
 
     private void Update()
     {
-        this.UpdateWall();
+        this.UpdateWallGhost();
     }
 
-    private void UpdateWall()
+    private void UpdateWallGhost()
     {
         //TODO - move the health bar to over the middle of the wall.
-        Debug.Assert(this.Wall != null, "WallNode has no Wall assigned.");
+        Debug.Assert(this.WallGhost != null, "WallNode has no Wall Ghost assigned.");
         //Debug.Log("Updating WallNode. Connected to " + ConnectedNode);
         if (this.ConnectedNode != null)
         {
@@ -79,13 +140,13 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
             if (direction.magnitude > 0.01f)
             {
                 var midpoint = this.transform.position + (direction * 0.5f);
-                this.Wall.position = midpoint;
-                this.Wall.localScale = new Vector3(1, 1, direction.magnitude);
-                this.Wall.rotation = Quaternion.LookRotation(direction, Vector3.up);
+                this.WallGhost.position = midpoint;
+                this.WallGhost.localScale = new Vector3(1, 1, direction.magnitude);
+                this.WallGhost.rotation = Quaternion.LookRotation(direction, Vector3.up);
                 return;
             }
         }
-        this.Wall.localScale = Vector3.zero;
+        this.WallGhost.localScale = Vector3.zero;
     }
 
     protected override void OnSelect()
@@ -182,7 +243,12 @@ public abstract class PlaceableSelectableGhostableMonoBehaviour : SelectableGhos
     public virtual float AdditionalCost => 0f;
 
     /// <summary>
-    /// Called when the object is placed to start whatever spawn behaviour it has defined.
+    /// Called at the moment the object is placed (when the build animation begins).
+    /// </summary>
+    public virtual void OnBuildStart() { }
+
+    /// <summary>
+    /// Called when the object finishes being built (after the build animation completes).
     /// </summary>
     public abstract void OnPlace();
 }
