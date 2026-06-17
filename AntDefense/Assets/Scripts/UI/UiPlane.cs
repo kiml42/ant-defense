@@ -60,7 +60,7 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
             newButton.transform.parent = this.transform;
             newButton.Ghost = ghost;
 
-            newButton.CostText.text = $"�{ghost.BaseCost:F2}";
+            newButton.CostText.text = $"£{ghost.BaseCost:F2}";
             CreateDummy(ghost, newButton);
 
             this._buttons.Add(newButton);
