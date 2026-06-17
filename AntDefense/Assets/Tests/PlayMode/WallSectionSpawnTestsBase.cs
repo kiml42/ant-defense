@@ -209,11 +209,16 @@ public abstract class WallSectionSpawnTestsBase
         wallNode.OnBuildStart();
         yield return null;
 
-        int sectionCount = GetSpawnedSections(wallNode).Count;
-        int totalChildren = wallNode.transform.childCount;
+        var sections = GetSpawnedSections(wallNode);
+        var stumps = new List<Transform>();
+        foreach (Transform child in wallNode.transform)
+        {
+            if (child.GetComponent<WallSection>() == null)
+                stumps.Add(child);
+        }
 
-        // TODO: currently only one stump is spawned (at nodeA end); spawn one at nodeB end too
-        Assert.AreEqual(sectionCount + 2, totalChildren, "Expected one stump at each end of the wall");
+        Assert.AreEqual(3, sections.Count, "Expected 3 full wall sections");
+        Assert.AreEqual(2, stumps.Count, "Expected one stump at each end of the wall");
     }
 
     [UnityTest]
