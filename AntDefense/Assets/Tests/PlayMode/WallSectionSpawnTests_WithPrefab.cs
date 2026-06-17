@@ -85,6 +85,54 @@ public class WallSectionSpawnTests_WithPrefab : WallSectionSpawnTestsBase
     }
 
     [UnityTest]
+    public IEnumerator SpawnSections_StumpHealthIndicators_RegisteredWithParentNode()
+    {
+        float distance = SectionLength * 3 + SectionLength * 0.5f;
+        var wallNode = CreateWallSetup(Vector3.zero, new Vector3(0, 0, distance), withStumpPrefab: true);
+        wallNode.OnBuildStart();
+        yield return null;
+
+        var stumps = GetSpawnedStumps(wallNode);
+        Assert.AreEqual(2, stumps.Count, "Expected 2 stumps");
+
+        foreach (var stump in stumps)
+        {
+            var parentHealth = stump.parent.GetComponentInChildren<HealthController>();
+            Assert.IsNotNull(parentHealth, $"Parent of '{stump.name}' has no HealthController");
+
+            foreach (var indicator in stump.GetComponentsInChildren<ProgressIndicatorBehaviour>(includeInactive: true))
+            {
+                Assert.That(parentHealth.HealthIndicators, Does.Contain(indicator),
+                    $"Stump indicator '{indicator.name}' must be registered on the parent node's HealthController");
+            }
+        }
+    }
+
+    [UnityTest]
+    public IEnumerator SpawnSections_StumpDeathAnimation_TriggeredWhenParentNodeDies()
+    {
+        float distance = SectionLength * 3 + SectionLength * 0.5f;
+        var wallNode = CreateWallSetup(Vector3.zero, new Vector3(0, 0, distance), withStumpPrefab: true);
+        wallNode.OnBuildStart();
+        yield return null;
+
+        var stumps = GetSpawnedStumps(wallNode);
+        Assert.AreEqual(2, stumps.Count, "Expected 2 stumps");
+
+        foreach (var stump in stumps)
+        {
+            var parentHealth = stump.parent.GetComponentInChildren<HealthController>();
+            Assert.IsNotNull(parentHealth, $"Parent of '{stump.name}' has no HealthController");
+
+            parentHealth.Injure(parentHealth.MaxHealth);
+
+            var anim = stump.GetComponentInChildren<BaseBuildAnimation>(includeInactive: true);
+            Assert.IsNotNull(anim, $"Stump '{stump.name}' has no BaseBuildAnimation");
+            Assert.IsTrue(anim.HasDied, $"Stump '{stump.name}' death animation should have been triggered when parent node died");
+        }
+    }
+
+    [UnityTest]
     public IEnumerator SpawnSections_StumpDamage_ForwardedToParentWallNode()
     {
         float distance = SectionLength * 3 + SectionLength * 0.5f;

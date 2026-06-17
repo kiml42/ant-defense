@@ -41,6 +41,7 @@ public abstract class  BaseBuildAnimation : DeathActionBehaviour
     private bool _isRunning = false;
 
     public bool HasStartedAnimating => this._progress > 0f;
+    public bool HasDied => this._hasDied;
 
     public bool ReverseOnDeath = true;
     private bool _hasDied = false;
