@@ -50,6 +50,17 @@ public abstract class WallSectionSpawnTestsBase
         return sections;
     }
 
+    protected List<Transform> GetSpawnedStumps(WallNode wallNode)
+    {
+        var stumps = new List<Transform>();
+        foreach (Transform child in wallNode.transform)
+        {
+            if (child.GetComponent<WallSection>() == null)
+                stumps.Add(child);
+        }
+        return stumps;
+    }
+
     // ── Section count ────────────────────────────────────────────────────────
 
     [UnityTest]
@@ -212,12 +223,7 @@ public abstract class WallSectionSpawnTestsBase
         yield return null;
 
         var sections = GetSpawnedSections(wallNode);
-        var stumps = new List<Transform>();
-        foreach (Transform child in wallNode.transform)
-        {
-            if (child.GetComponent<WallSection>() == null)
-                stumps.Add(child);
-        }
+        var stumps = GetSpawnedStumps(wallNode);
 
         Assert.AreEqual(3, sections.Count, "Expected 3 full wall sections");
         Assert.AreEqual(2, stumps.Count, "Expected one stump at each end of the wall");

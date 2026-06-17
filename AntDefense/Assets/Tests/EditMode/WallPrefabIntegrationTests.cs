@@ -10,9 +10,11 @@ public class WallPrefabIntegrationTests
 {
     private const string WallNodePrefabPath    = "Assets/Prefabs/Placeables/WallNode.prefab";
     private const string WallSectionPrefabPath = "Assets/Prefabs/Placeables/WallSection.prefab";
+    private const string WallStumpPrefabPath   = "Assets/Prefabs/Placeables/WallStump.prefab";
 
     private WallNode    _wallNode;
     private WallSection _wallSection;
+    private GameObject  _wallStump;
 
     [SetUp]
     public void SetUp()
@@ -26,6 +28,9 @@ public class WallPrefabIntegrationTests
         Assert.IsNotNull(sectionPrefab, $"Could not load prefab at {WallSectionPrefabPath}");
         _wallSection = sectionPrefab.GetComponentInChildren<WallSection>(includeInactive: true);
         Assert.IsNotNull(_wallSection, "WallSection prefab has no WallSection component");
+
+        _wallStump = AssetDatabase.LoadAssetAtPath<GameObject>(WallStumpPrefabPath);
+        Assert.IsNotNull(_wallStump, $"Could not load prefab at {WallStumpPrefabPath}");
     }
 
     // ── WallNode prefab ──────────────────────────────────────────────────────
@@ -88,6 +93,22 @@ public class WallPrefabIntegrationTests
     {
         var health = _wallSection.GetComponentInChildren<HealthController>(includeInactive: true);
         Assert.Greater(health.MaxHealth, 0f);
+    }
+
+    // ── WallStump prefab ─────────────────────────────────────────────────────
+
+    [Test]
+    public void WallStump_HasPlaceableRealObject()
+    {
+        Assert.IsNotNull(_wallStump.GetComponentInChildren<PlaceableObjectOrGhost>(includeInactive: true),
+            "WallStump prefab must have a PlaceableObjectOrGhost component so Place() can trigger its animation");
+    }
+
+    [Test]
+    public void WallStump_HasBuildAnimation()
+    {
+        Assert.IsNotNull(_wallStump.GetComponentInChildren<BaseBuildAnimation>(includeInactive: true),
+            "WallStump prefab must have a BaseBuildAnimation component");
     }
 
     // ── Cross-prefab consistency ─────────────────────────────────────────────

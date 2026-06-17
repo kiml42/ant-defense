@@ -93,9 +93,11 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
         {
             var stumpA = Instantiate(this.StumpPrefab, start, rotation, this.transform);
             stumpA.transform.localScale = new Vector3(1, 1, halfGap);
+            stumpA.GetComponent<PlaceableObjectOrGhost>()?.Place();
 
             var stumpB = Instantiate(this.StumpPrefab, end, Quaternion.LookRotation(-dirNorm, Vector3.up), this.transform);
             stumpB.transform.localScale = new Vector3(1, 1, halfGap);
+            stumpB.GetComponent<PlaceableObjectOrGhost>()?.Place();
         }
 
         Debug.Log("Destroying the wall ghost");
