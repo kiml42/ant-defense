@@ -43,6 +43,12 @@ public class WallPrefabIntegrationTests
     }
 
     [Test]
+    public void WallNode_HasStumpPrefabAssigned()
+    {
+        Assert.IsNotNull(_wallNode.StumpPrefab, "StumpPrefab must be assigned on the WallNode prefab");
+    }
+
+    [Test]
     public void WallNode_MaxLengthIsPositive()
     {
         Assert.Greater(_wallNode.MaxLength, 0f);
