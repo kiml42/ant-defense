@@ -56,6 +56,7 @@ public class AntTargetSelector : MonoBehaviour
     {
         _antStateMachine = GetComponent<AntStateMachine>();
         ViewPoint = ViewPoint != null ? ViewPoint : transform;
+        _losCheckTimer = Random.Range(0f, LosCheckInterval);
     }
 
     private void FixedUpdate()
