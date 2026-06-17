@@ -48,12 +48,8 @@ public class HealthController : MonoBehaviour
 
     private void ShowDamage()
     {
-        if (this.HealthIndicators != null)
-        {
-            foreach (var indicator in this.HealthIndicators)
-            {
-                indicator.AdjustProgress(this.CurrentHealth, this.MaxHealth);
-            }
-        }
+        if (this.HealthIndicators == null) return;
+        foreach (var indicator in this.HealthIndicators)
+            indicator?.AdjustProgress(this.CurrentHealth, this.MaxHealth);
     }
 }
