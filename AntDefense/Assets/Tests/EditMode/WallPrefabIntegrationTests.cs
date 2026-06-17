@@ -111,6 +111,13 @@ public class WallPrefabIntegrationTests
             "WallStump prefab must have a BaseBuildAnimation component");
     }
 
+    [Test]
+    public void WallStump_HasForwardDamageToParent()
+    {
+        Assert.IsNotNull(_wallStump.GetComponentInChildren<ForwardDamageToParent>(includeInactive: true),
+            "WallStump prefab must have a ForwardDamageToParent component so hits are applied to the parent wall node");
+    }
+
     // ── Cross-prefab consistency ─────────────────────────────────────────────
 
     [Test]

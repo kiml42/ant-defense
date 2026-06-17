@@ -93,15 +93,23 @@ public class WallNode : PlaceableSelectableGhostableMonoBehaviour, IPlaceablePos
         {
             var stumpA = Instantiate(this.StumpPrefab, start, rotation, this.transform);
             stumpA.transform.localScale = new Vector3(1, 1, halfGap);
-            stumpA.GetComponent<PlaceableObjectOrGhost>()?.Place();
+            this.SetupStump(stumpA, this);
 
-            var stumpB = Instantiate(this.StumpPrefab, end, Quaternion.LookRotation(-dirNorm, Vector3.up), this.transform);
+            var stumpB = Instantiate(this.StumpPrefab, end, Quaternion.LookRotation(-dirNorm, Vector3.up), this.ConnectedNode.transform);
             stumpB.transform.localScale = new Vector3(1, 1, halfGap);
-            stumpB.GetComponent<PlaceableObjectOrGhost>()?.Place();
+            this.SetupStump(stumpB, this.ConnectedNode);
         }
 
         Debug.Log("Destroying the wall ghost");
         Destroy(this.WallGhost.gameObject);
+    }
+
+    private void SetupStump(GameObject stump, WallNode parentNode)
+    {
+        var forwarder = stump.GetComponent<ForwardDamageToParent>();
+        if (forwarder != null)
+            forwarder.Target = parentNode.GetComponentInChildren<HealthController>();
+        stump.GetComponent<PlaceableObjectOrGhost>()?.Place();
     }
 
     internal void ConnectTo(WallNode other)

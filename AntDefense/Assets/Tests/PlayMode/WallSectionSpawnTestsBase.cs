@@ -53,12 +53,19 @@ public abstract class WallSectionSpawnTestsBase
     protected List<Transform> GetSpawnedStumps(WallNode wallNode)
     {
         var stumps = new List<Transform>();
-        foreach (Transform child in wallNode.transform)
+        CollectStumps(wallNode.transform, stumps);
+        if (wallNode.ConnectedNode != null)
+            CollectStumps(wallNode.ConnectedNode.transform, stumps);
+        return stumps;
+    }
+
+    private void CollectStumps(Transform parent, List<Transform> result)
+    {
+        foreach (Transform child in parent)
         {
             if (child.GetComponent<WallSection>() == null)
-                stumps.Add(child);
+                result.Add(child);
         }
-        return stumps;
     }
 
     // ── Section count ────────────────────────────────────────────────────────
@@ -238,6 +245,9 @@ public abstract class WallSectionSpawnTestsBase
         Assert.AreEqual(end,   stumpB.position, "StumpB must be placed at the end node position");
         Assert.AreEqual(expectedGap, stumpA.localScale.z, 0.001f, "StumpA Z scale must equal the gap size");
         Assert.AreEqual(expectedGap, stumpB.localScale.z, 0.001f, "StumpB Z scale must equal the gap size");
+
+        Assert.AreEqual(wallNode.transform,               stumpA.parent, "StumpA must be a child of the start WallNode");
+        Assert.AreEqual(wallNode.ConnectedNode.transform, stumpB.parent, "StumpB must be a child of the end WallNode");
     }
 
     [UnityTest]

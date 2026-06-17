@@ -39,6 +39,7 @@ public class WallSectionSpawnTests_WithPrefab : WallSectionSpawnTestsBase
         var connectedGO = new GameObject("ConnectedNode");
         connectedGO.transform.position = end;
         var connectedNode = connectedGO.AddComponent<WallNode>();
+        connectedGO.AddComponent<HealthController>();
         var connectedGhostGO = new GameObject("ConnectedWallGhost");
         connectedNode.WallGhost = connectedGhostGO.transform;
         ToDestroy.Add(connectedGO);
@@ -50,6 +51,7 @@ public class WallSectionSpawnTests_WithPrefab : WallSectionSpawnTestsBase
         var wallNodeGO = new GameObject("WallNode");
         wallNodeGO.transform.position = start;
         var wallNode = wallNodeGO.AddComponent<WallNode>();
+        wallNodeGO.AddComponent<HealthController>();
         wallNode.SectionPrefab = _sectionPrefab;
         wallNode.ConnectedNode = connectedNode;
         wallNode.WallGhost = ghostGO.transform;
@@ -79,6 +81,35 @@ public class WallSectionSpawnTests_WithPrefab : WallSectionSpawnTestsBase
             var anim = stump.GetComponentInChildren<BaseBuildAnimation>(includeInactive: true);
             Assert.IsNotNull(anim, $"Stump '{stump.name}' has no BaseBuildAnimation component");
             Assert.IsTrue(anim.HasStartedAnimating, $"Stump '{stump.name}' animation has not started");
+        }
+    }
+
+    [UnityTest]
+    public IEnumerator SpawnSections_StumpDamage_ForwardedToParentWallNode()
+    {
+        float distance = SectionLength * 3 + SectionLength * 0.5f;
+        var wallNode = CreateWallSetup(Vector3.zero, new Vector3(0, 0, distance), withStumpPrefab: true);
+        wallNode.OnBuildStart();
+
+        // Wait one frame for ForwardDamageToParent.Start() to run and wire up ImpactDamageHandlers
+        yield return null;
+
+        var stumps = GetSpawnedStumps(wallNode);
+        Assert.AreEqual(2, stumps.Count, "Expected 2 stumps");
+
+        foreach (var stump in stumps)
+        {
+            var parentHealth = stump.parent.GetComponentInChildren<HealthController>();
+            Assert.IsNotNull(parentHealth, $"Parent of '{stump.name}' has no HealthController");
+
+            float damageBefore = parentHealth.Damage;
+
+            var handler = stump.GetComponentInChildren<ImpactDamageHandler>(includeInactive: true);
+            Assert.IsNotNull(handler, $"Stump '{stump.name}' has no ImpactDamageHandler");
+            handler.DealDamageAtPoint(10f, stump.position);
+
+            Assert.AreEqual(damageBefore + 10f, parentHealth.Damage, 0.001f,
+                $"Damage dealt to '{stump.name}' should have been applied to its parent WallNode's health");
         }
     }
 }
