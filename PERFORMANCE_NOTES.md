@@ -2,32 +2,34 @@
 
 Remove items from this list as they are completed.
 
+All identified items have been implemented. File kept for reference.
+
 ---
 
 ## GC Allocations (cause stutters via garbage collection)
 
-- [x] **AntCam.cs:21-29** — `_directionKeys` property allocated 4 new collections + array every frame. Fixed: cached as a field initialised in `Awake()`.
+- [x] 1 **AntCam.cs:21-29** — `_directionKeys` property allocated 4 new collections + array every frame. Fixed: cached as a field initialised in `Awake()`.
 
-- [ ] **TrailPointManager.cs:52,62** — LINQ `.Where()` in `Update()` allocates enumerators every frame across potentially hundreds of trail points. Replace with manual `for` loops.
+- [x] 2 **TrailPointManager.cs:52,62** — LINQ `.Where()` in `Update()` allocates enumerators every frame across potentially hundreds of trail points. Fixed: manual `foreach` loops with inline guards.
 
-- [ ] **TurretController.cs:171** — `CleanTargets()` runs `.Where().Distinct().ToList()` every `FixedUpdate`. `.Distinct()` is O(n²) worst-case and allocates. Use `RemoveAll()` instead.
+- [x] 3 **TurretController.cs:171** — `CleanTargets()` ran `.Where().Distinct().ToList()` every `FixedUpdate`. Fixed: `RemoveAll()`. `.Distinct()` was also redundant since `RegisterTarget` already prevents duplicates.
 
-- [ ] **TrailPointController.cs:59,67,80** — LINQ `.Any()`, `.Max()`, `.OrderBy().First()` in properties likely called in hot paths. Replace with manual loops.
+- [x] 4 **TrailPointController.cs:59,67,80** — LINQ `.Any()`, `.Max()`, `.OrderBy().First()` in properties called in hot paths. Fixed: manual for-loops throughout; `UpdateTrailPoint` uses reverse-index `RemoveAt`.
 
-- [ ] **UiPlane.cs:25** — LINQ filter on `ProtectMes` every frame to clean up destroyed objects. Switch to event/callback-based cleanup.
+- [x] 5 **UiPlane.cs:25** — LINQ filter + `ToArray()` on `ProtectMes` every frame. Fixed: `RemoveAll()`.
 
 ---
 
 ## Physics / Raycasts
 
-- [ ] **AntTrailController.cs:111** — `Physics.OverlapSphere()` every `FixedUpdate` per ant. Add a frame-skip counter (every 2–3 frames) to halve/third the cost.
+- [x] 6 **AntTrailController.cs:111** — LINQ chain over `Physics.OverlapSphere` results every time a trail point is dropped. Fixed: single manual loop; distance comparison uses `sqrMagnitude`.
 
-- [ ] **AntTargetSelector.cs:198** — LOS raycast every `FixedUpdate` per ant. Cache the result with a short TTL (e.g. 0.1s) and only recheck on expiry.
+- [x] 7 **AntTargetSelector.cs:198** — LOS raycast every `FixedUpdate` per ant. Fixed: TTL-cached via `CachedCheckLineOfSight()` (default interval 0.1s); cache invalidated on target change.
 
-- [ ] **TranslateHandle.cs:216,232,245** — 3 separate raycasts per frame for input detection. Do one raycast and pass the result to all handlers.
+- [x] 8 **TranslateHandle.cs:216,232,245** — 3 separate raycasts per frame for UI input. Fixed: single `PerformUiRaycast()` in `Update()`; result shared by all three handlers.
 
 ---
 
 ## Algorithmic
 
-- [ ] **NoSpawnZone.cs:137-171** — `GetBestEdgePosition()` has nested LINQ loops that re-check `IsInAnyNoSpawnZone()` for every candidate point on every mouse-move frame. Cache per-frame or dirty-flag the result.
+- [x] 9 **NoSpawnZone.cs:137-171** — LINQ `.Where()` / `.Select()` allocations in `GetBestEdgePosition()` on every mouse-drag frame. Fixed: manual for-loops; `transgressedZones` list lazily allocated only when needed; `pointsToCheck` pre-sized.
