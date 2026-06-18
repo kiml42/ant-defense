@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e83caeb337a1f148b95a39c32105e58, type: 3}
-  m_Name: L0
+  m_Name: L1
   m_EditorClassIdentifier: AntDefense::LevelDefinition
   LevelName: L0
   StartingMoney: 100
@@ -36,6 +36,15 @@ MonoBehaviour:
     EulerRotation: {x: 0, y: 0, z: 0}
   Nests:
   - Position: {x: -61.6, y: 0, z: -2.5999994}
+    MaxAnts: 200
+    AntsPerSpawn: 5
+    MinRespawnTime: 1
+    MaxRespawnTime: 5
+    ReserveFood: 100
+    MaxFood: 400
+    StartFood: 400
+    FoodExpenditure: 0.01
+  - Position: {x: 61.6, y: 0, z: -2.5999994}
     MaxAnts: 200
     AntsPerSpawn: 5
     MinRespawnTime: 1

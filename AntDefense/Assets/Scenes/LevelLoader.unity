@@ -1066,7 +1066,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bca15d03769d2484090d3f0574a3532a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AntDefense::LevelLoader
-  Level: {fileID: 11400000, guid: 982829530d4f9d4488ed1637dbb1dd2c, type: 2}
+  Level: {fileID: 11400000, guid: ec52e302c74bf1249b2438b9b38dfbb4, type: 2}
   NestPrefab: {fileID: 4243399154530772869, guid: 98c4698d565f2884b9b31b30eaf8f856, type: 3}
 --- !u!1 &2136715976
 GameObject:
