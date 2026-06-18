@@ -45,7 +45,7 @@ public class LevelLoader : MonoBehaviour
                 continue;
             }
             var rotation = Quaternion.Euler(entry.EulerRotation);
-            Instantiate(entry.Prefab, entry.Position, rotation);
+            Instantiate(entry.Prefab, entry.Position, rotation, null);
         }
     }
 
