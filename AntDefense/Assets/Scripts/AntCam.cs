@@ -12,7 +12,7 @@ public class AntCam : MonoBehaviour
     public float MaxXDeviation = 100f;
     public float MaxZDeviation = 100f;
 
-    private Vector3 _lastMousePosition;
+    private Vector3 _dragAnchorWorld;
 
     private KeyCode[] _upKeyCodes = new[] { KeyCode.W, KeyCode.UpArrow };
     private KeyCode[] _leftKeyCodes = new[] { KeyCode.A, KeyCode.LeftArrow };
@@ -49,20 +49,15 @@ public class AntCam : MonoBehaviour
 
         if (Input.GetMouseButtonDown(MouseButton))
         {
-            this._lastMousePosition = Input.mousePosition;
+            this._dragAnchorWorld = GroundPointUnderRay(this.Camera.ScreenPointToRay(Input.mousePosition));
         }
 
         if (Input.GetMouseButton(MouseButton))
         {
-            var change = Input.mousePosition - this._lastMousePosition;
-            this._lastMousePosition = Input.mousePosition;
-            if (change.magnitude > 0)
-            {
-                //Debug.Log("Mouse Move " + change);
-                //transform.position += change;
-                newX -= change.x * this.Speed;
-                newZ -= change.y * this.Speed;
-            }
+            var currentGroundPoint = GroundPointUnderRay(this.Camera.ScreenPointToRay(Input.mousePosition));
+            var delta = this._dragAnchorWorld - currentGroundPoint;
+            newX += delta.x;
+            newZ += delta.z;
         }
         else
         {
@@ -161,5 +156,15 @@ public class AntCam : MonoBehaviour
     private static float GetProportionOfRange(float proportion, float min, float max)
     {
         return min + ((max - min) * proportion);
+    }
+
+    // Finds the point on the y=0 ground plane that lies along the given ray.
+    // Returns ray.origin if the ray is parallel to the ground (degenerate case).
+    public static Vector3 GroundPointUnderRay(Ray ray)
+    {
+        if (Mathf.Approximately(ray.direction.y, 0f))
+            return ray.origin;
+        float t = -ray.origin.y / ray.direction.y;
+        return ray.origin + t * ray.direction;
     }
 }
