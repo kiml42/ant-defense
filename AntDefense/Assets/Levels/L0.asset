@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e83caeb337a1f148b95a39c32105e58, type: 3}
+  m_Name: L0
+  m_EditorClassIdentifier: AntDefense::LevelDefinition
+  LevelName: L0
+  StartingMoney: 100
+  IncomePerSecond: 100
+  MapObjects:
+  - Prefab: {fileID: 100100000, guid: d10197047e81f784ab53911712b7cabb, type: 3}
+    Position: {x: -56.399994, y: -0.33998108, z: 44.9}
+    EulerRotation: {x: 0, y: 0, z: 0}
+  - Prefab: {fileID: 100100000, guid: d10197047e81f784ab53911712b7cabb, type: 3}
+    Position: {x: 53.999992, y: -0.33999634, z: -19.399998}
+    EulerRotation: {x: 0, y: 0, z: 0}
+  - Prefab: {fileID: 100100000, guid: d10197047e81f784ab53911712b7cabb, type: 3}
+    Position: {x: 43.1, y: -0.33999634, z: -2.4999971}
+    EulerRotation: {x: 0, y: 0, z: 0}
+  - Prefab: {fileID: 100100000, guid: d10197047e81f784ab53911712b7cabb, type: 3}
+    Position: {x: -80.799995, y: -0.3400116, z: -29.3}
+    EulerRotation: {x: 0, y: 0, z: 0}
+  - Prefab: {fileID: 100100000, guid: d10197047e81f784ab53911712b7cabb, type: 3}
+    Position: {x: 38, y: -0.33999634, z: -23.399998}
+    EulerRotation: {x: 0, y: 0, z: 0}
+  - Prefab: {fileID: 100100000, guid: 35987110d981f0a4a8e1f7028d1593d5, type: 3}
+    Position: {x: 66.399994, y: 0, z: 42.2}
+    EulerRotation: {x: 0, y: 0, z: 0}
+  Nests:
+  - Position: {x: -61.6, y: 0, z: -2.5999994}
+    MaxAnts: 100
+    AntsPerSpawn: 5
+    MinRespawnTime: 1
+    MaxRespawnTime: 5
+    ReserveFood: 20
+    MaxFood: 200
+    StartFood: 50
+    FoodExpenditure: 0.1
