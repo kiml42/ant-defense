@@ -21,7 +21,7 @@ public class LevelDefinition : ScriptableObject
 [Serializable]
 public class SpawnEntry
 {
-    public Object Prefab;
+    public UnityEngine.Object Prefab;
     public Vector3 Position;
     public Vector3 EulerRotation;
 }
