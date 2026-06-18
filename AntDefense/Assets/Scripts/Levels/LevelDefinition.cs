@@ -38,8 +38,8 @@ public class NestConfig
     public float MaxRespawnTime = 5f;
 
     [Header("Food")]
-    public float ReserveFood = 20f;
-    public float MaxFood = 200f;
-    public float StartFood = 50f;
-    public float FoodExpenditure = 0.1f;
+    public float ReserveFood = 100f;
+    public float MaxFood = 400f;
+    public float StartFood = 400f;
+    public float FoodExpenditure = 0.01f;
 }

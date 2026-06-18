@@ -36,11 +36,11 @@ MonoBehaviour:
     EulerRotation: {x: 0, y: 0, z: 0}
   Nests:
   - Position: {x: -61.6, y: 0, z: -2.5999994}
-    MaxAnts: 100
+    MaxAnts: 200
     AntsPerSpawn: 5
     MinRespawnTime: 1
     MaxRespawnTime: 5
-    ReserveFood: 20
-    MaxFood: 200
-    StartFood: 50
-    FoodExpenditure: 0.1
+    ReserveFood: 100
+    MaxFood: 400
+    StartFood: 400
+    FoodExpenditure: 0.01
