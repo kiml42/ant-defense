@@ -21,17 +21,14 @@ public class LevelSelectUI : MonoBehaviour
     [Tooltip("Button prefab. Must have a Text or TMP_Text child for the label.")]
     public Button ButtonPrefab;
 
-    public Vector2 ButtonSize = new Vector2(160, 40);
+    public float ButtonScale = 1f;
 
     void Start()
     {
         foreach (var level in Registry.Levels)
         {
             var btn = Instantiate(ButtonPrefab, ButtonContainer);
-
-            var rect = btn.GetComponent<RectTransform>();
-            if (rect != null)
-                rect.sizeDelta = ButtonSize;
+            btn.transform.localScale = Vector3.one * ButtonScale;
 
             var label = btn.GetComponentInChildren<TMPro.TMP_Text>();
             if (label != null)
