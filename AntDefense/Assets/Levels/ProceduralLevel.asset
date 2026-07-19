@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e83caeb337a1f148b95a39c32105e58, type: 3}
   m_Name: ProceduralLevel
   m_EditorClassIdentifier: AntDefense::LevelDefinition
-  LevelName: Procedural
-  SceneName: L1
+  LevelName: Procedural (WIP)
+  SceneName: ProceduralLevel
   StartingMoney: 100
   IncomePerSecond: 5
