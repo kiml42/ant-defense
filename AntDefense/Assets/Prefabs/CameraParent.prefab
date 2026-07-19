@@ -231,7 +231,7 @@ MonoBehaviour:
   Panel: {fileID: 7047974993136644170}
   LevelNameLabel: {fileID: 3204863468574299426}
   GameState: {fileID: 11400000, guid: 0bf12050de86b0d4b980c091c6ec0833, type: 2}
-  LevelSelectSceneName: LevelLoader
+  LevelSelectSceneName: LevelSelect
 --- !u!1 &1807611580485893518
 GameObject:
   m_ObjectHideFlags: 0

@@ -473,7 +473,7 @@ MonoBehaviour:
   m_Spacing: 30
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 1
+  m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
@@ -514,7 +514,7 @@ MonoBehaviour:
   GameState: {fileID: 11400000, guid: 0bf12050de86b0d4b980c091c6ec0833, type: 2}
   BaseSceneName: BaseScrene
   ButtonContainer: {fileID: 921315070}
-  ButtonPrefab: {fileID: 2370721900124868138, guid: 2a052551fd1abc34998dc860bf51d3ef, type: 3}
+  ButtonPrefab: {fileID: 479935569800719780, guid: 1176a78ef9ab5af469ba01c7b163efa5, type: 3}
 --- !u!114 &1079632255
 MonoBehaviour:
   m_ObjectHideFlags: 0
