@@ -5,7 +5,7 @@ public class LevelDefinition : ScriptableObject
 {
     public string LevelName = "New Level";
 
-    [Tooltip("Name of the additive scene to load for this level (must be in Build Settings).")]
+    [SceneName]
     public string SceneName;
 
     [Header("Player Resources")]
