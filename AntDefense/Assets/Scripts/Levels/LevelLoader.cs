@@ -1,17 +1,15 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Reads a LevelDefinition asset at scene start and sets up the map:
-/// spawns map objects, instantiates ant nests with configured parameters,
-/// and applies player resource settings.
+/// Sits in the base scene. Applies per-level resource settings then loads the
+/// level's own scene additively so gameplay objects (nests, food, etc.) are
+/// kept separate from shared infrastructure.
 /// </summary>
 public class LevelLoader : MonoBehaviour
 {
     public LevelDefinition Level;
-
-    [Header("Nest Setup")]
-    [Tooltip("Prefab used to instantiate ant nests. Must have AntNest and Digestion components.")]
-    public GameObject NestPrefab;
 
     void Awake()
     {
@@ -22,8 +20,19 @@ public class LevelLoader : MonoBehaviour
         }
 
         ApplyPlayerResources();
-        SpawnMapObjects();
-        SpawnNests();
+    }
+
+    IEnumerator Start()
+    {
+        if (Level == null) yield break;
+
+        if (string.IsNullOrEmpty(Level.SceneName))
+        {
+            Debug.LogWarning("LevelLoader: LevelDefinition has no SceneName set.");
+            yield break;
+        }
+
+        yield return SceneManager.LoadSceneAsync(Level.SceneName, LoadSceneMode.Additive);
     }
 
     private void ApplyPlayerResources()
@@ -32,52 +41,6 @@ public class LevelLoader : MonoBehaviour
         {
             MoneyTracker.Instance.InitialMoney = Level.StartingMoney;
             MoneyTracker.Instance.IncomePerSecond = Level.IncomePerSecond;
-        }
-    }
-
-    private void SpawnMapObjects()
-    {
-        foreach (var entry in Level.MapObjects)
-        {
-            if (entry.Prefab == null)
-            {
-                Debug.LogWarning("LevelLoader: SpawnEntry has null prefab, skipping.");
-                continue;
-            }
-            var rotation = Quaternion.Euler(entry.EulerRotation);
-            Instantiate(entry.Prefab, entry.Position, rotation, null);
-        }
-    }
-
-    private void SpawnNests()
-    {
-        if (NestPrefab == null)
-        {
-            Debug.LogWarning("LevelLoader: NestPrefab not assigned, cannot spawn nests.");
-            return;
-        }
-
-        foreach (var config in Level.Nests)
-        {
-            var nestObj = Instantiate(NestPrefab, config.Position, Quaternion.identity);
-
-            var nest = nestObj.GetComponent<AntNest>();
-            if (nest != null)
-            {
-                nest.MaxAnts = config.MaxAnts;
-                nest.AntsPerSpawn = config.AntsPerSpawn;
-                nest.MinRespawnTime = config.MinRespawnTime;
-                nest.MaxRespawnTime = config.MaxRespawnTime;
-                nest.ReserveFood = config.ReserveFood;
-            }
-
-            var digestion = nestObj.GetComponent<Digestion>();
-            if (digestion != null)
-            {
-                digestion.MaxFood = config.MaxFood;
-                digestion.StartFood = config.StartFood;
-                digestion.Expenditure = config.FoodExpenditure;
-            }
         }
     }
 }
