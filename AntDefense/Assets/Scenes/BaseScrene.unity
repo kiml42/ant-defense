@@ -521,7 +521,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bca15d03769d2484090d3f0574a3532a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: AntDefense::LevelLoader
-  Level: {fileID: 11400000, guid: 982829530d4f9d4488ed1637dbb1dd2c, type: 2}
+  GameState: {fileID: 11400000, guid: 0bf12050de86b0d4b980c091c6ec0833, type: 2}
+  FallbackLevel: {fileID: 11400000, guid: 982829530d4f9d4488ed1637dbb1dd2c, type: 2}
 --- !u!4 &2077131969
 Transform:
   m_ObjectHideFlags: 0

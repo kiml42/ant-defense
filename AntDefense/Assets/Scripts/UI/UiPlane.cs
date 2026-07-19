@@ -62,6 +62,7 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
             newButton.transform.parent = this.transform;
             newButton.Ghost = ghost;
 
+            newButton.MainText.text = ghost.name;
             newButton.CostText.text = $"£{ghost.BaseCost:F2}";
             CreateDummy(ghost, newButton);
 

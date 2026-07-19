@@ -5,6 +5,7 @@ public class QuickBarButton : ClickableButton
 {
     public PlaceableObjectOrGhost Ghost { get; set; }
 
+    public TextMeshPro MainText;
     public TextMeshPro CostText;
 
     public float MouseoverScale = 1.1f;
