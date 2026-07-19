@@ -49,6 +49,7 @@ public class PauseMenu : MonoBehaviour
         AudioListener.pause = false;
         if (GameState != null)
             GameState.CurrentLevel = null;
+        Debug.Log($"PauseMenu: Loading scene '{LevelSelectSceneName}'");
         SceneManager.LoadScene(LevelSelectSceneName);
     }
 }
