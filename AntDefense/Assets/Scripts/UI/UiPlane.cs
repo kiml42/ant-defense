@@ -13,6 +13,7 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
     float _width;
 
     private static readonly List<ProtectMeBarObject> ProtectMes = new List<ProtectMeBarObject>();
+    private bool _anythingEverRegistered = false;
 
     private void Start()
     {
@@ -22,8 +23,9 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
     private void Update()
     {
         ProtectMes.RemoveAll(p => p.ProtectMe == null);
+        if (!_anythingEverRegistered) return;
         if(ProtectMes.Count == 0)
-        { 
+        {
             Debug.Log("All protectMes are gone!");
 
             Debug.Log("GAME OVER");
@@ -60,6 +62,7 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
             newButton.transform.parent = this.transform;
             newButton.Ghost = ghost;
 
+            newButton.MainText.text = ghost.name;
             newButton.CostText.text = $"£{ghost.BaseCost:F2}";
             CreateDummy(ghost, newButton);
 
@@ -103,6 +106,7 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
         if (!ProtectMes.Any(p => p.ProtectMe == protectMe))
         {
             ProtectMes.Add(new ProtectMeBarObject(protectMe));
+            Instance._anythingEverRegistered = true;
         }
     }
 
