@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 
 public class GlobalKeyHandler : MonoBehaviour
 {
+    public static event Action<TimeScaleMode> OnModeChanged;
     public KeyCode TogglePauseKey = KeyCode.Space;
 
     public KeyCode FastForwardModeKey = KeyCode.F;
@@ -42,6 +44,14 @@ public class GlobalKeyHandler : MonoBehaviour
 
     private TimeScaleMode _currentMode = TimeScaleMode.Normal;
 
+    public void SetMode(TimeScaleMode mode)
+    {
+        _currentMode = mode;
+        Time.timeScale = this.CurrentTimeScale;
+        AudioListener.pause = _currentMode == TimeScaleMode.Paused;
+        OnModeChanged?.Invoke(_currentMode);
+    }
+
     private float CurrentTimeScale
     {
         get
@@ -71,7 +81,10 @@ public class GlobalKeyHandler : MonoBehaviour
     {
         //Debug.Log($"Update: Current time scale mode: {this._currentMode}, time scale: {Time.timeScale}, deltaTime={Time.deltaTime}, fixedDeltaTime={Time.fixedDeltaTime}");
         if (Input.GetKeyDown(KeyCode.Escape))
-            Application.Quit();
+        {
+            this._currentMode = this._currentMode == TimeScaleMode.Paused ? TimeScaleMode.Normal : TimeScaleMode.Paused;
+            anyChange = true;
+        }
         var anyChange = false;
         if (Input.GetKeyUp(this.TogglePauseKey))
         {
@@ -103,8 +116,9 @@ public class GlobalKeyHandler : MonoBehaviour
         if (anyChange || this._currentMode == TimeScaleMode.FastForward)
         {
             Time.timeScale = this.CurrentTimeScale;
-            //Debug.Log($"Changed time scale mode to {this._currentMode}, time scale: {Time.timeScale}, deltaTime={Time.deltaTime}");
             AudioListener.pause = this._currentMode == TimeScaleMode.Paused;
+            if (anyChange)
+                OnModeChanged?.Invoke(this._currentMode);
         }
     }
 }
