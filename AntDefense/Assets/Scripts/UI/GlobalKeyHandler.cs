@@ -80,12 +80,12 @@ public class GlobalKeyHandler : MonoBehaviour
     void Update()
     {
         //Debug.Log($"Update: Current time scale mode: {this._currentMode}, time scale: {Time.timeScale}, deltaTime={Time.deltaTime}, fixedDeltaTime={Time.fixedDeltaTime}");
+        var anyChange = false;
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             this._currentMode = this._currentMode == TimeScaleMode.Paused ? TimeScaleMode.Normal : TimeScaleMode.Paused;
             anyChange = true;
         }
-        var anyChange = false;
         if (Input.GetKeyUp(this.TogglePauseKey))
         {
             if (this._currentMode == TimeScaleMode.Paused)
