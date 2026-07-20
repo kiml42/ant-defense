@@ -32,15 +32,9 @@ public abstract class PlaceableObjectOrGhost : MonoBehaviour
         }
     }
 
-    // TODO put this on the UI canvas.
-    // TODO just make a button version.
-    public Transform Icon;
-    public float ScaleForButton = 1;
-    public Vector3 OffsetForButton = Vector3.zero;
-    public Quaternion RotationForButton = Quaternion.identity;
-
-    protected abstract Transform FallbackIcon { get; }
-    public Transform ActualIcon { get { return this.Icon == null ? this.FallbackIcon : this.Icon; } }
+    [Header("Quick Bar")]
+    public string DisplayName;
+    public Sprite ButtonIcon;
 
     public float TimeOut = 3;
 

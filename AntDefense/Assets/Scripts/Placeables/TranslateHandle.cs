@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
 {
@@ -64,12 +65,6 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
         this.UpdateMouseOverQuickBarButton();
         this.UpdateHandleVisibility();
         this.HandleCancelButton();
-
-        // TODO: bug when clicking briefy on a quick bar button - it places the object immediately behind the button. Need to enforce some movement to start the drag.
-        if (Input.GetMouseButtonDown(this.PlaceMouseButton))
-        {
-            this.TryActivateQuickBarButton();
-        }
 
         if (Input.GetMouseButtonUp(this.PlaceMouseButton))
         {
@@ -219,23 +214,9 @@ public class TranslateHandle : SingletonMonoBehaviour<TranslateHandle>
         _uiRaycastHit = Physics.Raycast(ray, out _uiRaycastHitInfo, 500, this.UiLayermask, QueryTriggerInteraction.Collide);
     }
 
-    private bool TryActivateQuickBarButton()
-    {
-        if (_uiRaycastHit)
-        {
-            var quickBarButton = _uiRaycastHitInfo.transform.GetComponentInParent<QuickBarButton>();
-            if (quickBarButton != null)
-            {
-                ObjectPlacer.Instance.StartPlacingGhost(quickBarButton.Ghost);
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void UpdateMouseOverQuickBarButton()
     {
-        this._mouseOverQuickBarButton = _uiRaycastHit && _uiRaycastHitInfo.transform.GetComponentInParent<ClickableButton>() != null;
+        this._mouseOverQuickBarButton = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 
     private bool TryActivateSelectionActionButton()

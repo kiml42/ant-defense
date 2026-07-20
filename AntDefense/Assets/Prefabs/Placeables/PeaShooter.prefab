@@ -323,10 +323,8 @@ MonoBehaviour:
   BaseCost: 30
   WallToBuildOn: {fileID: 710721694348773487, guid: fc03a1413b4298648ac5624f71573cd1, type: 3}
   WallParent: {fileID: 0}
-  Icon: {fileID: 6761051270729749225, guid: fd14998c1ee98ab42a87fa7acbe143cc, type: 3}
-  ScaleForButton: 0.4
-  OffsetForButton: {x: 0, y: 0, z: 0}
-  RotationForButton: {x: 0.28308818, y: 0.14199114, z: 0.076293215, w: 0.9454517}
+  DisplayName: Pea Shooter
+  ButtonIcon: {fileID: 21300000, guid: 2dbf3d08e9a26a4478cd8e2777def57f, type: 3}
   TimeOut: 3
   SpawnOffset: {x: 0, y: 0, z: 0}
   ObjectToDeselectWhenPlaced: {fileID: 3631510004101697051}
