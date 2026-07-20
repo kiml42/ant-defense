@@ -529,7 +529,7 @@ MonoBehaviour:
   WallToBuildOn: {fileID: 0}
   WallParent: {fileID: 0}
   DisplayName: Flip Trap
-  ButtonIcon: {fileID: 0}
+  ButtonIcon: {fileID: 21300000, guid: 2d2275f82df7434409c4a7cfe32ab68a, type: 3}
   TimeOut: 0.1
   SpawnOffset: {x: 0, y: 0, z: 0}
   RealObject: {fileID: 3718810060759407500, guid: 133c22227935cbd4b801fb75c448f47b, type: 3}
