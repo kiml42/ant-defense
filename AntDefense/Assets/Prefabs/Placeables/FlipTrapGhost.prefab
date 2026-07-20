@@ -528,10 +528,8 @@ MonoBehaviour:
   BaseCost: 10
   WallToBuildOn: {fileID: 0}
   WallParent: {fileID: 0}
-  Icon: {fileID: 3718810060759407500, guid: 654ef4f10c4d2324a8087c5098f43256, type: 3}
-  ScaleForButton: 0.3
-  OffsetForButton: {x: 0, y: 0, z: 0}
-  RotationForButton: {x: 0.2830882, y: 0.14199114, z: 0.076293215, w: 0.94545174}
+  DisplayName: Flip Trap
+  ButtonIcon: {fileID: 0}
   TimeOut: 0.1
   SpawnOffset: {x: 0, y: 0, z: 0}
   RealObject: {fileID: 3718810060759407500, guid: 133c22227935cbd4b801fb75c448f47b, type: 3}

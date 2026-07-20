@@ -1,16 +1,13 @@
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UiPlane : SingletonMonoBehaviour<UiPlane>
 {
     public QuickBarButton QuickBarButton;
-    public Transform QuickBarCenter;
-    public float QuickBarSpacing = 0.1f;
+    public Transform QuickBarContainer;
     private List<QuickBarButton> _buttons = null;
-
-    float _height;
-    float _width;
 
     private static readonly List<ProtectMeBarObject> ProtectMes = new List<ProtectMeBarObject>();
     private bool _anythingEverRegistered = false;
@@ -24,10 +21,8 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
     {
         ProtectMes.RemoveAll(p => p.ProtectMe == null);
         if (!_anythingEverRegistered) return;
-        if(ProtectMes.Count == 0)
+        if (ProtectMes.Count == 0)
         {
-            Debug.Log("All protectMes are gone!");
-
             Debug.Log("GAME OVER");
             Application.Quit();
 #if UNITY_EDITOR
@@ -40,64 +35,29 @@ public class UiPlane : SingletonMonoBehaviour<UiPlane>
     {
         if (this._buttons != null) return;
 
-        Camera cam = Camera.main;
-        var distance = (cam.transform.position - this.transform.position).magnitude;
-        this._height = Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * distance * 2f;
-        this._width = this._height * cam.aspect;
-        var min = Mathf.Min(this._height, this._width);
-        this.transform.position = cam.transform.position + (cam.transform.forward * distance);
-
-        this.transform.localScale = new Vector3(min, min, min);
-
         this._buttons = new List<QuickBarButton>();
         var quickBarObjects = ObjectPlacer.Instance.QuickBarObjects;
 
-        var leftOffset = -this.QuickBarSpacing * (quickBarObjects.Count - 1) / 2;
-
-        for (int i = 0; i < quickBarObjects.Count; i++)
+        foreach (var ghost in quickBarObjects)
         {
-            var offset = leftOffset + (i * this.QuickBarSpacing);
-            var ghost = quickBarObjects[i];
-            var newButton = Instantiate(this.QuickBarButton, this.QuickBarCenter.transform.position + new Vector3(offset, 0, 0), this.QuickBarCenter.transform.rotation);
-            newButton.transform.parent = this.transform;
+            var newButton = Instantiate(this.QuickBarButton, this.QuickBarContainer);
             newButton.Ghost = ghost;
 
-            newButton.MainText.text = ghost.name;
-            newButton.CostText.text = $"£{ghost.BaseCost:F2}";
-            CreateDummy(ghost, newButton);
+            if (newButton.NameText != null)
+                newButton.NameText.text = ghost.DisplayName;
+
+            if (newButton.CostText != null)
+                newButton.CostText.text = $"£{ghost.BaseCost:F2}";
+
+            if (newButton.Icon != null && ghost.ButtonIcon != null)
+                newButton.Icon.sprite = ghost.ButtonIcon;
+
+            var captured = ghost;
+            var btn = newButton.GetComponent<Button>();
+            if (btn != null)
+                btn.onClick.AddListener(() => ObjectPlacer.Instance.StartPlacingGhost(captured));
 
             this._buttons.Add(newButton);
-        }
-    }
-
-    private static void CreateDummy(PlaceableObjectOrGhost ghost, QuickBarButton newButton)
-    {
-        var objectToUse = ghost.ActualIcon;
-        var dummy = Instantiate(objectToUse, newButton.transform.position + ghost.OffsetForButton, newButton.transform.rotation * ghost.RotationForButton);
-        dummy.localScale = dummy.localScale.normalized * newButton.transform.localScale.magnitude * ghost.ScaleForButton;
-        dummy.parent = newButton.transform;
-
-        Dummyise(dummy);
-    }
-
-    private static void Dummyise(Transform dummy)
-    {
-        var componentsToDestroy = dummy.GetComponentsInChildren<MonoBehaviour>().Cast<UnityEngine.Object>().ToList();
-        componentsToDestroy.AddRange(dummy.GetComponentsInChildren<HingeJoint>());
-        componentsToDestroy.AddRange(dummy.GetComponentsInChildren<Rigidbody>());
-        componentsToDestroy.AddRange(dummy.GetComponentsInChildren<Collider>());
-        componentsToDestroy.AddRange(dummy.GetComponentsInChildren<TurretTrigger>().Select(t => t.gameObject));
-
-        foreach (var component in componentsToDestroy)
-        {
-            Destroy(component);
-        }
-
-        var renderers = dummy.GetComponentsInChildren<MeshRenderer>();
-
-        foreach (var renderer in renderers)
-        {
-            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         }
     }
 

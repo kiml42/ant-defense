@@ -56,10 +56,8 @@ MonoBehaviour:
   BaseCost: 0.2
   WallToBuildOn: {fileID: 0}
   WallParent: {fileID: 0}
-  Icon: {fileID: 0}
-  ScaleForButton: 1
-  OffsetForButton: {x: 0, y: 0, z: 0}
-  RotationForButton: {x: 0, y: 0, z: 0, w: 1}
+  DisplayName: Berry
+  ButtonIcon: {fileID: 0}
   TimeOut: 0
   SpawnOffset: {x: 0, y: 2, z: 0}
   ObjectToDeselectWhenPlaced: {fileID: 0}
@@ -176,6 +174,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &3839274093633991672
 SphereCollider:
@@ -317,6 +316,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &8302698094805185435
 GameObject:
@@ -407,6 +407,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &8946805042040502604
 CapsuleCollider:

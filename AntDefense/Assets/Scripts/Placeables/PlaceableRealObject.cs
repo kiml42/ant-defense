@@ -4,7 +4,6 @@ public class PlaceableRealObject : PlaceableObjectOrGhost
 {
     private BaseGhostableMonobehaviour[] _ghostables;
     private BaseGhostableMonobehaviour[] Ghostables { get { return this._ghostables ??= this.GetComponentsInChildren<BaseGhostableMonobehaviour>(); } }
-    override protected Transform FallbackIcon { get { return this.transform; } }
 
     public SelectableGhostableMonoBehaviour ObjectToDeselectWhenPlaced;
 
