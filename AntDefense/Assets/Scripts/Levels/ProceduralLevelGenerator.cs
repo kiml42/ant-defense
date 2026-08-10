@@ -109,7 +109,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
     // ── Wall generation ───────────────────────────────────────────────────────
 
     private List<ProceduralPlacement.WallSegment> BuildWalls(
-        List<Vector2> nestPositions, Vector2 platePos2D, int wallDensity, Random rng)
+        List<Vector2> nestPositions, Vector2 platePos2D, int wallDensity, System.Random rng)
     {
         var walls = new List<ProceduralPlacement.WallSegment>();
 
@@ -182,7 +182,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         }
     }
 
-    private void SpawnClusters(List<ProceduralPlacement.BushCluster> clusters, Random rng)
+    private void SpawnClusters(List<ProceduralPlacement.BushCluster> clusters, System.Random rng)
     {
         if (BerryBushPrefabs == null || BerryBushPrefabs.Length == 0) return;
 

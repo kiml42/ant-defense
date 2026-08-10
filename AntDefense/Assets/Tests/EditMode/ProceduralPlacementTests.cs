@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
@@ -14,7 +13,7 @@ public class ProceduralPlacementTests
     [Test]
     public void PlaceNests_ReturnsRequestedCount()
     {
-        var rng = new Random(42);
+        var rng = new System.Random(42);
         var nests = ProceduralPlacement.PlaceNests(3, StandardArea, MinSeparation, Margin, rng);
         Assert.AreEqual(3, nests.Count);
     }
@@ -22,7 +21,7 @@ public class ProceduralPlacementTests
     [Test]
     public void PlaceNests_AllWithinBounds()
     {
-        var rng = new Random(1);
+        var rng = new System.Random(1);
         var inner = new Rect(
             StandardArea.x + Margin, StandardArea.y + Margin,
             StandardArea.width - Margin * 2, StandardArea.height - Margin * 2);
@@ -37,7 +36,7 @@ public class ProceduralPlacementTests
     [Test]
     public void PlaceNests_SingleNest_AlwaysPlaced()
     {
-        var rng = new Random(7);
+        var rng = new System.Random(7);
         var nests = ProceduralPlacement.PlaceNests(1, StandardArea, MinSeparation, Margin, rng);
         Assert.AreEqual(1, nests.Count);
     }
@@ -45,8 +44,8 @@ public class ProceduralPlacementTests
     [Test]
     public void PlaceNests_DeterministicWithSameSeed()
     {
-        var nests1 = ProceduralPlacement.PlaceNests(3, StandardArea, MinSeparation, Margin, new Random(99));
-        var nests2 = ProceduralPlacement.PlaceNests(3, StandardArea, MinSeparation, Margin, new Random(99));
+        var nests1 = ProceduralPlacement.PlaceNests(3, StandardArea, MinSeparation, Margin, new System.Random(99));
+        var nests2 = ProceduralPlacement.PlaceNests(3, StandardArea, MinSeparation, Margin, new System.Random(99));
 
         for (int i = 0; i < nests1.Count; i++)
             Assert.AreEqual(nests1[i], nests2[i]);
@@ -55,8 +54,8 @@ public class ProceduralPlacementTests
     [Test]
     public void PlaceNests_DifferentSeeds_ProduceDifferentResults()
     {
-        var nests1 = ProceduralPlacement.PlaceNests(2, StandardArea, MinSeparation, Margin, new Random(1));
-        var nests2 = ProceduralPlacement.PlaceNests(2, StandardArea, MinSeparation, Margin, new Random(2));
+        var nests1 = ProceduralPlacement.PlaceNests(2, StandardArea, MinSeparation, Margin, new System.Random(1));
+        var nests2 = ProceduralPlacement.PlaceNests(2, StandardArea, MinSeparation, Margin, new System.Random(2));
         Assert.AreNotEqual(nests1[0], nests2[0]);
     }
 
@@ -65,7 +64,7 @@ public class ProceduralPlacementTests
     [Test]
     public void PlacePlate_WithinBounds()
     {
-        var rng = new Random(5);
+        var rng = new System.Random(5);
         var nests = new List<Vector2> { new Vector2(-50f, 0f) };
         var plate = ProceduralPlacement.PlacePlate(StandardArea, Margin, nests, rng);
 
@@ -79,7 +78,7 @@ public class ProceduralPlacementTests
     public void PlacePlate_FartherFromNestThanRandom()
     {
         // With many candidates the plate should be well away from the nest.
-        var rng = new Random(42);
+        var rng = new System.Random(42);
         var nest = new Vector2(-80f, 0f);
         var nests = new List<Vector2> { nest };
         var plate = ProceduralPlacement.PlacePlate(StandardArea, Margin, nests, rng, candidates: 500);
@@ -136,7 +135,7 @@ public class ProceduralPlacementTests
     [Test]
     public void PlaceClusters_ReturnsRequestedCount()
     {
-        var rng = new Random(3);
+        var rng = new System.Random(3);
         var nests = new List<Vector2> { new Vector2(0f, 0f) };
         var clusters = ProceduralPlacement.PlaceClusters(8, 4, StandardArea, Margin, nests, rng);
         Assert.AreEqual(8, clusters.Count);
@@ -145,7 +144,7 @@ public class ProceduralPlacementTests
     [Test]
     public void PlaceClusters_AllHaveAtLeastOneBush()
     {
-        var rng = new Random(10);
+        var rng = new System.Random(10);
         var nests = new List<Vector2> { new Vector2(0f, 0f) };
         var clusters = ProceduralPlacement.PlaceClusters(10, 3, StandardArea, Margin, nests, rng);
         foreach (var c in clusters)
@@ -156,8 +155,8 @@ public class ProceduralPlacementTests
     public void PlaceClusters_DeterministicWithSameSeed()
     {
         var nests = new List<Vector2> { new Vector2(-20f, 10f) };
-        var c1 = ProceduralPlacement.PlaceClusters(5, 4, StandardArea, Margin, nests, new Random(77));
-        var c2 = ProceduralPlacement.PlaceClusters(5, 4, StandardArea, Margin, nests, new Random(77));
+        var c1 = ProceduralPlacement.PlaceClusters(5, 4, StandardArea, Margin, nests, new System.Random(77));
+        var c2 = ProceduralPlacement.PlaceClusters(5, 4, StandardArea, Margin, nests, new System.Random(77));
 
         for (int i = 0; i < c1.Count; i++)
         {
@@ -175,7 +174,7 @@ public class ProceduralPlacementTests
 
         for (int seed = 0; seed < 50; seed++)
         {
-            var clusters = ProceduralPlacement.PlaceClusters(20, 5, StandardArea, Margin, nests, new Random(seed));
+            var clusters = ProceduralPlacement.PlaceClusters(20, 5, StandardArea, Margin, nests, new System.Random(seed));
             foreach (var c in clusters)
             {
                 float dist = Vector2.Distance(c.Centre, nests[0]);
@@ -193,7 +192,7 @@ public class ProceduralPlacementTests
     [Test]
     public void BuildBlockingWall_ProducesAtLeastOneSegment()
     {
-        var rng = new Random(1);
+        var rng = new System.Random(1);
         var segments = ProceduralPlacement.BuildBlockingWall(
             new Vector2(-40f, 0f), new Vector2(40f, 0f),
             StandardArea, minGapOffset: 5f, gapSize: 10f, rng);
@@ -205,7 +204,7 @@ public class ProceduralPlacementTests
     public void BuildBlockingWall_LeavesSufficientGap()
     {
         // The two segments should not overlap — there must be a gap between them.
-        var rng = new Random(2);
+        var rng = new System.Random(2);
         var segments = ProceduralPlacement.BuildBlockingWall(
             new Vector2(-40f, 0f), new Vector2(40f, 0f),
             StandardArea, minGapOffset: 5f, gapSize: 12f, rng);
