@@ -49,6 +49,10 @@ public class ProceduralLevelGenerator : MonoBehaviour
 
     void Start()
     {
+        // CameraRig lives in BaseScrene (loaded before this scene) — find it if not wired.
+        if (CameraRig == null)
+            CameraRig = FindFirstObjectByType<AntCam>();
+
         _playArea = ColliderToRect(GroundCollider);
 
         SaveAndSetOverviewCamera();
