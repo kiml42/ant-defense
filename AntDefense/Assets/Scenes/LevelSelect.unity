@@ -651,7 +651,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: AntDefense::LevelSelectUI
   Registry: {fileID: 11400000, guid: 62254785589787545898ec5601b93caa, type: 2}
   GameState: {fileID: 11400000, guid: 0bf12050de86b0d4b980c091c6ec0833, type: 2}
-  BaseSceneName: BaseScrene
+  BaseSceneName: BaseScene
   ButtonContainer: {fileID: 921315070}
   ButtonPrefab: {fileID: 479935569800719780, guid: 3f8416280df3f9d478f53204806c4573, type: 3}
 --- !u!114 &1079632255
