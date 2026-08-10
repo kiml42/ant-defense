@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,7 +15,7 @@ public static class ProceduralPlacement
     /// from the edges. Best-effort: if the area is too crowded the closest valid candidate is used.
     /// </summary>
     public static List<Vector2> PlaceNests(
-        int count, Rect area, float minSeparation, float margin, Random rng)
+        int count, Rect area, float minSeparation, float margin, System.Random rng)
     {
         var inner = Shrink(area, margin);
         var positions = new List<Vector2>(count);
@@ -65,7 +64,7 @@ public static class ProceduralPlacement
     /// <paramref name="candidates"/> random points and picks the best.
     /// </summary>
     public static Vector2 PlacePlate(
-        Rect area, float margin, IReadOnlyList<Vector2> nestPositions, Random rng, int candidates = 200)
+        Rect area, float margin, IReadOnlyList<Vector2> nestPositions, System.Random rng, int candidates = 200)
     {
         var inner = Shrink(area, margin);
         var best = RandomPoint(inner, rng);
@@ -108,7 +107,7 @@ public static class ProceduralPlacement
     /// </summary>
     public static List<WallSegment> BuildBlockingWall(
         Vector2 nestPos, Vector2 platePos,
-        Rect area, float minGapOffset, float gapSize, Random rng)
+        Rect area, float minGapOffset, float gapSize, System.Random rng)
     {
         var diff = platePos - nestPos;
         var wallDir = new Vector2(-diff.y, diff.x).normalized;
@@ -155,7 +154,7 @@ public static class ProceduralPlacement
     /// Even at maximum density the layout stays sparse.
     /// </summary>
     public static List<WallSegment> BuildAdditionalWalls(
-        int wallDensity, Rect area, float gapSize, float minSegmentLength, float maxSegmentLength, Random rng)
+        int wallDensity, Rect area, float gapSize, float minSegmentLength, float maxSegmentLength, System.Random rng)
     {
         // At density 10: 5 extra segments; at density 0: 0 segments.
         int count = Mathf.RoundToInt(wallDensity * 0.5f);
@@ -204,7 +203,7 @@ public static class ProceduralPlacement
     /// </summary>
     public static List<BushCluster> PlaceClusters(
         int clusterCount, int clusterSize, Rect area, float margin,
-        IReadOnlyList<Vector2> nestPositions, Random rng)
+        IReadOnlyList<Vector2> nestPositions, System.Random rng)
     {
         var inner = Shrink(area, margin);
         float maxPossibleDist = Mathf.Sqrt(inner.width * inner.width + inner.height * inner.height);
@@ -266,7 +265,7 @@ public static class ProceduralPlacement
     private static Rect Shrink(Rect r, float margin) =>
         new Rect(r.x + margin, r.y + margin, r.width - margin * 2, r.height - margin * 2);
 
-    private static Vector2 RandomPoint(Rect r, Random rng) =>
+    private static Vector2 RandomPoint(Rect r, System.Random rng) =>
         new Vector2(
             r.x + (float)(rng.NextDouble() * r.width),
             r.y + (float)(rng.NextDouble() * r.height));

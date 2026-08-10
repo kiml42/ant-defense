@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -70,7 +69,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         _config = config;
         ClearGenerated();
 
-        var rng = new Random(config.Seed);
+        var rng = new System.Random(config.Seed);
 
         var nestPositions = ProceduralPlacement.PlaceNests(
             config.NestCount, _playArea, MinNestSeparation, BoundaryMargin, rng);
