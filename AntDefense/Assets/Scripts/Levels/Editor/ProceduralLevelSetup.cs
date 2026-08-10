@@ -105,28 +105,9 @@ public static class ProceduralLevelSetup
         configUI.RegenerateButton   = regenBtn;
         configUI.ConfirmButton      = confirmBtn;
 
-        // ── Directional light ─────────────────────────────────────────────────
-        // Matches BaseScrene's light so standalone play looks the same.
-        var lightGO = new GameObject("Directional Light");
-        lightGO.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
-        var light = lightGO.AddComponent<Light>();
-        light.type = LightType.Directional;
-        light.color = new Color(1f, 0.9568627f, 0.8392157f);
-        light.intensity = 1f;
-
-        // ── Camera rig ────────────────────────────────────────────────────────
-        // Minimal standalone camera so the scene renders when played directly.
-        // When loaded via BaseScrene the AntCam from that scene is used instead.
-        var rigGO = new GameObject("CameraRig");
-        var antCam = rigGO.AddComponent<AntCam>();
-        var camChildGO = new GameObject("Main Camera");
-        camChildGO.transform.SetParent(rigGO.transform, false);
-        camChildGO.tag = "MainCamera";
-        camChildGO.AddComponent<AudioListener>();
-        var cam = camChildGO.AddComponent<Camera>();
-        cam.nearClipPlane = 0.3f;
-        cam.farClipPlane = 1000f;
-        antCam.Camera = cam;
+        // ── Editor bootstrapper ──────────────────────────────────────────────
+        var bootstrapGO = new GameObject("EditorSceneBootstrapper");
+        bootstrapGO.AddComponent<EditorSceneBootstrapper>();
 
         // ── Generator GO ─────────────────────────────────────────────────────
         var generatorGO = new GameObject("ProceduralLevelGenerator");
@@ -136,7 +117,6 @@ public static class ProceduralLevelSetup
         gen.BerryBushPrefabs     = new[] { berryBushPrefab };
         gen.EnvironmentWallPrefab = wallPrefab;
         gen.GroundCollider        = playAreaCol;
-        gen.CameraRig             = antCam;
         gen.ConfigUI              = configUI;
 
         EditorSceneManager.MarkSceneDirty(scene);
