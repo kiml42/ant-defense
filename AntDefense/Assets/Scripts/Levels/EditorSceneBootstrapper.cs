@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 public class EditorSceneBootstrapper : MonoBehaviour
 {
     [Tooltip("Name of the base scene that must be loaded alongside every level.")]
-    public string BaseSceneName = "BaseScrene";
+    public string BaseSceneName = "BaseScene";
 
     void Awake()
     {
