@@ -105,6 +105,15 @@ public static class ProceduralLevelSetup
         configUI.RegenerateButton   = regenBtn;
         configUI.ConfirmButton      = confirmBtn;
 
+        // ── Directional light ─────────────────────────────────────────────────
+        // Matches BaseScrene's light so standalone play looks the same.
+        var lightGO = new GameObject("Directional Light");
+        lightGO.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
+        var light = lightGO.AddComponent<Light>();
+        light.type = LightType.Directional;
+        light.color = new Color(1f, 0.9568627f, 0.8392157f);
+        light.intensity = 1f;
+
         // ── Camera rig ────────────────────────────────────────────────────────
         // Minimal standalone camera so the scene renders when played directly.
         // When loaded via BaseScrene the AntCam from that scene is used instead.
