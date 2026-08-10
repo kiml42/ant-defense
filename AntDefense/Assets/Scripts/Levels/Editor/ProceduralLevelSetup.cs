@@ -105,6 +105,20 @@ public static class ProceduralLevelSetup
         configUI.RegenerateButton   = regenBtn;
         configUI.ConfirmButton      = confirmBtn;
 
+        // ── Camera rig ────────────────────────────────────────────────────────
+        // Minimal standalone camera so the scene renders when played directly.
+        // When loaded via BaseScrene the AntCam from that scene is used instead.
+        var rigGO = new GameObject("CameraRig");
+        var antCam = rigGO.AddComponent<AntCam>();
+        var camChildGO = new GameObject("Main Camera");
+        camChildGO.transform.SetParent(rigGO.transform, false);
+        camChildGO.tag = "MainCamera";
+        camChildGO.AddComponent<AudioListener>();
+        var cam = camChildGO.AddComponent<Camera>();
+        cam.nearClipPlane = 0.3f;
+        cam.farClipPlane = 1000f;
+        antCam.Camera = cam;
+
         // ── Generator GO ─────────────────────────────────────────────────────
         var generatorGO = new GameObject("ProceduralLevelGenerator");
         var gen = generatorGO.AddComponent<ProceduralLevelGenerator>();
@@ -113,6 +127,7 @@ public static class ProceduralLevelSetup
         gen.BerryBushPrefabs     = new[] { berryBushPrefab };
         gen.EnvironmentWallPrefab = wallPrefab;
         gen.GroundCollider        = playAreaCol;
+        gen.CameraRig             = antCam;
         gen.ConfigUI              = configUI;
 
         EditorSceneManager.MarkSceneDirty(scene);
