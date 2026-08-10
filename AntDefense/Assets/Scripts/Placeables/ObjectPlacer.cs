@@ -102,7 +102,7 @@ public class ObjectPlacer : SingletonMonoBehaviour<ObjectPlacer>
     {
         if (TranslateHandle.IsMouseOverQuickBarButton)
         {
-            Debug.LogWarning("Cannot place object while mouse is over a quick bar button.");
+            //Debug.LogWarning("Cannot place object while mouse is over a quick bar button.");
             return null;
         }
         if (this._objectBeingPlaced == null)
