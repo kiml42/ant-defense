@@ -5,15 +5,12 @@ using UnityEngine.UI;
 /// <summary>
 /// Spawns one button per level in the registry. Assign to a GameObject in
 /// the LevelSelect scene alongside a LevelRegistry and GameState asset.
+/// Each level scene is responsible for loading BaseScene via BaseSceneLoader.
 /// </summary>
 public class LevelSelectUI : MonoBehaviour
 {
     public LevelRegistry Registry;
     public GameState GameState;
-
-    [Tooltip("Name of the base game scene to load when a level is selected.")]
-    [SceneName]
-    public string BaseSceneName;
 
     [Tooltip("Parent transform to spawn buttons into.")]
     public Transform ButtonContainer;
@@ -39,6 +36,6 @@ public class LevelSelectUI : MonoBehaviour
     private void SelectLevel(LevelDefinition level)
     {
         GameState.CurrentLevel = level;
-        SceneManager.LoadScene(BaseSceneName);
+        SceneManager.LoadScene(level.SceneName);
     }
 }

@@ -2,24 +2,22 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Loads BaseScrene additively when a level scene is played directly in the editor.
-/// In production this Awake does nothing; BaseScrene is always loaded first via the
-/// normal flow (LevelSelectUI → LevelLoader).
+/// Add to every level scene. Loads the base scene additively if it is not
+/// already present, so any level can be the entry point regardless of how
+/// it was launched (editor play mode, level select, or direct load).
 /// </summary>
-public class EditorSceneBootstrapper : MonoBehaviour
+public class BaseSceneLoader : MonoBehaviour
 {
     [Tooltip("Name of the base scene that must be loaded alongside every level.")]
     public string BaseSceneName = "BaseScene";
 
     void Awake()
     {
-#if UNITY_EDITOR
         for (int i = 0; i < SceneManager.sceneCount; i++)
         {
             if (SceneManager.GetSceneAt(i).name == BaseSceneName)
                 return;
         }
         SceneManager.LoadScene(BaseSceneName, LoadSceneMode.Additive);
-#endif
     }
 }

@@ -105,9 +105,9 @@ public static class ProceduralLevelSetup
         configUI.RegenerateButton   = regenBtn;
         configUI.ConfirmButton      = confirmBtn;
 
-        // ── Editor bootstrapper ──────────────────────────────────────────────
-        var bootstrapGO = new GameObject("EditorSceneBootstrapper");
-        bootstrapGO.AddComponent<EditorSceneBootstrapper>();
+        // ── Base scene loader ─────────────────────────────────────────────────
+        var bootstrapGO = new GameObject("BaseSceneLoader");
+        bootstrapGO.AddComponent<BaseSceneLoader>();
 
         // ── Generator GO ─────────────────────────────────────────────────────
         var generatorGO = new GameObject("ProceduralLevelGenerator");
