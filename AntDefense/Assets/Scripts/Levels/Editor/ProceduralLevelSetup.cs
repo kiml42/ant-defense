@@ -59,33 +59,34 @@ public static class ProceduralLevelSetup
         canvasGO.AddComponent<GraphicRaycaster>();
 
         // ── Config panel ──────────────────────────────────────────────────────
-        var panel = MakePanel(canvasGO.transform);
+        var panel  = MakePanel(canvasGO.transform);
+        var panelT = panel.transform;
 
         // ── Title ─────────────────────────────────────────────────────────────
-        MakeLabel(panel, "Title", "Procedural Level Config", 18, TextAlignmentOptions.Center,
+        MakeLabel(panelT, "Title", "Procedural Level Config", 18, TextAlignmentOptions.Center,
             new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, -10), new Vector2(-20, 25));
 
         // ── Slider rows ───────────────────────────────────────────────────────
         float rowY = -45;
         const float rowStep = 35f;
 
-        var nestSlider    = MakeSliderRow(panel, "Nests",        1, 5,  2, rowY); rowY -= rowStep;
-        var clusterSlider = MakeSliderRow(panel, "Clusters",     1, 15, 6, rowY); rowY -= rowStep;
-        var sizeSlider    = MakeSliderRow(panel, "Cluster Size", 1, 10, 4, rowY); rowY -= rowStep;
-        var wallSlider    = MakeSliderRow(panel, "Walls",        0, 10, 3, rowY); rowY -= rowStep;
+        var nestSlider    = MakeSliderRow(panelT, "Nests",        1, 5,  2, rowY); rowY -= rowStep;
+        var clusterSlider = MakeSliderRow(panelT, "Clusters",     1, 15, 6, rowY); rowY -= rowStep;
+        var sizeSlider    = MakeSliderRow(panelT, "Cluster Size", 1, 10, 4, rowY); rowY -= rowStep;
+        var wallSlider    = MakeSliderRow(panelT, "Walls",        0, 10, 3, rowY); rowY -= rowStep;
 
         // ── Config string ─────────────────────────────────────────────────────
         rowY -= 5;
-        MakeLabel(panel, "ConfigLabel", "Config string:", 12, TextAlignmentOptions.Left,
+        MakeLabel(panelT, "ConfigLabel", "Config string:", 12, TextAlignmentOptions.Left,
             new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, rowY), new Vector2(-20, 18));
         rowY -= 22;
-        var configField = MakeInputField(panel, rowY);
+        var configField = MakeInputField(panelT, rowY);
         rowY -= 38;
 
         // ── Buttons ───────────────────────────────────────────────────────────
         rowY -= 5;
-        var regenBtn    = MakeButton(panel, "Regenerate", new Vector2(10, rowY), new Vector2(165, 35));
-        var confirmBtn  = MakeButton(panel, "Confirm",    new Vector2(185, rowY), new Vector2(165, 35));
+        var regenBtn   = MakeButton(panelT, "Regenerate", new Vector2(10, rowY), new Vector2(165, 35));
+        var confirmBtn = MakeButton(panelT, "Confirm",    new Vector2(185, rowY), new Vector2(165, 35));
 
         // ── ProceduralLevelConfigUI ───────────────────────────────────────────
         var configUI = panel.GetComponent<ProceduralLevelConfigUI>()
