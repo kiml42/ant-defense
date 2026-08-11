@@ -165,29 +165,18 @@ public static class ProceduralPlacement
     /// Even at maximum density the layout stays sparse.
     /// </summary>
     public static List<WallSegment> BuildAdditionalWalls(
-        int wallDensity, Rect area, float gapSize, float minSegmentLength, float maxSegmentLength, System.Random rng)
+        int wallDensity, Rect area, float minSegmentLength, float maxSegmentLength, System.Random rng)
     {
-        // At density 10: 5 extra segments; at density 0: 0 segments.
-        int count = Mathf.RoundToInt(wallDensity * 0.5f);
+        // One wall object per density step; connectivity check prevents blocking.
         var inner = Shrink(area, 10f);
-        var result = new List<WallSegment>(count);
+        var result = new List<WallSegment>(wallDensity);
 
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < wallDensity; i++)
         {
             var centre = RandomPoint(inner, rng);
             float angle = (float)(rng.NextDouble() * 360.0);
-            float totalLen = Lerp(minSegmentLength, maxSegmentLength, (float)rng.NextDouble());
-
-            // Split into two segments with a gap, like blocking walls
-            float gapLen = Mathf.Max(gapSize, totalLen * 0.25f);
-            float halfSide = (totalLen - gapLen) * 0.5f;
-            var dir = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
-
-            if (halfSide > 0.5f)
-            {
-                result.Add(new WallSegment(centre - dir * (halfSide * 0.5f + gapLen * 0.5f), angle, halfSide));
-                result.Add(new WallSegment(centre + dir * (halfSide * 0.5f + gapLen * 0.5f), angle, halfSide));
-            }
+            float len = Lerp(minSegmentLength, maxSegmentLength, (float)rng.NextDouble());
+            result.Add(new WallSegment(centre, angle, len));
         }
 
         return result;

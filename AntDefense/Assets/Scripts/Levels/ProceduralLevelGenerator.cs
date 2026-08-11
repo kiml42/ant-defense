@@ -152,7 +152,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
 
         // Extra ambient walls based on density slider
         var extra = ProceduralPlacement.BuildAdditionalWalls(
-            wallDensity, _playArea, GapSize, AdditionalWallMinLength, AdditionalWallMaxLength, rng);
+            wallDensity, _playArea, AdditionalWallMinLength, AdditionalWallMaxLength, rng);
 
         foreach (var seg in extra)
         {
