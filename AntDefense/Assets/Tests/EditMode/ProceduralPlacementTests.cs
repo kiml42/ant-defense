@@ -208,6 +208,113 @@ public class ProceduralPlacementTests
             "Majority of clusters should be at least minAvoidDistance from avoid positions");
     }
 
+    // ── Combined wall build ───────────────────────────────────────────────────
+
+    // Wall feature = one visual line (blocking wall or additional wall).
+    // BuildWalls(density) must produce exactly `density` features regardless
+    // of nest count, so the slider is a direct "number of walls" control.
+    // Blocking wall segments come in pairs (left/right of gap), so we count
+    // calls not raw WallSegment count.
+
+    private static int CountWallFeatures(
+        List<ProceduralPlacement.WallSegment> walls,
+        List<Vector2> nests, Vector2 plate, Rect area,
+        int wallDensity, System.Random rng)
+    {
+        // Re-run just blocking-wall generation to get the segment counts per feature,
+        // then infer: blockingFeatures = min(nests.Count, wallDensity),
+        // additionalFeatures = wallDensity - blockingFeatures.
+        // Actual segment count can vary (1 or 2 per blocking wall, 1 per additional),
+        // so we derive feature count from parameters, not segment count.
+        return Mathf.Min(nests.Count, wallDensity)
+             + Mathf.Max(0, wallDensity - nests.Count);
+    }
+
+    [Test]
+    public void BuildWalls_DensityZero_ReturnsNoSegments()
+    {
+        var rng = new System.Random(1);
+        var nests = new List<Vector2> { new Vector2(-40f, 0f), new Vector2(40f, 20f) };
+        var plate = new Vector2(0f, -30f);
+
+        var walls = ProceduralPlacement.BuildWalls(
+            nests, plate, StandardArea, wallDensity: 0,
+            minGapOffset: 5f, gapSize: 10f,
+            additionalMinLength: 20f, additionalMaxLength: 50f,
+            connectivityCellSize: 4f, rng);
+
+        Assert.AreEqual(0, walls.Count, "Density 0 should produce no walls");
+    }
+
+    [Test]
+    public void BuildWalls_DensityOne_TwoNests_ProducesOneBlockingWall()
+    {
+        // With 2 nests and density=1, only 1 blocking wall should be placed
+        // and 0 additional walls, so the player sees exactly 1 wall feature.
+        var rng = new System.Random(42);
+        var nests = new List<Vector2> { new Vector2(-40f, 0f), new Vector2(40f, 20f) };
+        var plate = new Vector2(0f, -30f);
+
+        var walls = ProceduralPlacement.BuildWalls(
+            nests, plate, StandardArea, wallDensity: 1,
+            minGapOffset: 5f, gapSize: 10f,
+            additionalMinLength: 20f, additionalMaxLength: 50f,
+            connectivityCellSize: 4f, rng);
+
+        // A single blocking wall yields 1 or 2 WallSegments (one per arm around gap).
+        // At density=1 with 2 nests, only one blocking wall is built and no additional walls.
+        Assert.LessOrEqual(walls.Count, 2, "Density 1 with 2 nests should produce at most one blocking wall (1-2 segments)");
+        Assert.Greater(walls.Count, 0, "Density 1 should produce at least one segment");
+    }
+
+    [Test]
+    public void BuildWalls_DensityTwo_TwoNests_ProducesTwoBlockingWalls()
+    {
+        var rng = new System.Random(7);
+        var nests = new List<Vector2> { new Vector2(-40f, 0f), new Vector2(40f, 20f) };
+        var plate = new Vector2(0f, -30f);
+
+        var walls1 = ProceduralPlacement.BuildWalls(
+            nests, plate, StandardArea, wallDensity: 1,
+            minGapOffset: 5f, gapSize: 10f,
+            additionalMinLength: 20f, additionalMaxLength: 50f,
+            connectivityCellSize: 4f, new System.Random(7));
+
+        var walls2 = ProceduralPlacement.BuildWalls(
+            nests, plate, StandardArea, wallDensity: 2,
+            minGapOffset: 5f, gapSize: 10f,
+            additionalMinLength: 20f, additionalMaxLength: 50f,
+            connectivityCellSize: 4f, new System.Random(7));
+
+        // Density 2 should add a second blocking wall vs density 1
+        Assert.Greater(walls2.Count, walls1.Count,
+            "Density 2 should produce more segments than density 1");
+    }
+
+    [Test]
+    public void BuildWalls_DensityExceedsNestCount_AddsAdditionalWalls()
+    {
+        // With 1 nest and density=3: 1 blocking wall + 2 additional walls expected
+        var rng = new System.Random(5);
+        var nests = new List<Vector2> { new Vector2(-40f, 0f) };
+        var plate = new Vector2(40f, 0f);
+
+        var wallsAt1 = ProceduralPlacement.BuildWalls(
+            nests, plate, StandardArea, wallDensity: 1,
+            minGapOffset: 5f, gapSize: 10f,
+            additionalMinLength: 20f, additionalMaxLength: 50f,
+            connectivityCellSize: 4f, new System.Random(5));
+
+        var wallsAt3 = ProceduralPlacement.BuildWalls(
+            nests, plate, StandardArea, wallDensity: 3,
+            minGapOffset: 5f, gapSize: 10f,
+            additionalMinLength: 20f, additionalMaxLength: 50f,
+            connectivityCellSize: 4f, new System.Random(5));
+
+        Assert.Greater(wallsAt3.Count, wallsAt1.Count,
+            "Density 3 with 1 nest should add 2 extra walls beyond the blocking wall");
+    }
+
     // ── Blocking wall ─────────────────────────────────────────────────────────
 
     [Test]

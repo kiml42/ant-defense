@@ -124,45 +124,11 @@ public class ProceduralLevelGenerator : MonoBehaviour
     private List<ProceduralPlacement.WallSegment> BuildWalls(
         List<Vector2> nestPositions, Vector2 platePos2D, int wallDensity, System.Random rng)
     {
-        var walls = new List<ProceduralPlacement.WallSegment>();
-        if (wallDensity == 0) return walls;
-
-        // Blocking wall between each nest and the plate
-        foreach (var nest in nestPositions)
-        {
-            List<ProceduralPlacement.WallSegment> candidate = null;
-            for (int attempt = 0; attempt < 10; attempt++)
-            {
-                candidate = ProceduralPlacement.BuildBlockingWall(
-                    nest, platePos2D, _playArea, MinGapOffset, GapSize, rng);
-
-                var combined = new List<ProceduralPlacement.WallSegment>(walls);
-                combined.AddRange(candidate);
-
-                if (ProceduralPlacement.IsConnected(
-                    nestPositions, platePos2D, combined, _playArea, WallConnectivityCellSize))
-                    break;
-
-                candidate = null;
-            }
-
-            if (candidate != null)
-                walls.AddRange(candidate);
-        }
-
-        // Extra ambient walls based on density slider
-        var extra = ProceduralPlacement.BuildAdditionalWalls(
-            wallDensity, _playArea, AdditionalWallMinLength, AdditionalWallMaxLength, rng);
-
-        foreach (var seg in extra)
-        {
-            var testList = new List<ProceduralPlacement.WallSegment>(walls) { seg };
-            if (ProceduralPlacement.IsConnected(
-                nestPositions, platePos2D, testList, _playArea, WallConnectivityCellSize))
-                walls.Add(seg);
-        }
-
-        return walls;
+        return ProceduralPlacement.BuildWalls(
+            nestPositions, platePos2D, _playArea, wallDensity,
+            MinGapOffset, GapSize,
+            AdditionalWallMinLength, AdditionalWallMaxLength,
+            WallConnectivityCellSize, rng);
     }
 
     // ── Spawning ──────────────────────────────────────────────────────────────

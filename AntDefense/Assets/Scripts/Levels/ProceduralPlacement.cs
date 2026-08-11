@@ -182,6 +182,62 @@ public static class ProceduralPlacement
         return result;
     }
 
+    // ── Combined wall build ───────────────────────────────────────────────────
+
+    /// <summary>
+    /// Builds all walls for a level. <paramref name="wallDensity"/> is the total number of
+    /// visual wall lines: blocking walls (one per nest, up to the density budget) are placed
+    /// first; any remaining budget is spent on additional ambient walls.
+    /// Returns 0 segments when density is 0.
+    /// </summary>
+    public static List<WallSegment> BuildWalls(
+        List<Vector2> nestPositions, Vector2 platePos2D,
+        Rect area, int wallDensity,
+        float minGapOffset, float gapSize,
+        float additionalMinLength, float additionalMaxLength,
+        float connectivityCellSize, System.Random rng)
+    {
+        var walls = new List<WallSegment>();
+        if (wallDensity == 0) return walls;
+
+        int blockingCount = Mathf.Min(nestPositions.Count, wallDensity);
+
+        for (int i = 0; i < blockingCount; i++)
+        {
+            List<WallSegment> candidate = null;
+            for (int attempt = 0; attempt < 10; attempt++)
+            {
+                candidate = BuildBlockingWall(
+                    nestPositions[i], platePos2D, area, minGapOffset, gapSize, rng);
+
+                var combined = new List<WallSegment>(walls);
+                combined.AddRange(candidate);
+
+                if (IsConnected(nestPositions, platePos2D, combined, area, connectivityCellSize))
+                    break;
+
+                candidate = null;
+            }
+
+            if (candidate != null)
+                walls.AddRange(candidate);
+        }
+
+        int additionalCount = wallDensity - blockingCount;
+        if (additionalCount > 0)
+        {
+            var extra = BuildAdditionalWalls(additionalCount, area, additionalMinLength, additionalMaxLength, rng);
+            foreach (var seg in extra)
+            {
+                var testList = new List<WallSegment>(walls) { seg };
+                if (IsConnected(nestPositions, platePos2D, testList, area, connectivityCellSize))
+                    walls.Add(seg);
+            }
+        }
+
+        return walls;
+    }
+
     // ── Cluster placement ─────────────────────────────────────────────────────
 
     public readonly struct BushCluster
