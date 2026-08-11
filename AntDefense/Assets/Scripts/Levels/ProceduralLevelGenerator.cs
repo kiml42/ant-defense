@@ -30,20 +30,20 @@ public class ProceduralLevelGenerator : MonoBehaviour
     public float AdditionalWallMinLength = 20f;
     public float AdditionalWallMaxLength = 50f;
     public float WallConnectivityCellSize = 4f;
+    [Tooltip("Clusters stay at least this far from nests and the plate.")]
+    public float MinClusterAvoidDistance = 20f;
+    [Tooltip("Minimum distance between cluster centres, to spread them across the map.")]
+    public float MinClusterSeparation = 18f;
 
     [Header("Camera Overview")]
-    public float OverviewCameraHeight = 120f;
+    [Tooltip("Starting height of the camera when the config panel opens.")]
+    public float OverviewCameraHeight = 180f;
 
     // ── Runtime state ─────────────────────────────────────────────────────────
 
     private ProceduralLevelConfig _config;
     private readonly List<GameObject> _generatedObjects = new List<GameObject>();
     private Rect _playArea;
-
-    // Camera state saved before overview
-    private Vector3 _savedRigPosition;
-    private Vector3 _savedCamLocalPosition;
-    private Quaternion _savedCamLocalRotation;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -55,7 +55,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
 
         _playArea = ColliderToRect(GroundCollider);
 
-        SaveAndSetOverviewCamera();
+        SetInitialCamera();
 
         FindFirstObjectByType<GlobalKeyHandler>()?.SetMode(GlobalKeyHandler.TimeScaleMode.Paused);
 
@@ -83,13 +83,23 @@ public class ProceduralLevelGenerator : MonoBehaviour
 
         var allWalls = BuildWalls(nestPositions, platePos2D, config.WallDensity, rng);
 
-        SpawnNests(nestPositions);
-        SpawnPlate(platePos2D);
-        SpawnWalls(allWalls);
+        var nestsParent  = CreateParent("Nests");
+        var plateParent  = CreateParent("Plate");
+        var wallsParent  = CreateParent("Walls");
+        var clusterParent = CreateParent("Clusters");
 
+        SpawnNests(nestPositions, nestsParent.transform);
+        SpawnPlate(platePos2D, plateParent.transform);
+        SpawnWalls(allWalls, wallsParent.transform);
+
+        var avoidPositions = new List<Vector2>(nestPositions) { platePos2D };
         var clusters = ProceduralPlacement.PlaceClusters(
-            config.ClusterCount, config.ClusterSize, _playArea, BoundaryMargin, nestPositions, rng);
-        SpawnClusters(clusters, rng);
+            config.ClusterCount, config.ClusterSize, _playArea, BoundaryMargin,
+            nestPositions, rng,
+            avoidPositions: avoidPositions,
+            minAvoidDistance: MinClusterAvoidDistance,
+            minClusterSeparation: MinClusterSeparation);
+        SpawnClusters(clusters, rng, clusterParent.transform);
     }
 
     /// <summary>Increments the seed and regenerates.</summary>
@@ -102,11 +112,10 @@ public class ProceduralLevelGenerator : MonoBehaviour
     /// <summary>Returns the current config (may have a different seed after Regenerate calls).</summary>
     public ProceduralLevelConfig CurrentConfig => _config;
 
-    /// <summary>Hides the config panel, restores the camera, and resumes play.</summary>
+    /// <summary>Hides the config panel and resumes play.</summary>
     public void Confirm()
     {
         ConfigUI.Hide();
-        RestoreCamera();
         FindFirstObjectByType<GlobalKeyHandler>()?.SetMode(GlobalKeyHandler.TimeScaleMode.Normal);
     }
 
@@ -116,6 +125,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         List<Vector2> nestPositions, Vector2 platePos2D, int wallDensity, System.Random rng)
     {
         var walls = new List<ProceduralPlacement.WallSegment>();
+        if (wallDensity == 0) return walls;
 
         // Blocking wall between each nest and the plate
         foreach (var nest in nestPositions)
@@ -133,7 +143,6 @@ public class ProceduralLevelGenerator : MonoBehaviour
                     nestPositions, platePos2D, combined, _playArea, WallConnectivityCellSize))
                     break;
 
-                // This placement blocked all paths — try a fresh wall with a new rng state
                 candidate = null;
             }
 
@@ -145,7 +154,6 @@ public class ProceduralLevelGenerator : MonoBehaviour
         var extra = ProceduralPlacement.BuildAdditionalWalls(
             wallDensity, _playArea, GapSize, AdditionalWallMinLength, AdditionalWallMaxLength, rng);
 
-        // Only add extra walls that preserve connectivity
         foreach (var seg in extra)
         {
             var testList = new List<ProceduralPlacement.WallSegment>(walls) { seg };
@@ -159,53 +167,54 @@ public class ProceduralLevelGenerator : MonoBehaviour
 
     // ── Spawning ──────────────────────────────────────────────────────────────
 
-    private void SpawnNests(List<Vector2> positions)
+    private void SpawnNests(List<Vector2> positions, Transform parent)
     {
         foreach (var pos in positions)
-            Track(Instantiate(AntNestPrefab, Xz(pos), Quaternion.identity));
+            Track(Instantiate(AntNestPrefab, Xz(pos), Quaternion.identity, parent));
     }
 
-    private void SpawnPlate(Vector2 pos)
+    private void SpawnPlate(Vector2 pos, Transform parent)
     {
-        Track(Instantiate(BiscuitPlatePrefab, Xz(pos), Quaternion.identity));
+        Track(Instantiate(BiscuitPlatePrefab, Xz(pos), Quaternion.identity, parent));
     }
 
-    private void SpawnWalls(List<ProceduralPlacement.WallSegment> walls)
+    private void SpawnWalls(List<ProceduralPlacement.WallSegment> walls, Transform parent)
     {
         foreach (var wall in walls)
         {
             var go = Instantiate(
                 EnvironmentWallPrefab,
                 Xz(wall.Centre),
-                Quaternion.Euler(0f, -wall.AngleDegrees, 0f));
+                Quaternion.Euler(0f, -wall.AngleDegrees, 0f),
+                parent);
 
-            // Scale only the X (length) axis; height and depth are baked into the prefab.
             var s = go.transform.localScale;
             go.transform.localScale = new Vector3(wall.Length, s.y, s.z);
             Track(go);
         }
     }
 
-    private void SpawnClusters(List<ProceduralPlacement.BushCluster> clusters, System.Random rng)
+    private void SpawnClusters(List<ProceduralPlacement.BushCluster> clusters, System.Random rng, Transform parent)
     {
         if (BerryBushPrefabs == null || BerryBushPrefabs.Length == 0) return;
 
-        foreach (var cluster in clusters)
+        for (int i = 0; i < clusters.Count; i++)
         {
-            // Pick one or two prefabs for this cluster (monoculture or mixed)
+            var cluster = clusters[i];
+            var clusterGO = CreateParent($"Cluster_{i}", parent);
+
             bool mixed = rng.NextDouble() > 0.5;
             var prefabA = BerryBushPrefabs[rng.Next(BerryBushPrefabs.Length)];
             var prefabB = mixed ? BerryBushPrefabs[rng.Next(BerryBushPrefabs.Length)] : prefabA;
 
-            for (int i = 0; i < cluster.BushCount; i++)
+            for (int j = 0; j < cluster.BushCount; j++)
             {
-                var prefab = (i % 2 == 0 || !mixed) ? prefabA : prefabB;
+                var prefab = (j % 2 == 0 || !mixed) ? prefabA : prefabB;
                 var offset = new Vector2(
                     (float)(rng.NextDouble() * 2 - 1) * ClusterRadius,
                     (float)(rng.NextDouble() * 2 - 1) * ClusterRadius);
-                var pos = cluster.Centre + offset;
                 float yRot = (float)(rng.NextDouble() * 360.0);
-                Track(Instantiate(prefab, Xz(pos), Quaternion.Euler(0f, yRot, 0f)));
+                Track(Instantiate(prefab, Xz(cluster.Centre + offset), Quaternion.Euler(0f, yRot, 0f), clusterGO.transform));
             }
         }
     }
@@ -217,6 +226,14 @@ public class ProceduralLevelGenerator : MonoBehaviour
         foreach (var go in _generatedObjects)
             if (go != null) Destroy(go);
         _generatedObjects.Clear();
+    }
+
+    private GameObject CreateParent(string name, Transform parent = null)
+    {
+        var go = new GameObject(name);
+        if (parent != null) go.transform.SetParent(parent);
+        Track(go);
+        return go;
     }
 
     private void Track(GameObject go) => _generatedObjects.Add(go);
@@ -231,31 +248,15 @@ public class ProceduralLevelGenerator : MonoBehaviour
 
     // ── Camera ────────────────────────────────────────────────────────────────
 
-    private void SaveAndSetOverviewCamera()
+    private void SetInitialCamera()
     {
         if (CameraRig == null) return;
 
-        _savedRigPosition = CameraRig.transform.position;
-        _savedCamLocalPosition = CameraRig.Camera.transform.localPosition;
-        _savedCamLocalRotation = CameraRig.Camera.transform.localRotation;
-
-        // Disable AntCam so player input doesn't move the camera during config
-        CameraRig.enabled = false;
-
-        // Centre the rig over the play area and raise the camera straight up
+        // Centre the rig over the play area; leave AntCam controls active so
+        // the player can pan/zoom normally during configuration.
         var centre = _playArea.center;
         CameraRig.transform.position = new Vector3(centre.x, 0f, centre.y);
         CameraRig.Camera.transform.localPosition = new Vector3(0f, OverviewCameraHeight, 0f);
         CameraRig.Camera.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-    }
-
-    private void RestoreCamera()
-    {
-        if (CameraRig == null) return;
-
-        CameraRig.transform.position = _savedRigPosition;
-        CameraRig.Camera.transform.localPosition = _savedCamLocalPosition;
-        CameraRig.Camera.transform.localRotation = _savedCamLocalRotation;
-        CameraRig.enabled = true;
     }
 }

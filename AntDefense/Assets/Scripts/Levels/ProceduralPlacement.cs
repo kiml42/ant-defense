@@ -103,7 +103,7 @@ public static class ProceduralPlacement
     /// <summary>
     /// Produces wall segments that block the direct line from <paramref name="nestPos"/> to
     /// <paramref name="platePos"/>. The gap in the wall is at least <paramref name="minGapOffset"/>
-    /// units from the direct nest–plate line. Returns at most two segments (one either side of gap).
+    /// units from the midpoint. Returns at most two segments (one either side of gap).
     /// </summary>
     public static List<WallSegment> BuildBlockingWall(
         Vector2 nestPos, Vector2 platePos,
@@ -113,16 +113,27 @@ public static class ProceduralPlacement
         var wallDir = new Vector2(-diff.y, diff.x).normalized;
         var midpoint = (nestPos + platePos) * 0.5f;
 
-        // extent along wallDir needed to reach area boundary from midpoint
-        float extent = WallExtent(midpoint, wallDir, area);
+        // Independent extents from midpoint to each boundary along wallDir
+        var (posExtent, negExtent) = WallExtents(midpoint, wallDir, area);
 
-        // gap centre: offset from midpoint along wallDir by at least minGapOffset
-        float maxOffset = extent - gapSize * 0.5f;
-        float minOffset = minGapOffset;
-        float gapOffset = minOffset < maxOffset
-            ? (float)(rng.NextDouble() * (maxOffset - minOffset) + minOffset)
-            : minOffset;
-        gapOffset *= rng.NextDouble() > 0.5 ? 1f : -1f; // random side
+        // Place the gap on one side, at least minGapOffset from midpoint
+        bool posValid = posExtent - gapSize * 0.5f >= minGapOffset;
+        bool negValid = negExtent - gapSize * 0.5f >= minGapOffset;
+
+        float gapOffset;
+        if (posValid && negValid)
+        {
+            if (rng.NextDouble() > 0.5)
+                gapOffset = RangeRng(rng, minGapOffset, posExtent - gapSize * 0.5f);
+            else
+                gapOffset = -RangeRng(rng, minGapOffset, negExtent - gapSize * 0.5f);
+        }
+        else if (posValid)
+            gapOffset = RangeRng(rng, minGapOffset, posExtent - gapSize * 0.5f);
+        else if (negValid)
+            gapOffset = -RangeRng(rng, minGapOffset, negExtent - gapSize * 0.5f);
+        else
+            gapOffset = 0f;
 
         float gapLeft = gapOffset - gapSize * 0.5f;
         float gapRight = gapOffset + gapSize * 0.5f;
@@ -130,19 +141,19 @@ public static class ProceduralPlacement
         float wallAngle = Mathf.Atan2(wallDir.y, wallDir.x) * Mathf.Rad2Deg;
         var segments = new List<WallSegment>(2);
 
-        // Segment on the negative side of the gap
-        float leftLen = gapLeft + extent;
+        // Segment from -negExtent to gapLeft
+        float leftLen = gapLeft + negExtent;
         if (leftLen > 0.5f)
         {
-            var leftCentre = midpoint + wallDir * ((gapLeft - extent) * 0.5f);
+            var leftCentre = midpoint + wallDir * ((gapLeft - negExtent) * 0.5f);
             segments.Add(new WallSegment(leftCentre, wallAngle, leftLen));
         }
 
-        // Segment on the positive side of the gap
-        float rightLen = extent - gapRight;
+        // Segment from gapRight to +posExtent
+        float rightLen = posExtent - gapRight;
         if (rightLen > 0.5f)
         {
-            var rightCentre = midpoint + wallDir * ((gapRight + extent) * 0.5f);
+            var rightCentre = midpoint + wallDir * ((gapRight + posExtent) * 0.5f);
             segments.Add(new WallSegment(rightCentre, wallAngle, rightLen));
         }
 
@@ -200,20 +211,49 @@ public static class ProceduralPlacement
     /// Places <paramref name="clusterCount"/> clusters inside <paramref name="area"/>.
     /// Cluster size is probabilistically larger the further the cluster centre is from
     /// any nest. <paramref name="clusterSize"/> is the baseline average size.
+    /// <paramref name="avoidPositions"/> (nests + plate) are kept at least
+    /// <paramref name="minAvoidDistance"/> away. Clusters are kept at least
+    /// <paramref name="minClusterSeparation"/> apart to spread them evenly.
     /// </summary>
     public static List<BushCluster> PlaceClusters(
         int clusterCount, int clusterSize, Rect area, float margin,
-        IReadOnlyList<Vector2> nestPositions, System.Random rng)
+        IReadOnlyList<Vector2> nestPositions, System.Random rng,
+        IReadOnlyList<Vector2> avoidPositions = null,
+        float minAvoidDistance = 0f,
+        float minClusterSeparation = 0f)
     {
         var inner = Shrink(area, margin);
         float maxPossibleDist = Mathf.Sqrt(inner.width * inner.width + inner.height * inner.height);
 
         var clusters = new List<BushCluster>(clusterCount);
+        var centres = new List<Vector2>(clusterCount);
 
         for (int i = 0; i < clusterCount; i++)
         {
-            var centre = RandomPoint(inner, rng);
-            float distToNest = MinDistanceTo(centre, nestPositions);
+            var best = RandomPoint(inner, rng);
+
+            for (int a = 0; a < 50; a++)
+            {
+                var candidate = RandomPoint(inner, rng);
+
+                if (avoidPositions != null && minAvoidDistance > 0f)
+                {
+                    float d = MinDistanceTo(candidate, avoidPositions);
+                    if (d >= 0f && d < minAvoidDistance) continue;
+                }
+
+                if (minClusterSeparation > 0f && centres.Count > 0)
+                {
+                    if (MinDistanceTo(candidate, centres) < minClusterSeparation) continue;
+                }
+
+                best = candidate;
+                break;
+            }
+
+            centres.Add(best);
+
+            float distToNest = MinDistanceTo(best, nestPositions);
             if (distToNest < 0f) distToNest = maxPossibleDist;
 
             float normalizedDist = Mathf.Clamp01(distToNest / (maxPossibleDist * 0.5f));
@@ -224,7 +264,7 @@ public static class ProceduralPlacement
             float scale = Lerp(minScale, maxScale, (float)rng.NextDouble());
 
             int count = Mathf.Max(1, Mathf.RoundToInt(clusterSize * scale));
-            clusters.Add(new BushCluster(centre, count));
+            clusters.Add(new BushCluster(best, count));
         }
 
         return clusters;
@@ -279,9 +319,11 @@ public static class ProceduralPlacement
         return min;
     }
 
-    // Maximum symmetric extent from centre along wallDir that stays within area.
-    // Finds the closest boundary in each direction (+wallDir, -wallDir) and returns the smaller.
-    private static float WallExtent(Vector2 centre, Vector2 wallDir, Rect area)
+    private static float RangeRng(System.Random rng, float min, float max) =>
+        (float)(rng.NextDouble() * (max - min) + min);
+
+    // Extents from centre along +wallDir and -wallDir to the nearest area boundary.
+    private static (float pos, float neg) WallExtents(Vector2 centre, Vector2 wallDir, Rect area)
     {
         float posExtent = float.MaxValue, negExtent = float.MaxValue;
 
@@ -304,7 +346,7 @@ public static class ProceduralPlacement
 
         float pos = posExtent == float.MaxValue ? 50f : posExtent;
         float neg = negExtent == float.MaxValue ? 50f : negExtent;
-        return Mathf.Max(Mathf.Min(pos, neg), 5f);
+        return (Mathf.Max(pos, 5f), Mathf.Max(neg, 5f));
     }
 
     private static float Lerp(float a, float b, float t) => a + (b - a) * t;

@@ -187,6 +187,27 @@ public class ProceduralPlacementTests
             "Clusters far from nests should on average have more bushes than nearby ones");
     }
 
+    [Test]
+    public void PlaceClusters_RespectsMinAvoidDistance()
+    {
+        var rng = new System.Random(42);
+        var nests = new List<Vector2> { new Vector2(0f, 0f) };
+        var avoid = new List<Vector2> { new Vector2(0f, 0f) };
+        const float minDist = 25f;
+
+        var clusters = ProceduralPlacement.PlaceClusters(
+            10, 4, StandardArea, Margin, nests, rng,
+            avoidPositions: avoid, minAvoidDistance: minDist);
+
+        // Most clusters (allowing for the best-effort fallback) should respect the limit.
+        int violations = 0;
+        foreach (var c in clusters)
+            if (Vector2.Distance(c.Centre, avoid[0]) < minDist) violations++;
+
+        Assert.Less(violations, clusters.Count / 2,
+            "Majority of clusters should be at least minAvoidDistance from avoid positions");
+    }
+
     // ── Blocking wall ─────────────────────────────────────────────────────────
 
     [Test]

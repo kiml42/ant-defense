@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -41,6 +42,8 @@ public class ProceduralLevelConfigUI : MonoBehaviour
 
     private ProceduralLevelGenerator _generator;
     private bool _ignoreSliderEvents;
+    private Coroutine _generateCoroutine;
+    private const float GenerateDelay = 0.15f;
 
     // ── Initialisation ────────────────────────────────────────────────────────
 
@@ -79,7 +82,18 @@ public class ProceduralLevelConfigUI : MonoBehaviour
         var config = ReadConfigFromSliders();
         RefreshLabels(config);
         UpdateConfigStringDisplay(config);
+
+        // Debounce: wait until the slider stops moving before regenerating.
+        // WaitForSecondsRealtime works even while the game is paused.
+        if (_generateCoroutine != null) StopCoroutine(_generateCoroutine);
+        _generateCoroutine = StartCoroutine(GenerateAfterDelay(config));
+    }
+
+    private IEnumerator GenerateAfterDelay(ProceduralLevelConfig config)
+    {
+        yield return new WaitForSecondsRealtime(GenerateDelay);
         _generator.Generate(config);
+        _generateCoroutine = null;
     }
 
     private void OnRegenerateClicked()
