@@ -36,8 +36,8 @@ public class ProceduralLevelGenerator : MonoBehaviour
     public float MinClusterSeparation = 18f;
 
     [Header("Camera Overview")]
-    [Tooltip("Starting height of the camera when the config panel opens.")]
-    public float OverviewCameraHeight = 180f;
+    [Tooltip("Extra scale on the computed overview height so the play area sits comfortably inside the view.")]
+    public float OverviewMargin = 1.15f;
 
     // ── Runtime state ─────────────────────────────────────────────────────────
 
@@ -252,11 +252,13 @@ public class ProceduralLevelGenerator : MonoBehaviour
     {
         if (CameraRig == null) return;
 
-        // Centre the rig over the play area; leave AntCam controls active so
-        // the player can pan/zoom normally during configuration.
+        var cam = CameraRig.Camera;
+        float tanHalfFov = Mathf.Tan(cam.fieldOfView * 0.5f * Mathf.Deg2Rad);
+        float h = Mathf.Max(_playArea.height, _playArea.width / cam.aspect) / (2f * tanHalfFov) * OverviewMargin;
+
         var centre = _playArea.center;
         CameraRig.transform.position = new Vector3(centre.x, 0f, centre.y);
-        CameraRig.Camera.transform.localPosition = new Vector3(0f, OverviewCameraHeight, 0f);
-        CameraRig.Camera.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+        cam.transform.localPosition = new Vector3(0f, h, 0f);
+        cam.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
     }
 }
