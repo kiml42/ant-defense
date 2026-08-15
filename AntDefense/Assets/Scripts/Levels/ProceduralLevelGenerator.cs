@@ -136,12 +136,16 @@ public class ProceduralLevelGenerator : MonoBehaviour
     private List<ProceduralPlacement.WallSegment> BuildWalls(
         List<Vector2> nestPositions, Vector2 platePos2D, int wallDensity, System.Random rng)
     {
+        float wallWidth = EnvironmentWallPrefab != null
+            ? EnvironmentWallPrefab.transform.localScale.z : 0f;
+
         return ProceduralPlacement.BuildWalls(
             nestPositions, platePos2D, _playArea, wallDensity,
             MinGapOffset, GapSize,
             GapsPerUnitLength, MinWallAvoidDistance, MinWallSegmentLength,
             MinParallelWallAngle, MinParallelWallSeparation,
-            WallConnectivityCellSize, BlockingWallThreshold, rng);
+            WallConnectivityCellSize, BlockingWallThreshold, rng,
+            wallWidth);
     }
 
     // ── Spawning ──────────────────────────────────────────────────────────────

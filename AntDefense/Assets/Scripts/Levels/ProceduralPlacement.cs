@@ -363,15 +363,18 @@ public static class ProceduralPlacement
     /// Adding these to the wall list before placing internal walls lets the parallel-separation
     /// and clip-to-wall rules treat the boundary the same as any other wall.
     /// </summary>
-    public static List<WallSegment> BuildEdgeWalls(Rect area)
+    public static List<WallSegment> BuildEdgeWalls(Rect area, float wallWidth = 0f)
     {
         float cx = area.center.x, cy = area.center.y;
+        float hw = wallWidth * 0.5f;
+        // Each wall shifts its centre by halfWidth in the clockwise direction around the
+        // perimeter so adjacent walls butt against each other without corner gaps or overlaps.
         return new List<WallSegment>
         {
-            new WallSegment(new Vector2(cx,         area.yMin), 0f,  area.width),
-            new WallSegment(new Vector2(cx,         area.yMax), 0f,  area.width),
-            new WallSegment(new Vector2(area.xMin,  cy),        90f, area.height),
-            new WallSegment(new Vector2(area.xMax,  cy),        90f, area.height),
+            new WallSegment(new Vector2(cx - hw,        area.yMin), 0f,  area.width),  // bottom → left
+            new WallSegment(new Vector2(cx + hw,        area.yMax), 0f,  area.width),  // top    → right
+            new WallSegment(new Vector2(area.xMin, cy + hw),        90f, area.height), // left   → up
+            new WallSegment(new Vector2(area.xMax, cy - hw),        90f, area.height), // right  → down
         };
     }
 
@@ -390,9 +393,10 @@ public static class ProceduralPlacement
         float gapsPerUnitLength, float minAvoidDistance, float minSegmentLength,
         float minParallelAngle, float minParallelSeparation,
         float connectivityCellSize, float blockingWallThreshold,
-        System.Random rng)
+        System.Random rng,
+        float wallWidth = 0f)
     {
-        var walls = new List<WallSegment>(BuildEdgeWalls(area));
+        var walls = new List<WallSegment>(BuildEdgeWalls(area, wallWidth));
         var avoidPositions = new List<Vector2>(nestPositions) { platePos2D };
 
         // Blocking walls: automatic when a nest is close enough to the plate.
