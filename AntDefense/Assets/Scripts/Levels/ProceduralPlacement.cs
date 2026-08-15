@@ -497,7 +497,8 @@ public static class ProceduralPlacement
         float minAvoidDistance,
         IReadOnlyList<Vector2> avoidPositions,
         IReadOnlyList<WallSegment> walls,
-        System.Random rng)
+        System.Random rng,
+        float minBushSeparation = 0f)
     {
         int totalCells = 0;
         foreach (var r in regions) totalCells += r.CellCount;
@@ -538,9 +539,20 @@ public static class ProceduralPlacement
                     float theta = (float)rng.NextDouble() * 2f * Mathf.PI;
                     var bushCandidate = centre.Value + new Vector2(Mathf.Cos(theta) * r, Mathf.Sin(theta) * r);
 
-                    if (IsValidBushPosition(bushCandidate, centre.Value, clusterRadius,
+                    if (!IsValidBushPosition(bushCandidate, centre.Value, clusterRadius,
                             walls, wallSetback, avoidPositions, minAvoidDistance))
-                        bushPositions.Add(bushCandidate);
+                        continue;
+
+                    if (minBushSeparation > 0f)
+                    {
+                        bool tooClose = false;
+                        foreach (var placed in bushPositions)
+                            if (Vector2.Distance(bushCandidate, placed) < minBushSeparation)
+                            { tooClose = true; break; }
+                        if (tooClose) continue;
+                    }
+
+                    bushPositions.Add(bushCandidate);
                 }
 
                 if (bushPositions.Count > 0)

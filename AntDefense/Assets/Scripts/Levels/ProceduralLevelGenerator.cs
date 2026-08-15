@@ -26,7 +26,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
     public float PlateMargin = 20f;
     public float MinGapOffset = 8f;
     public float GapSize = 14f;
-    public float ClusterRadius = 8f;
+    public float ClusterRadius = 20f;
     [Tooltip("Gaps per unit of wall length. A 200-unit wall with 0.02 gets ~4 gaps; a 50-unit wall gets ~1.")]
     public float GapsPerUnitLength = 0.02f;
     [Tooltip("Minimum distance walls must keep from nests and the plate. A gap is forced wherever a wall comes closer than this.")]
@@ -42,6 +42,8 @@ public class ProceduralLevelGenerator : MonoBehaviour
     public float MinClusterAvoidDistance = 20f;
     [Tooltip("Minimum perpendicular distance that bush positions maintain from wall lines.")]
     public float WallSetback = 5f;
+    [Tooltip("Minimum distance between individual bush positions within a cluster.")]
+    public float MinBushSeparation = 5f;
     [Tooltip("Walls that would isolate a region (no nest or plate) smaller than this many cells are rejected. 0 disables the check.")]
     public int MinIsolatedRegionCells = 30;
     [Tooltip("Plate is never placed closer than this to any nest.")]
@@ -110,7 +112,8 @@ public class ProceduralLevelGenerator : MonoBehaviour
         var avoidPositions = new List<Vector2>(nestPositions) { platePos2D };
         var clusters = ProceduralPlacement.PlaceClusters(
             regions, WallConnectivityCellSize, config.ClusterCount, config.ClusterSize,
-            ClusterRadius, WallSetback, MinClusterAvoidDistance, avoidPositions, allWalls, rng);
+            ClusterRadius, WallSetback, MinClusterAvoidDistance, avoidPositions, allWalls, rng,
+            MinBushSeparation);
         SpawnClusters(clusters, rng, clusterParent.transform);
     }
 
