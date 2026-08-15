@@ -64,7 +64,8 @@ public static class ProceduralPlacement
     /// <paramref name="candidates"/> random points and picks the best.
     /// </summary>
     public static Vector2 PlacePlate(
-        Rect area, float margin, IReadOnlyList<Vector2> nestPositions, System.Random rng, int candidates = 200)
+        Rect area, float margin, IReadOnlyList<Vector2> nestPositions, System.Random rng,
+        int candidates = 200, float minDistance = 0f)
     {
         var inner = Shrink(area, margin);
         var best = RandomPoint(inner, rng);
@@ -74,6 +75,7 @@ public static class ProceduralPlacement
         {
             var candidate = RandomPoint(inner, rng);
             float d = MinDistanceTo(candidate, nestPositions);
+            if (minDistance > 0f && d < minDistance) continue;
             if (d > bestDist)
             {
                 bestDist = d;
@@ -185,30 +187,30 @@ public static class ProceduralPlacement
     // ── Combined wall build ───────────────────────────────────────────────────
 
     /// <summary>
-    /// Builds all walls for a level. <paramref name="wallDensity"/> is the total number of
-    /// visual wall lines: blocking walls (one per nest, up to the density budget) are placed
-    /// first; any remaining budget is spent on additional ambient walls.
-    /// Returns 0 segments when density is 0.
+    /// Builds all walls for a level.
+    /// Blocking walls are placed automatically for any nest whose distance to the plate
+    /// is less than <paramref name="blockingWallThreshold"/> — independent of the slider.
+    /// <paramref name="wallDensity"/> controls only the number of additional ambient walls.
     /// </summary>
     public static List<WallSegment> BuildWalls(
         List<Vector2> nestPositions, Vector2 platePos2D,
         Rect area, int wallDensity,
         float minGapOffset, float gapSize,
         float additionalMinLength, float additionalMaxLength,
-        float connectivityCellSize, System.Random rng)
+        float connectivityCellSize, float blockingWallThreshold,
+        System.Random rng)
     {
         var walls = new List<WallSegment>();
-        if (wallDensity == 0) return walls;
 
-        int blockingCount = Mathf.Min(nestPositions.Count, wallDensity);
-
-        for (int i = 0; i < blockingCount; i++)
+        // Blocking walls: automatic when a nest is close enough to the plate.
+        foreach (var nest in nestPositions)
         {
+            if (Vector2.Distance(nest, platePos2D) >= blockingWallThreshold) continue;
+
             List<WallSegment> candidate = null;
             for (int attempt = 0; attempt < 10; attempt++)
             {
-                candidate = BuildBlockingWall(
-                    nestPositions[i], platePos2D, area, minGapOffset, gapSize, rng);
+                candidate = BuildBlockingWall(nest, platePos2D, area, minGapOffset, gapSize, rng);
 
                 var combined = new List<WallSegment>(walls);
                 combined.AddRange(candidate);
@@ -223,10 +225,10 @@ public static class ProceduralPlacement
                 walls.AddRange(candidate);
         }
 
-        int additionalCount = wallDensity - blockingCount;
-        if (additionalCount > 0)
+        // Ambient walls: density slider controls count.
+        if (wallDensity > 0)
         {
-            var extra = BuildAdditionalWalls(additionalCount, area, additionalMinLength, additionalMaxLength, rng);
+            var extra = BuildAdditionalWalls(wallDensity, area, additionalMinLength, additionalMaxLength, rng);
             foreach (var seg in extra)
             {
                 var testList = new List<WallSegment>(walls) { seg };

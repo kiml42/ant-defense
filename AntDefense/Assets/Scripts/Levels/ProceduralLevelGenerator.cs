@@ -34,6 +34,10 @@ public class ProceduralLevelGenerator : MonoBehaviour
     public float MinClusterAvoidDistance = 20f;
     [Tooltip("Minimum distance between cluster centres, to spread them across the map.")]
     public float MinClusterSeparation = 18f;
+    [Tooltip("Plate is never placed closer than this to any nest.")]
+    public float MinNestPlateSeparation = 30f;
+    [Tooltip("A blocking wall is placed between nest and plate when they are closer than this. Above this distance ants have a long enough route without one.")]
+    public float BlockingWallThreshold = 100f;
 
     [Header("Camera Overview")]
     [Tooltip("Extra scale on the computed overview height so the play area sits comfortably inside the view.")]
@@ -79,7 +83,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
             config.NestCount, _playArea, MinNestSeparation, BoundaryMargin, rng);
 
         var platePos2D = ProceduralPlacement.PlacePlate(
-            _playArea, PlateMargin, nestPositions, rng);
+            _playArea, PlateMargin, nestPositions, rng, minDistance: MinNestPlateSeparation);
 
         var allWalls = BuildWalls(nestPositions, platePos2D, config.WallDensity, rng);
 
@@ -128,7 +132,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
             nestPositions, platePos2D, _playArea, wallDensity,
             MinGapOffset, GapSize,
             AdditionalWallMinLength, AdditionalWallMaxLength,
-            WallConnectivityCellSize, rng);
+            WallConnectivityCellSize, BlockingWallThreshold, rng);
     }
 
     // ── Spawning ──────────────────────────────────────────────────────────────
