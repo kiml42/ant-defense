@@ -167,26 +167,40 @@ public static class ProceduralPlacement
     public static List<WallSegment> BuildAdditionalWalls(
         int wallDensity, Rect area, float gapSize, float gapsPerUnitLength, System.Random rng,
         float minAvoidDistance = 0f, float minSegmentLength = 8f,
+        float minParallelAngle = 0f, float minParallelSeparation = 0f,
         IReadOnlyList<Vector2> avoidPositions = null)
     {
         var result = new List<WallSegment>(wallDensity * 4);
         for (int i = 0; i < wallDensity; i++)
-            result.AddRange(BuildAmbientWall(area, gapSize, gapsPerUnitLength, minAvoidDistance, minSegmentLength, rng, null, avoidPositions));
+            result.AddRange(BuildAmbientWall(area, gapSize, gapsPerUnitLength,
+                minAvoidDistance, minSegmentLength, minParallelAngle, minParallelSeparation,
+                rng, null, avoidPositions));
         return result;
     }
 
     // Builds one full-width wall (clipped to existing walls) at a random angle.
     // Forced gaps clear nests/plate; random gaps fill out the density target.
     private static List<WallSegment> BuildAmbientWall(
-        Rect area, float gapSize, float gapsPerUnitLength, float minAvoidDistance, float minSegmentLength,
+        Rect area, float gapSize, float gapsPerUnitLength,
+        float minAvoidDistance, float minSegmentLength,
+        float minParallelAngle, float minParallelSeparation,
         System.Random rng,
         IReadOnlyList<WallSegment> existingWalls,
         IReadOnlyList<Vector2> avoidPositions)
     {
-        float angleDeg = (float)(rng.NextDouble() * 180.0);
-        float rad = angleDeg * Mathf.Deg2Rad;
-        var dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
-        var centre = RandomPoint(Shrink(area, 10f), rng);
+        // Try to find an angle + position that isn't too close and parallel to an existing wall.
+        float angleDeg = 0f;
+        Vector2 dir = Vector2.right, centre = Vector2.zero;
+        var inner = Shrink(area, 10f);
+        for (int attempt = 0; attempt < 12; attempt++)
+        {
+            angleDeg = (float)(rng.NextDouble() * 180.0);
+            float rad0 = angleDeg * Mathf.Deg2Rad;
+            dir    = new Vector2(Mathf.Cos(rad0), Mathf.Sin(rad0));
+            centre = RandomPoint(inner, rng);
+            if (!IsTooCloseAndParallel(centre, dir, angleDeg, existingWalls, minParallelAngle, minParallelSeparation))
+                break;
+        }
 
         var (posExtent, negExtent) = WallExtents(centre, dir, area);
         ClipToExistingWalls(ref posExtent, ref negExtent, centre, dir, existingWalls);
@@ -202,6 +216,29 @@ public static class ProceduralPlacement
 
         float wallAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         return SegmentsFromGaps(centre, dir, wallAngle, wallStart, wallEnd, gaps, minSegmentLength);
+    }
+
+    // Returns true if a wall at (centre, dir, angleDeg) is too close to any existing wall
+    // with a similar angle. Uses perpendicular distance between the two infinite lines.
+    private static bool IsTooCloseAndParallel(
+        Vector2 centre, Vector2 dir, float angleDeg,
+        IReadOnlyList<WallSegment> existingWalls,
+        float minAngleDiff, float minPerpDist)
+    {
+        if (existingWalls == null || minAngleDiff <= 0f || minPerpDist <= 0f) return false;
+
+        foreach (var seg in existingWalls)
+        {
+            float diff = Mathf.Abs(angleDeg - seg.AngleDegrees) % 180f;
+            if (diff > 90f) diff = 180f - diff;
+            if (diff > minAngleDiff) continue;
+
+            // Perpendicular distance from seg.Centre to the new wall's infinite line.
+            var delta = seg.Centre - centre;
+            float perpDist = Mathf.Abs(delta.x * dir.y - delta.y * dir.x);
+            if (perpDist < minPerpDist) return true;
+        }
+        return false;
     }
 
     // Clips posExtent / negExtent so the wall stops where it first hits an existing wall.
@@ -332,6 +369,7 @@ public static class ProceduralPlacement
         Rect area, int wallDensity,
         float minGapOffset, float gapSize,
         float gapsPerUnitLength, float minAvoidDistance, float minSegmentLength,
+        float minParallelAngle, float minParallelSeparation,
         float connectivityCellSize, float blockingWallThreshold,
         System.Random rng)
     {
@@ -366,7 +404,9 @@ public static class ProceduralPlacement
         // Ambient walls: built one at a time so each sees previously placed walls.
         for (int i = 0; i < wallDensity; i++)
         {
-            var segs = BuildAmbientWall(area, gapSize, gapsPerUnitLength, minAvoidDistance, minSegmentLength, rng, walls, avoidPositions);
+            var segs = BuildAmbientWall(area, gapSize, gapsPerUnitLength,
+                minAvoidDistance, minSegmentLength, minParallelAngle, minParallelSeparation,
+                rng, walls, avoidPositions);
             var testList = new List<WallSegment>(walls);
             testList.AddRange(segs);
             if (IsConnected(nestPositions, platePos2D, testList, area, connectivityCellSize))

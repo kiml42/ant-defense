@@ -239,6 +239,7 @@ public class ProceduralPlacementTests
             nests, plate, StandardArea, density,
             minGapOffset: 5f, gapSize: 10f,
             gapsPerUnitLength: 0.02f, minAvoidDistance: 0f, minSegmentLength: 0f,
+            minParallelAngle: 0f, minParallelSeparation: 0f,
             connectivityCellSize: 4f, blockingWallThreshold: threshold,
             rng);
     }
