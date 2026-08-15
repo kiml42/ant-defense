@@ -238,7 +238,7 @@ public class ProceduralPlacementTests
         return ProceduralPlacement.BuildWalls(
             nests, plate, StandardArea, density,
             minGapOffset: 5f, gapSize: 10f,
-            blockingExtraGaps: 2, ambientGapCount: 3,
+            gapsPerUnitLength: 0.02f,
             connectivityCellSize: 4f, blockingWallThreshold: threshold,
             rng);
     }

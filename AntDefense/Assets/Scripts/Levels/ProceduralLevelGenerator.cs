@@ -27,10 +27,8 @@ public class ProceduralLevelGenerator : MonoBehaviour
     public float MinGapOffset = 8f;
     public float GapSize = 14f;
     public float ClusterRadius = 8f;
-    [Tooltip("Extra random gaps added to blocking walls beyond the strategic gap.")]
-    public int BlockingExtraGaps = 2;
-    [Tooltip("Number of gaps in each ambient (non-blocking) wall.")]
-    public int AmbientWallGapCount = 3;
+    [Tooltip("Gaps per unit of wall length. A 200-unit wall with 0.02 gets ~4 gaps; a 50-unit wall gets ~1.")]
+    public float GapsPerUnitLength = 0.02f;
     public float WallConnectivityCellSize = 4f;
     [Tooltip("Clusters stay at least this far from nests and the plate.")]
     public float MinClusterAvoidDistance = 20f;
@@ -133,7 +131,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         return ProceduralPlacement.BuildWalls(
             nestPositions, platePos2D, _playArea, wallDensity,
             MinGapOffset, GapSize,
-            BlockingExtraGaps, AmbientWallGapCount,
+            GapsPerUnitLength,
             WallConnectivityCellSize, BlockingWallThreshold, rng);
     }
 
