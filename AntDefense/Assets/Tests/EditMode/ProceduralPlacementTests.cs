@@ -222,6 +222,41 @@ public class ProceduralPlacementTests
             "Majority of clusters should be at least minAvoidDistance from avoid positions");
     }
 
+    // ── Edge walls ────────────────────────────────────────────────────────────
+
+    [Test]
+    public void BuildEdgeWalls_ReturnsFourSegments()
+    {
+        var walls = ProceduralPlacement.BuildEdgeWalls(StandardArea);
+        Assert.AreEqual(4, walls.Count);
+    }
+
+    [Test]
+    public void BuildEdgeWalls_SegmentsAreAtAreaBoundary()
+    {
+        var walls = ProceduralPlacement.BuildEdgeWalls(StandardArea);
+        // All centres must lie exactly on one of the four boundary lines.
+        foreach (var w in walls)
+        {
+            bool onBoundary =
+                Mathf.Approximately(w.Centre.x, StandardArea.xMin) ||
+                Mathf.Approximately(w.Centre.x, StandardArea.xMax) ||
+                Mathf.Approximately(w.Centre.y, StandardArea.yMin) ||
+                Mathf.Approximately(w.Centre.y, StandardArea.yMax);
+            Assert.IsTrue(onBoundary, $"Edge wall centre {w.Centre} is not on a boundary");
+        }
+    }
+
+    [Test]
+    public void BuildWalls_EdgeWallsAlwaysPresent()
+    {
+        // Even with no blocking walls and no ambient walls, the 4 edge walls are returned.
+        var nests = new List<Vector2> { new Vector2(-90f, 0f) };
+        var plate = new Vector2(90f, 0f);
+        var walls = Walls(nests, plate, density: 0, new System.Random(42));
+        Assert.AreEqual(EdgeWallCount, walls.Count);
+    }
+
     // ── Combined wall build ───────────────────────────────────────────────────
     //
     // Design contract:
@@ -230,6 +265,7 @@ public class ProceduralPlacementTests
     //   - Both are independent: blocking walls fire even at density=0 for close nests.
 
     private const float BlockingThreshold = 80f;
+    private const int EdgeWallCount = 4; // BuildEdgeWalls always adds 4 perimeter segments
 
     private static List<ProceduralPlacement.WallSegment> Walls(
         List<Vector2> nests, Vector2 plate, int density, System.Random rng,
@@ -258,29 +294,29 @@ public class ProceduralPlacementTests
     }
 
     [Test]
-    public void BuildWalls_FarNest_DensityZero_ReturnsNoSegments()
+    public void BuildWalls_FarNest_DensityZero_ReturnsOnlyEdgeWalls()
     {
-        // Nest far beyond threshold — no blocking wall, no ambient walls.
+        // Nest far beyond threshold — no blocking wall, no ambient walls — only the 4 perimeter edges.
         var nests = new List<Vector2> { new Vector2(-90f, 0f) };
         var plate = new Vector2(90f, 0f); // dist = 180 >> threshold 80
 
         var walls = Walls(nests, plate, density: 0, new System.Random(2));
 
-        Assert.AreEqual(0, walls.Count, "Far nest + density 0 should produce no walls");
+        Assert.AreEqual(EdgeWallCount, walls.Count, "Far nest + density 0 should produce only edge walls");
     }
 
     [Test]
     public void BuildWalls_FarNest_DensityN_ProducesOnlyAmbientWalls()
     {
         // Nest far beyond threshold — no blocking wall.
-        // density=3 should give exactly 3 ambient wall segments.
+        // density=3 should give at most 3 ambient segments on top of the 4 edge walls.
         var nests = new List<Vector2> { new Vector2(-90f, 0f) };
         var plate = new Vector2(90f, 0f); // dist = 180 >> threshold 80
 
         var walls = Walls(nests, plate, density: 3, new System.Random(3));
 
-        // Connectivity check may reject some; at most 3 ambient walls (none from blocking).
-        Assert.LessOrEqual(walls.Count, 3);
+        // Connectivity check may reject some; at most EdgeWallCount + 3 total (none from blocking).
+        Assert.LessOrEqual(walls.Count, EdgeWallCount + 3);
     }
 
     [Test]

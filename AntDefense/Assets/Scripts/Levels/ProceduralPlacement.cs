@@ -356,6 +356,25 @@ public static class ProceduralPlacement
         return result;
     }
 
+    // ── Edge walls ────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Returns four WallSegments forming a rectangular perimeter around <paramref name="area"/>.
+    /// Adding these to the wall list before placing internal walls lets the parallel-separation
+    /// and clip-to-wall rules treat the boundary the same as any other wall.
+    /// </summary>
+    public static List<WallSegment> BuildEdgeWalls(Rect area)
+    {
+        float cx = area.center.x, cy = area.center.y;
+        return new List<WallSegment>
+        {
+            new WallSegment(new Vector2(cx,         area.yMin), 0f,  area.width),
+            new WallSegment(new Vector2(cx,         area.yMax), 0f,  area.width),
+            new WallSegment(new Vector2(area.xMin,  cy),        90f, area.height),
+            new WallSegment(new Vector2(area.xMax,  cy),        90f, area.height),
+        };
+    }
+
     // ── Combined wall build ───────────────────────────────────────────────────
 
     /// <summary>
@@ -373,7 +392,7 @@ public static class ProceduralPlacement
         float connectivityCellSize, float blockingWallThreshold,
         System.Random rng)
     {
-        var walls = new List<WallSegment>();
+        var walls = new List<WallSegment>(BuildEdgeWalls(area));
         var avoidPositions = new List<Vector2>(nestPositions) { platePos2D };
 
         // Blocking walls: automatic when a nest is close enough to the plate.
