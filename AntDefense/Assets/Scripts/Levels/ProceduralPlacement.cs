@@ -88,6 +88,14 @@ public static class ProceduralPlacement
 
     // ── Wall segment generation ───────────────────────────────────────────────
 
+    // A gap in a wall line: centre along the wall axis and the half-width of the opening.
+    private readonly struct GapSpec
+    {
+        public readonly float Centre;
+        public readonly float HalfSize;
+        public GapSpec(float centre, float halfSize) { Centre = centre; HalfSize = halfSize; }
+    }
+
     public readonly struct WallSegment
     {
         public readonly Vector2 Centre;
@@ -104,14 +112,16 @@ public static class ProceduralPlacement
 
     /// <summary>
     /// Produces a wall spanning edge-to-edge (or to an existing wall) perpendicular to the
-    /// nest→plate line. One strategic gap is placed offset from the midpoint; additional gaps
-    /// are distributed proportionally to wall length via <paramref name="gapsPerUnitLength"/>.
+    /// nest→plate line. One strategic gap is placed offset from the midpoint; forced gaps are
+    /// added wherever the wall passes near an avoid point; additional random gaps fill out the
+    /// density set by <paramref name="gapsPerUnitLength"/>.
     /// </summary>
     public static List<WallSegment> BuildBlockingWall(
         Vector2 nestPos, Vector2 platePos,
         Rect area, float minGapOffset, float gapSize,
-        float gapsPerUnitLength, System.Random rng,
-        IReadOnlyList<WallSegment> existingWalls = null)
+        float gapsPerUnitLength, float minAvoidDistance, System.Random rng,
+        IReadOnlyList<WallSegment> existingWalls = null,
+        IReadOnlyList<Vector2> avoidPositions = null)
     {
         var diff = platePos - nestPos;
         var wallDir = new Vector2(-diff.y, diff.x).normalized;
@@ -120,9 +130,9 @@ public static class ProceduralPlacement
         var (posExtent, negExtent) = WallExtents(midpoint, wallDir, area);
         ClipToExistingWalls(ref posExtent, ref negExtent, midpoint, wallDir, existingWalls);
 
-        float wallStart = -negExtent;
-        float wallEnd   =  posExtent;
-        float wallLength = posExtent + negExtent;
+        float wallStart  = -negExtent;
+        float wallEnd    =  posExtent;
+        float wallLength =  posExtent + negExtent;
 
         // Strategic gap: offset from midpoint so it isn't directly on the nest-plate line.
         bool posValid = posExtent - gapSize * 0.5f >= minGapOffset;
@@ -141,31 +151,35 @@ public static class ProceduralPlacement
             strategic = 0f;
 
         int totalGaps = Mathf.Max(1, Mathf.RoundToInt(wallLength * gapsPerUnitLength));
-        var gapCentres = new List<float> { strategic };
-        AddRandomGaps(gapCentres, totalGaps - 1, wallStart, wallEnd, gapSize, rng);
+        var gaps = new List<GapSpec> { new GapSpec(strategic, gapSize * 0.5f) };
+        AddForcedGaps(gaps, midpoint, wallDir, wallStart, wallEnd, gapSize, minAvoidDistance, avoidPositions);
+        AddRandomGaps(gaps, Mathf.Max(0, totalGaps - gaps.Count), wallStart, wallEnd, gapSize, rng);
 
         float wallAngle = Mathf.Atan2(wallDir.y, wallDir.x) * Mathf.Rad2Deg;
-        return SegmentsFromGaps(midpoint, wallDir, wallAngle, wallStart, wallEnd, gapSize, gapCentres);
+        return SegmentsFromGaps(midpoint, wallDir, wallAngle, wallStart, wallEnd, gaps);
     }
 
     /// <summary>
-    /// Generates <paramref name="wallDensity"/> ambient walls, each spanning edge-to-edge (or to
-    /// an existing wall) with gaps proportional to wall length via <paramref name="gapsPerUnitLength"/>.
+    /// Generates <paramref name="wallDensity"/> ambient walls without existing-wall context.
+    /// Used primarily for testing; in-game use goes through BuildWalls.
     /// </summary>
     public static List<WallSegment> BuildAdditionalWalls(
-        int wallDensity, Rect area, float gapSize, float gapsPerUnitLength, System.Random rng)
+        int wallDensity, Rect area, float gapSize, float gapsPerUnitLength, System.Random rng,
+        float minAvoidDistance = 0f, IReadOnlyList<Vector2> avoidPositions = null)
     {
         var result = new List<WallSegment>(wallDensity * 4);
         for (int i = 0; i < wallDensity; i++)
-            result.AddRange(BuildAmbientWall(area, gapSize, gapsPerUnitLength, rng, null));
+            result.AddRange(BuildAmbientWall(area, gapSize, gapsPerUnitLength, minAvoidDistance, rng, null, avoidPositions));
         return result;
     }
 
     // Builds one full-width wall (clipped to existing walls) at a random angle.
-    // Gap count scales with wall length so shorter walls get fewer gaps.
+    // Forced gaps clear nests/plate; random gaps fill out the density target.
     private static List<WallSegment> BuildAmbientWall(
-        Rect area, float gapSize, float gapsPerUnitLength, System.Random rng,
-        IReadOnlyList<WallSegment> existingWalls)
+        Rect area, float gapSize, float gapsPerUnitLength, float minAvoidDistance,
+        System.Random rng,
+        IReadOnlyList<WallSegment> existingWalls,
+        IReadOnlyList<Vector2> avoidPositions)
     {
         float angleDeg = (float)(rng.NextDouble() * 180.0);
         float rad = angleDeg * Mathf.Deg2Rad;
@@ -179,12 +193,13 @@ public static class ProceduralPlacement
         float wallEnd    =  posExtent;
         float wallLength =  posExtent + negExtent;
 
-        int gapCount = Mathf.Max(1, Mathf.RoundToInt(wallLength * gapsPerUnitLength));
-        var gapCentres = new List<float>(gapCount);
-        AddRandomGaps(gapCentres, gapCount, wallStart, wallEnd, gapSize, rng);
+        int targetGaps = Mathf.Max(1, Mathf.RoundToInt(wallLength * gapsPerUnitLength));
+        var gaps = new List<GapSpec>(targetGaps);
+        AddForcedGaps(gaps, centre, dir, wallStart, wallEnd, gapSize, minAvoidDistance, avoidPositions);
+        AddRandomGaps(gaps, Mathf.Max(0, targetGaps - gaps.Count), wallStart, wallEnd, gapSize, rng);
 
         float wallAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        return SegmentsFromGaps(centre, dir, wallAngle, wallStart, wallEnd, gapSize, gapCentres);
+        return SegmentsFromGaps(centre, dir, wallAngle, wallStart, wallEnd, gaps);
     }
 
     // Clips posExtent / negExtent so the wall stops where it first hits an existing wall.
@@ -219,9 +234,42 @@ public static class ProceduralPlacement
         }
     }
 
-    // Appends up to `count` non-overlapping gap centres to `gaps`.
-    private static void AddRandomGaps(List<float> gaps, int count, float wallStart, float wallEnd, float gapSize, System.Random rng)
+    // Adds a forced gap wherever the wall passes within minAvoidDistance of an avoid point.
+    // The gap half-size is the exact geometric clearance needed to keep the wall edge at
+    // minAvoidDistance from the point.
+    private static void AddForcedGaps(
+        List<GapSpec> gaps,
+        Vector2 origin, Vector2 dir,
+        float wallStart, float wallEnd,
+        float gapSize, float minAvoidDistance,
+        IReadOnlyList<Vector2> avoidPositions)
     {
+        if (avoidPositions == null || minAvoidDistance <= 0f) return;
+        float halfGap = gapSize * 0.5f;
+
+        foreach (var pt in avoidPositions)
+        {
+            float t = Mathf.Clamp(Vector2.Dot(pt - origin, dir), wallStart, wallEnd);
+            float dist = Vector2.Distance(pt, origin + dir * t);
+            if (dist >= minAvoidDistance) continue;
+
+            float halfRequired = Mathf.Sqrt(Mathf.Max(0f, minAvoidDistance * minAvoidDistance - dist * dist));
+            float halfSize = Mathf.Max(halfGap, halfRequired);
+
+            // Skip if an existing gap already covers this point.
+            bool covered = false;
+            foreach (var g in gaps)
+                if (t >= g.Centre - g.HalfSize && t <= g.Centre + g.HalfSize) { covered = true; break; }
+
+            if (!covered)
+                gaps.Add(new GapSpec(t, halfSize));
+        }
+    }
+
+    // Appends up to `count` non-overlapping random gaps; respects existing gap extents.
+    private static void AddRandomGaps(List<GapSpec> gaps, int count, float wallStart, float wallEnd, float gapSize, System.Random rng)
+    {
+        float halfGap   = gapSize * 0.5f;
         float safeStart = wallStart + gapSize;
         float safeEnd   = wallEnd   - gapSize;
         if (safeEnd <= safeStart) return;
@@ -232,25 +280,26 @@ public static class ProceduralPlacement
             {
                 float t = RangeRng(rng, safeStart, safeEnd);
                 bool overlaps = false;
-                foreach (float g in gaps)
-                    if (Mathf.Abs(t - g) < gapSize * 1.5f) { overlaps = true; break; }
-                if (!overlaps) { gaps.Add(t); break; }
+                foreach (var g in gaps)
+                    if (t < g.Centre + g.HalfSize + halfGap && t > g.Centre - g.HalfSize - halfGap)
+                    { overlaps = true; break; }
+                if (!overlaps) { gaps.Add(new GapSpec(t, halfGap)); break; }
             }
         }
     }
 
-    // Converts a sorted list of gap centres into solid WallSegments between them.
+    // Converts a list of GapSpecs into solid WallSegments in the spaces between them.
     private static List<WallSegment> SegmentsFromGaps(
         Vector2 origin, Vector2 dir, float angleDeg,
-        float wallStart, float wallEnd, float gapSize, List<float> gapCentres)
+        float wallStart, float wallEnd, List<GapSpec> gaps)
     {
-        gapCentres.Sort();
+        gaps.Sort((a, b) => a.Centre.CompareTo(b.Centre));
 
         var bounds = new List<float> { wallStart };
-        foreach (float g in gapCentres)
+        foreach (var g in gaps)
         {
-            bounds.Add(g - gapSize * 0.5f);
-            bounds.Add(g + gapSize * 0.5f);
+            bounds.Add(g.Centre - g.HalfSize);
+            bounds.Add(g.Centre + g.HalfSize);
         }
         bounds.Add(wallEnd);
 
@@ -278,11 +327,12 @@ public static class ProceduralPlacement
         List<Vector2> nestPositions, Vector2 platePos2D,
         Rect area, int wallDensity,
         float minGapOffset, float gapSize,
-        float gapsPerUnitLength,
+        float gapsPerUnitLength, float minAvoidDistance,
         float connectivityCellSize, float blockingWallThreshold,
         System.Random rng)
     {
         var walls = new List<WallSegment>();
+        var avoidPositions = new List<Vector2>(nestPositions) { platePos2D };
 
         // Blocking walls: automatic when a nest is close enough to the plate.
         foreach (var nest in nestPositions)
@@ -294,7 +344,7 @@ public static class ProceduralPlacement
             {
                 candidate = BuildBlockingWall(
                     nest, platePos2D, area, minGapOffset, gapSize,
-                    gapsPerUnitLength, rng, walls);
+                    gapsPerUnitLength, minAvoidDistance, rng, walls, avoidPositions);
 
                 var combined = new List<WallSegment>(walls);
                 combined.AddRange(candidate);
@@ -312,7 +362,7 @@ public static class ProceduralPlacement
         // Ambient walls: built one at a time so each sees previously placed walls.
         for (int i = 0; i < wallDensity; i++)
         {
-            var segs = BuildAmbientWall(area, gapSize, gapsPerUnitLength, rng, walls);
+            var segs = BuildAmbientWall(area, gapSize, gapsPerUnitLength, minAvoidDistance, rng, walls, avoidPositions);
             var testList = new List<WallSegment>(walls);
             testList.AddRange(segs);
             if (IsConnected(nestPositions, platePos2D, testList, area, connectivityCellSize))

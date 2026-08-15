@@ -238,7 +238,7 @@ public class ProceduralPlacementTests
         return ProceduralPlacement.BuildWalls(
             nests, plate, StandardArea, density,
             minGapOffset: 5f, gapSize: 10f,
-            gapsPerUnitLength: 0.02f,
+            gapsPerUnitLength: 0.02f, minAvoidDistance: 0f,
             connectivityCellSize: 4f, blockingWallThreshold: threshold,
             rng);
     }
@@ -321,7 +321,7 @@ public class ProceduralPlacementTests
         var rng = new System.Random(1);
         var segments = ProceduralPlacement.BuildBlockingWall(
             new Vector2(-40f, 0f), new Vector2(40f, 0f),
-            StandardArea, minGapOffset: 5f, gapSize: 10f, gapsPerUnitLength: 0.02f, rng);
+            StandardArea, minGapOffset: 5f, gapSize: 10f, gapsPerUnitLength: 0.02f, minAvoidDistance: 0f, rng);
 
         Assert.Greater(segments.Count, 0);
     }
@@ -333,7 +333,7 @@ public class ProceduralPlacementTests
         var rng = new System.Random(2);
         var segments = ProceduralPlacement.BuildBlockingWall(
             new Vector2(-40f, 0f), new Vector2(40f, 0f),
-            StandardArea, minGapOffset: 5f, gapSize: 12f, gapsPerUnitLength: 0.02f, rng);
+            StandardArea, minGapOffset: 5f, gapSize: 12f, gapsPerUnitLength: 0.02f, minAvoidDistance: 0f, rng);
 
         if (segments.Count < 2) return; // single segment is fine
 
