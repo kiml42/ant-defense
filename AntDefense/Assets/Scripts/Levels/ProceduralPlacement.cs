@@ -110,6 +110,21 @@ public static class ProceduralPlacement
         }
     }
 
+    public readonly struct Region
+    {
+        public readonly List<Vector2> SamplePoints;
+        public readonly bool ContainsNest;
+        public readonly bool ContainsPlate;
+        public int CellCount => SamplePoints.Count;
+
+        public Region(List<Vector2> samplePoints, bool containsNest, bool containsPlate)
+        {
+            SamplePoints = samplePoints;
+            ContainsNest = containsNest;
+            ContainsPlate = containsPlate;
+        }
+    }
+
     /// <summary>
     /// Produces a wall spanning edge-to-edge (or to an existing wall) perpendicular to the
     /// nest→plate line. One strategic gap is placed offset from the midpoint; forced gaps are
@@ -385,6 +400,8 @@ public static class ProceduralPlacement
     /// Blocking walls fire automatically when dist(nest, plate) &lt; blockingWallThreshold.
     /// wallDensity controls ambient wall count. Both use gapsPerUnitLength for gap density.
     /// Each new wall is clipped against already-placed walls so it can end at an existing wall.
+    /// When <paramref name="minIsolatedRegionCells"/> &gt; 0, walls that would create a small
+    /// isolated region (not containing a nest or plate) are rejected.
     /// </summary>
     public static List<WallSegment> BuildWalls(
         List<Vector2> nestPositions, Vector2 platePos2D,
@@ -394,7 +411,8 @@ public static class ProceduralPlacement
         float minParallelAngle, float minParallelSeparation,
         float connectivityCellSize, float blockingWallThreshold,
         System.Random rng,
-        float wallWidth = 0f)
+        float wallWidth = 0f,
+        int minIsolatedRegionCells = 0)
     {
         var walls = new List<WallSegment>(BuildEdgeWalls(area, wallWidth));
         var avoidPositions = new List<Vector2>(nestPositions) { platePos2D };
@@ -414,7 +432,13 @@ public static class ProceduralPlacement
                 var combined = new List<WallSegment>(walls);
                 combined.AddRange(candidate);
 
-                if (IsConnected(nestPositions, platePos2D, combined, area, connectivityCellSize))
+                bool connected = IsConnected(nestPositions, platePos2D, combined, area, connectivityCellSize);
+                bool noSmallRegion = minIsolatedRegionCells <= 0 ||
+                    !HasSmallIsolatedRegion(
+                        BuildRegions(combined, area, connectivityCellSize, nestPositions, platePos2D),
+                        minIsolatedRegionCells);
+
+                if (connected && noSmallRegion)
                     break;
 
                 candidate = null;
@@ -432,7 +456,14 @@ public static class ProceduralPlacement
                 rng, walls, avoidPositions);
             var testList = new List<WallSegment>(walls);
             testList.AddRange(segs);
-            if (IsConnected(nestPositions, platePos2D, testList, area, connectivityCellSize))
+
+            bool connected = IsConnected(nestPositions, platePos2D, testList, area, connectivityCellSize);
+            bool noSmallRegion = minIsolatedRegionCells <= 0 ||
+                !HasSmallIsolatedRegion(
+                    BuildRegions(testList, area, connectivityCellSize, nestPositions, platePos2D),
+                    minIsolatedRegionCells);
+
+            if (connected && noSmallRegion)
                 walls.AddRange(segs);
         }
 
@@ -441,79 +472,194 @@ public static class ProceduralPlacement
 
     // ── Cluster placement ─────────────────────────────────────────────────────
 
-    public readonly struct BushCluster
+    public struct BushCluster
     {
         public readonly Vector2 Centre;
-        public readonly int BushCount;
-
-        public BushCluster(Vector2 centre, int bushCount)
-        {
-            Centre = centre;
-            BushCount = bushCount;
-        }
+        public readonly List<Vector2> BushPositions;
+        public BushCluster(Vector2 centre, List<Vector2> bushPositions) { Centre = centre; BushPositions = bushPositions; }
+        public int BushCount => BushPositions?.Count ?? 0;
     }
 
     /// <summary>
-    /// Places <paramref name="clusterCount"/> clusters inside <paramref name="area"/>.
-    /// Cluster size is probabilistically larger the further the cluster centre is from
-    /// any nest. <paramref name="clusterSize"/> is the baseline average size.
-    /// <paramref name="avoidPositions"/> (nests + plate) are kept at least
-    /// <paramref name="minAvoidDistance"/> away. Clusters are kept at least
-    /// <paramref name="minClusterSeparation"/> apart to spread them evenly.
+    /// Distributes clusters across <paramref name="regions"/> proportionally by area.
+    /// For each cluster a centre is picked from the region's sample points; bush positions are
+    /// rejection-sampled within <paramref name="clusterRadius"/> to stay on the correct side of
+    /// every wall and at least <paramref name="wallSetback"/> away from the wall line.
+    /// Clusters with zero valid bush positions are discarded.
     /// </summary>
     public static List<BushCluster> PlaceClusters(
-        int clusterCount, int clusterSize, Rect area, float margin,
-        IReadOnlyList<Vector2> nestPositions, System.Random rng,
-        IReadOnlyList<Vector2> avoidPositions = null,
-        float minAvoidDistance = 0f,
-        float minClusterSeparation = 0f)
+        IReadOnlyList<Region> regions,
+        float cellSize,
+        int totalClusterCount,
+        int maxBushesPerCluster,
+        float clusterRadius,
+        float wallSetback,
+        float minAvoidDistance,
+        IReadOnlyList<Vector2> avoidPositions,
+        IReadOnlyList<WallSegment> walls,
+        System.Random rng)
     {
-        var inner = Shrink(area, margin);
-        float maxPossibleDist = Mathf.Sqrt(inner.width * inner.width + inner.height * inner.height);
+        int totalCells = 0;
+        foreach (var r in regions) totalCells += r.CellCount;
+        if (totalCells == 0) return new List<BushCluster>();
 
-        var clusters = new List<BushCluster>(clusterCount);
-        var centres = new List<Vector2>(clusterCount);
+        var result = new List<BushCluster>();
 
-        for (int i = 0; i < clusterCount; i++)
+        foreach (var region in regions)
         {
-            var best = RandomPoint(inner, rng);
+            float expected = (float)totalClusterCount * region.CellCount / totalCells;
+            int clusterCount = Mathf.FloorToInt(expected);
+            float frac = expected - clusterCount;
+            if (rng.NextDouble() < frac) clusterCount++;
 
-            for (int a = 0; a < 50; a++)
+            for (int i = 0; i < clusterCount; i++)
             {
-                var candidate = RandomPoint(inner, rng);
-
-                if (avoidPositions != null && minAvoidDistance > 0f)
+                // Pick a random centre from SamplePoints that respects minAvoidDistance.
+                Vector2? centre = null;
+                int maxAttempts = Mathf.Min(region.SamplePoints.Count, 50);
+                for (int a = 0; a < maxAttempts; a++)
                 {
-                    float d = MinDistanceTo(candidate, avoidPositions);
-                    if (d >= 0f && d < minAvoidDistance) continue;
+                    var candidate = region.SamplePoints[rng.Next(region.SamplePoints.Count)];
+                    float dist = MinDistanceTo(candidate, avoidPositions);
+                    if (minAvoidDistance <= 0f || dist < 0f || dist >= minAvoidDistance)
+                    {
+                        centre = candidate;
+                        break;
+                    }
                 }
 
-                if (minClusterSeparation > 0f && centres.Count > 0)
+                if (!centre.HasValue) continue;
+
+                // Rejection-sample bush positions within the cluster circle.
+                var bushPositions = new List<Vector2>();
+                for (int b = 0; b < maxBushesPerCluster; b++)
                 {
-                    if (MinDistanceTo(candidate, centres) < minClusterSeparation) continue;
+                    float r = Mathf.Sqrt((float)rng.NextDouble()) * clusterRadius;
+                    float theta = (float)rng.NextDouble() * 2f * Mathf.PI;
+                    var bushCandidate = centre.Value + new Vector2(Mathf.Cos(theta) * r, Mathf.Sin(theta) * r);
+
+                    if (IsValidBushPosition(bushCandidate, centre.Value, clusterRadius,
+                            walls, wallSetback, avoidPositions, minAvoidDistance))
+                        bushPositions.Add(bushCandidate);
                 }
 
-                best = candidate;
-                break;
+                if (bushPositions.Count > 0)
+                    result.Add(new BushCluster(centre.Value, bushPositions));
             }
-
-            centres.Add(best);
-
-            float distToNest = MinDistanceTo(best, nestPositions);
-            if (distToNest < 0f) distToNest = maxPossibleDist;
-
-            float normalizedDist = Mathf.Clamp01(distToNest / (maxPossibleDist * 0.5f));
-
-            // Distance-weighted size: small (0.3–0.7×) near nests, large (0.5–2.5×) far away
-            float minScale = Lerp(0.3f, 0.5f, normalizedDist);
-            float maxScale = Lerp(0.7f, 2.5f, normalizedDist);
-            float scale = Lerp(minScale, maxScale, (float)rng.NextDouble());
-
-            int count = Mathf.Max(1, Mathf.RoundToInt(clusterSize * scale));
-            clusters.Add(new BushCluster(best, count));
         }
 
-        return clusters;
+        return result;
+    }
+
+    private static bool IsValidBushPosition(
+        Vector2 candidate, Vector2 clusterCentre, float clusterRadius,
+        IReadOnlyList<WallSegment> walls, float wallSetback,
+        IReadOnlyList<Vector2> avoidPositions, float minAvoidDistance)
+    {
+        if (Vector2.Distance(candidate, clusterCentre) > clusterRadius) return false;
+
+        if (minAvoidDistance > 0f && avoidPositions != null)
+        {
+            foreach (var avoid in avoidPositions)
+                if (Vector2.Distance(candidate, avoid) < minAvoidDistance) return false;
+        }
+
+        if (walls != null)
+        {
+            foreach (var wall in walls)
+            {
+                float wallRad = wall.AngleDegrees * Mathf.Deg2Rad;
+                var wallNormal = new Vector2(-Mathf.Sin(wallRad), Mathf.Cos(wallRad));
+
+                float centreSignedDist  = Vector2.Dot(clusterCentre - wall.Centre, wallNormal);
+                float candidateSignedDist = Vector2.Dot(candidate   - wall.Centre, wallNormal);
+
+                // Whole cluster circle is safely on one side — no check needed.
+                if (Mathf.Abs(centreSignedDist) > clusterRadius + wallSetback) continue;
+
+                // Reject if on the wrong side of the wall or within the setback zone.
+                if (Mathf.Sign(candidateSignedDist) != Mathf.Sign(centreSignedDist) ||
+                    Mathf.Abs(candidateSignedDist) < wallSetback)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    // ── Region decomposition ──────────────────────────────────────────────────
+
+    /// <summary>
+    /// BFS flood-fill decomposition of the play area into connected regions bounded by walls.
+    /// Each region records whether it contains a nest or the plate position.
+    /// <paramref name="cellSize"/> is the grid resolution used for both blocking and BFS.
+    /// </summary>
+    public static List<Region> BuildRegions(
+        IReadOnlyList<WallSegment> walls, Rect area, float cellSize,
+        IReadOnlyList<Vector2> nestPositions, Vector2 platePos)
+    {
+        int cols = Mathf.CeilToInt(area.width  / cellSize);
+        int rows = Mathf.CeilToInt(area.height / cellSize);
+        bool[,] blocked = BuildBlockedGrid(walls, area, cellSize, cols, rows);
+
+        // Pre-compute nest cells for fast lookup.
+        var nestCells = new HashSet<(int, int)>();
+        if (nestPositions != null)
+            foreach (var nest in nestPositions)
+                nestCells.Add(WorldToCell(nest, area, cellSize, cols, rows));
+
+        var plateCell = WorldToCell(platePos, area, cellSize, cols, rows);
+
+        bool[,] visited = new bool[cols, rows];
+        var regions = new List<Region>();
+
+        int[] dx = { 1, -1, 0, 0, 1, -1, 1, -1 };
+        int[] dy = { 0, 0, 1, -1, 1, 1, -1, -1 };
+
+        for (int sx = 0; sx < cols; sx++)
+        {
+            for (int sy = 0; sy < rows; sy++)
+            {
+                if (visited[sx, sy] || blocked[sx, sy]) continue;
+
+                var samplePoints  = new List<Vector2>();
+                bool containsNest  = false;
+                bool containsPlate = false;
+                var queue = new Queue<(int, int)>();
+                queue.Enqueue((sx, sy));
+                visited[sx, sy] = true;
+
+                while (queue.Count > 0)
+                {
+                    var (cx, cy) = queue.Dequeue();
+                    samplePoints.Add(CellToWorld(cx, cy, area, cellSize));
+
+                    if (nestCells.Contains((cx, cy))) containsNest  = true;
+                    if (cx == plateCell.x && cy == plateCell.y) containsPlate = true;
+
+                    for (int d = 0; d < 8; d++)
+                    {
+                        int nx = cx + dx[d], ny = cy + dy[d];
+                        if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) continue;
+                        if (visited[nx, ny] || blocked[nx, ny]) continue;
+                        visited[nx, ny] = true;
+                        queue.Enqueue((nx, ny));
+                    }
+                }
+
+                regions.Add(new Region(samplePoints, containsNest, containsPlate));
+            }
+        }
+
+        return regions;
+    }
+
+    private static bool HasSmallIsolatedRegion(IReadOnlyList<Region> regions, int minCells)
+    {
+        foreach (var r in regions)
+            if (!r.ContainsNest && !r.ContainsPlate && r.CellCount < minCells)
+                return true;
+        return false;
     }
 
     // ── Connectivity check ────────────────────────────────────────────────────
@@ -527,12 +673,9 @@ public static class ProceduralPlacement
         IReadOnlyList<Vector2> nestPositions, Vector2 platePosition,
         IReadOnlyList<WallSegment> walls, Rect area, float cellSize)
     {
-        int cols = Mathf.CeilToInt(area.width / cellSize);
+        int cols = Mathf.CeilToInt(area.width  / cellSize);
         int rows = Mathf.CeilToInt(area.height / cellSize);
-        bool[,] blocked = new bool[cols, rows];
-
-        foreach (var wall in walls)
-            MarkWall(wall, area, cellSize, cols, rows, blocked);
+        bool[,] blocked = BuildBlockedGrid(walls, area, cellSize, cols, rows);
 
         var plateCell = WorldToCell(platePosition, area, cellSize, cols, rows);
 
@@ -599,12 +742,24 @@ public static class ProceduralPlacement
 
     // ── BFS helpers ───────────────────────────────────────────────────────────
 
+    private static bool[,] BuildBlockedGrid(
+        IReadOnlyList<WallSegment> walls, Rect area, float cellSize, int cols, int rows)
+    {
+        bool[,] blocked = new bool[cols, rows];
+        foreach (var wall in walls)
+            MarkWall(wall, area, cellSize, cols, rows, blocked);
+        return blocked;
+    }
+
     private static (int x, int y) WorldToCell(Vector2 world, Rect area, float cellSize, int cols, int rows)
     {
         int x = Mathf.Clamp(Mathf.FloorToInt((world.x - area.xMin) / cellSize), 0, cols - 1);
         int y = Mathf.Clamp(Mathf.FloorToInt((world.y - area.yMin) / cellSize), 0, rows - 1);
         return (x, y);
     }
+
+    private static Vector2 CellToWorld(int cx, int cy, Rect area, float cellSize) =>
+        new Vector2(area.xMin + (cx + 0.5f) * cellSize, area.yMin + (cy + 0.5f) * cellSize);
 
     private static void MarkWall(WallSegment wall, Rect area, float cellSize, int cols, int rows, bool[,] blocked)
     {

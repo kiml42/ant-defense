@@ -40,8 +40,10 @@ public class ProceduralLevelGenerator : MonoBehaviour
     public float WallConnectivityCellSize = 4f;
     [Tooltip("Clusters stay at least this far from nests and the plate.")]
     public float MinClusterAvoidDistance = 20f;
-    [Tooltip("Minimum distance between cluster centres, to spread them across the map.")]
-    public float MinClusterSeparation = 18f;
+    [Tooltip("Minimum perpendicular distance that bush positions maintain from wall lines.")]
+    public float WallSetback = 5f;
+    [Tooltip("Walls that would isolate a region (no nest or plate) smaller than this many cells are rejected. 0 disables the check.")]
+    public int MinIsolatedRegionCells = 30;
     [Tooltip("Plate is never placed closer than this to any nest.")]
     public float MinNestPlateSeparation = 30f;
     [Tooltip("A blocking wall is placed between nest and plate when they are closer than this. Above this distance ants have a long enough route without one.")]
@@ -94,6 +96,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
             _playArea, PlateMargin, nestPositions, rng, minDistance: MinNestPlateSeparation);
 
         var allWalls = BuildWalls(nestPositions, platePos2D, config.WallDensity, rng);
+        var regions = ProceduralPlacement.BuildRegions(allWalls, _playArea, WallConnectivityCellSize, nestPositions, platePos2D);
 
         var nestsParent  = CreateParent("Nests");
         var plateParent  = CreateParent("Plate");
@@ -106,11 +109,8 @@ public class ProceduralLevelGenerator : MonoBehaviour
 
         var avoidPositions = new List<Vector2>(nestPositions) { platePos2D };
         var clusters = ProceduralPlacement.PlaceClusters(
-            config.ClusterCount, config.ClusterSize, _playArea, BoundaryMargin,
-            nestPositions, rng,
-            avoidPositions: avoidPositions,
-            minAvoidDistance: MinClusterAvoidDistance,
-            minClusterSeparation: MinClusterSeparation);
+            regions, WallConnectivityCellSize, config.ClusterCount, config.ClusterSize,
+            ClusterRadius, WallSetback, MinClusterAvoidDistance, avoidPositions, allWalls, rng);
         SpawnClusters(clusters, rng, clusterParent.transform);
     }
 
@@ -145,7 +145,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
             GapsPerUnitLength, MinWallAvoidDistance, MinWallSegmentLength,
             MinParallelWallAngle, MinParallelWallSeparation,
             WallConnectivityCellSize, BlockingWallThreshold, rng,
-            wallWidth);
+            wallWidth, MinIsolatedRegionCells);
     }
 
     // ── Spawning ──────────────────────────────────────────────────────────────
@@ -190,14 +190,11 @@ public class ProceduralLevelGenerator : MonoBehaviour
             var prefabA = BerryBushPrefabs[rng.Next(BerryBushPrefabs.Length)];
             var prefabB = mixed ? BerryBushPrefabs[rng.Next(BerryBushPrefabs.Length)] : prefabA;
 
-            for (int j = 0; j < cluster.BushCount; j++)
+            for (int j = 0; j < cluster.BushPositions.Count; j++)
             {
                 var prefab = (j % 2 == 0 || !mixed) ? prefabA : prefabB;
-                var offset = new Vector2(
-                    (float)(rng.NextDouble() * 2 - 1) * ClusterRadius,
-                    (float)(rng.NextDouble() * 2 - 1) * ClusterRadius);
                 float yRot = (float)(rng.NextDouble() * 360.0);
-                Track(Instantiate(prefab, Xz(cluster.Centre + offset), Quaternion.Euler(0f, yRot, 0f), clusterGO.transform));
+                Track(Instantiate(prefab, Xz(cluster.BushPositions[j]), Quaternion.Euler(0f, yRot, 0f), clusterGO.transform));
             }
         }
     }

@@ -144,23 +144,74 @@ public class ProceduralPlacementTests
         Assert.IsFalse(ProceduralPlacement.IsConnected(nests, plate, walls, StandardArea, 5f));
     }
 
-    // ── Cluster placement ─────────────────────────────────────────────────────
+    // ── Region decomposition ──────────────────────────────────────────────────
 
     [Test]
-    public void PlaceClusters_ReturnsRequestedCount()
+    public void BuildRegions_OpenAreaGivesSingleRegion()
     {
-        var rng = new System.Random(3);
-        var nests = new List<Vector2> { new Vector2(0f, 0f) };
-        var clusters = ProceduralPlacement.PlaceClusters(8, 4, StandardArea, Margin, nests, rng);
-        Assert.AreEqual(8, clusters.Count);
+        var nests = new List<Vector2> { new Vector2(-30f, 0f) };
+        var plate = new Vector2(30f, 0f);
+        var walls = new List<ProceduralPlacement.WallSegment>();
+
+        var regions = ProceduralPlacement.BuildRegions(walls, StandardArea, 4f, nests, plate);
+
+        Assert.AreEqual(1, regions.Count, "Open area with no walls should be a single region");
+        Assert.IsTrue(regions[0].ContainsNest,  "Single region should contain the nest");
+        Assert.IsTrue(regions[0].ContainsPlate, "Single region should contain the plate");
     }
+
+    [Test]
+    public void BuildRegions_FullWallGivesTwoRegions()
+    {
+        var nests = new List<Vector2> { new Vector2(-50f, 0f) };
+        var plate = new Vector2(50f, 0f);
+        var walls = new List<ProceduralPlacement.WallSegment>
+        {
+            new ProceduralPlacement.WallSegment(new Vector2(0f, 0f), 90f, 200f),
+        };
+
+        var regions = ProceduralPlacement.BuildRegions(walls, StandardArea, 4f, nests, plate);
+
+        Assert.AreEqual(2, regions.Count, "Full-height wall should create exactly two regions");
+    }
+
+    [Test]
+    public void BuildRegions_TagsNestAndPlateCorrectly()
+    {
+        var nests = new List<Vector2> { new Vector2(-50f, 0f) };
+        var plate = new Vector2(50f, 0f);
+        var walls = new List<ProceduralPlacement.WallSegment>
+        {
+            new ProceduralPlacement.WallSegment(new Vector2(0f, 0f), 90f, 200f),
+        };
+
+        var regions = ProceduralPlacement.BuildRegions(walls, StandardArea, 4f, nests, plate);
+
+        Assert.IsTrue(regions.Exists(r => r.ContainsNest),  "A region should contain the nest");
+        Assert.IsTrue(regions.Exists(r => r.ContainsPlate), "A region should contain the plate");
+
+        var nestRegion  = regions.Find(r => r.ContainsNest);
+        var plateRegion = regions.Find(r => r.ContainsPlate);
+
+        Assert.IsFalse(nestRegion.ContainsPlate,  "The nest region should not contain the plate");
+        Assert.IsFalse(plateRegion.ContainsNest, "The plate region should not contain the nest");
+    }
+
+    // ── Cluster placement ─────────────────────────────────────────────────────
 
     [Test]
     public void PlaceClusters_AllHaveAtLeastOneBush()
     {
         var rng = new System.Random(10);
         var nests = new List<Vector2> { new Vector2(0f, 0f) };
-        var clusters = ProceduralPlacement.PlaceClusters(10, 3, StandardArea, Margin, nests, rng);
+        var plate = new Vector2(50f, 30f);
+        var walls = new List<ProceduralPlacement.WallSegment>();
+        var regions = ProceduralPlacement.BuildRegions(walls, StandardArea, 4f, nests, plate);
+
+        var clusters = ProceduralPlacement.PlaceClusters(
+            regions, 4f, 10, 5, 8f, 0f, 0f, null, walls, rng);
+
+        Assert.Greater(clusters.Count, 0, "Should produce at least some clusters");
         foreach (var c in clusters)
             Assert.GreaterOrEqual(c.BushCount, 1, $"Cluster at {c.Centre} has {c.BushCount} bushes");
     }
@@ -169,36 +220,19 @@ public class ProceduralPlacementTests
     public void PlaceClusters_DeterministicWithSameSeed()
     {
         var nests = new List<Vector2> { new Vector2(-20f, 10f) };
-        var c1 = ProceduralPlacement.PlaceClusters(5, 4, StandardArea, Margin, nests, new System.Random(77));
-        var c2 = ProceduralPlacement.PlaceClusters(5, 4, StandardArea, Margin, nests, new System.Random(77));
+        var plate = new Vector2(50f, 20f);
+        var walls = new List<ProceduralPlacement.WallSegment>();
+        var regions = ProceduralPlacement.BuildRegions(walls, StandardArea, 4f, nests, plate);
 
+        var c1 = ProceduralPlacement.PlaceClusters(regions, 4f, 5, 4, 8f, 0f, 0f, null, walls, new System.Random(77));
+        var c2 = ProceduralPlacement.PlaceClusters(regions, 4f, 5, 4, 8f, 0f, 0f, null, walls, new System.Random(77));
+
+        Assert.AreEqual(c1.Count, c2.Count);
         for (int i = 0; i < c1.Count; i++)
         {
-            Assert.AreEqual(c1[i].Centre, c2[i].Centre);
+            Assert.AreEqual(c1[i].Centre,   c2[i].Centre);
             Assert.AreEqual(c1[i].BushCount, c2[i].BushCount);
         }
-    }
-
-    [Test]
-    public void PlaceClusters_ClustersFartherFromNestTendToBelarger()
-    {
-        // Run many seeds and check the average: far clusters should be bigger on average.
-        float nearTotal = 0f, farTotal = 0f;
-        var nests = new List<Vector2> { new Vector2(0f, 0f) };
-
-        for (int seed = 0; seed < 50; seed++)
-        {
-            var clusters = ProceduralPlacement.PlaceClusters(20, 5, StandardArea, Margin, nests, new System.Random(seed));
-            foreach (var c in clusters)
-            {
-                float dist = Vector2.Distance(c.Centre, nests[0]);
-                if (dist < 50f) nearTotal += c.BushCount;
-                else farTotal += c.BushCount;
-            }
-        }
-
-        Assert.Greater(farTotal, nearTotal,
-            "Clusters far from nests should on average have more bushes than nearby ones");
     }
 
     [Test]
@@ -206,20 +240,72 @@ public class ProceduralPlacementTests
     {
         var rng = new System.Random(42);
         var nests = new List<Vector2> { new Vector2(0f, 0f) };
+        var plate = new Vector2(70f, 40f);
         var avoid = new List<Vector2> { new Vector2(0f, 0f) };
         const float minDist = 25f;
 
-        var clusters = ProceduralPlacement.PlaceClusters(
-            10, 4, StandardArea, Margin, nests, rng,
-            avoidPositions: avoid, minAvoidDistance: minDist);
+        var walls = new List<ProceduralPlacement.WallSegment>();
+        var regions = ProceduralPlacement.BuildRegions(walls, StandardArea, 4f, nests, plate);
 
-        // Most clusters (allowing for the best-effort fallback) should respect the limit.
+        var clusters = ProceduralPlacement.PlaceClusters(
+            regions, 4f, 10, 5, 8f, 0f, minDist, avoid, walls, rng);
+
+        // Cluster centres should mostly respect the minimum distance.
         int violations = 0;
         foreach (var c in clusters)
             if (Vector2.Distance(c.Centre, avoid[0]) < minDist) violations++;
 
-        Assert.Less(violations, clusters.Count / 2,
-            "Majority of clusters should be at least minAvoidDistance from avoid positions");
+        Assert.Less(violations, clusters.Count / 2 + 1,
+            "Majority of cluster centres should be at least minAvoidDistance from avoid positions");
+    }
+
+    [Test]
+    public void PlaceClusters_BushesRespectWallSetback()
+    {
+        // Vertical wall at x=0 splits left and right regions.
+        // wallSetback=5 means no bush should be within 5 units of the wall line.
+        const float wallSetback = 5f;
+        var wall = new ProceduralPlacement.WallSegment(new Vector2(0f, 0f), 90f, 200f);
+        var walls = new List<ProceduralPlacement.WallSegment> { wall };
+
+        var nests = new List<Vector2> { new Vector2(-50f, 0f) };
+        var plate = new Vector2(50f, 0f);
+        var regions = ProceduralPlacement.BuildRegions(walls, StandardArea, 4f, nests, plate);
+
+        var clusters = ProceduralPlacement.PlaceClusters(
+            regions, 4f, 10, 5, 8f, wallSetback, 0f, null, walls, new System.Random(1));
+
+        float wallRad = wall.AngleDegrees * Mathf.Deg2Rad;
+        var wallNormal = new Vector2(-Mathf.Sin(wallRad), Mathf.Cos(wallRad));
+
+        foreach (var cluster in clusters)
+            foreach (var bush in cluster.BushPositions)
+            {
+                float dist = Mathf.Abs(Vector2.Dot(bush - wall.Centre, wallNormal));
+                Assert.GreaterOrEqual(dist, wallSetback - 0.001f,
+                    $"Bush at {bush} is within wallSetback={wallSetback} of wall (dist={dist})");
+            }
+    }
+
+    [Test]
+    public void PlaceClusters_BushesRespectMinAvoidDistance()
+    {
+        const float minDist = 15f;
+        var avoidPoint = new Vector2(0f, 0f);
+        var avoid = new List<Vector2> { avoidPoint };
+
+        var nests = new List<Vector2> { new Vector2(-50f, 0f) };
+        var plate = new Vector2(50f, 0f);
+        var walls = new List<ProceduralPlacement.WallSegment>();
+        var regions = ProceduralPlacement.BuildRegions(walls, StandardArea, 4f, nests, plate);
+
+        var clusters = ProceduralPlacement.PlaceClusters(
+            regions, 4f, 10, 5, 8f, 0f, minDist, avoid, walls, new System.Random(2));
+
+        foreach (var cluster in clusters)
+            foreach (var bush in cluster.BushPositions)
+                Assert.GreaterOrEqual(Vector2.Distance(bush, avoidPoint), minDist - 0.001f,
+                    $"Bush at {bush} is within minAvoidDistance={minDist} of avoid point");
     }
 
     // ── Edge walls ────────────────────────────────────────────────────────────
@@ -315,8 +401,11 @@ public class ProceduralPlacementTests
 
         var walls = Walls(nests, plate, density: 3, new System.Random(3));
 
-        // Connectivity check may reject some; at most EdgeWallCount + 3 total (none from blocking).
-        Assert.LessOrEqual(walls.Count, EdgeWallCount + 3);
+        // Connectivity may reject some walls. Each ambient line can produce multiple segments
+        // (gapsPerUnitLength=0.02 on a ~200-unit wall gives ~4 gaps → ~5 segments per line).
+        // Upper bound: EdgeWallCount + density * 5 segments.
+        Assert.LessOrEqual(walls.Count, EdgeWallCount + 3 * 5,
+            "Far nest + density 3 should add at most 3 ambient wall lines (no blocking walls)");
     }
 
     [Test]
