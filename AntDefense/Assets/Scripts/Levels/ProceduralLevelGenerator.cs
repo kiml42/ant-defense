@@ -31,6 +31,8 @@ public class ProceduralLevelGenerator : MonoBehaviour
     public float GapsPerUnitLength = 0.02f;
     [Tooltip("Minimum distance walls must keep from nests and the plate. A gap is forced wherever a wall comes closer than this.")]
     public float MinWallAvoidDistance = 20f;
+    [Tooltip("Wall segments shorter than this are dropped; their space merges into the surrounding gap.")]
+    public float MinWallSegmentLength = 10f;
     public float WallConnectivityCellSize = 4f;
     [Tooltip("Clusters stay at least this far from nests and the plate.")]
     public float MinClusterAvoidDistance = 20f;
@@ -133,7 +135,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         return ProceduralPlacement.BuildWalls(
             nestPositions, platePos2D, _playArea, wallDensity,
             MinGapOffset, GapSize,
-            GapsPerUnitLength, MinWallAvoidDistance,
+            GapsPerUnitLength, MinWallAvoidDistance, MinWallSegmentLength,
             WallConnectivityCellSize, BlockingWallThreshold, rng);
     }
 

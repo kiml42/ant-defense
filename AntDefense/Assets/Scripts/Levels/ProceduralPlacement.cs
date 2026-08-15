@@ -119,7 +119,8 @@ public static class ProceduralPlacement
     public static List<WallSegment> BuildBlockingWall(
         Vector2 nestPos, Vector2 platePos,
         Rect area, float minGapOffset, float gapSize,
-        float gapsPerUnitLength, float minAvoidDistance, System.Random rng,
+        float gapsPerUnitLength, float minAvoidDistance, float minSegmentLength,
+        System.Random rng,
         IReadOnlyList<WallSegment> existingWalls = null,
         IReadOnlyList<Vector2> avoidPositions = null)
     {
@@ -156,7 +157,7 @@ public static class ProceduralPlacement
         AddRandomGaps(gaps, Mathf.Max(0, totalGaps - gaps.Count), wallStart, wallEnd, gapSize, rng);
 
         float wallAngle = Mathf.Atan2(wallDir.y, wallDir.x) * Mathf.Rad2Deg;
-        return SegmentsFromGaps(midpoint, wallDir, wallAngle, wallStart, wallEnd, gaps);
+        return SegmentsFromGaps(midpoint, wallDir, wallAngle, wallStart, wallEnd, gaps, minSegmentLength);
     }
 
     /// <summary>
@@ -165,18 +166,19 @@ public static class ProceduralPlacement
     /// </summary>
     public static List<WallSegment> BuildAdditionalWalls(
         int wallDensity, Rect area, float gapSize, float gapsPerUnitLength, System.Random rng,
-        float minAvoidDistance = 0f, IReadOnlyList<Vector2> avoidPositions = null)
+        float minAvoidDistance = 0f, float minSegmentLength = 8f,
+        IReadOnlyList<Vector2> avoidPositions = null)
     {
         var result = new List<WallSegment>(wallDensity * 4);
         for (int i = 0; i < wallDensity; i++)
-            result.AddRange(BuildAmbientWall(area, gapSize, gapsPerUnitLength, minAvoidDistance, rng, null, avoidPositions));
+            result.AddRange(BuildAmbientWall(area, gapSize, gapsPerUnitLength, minAvoidDistance, minSegmentLength, rng, null, avoidPositions));
         return result;
     }
 
     // Builds one full-width wall (clipped to existing walls) at a random angle.
     // Forced gaps clear nests/plate; random gaps fill out the density target.
     private static List<WallSegment> BuildAmbientWall(
-        Rect area, float gapSize, float gapsPerUnitLength, float minAvoidDistance,
+        Rect area, float gapSize, float gapsPerUnitLength, float minAvoidDistance, float minSegmentLength,
         System.Random rng,
         IReadOnlyList<WallSegment> existingWalls,
         IReadOnlyList<Vector2> avoidPositions)
@@ -199,7 +201,7 @@ public static class ProceduralPlacement
         AddRandomGaps(gaps, Mathf.Max(0, targetGaps - gaps.Count), wallStart, wallEnd, gapSize, rng);
 
         float wallAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        return SegmentsFromGaps(centre, dir, wallAngle, wallStart, wallEnd, gaps);
+        return SegmentsFromGaps(centre, dir, wallAngle, wallStart, wallEnd, gaps, minSegmentLength);
     }
 
     // Clips posExtent / negExtent so the wall stops where it first hits an existing wall.
@@ -289,9 +291,11 @@ public static class ProceduralPlacement
     }
 
     // Converts a list of GapSpecs into solid WallSegments in the spaces between them.
+    // Segments shorter than minSegmentLength are dropped; their space becomes part of the gap.
     private static List<WallSegment> SegmentsFromGaps(
         Vector2 origin, Vector2 dir, float angleDeg,
-        float wallStart, float wallEnd, List<GapSpec> gaps)
+        float wallStart, float wallEnd, List<GapSpec> gaps,
+        float minSegmentLength = 8f)
     {
         gaps.Sort((a, b) => a.Centre.CompareTo(b.Centre));
 
@@ -309,7 +313,7 @@ public static class ProceduralPlacement
             float start = bounds[i];
             float end   = bounds[i + 1];
             float len   = end - start;
-            if (len > 0.5f)
+            if (len >= minSegmentLength)
                 result.Add(new WallSegment(origin + dir * ((start + end) * 0.5f), angleDeg, len));
         }
         return result;
@@ -327,7 +331,7 @@ public static class ProceduralPlacement
         List<Vector2> nestPositions, Vector2 platePos2D,
         Rect area, int wallDensity,
         float minGapOffset, float gapSize,
-        float gapsPerUnitLength, float minAvoidDistance,
+        float gapsPerUnitLength, float minAvoidDistance, float minSegmentLength,
         float connectivityCellSize, float blockingWallThreshold,
         System.Random rng)
     {
@@ -344,7 +348,7 @@ public static class ProceduralPlacement
             {
                 candidate = BuildBlockingWall(
                     nest, platePos2D, area, minGapOffset, gapSize,
-                    gapsPerUnitLength, minAvoidDistance, rng, walls, avoidPositions);
+                    gapsPerUnitLength, minAvoidDistance, minSegmentLength, rng, walls, avoidPositions);
 
                 var combined = new List<WallSegment>(walls);
                 combined.AddRange(candidate);
@@ -362,7 +366,7 @@ public static class ProceduralPlacement
         // Ambient walls: built one at a time so each sees previously placed walls.
         for (int i = 0; i < wallDensity; i++)
         {
-            var segs = BuildAmbientWall(area, gapSize, gapsPerUnitLength, minAvoidDistance, rng, walls, avoidPositions);
+            var segs = BuildAmbientWall(area, gapSize, gapsPerUnitLength, minAvoidDistance, minSegmentLength, rng, walls, avoidPositions);
             var testList = new List<WallSegment>(walls);
             testList.AddRange(segs);
             if (IsConnected(nestPositions, platePos2D, testList, area, connectivityCellSize))
