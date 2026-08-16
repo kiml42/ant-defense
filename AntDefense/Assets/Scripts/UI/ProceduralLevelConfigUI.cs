@@ -15,12 +15,14 @@ public class ProceduralLevelConfigUI : MonoBehaviour
     [Header("Sliders")]
     public Slider NestCountSlider;
     public Slider ClusterCountSlider;
+    public Slider ClusterRadiusSlider;
     public Slider ClusterSizeSlider;
     public Slider WallDensitySlider;
 
     [Header("Slider Value Labels")]
     public TMP_Text NestCountLabel;
     public TMP_Text ClusterCountLabel;
+    public TMP_Text ClusterRadiusLabel;
     public TMP_Text ClusterSizeLabel;
     public TMP_Text WallDensityLabel;
 
@@ -35,6 +37,7 @@ public class ProceduralLevelConfigUI : MonoBehaviour
 
     private const int NestMin = 1, NestMax = 5;
     private const int ClusterMin = 1, ClusterMax = 15;
+    private const int RadiusMin = 10, RadiusMax = 80;
     private const int SizeMin = 1, SizeMax = 10;
     private const int WallMin = 0, WallMax = 10;
 
@@ -53,11 +56,13 @@ public class ProceduralLevelConfigUI : MonoBehaviour
 
         ConfigureSlider(NestCountSlider, NestMin, NestMax);
         ConfigureSlider(ClusterCountSlider, ClusterMin, ClusterMax);
+        ConfigureSlider(ClusterRadiusSlider, RadiusMin, RadiusMax);
         ConfigureSlider(ClusterSizeSlider, SizeMin, SizeMax);
         ConfigureSlider(WallDensitySlider, WallMin, WallMax);
 
         NestCountSlider.onValueChanged.AddListener(_ => OnSliderChanged());
         ClusterCountSlider.onValueChanged.AddListener(_ => OnSliderChanged());
+        ClusterRadiusSlider.onValueChanged.AddListener(_ => OnSliderChanged());
         ClusterSizeSlider.onValueChanged.AddListener(_ => OnSliderChanged());
         WallDensitySlider.onValueChanged.AddListener(_ => OnSliderChanged());
 
@@ -142,7 +147,7 @@ public class ProceduralLevelConfigUI : MonoBehaviour
     private ProceduralLevelConfig ReadConfigFromSliders() => new ProceduralLevelConfig(
         Mathf.RoundToInt(NestCountSlider.value),
         Mathf.RoundToInt(ClusterCountSlider.value),
-        _generator.CurrentConfig.ClusterRadius,      // no slider yet — preserved from current config
+        Mathf.RoundToInt(ClusterRadiusSlider.value),
         Mathf.RoundToInt(ClusterSizeSlider.value),   // ClusterDensity, slider wired in Inspector as ClusterSize
         Mathf.RoundToInt(WallDensitySlider.value),
         _generator.CurrentConfig.Seed);
@@ -152,6 +157,7 @@ public class ProceduralLevelConfigUI : MonoBehaviour
         _ignoreSliderEvents = true;
         NestCountSlider.value = config.NestCount;
         ClusterCountSlider.value = config.ClusterCount;
+        ClusterRadiusSlider.value = config.ClusterRadius;
         ClusterSizeSlider.value = config.ClusterDensity;
         WallDensitySlider.value = config.WallDensity;
         _ignoreSliderEvents = false;
@@ -164,6 +170,7 @@ public class ProceduralLevelConfigUI : MonoBehaviour
     {
         SetLabel(NestCountLabel, config.NestCount);
         SetLabel(ClusterCountLabel, config.ClusterCount);
+        SetLabel(ClusterRadiusLabel, config.ClusterRadius);
         SetLabel(ClusterSizeLabel, config.ClusterDensity);
         SetLabel(WallDensityLabel, config.WallDensity);
     }
