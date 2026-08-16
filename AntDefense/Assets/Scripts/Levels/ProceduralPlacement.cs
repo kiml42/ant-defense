@@ -589,17 +589,28 @@ public static class ProceduralPlacement
     }
 
     /// <summary>
-    /// For each pre-determined cluster centre, rejection-samples bush positions within a circle
-    /// of <paramref name="clusterRadius"/>. Positions are kept on the correct side of every wall
-    /// line and at least <paramref name="wallSetback"/> away from it. Call this with a separate
-    /// RNG stream from <see cref="PlaceClusterCentres"/> so that adjusting bush density does not
-    /// move the cluster centres.
+    /// Samples a radius for each cluster centre using the same RNG stream as
+    /// <see cref="PlaceClusterCentres"/>. Call immediately after that method so that
+    /// radii are fixed before bush density is considered.
+    /// </summary>
+    public static float[] SampleClusterRadii(
+        int count, float baseRadius, float variation, System.Random rng)
+    {
+        var radii = new float[count];
+        for (int i = 0; i < count; i++)
+            radii[i] = baseRadius * (1f + (float)(rng.NextDouble() * 2.0 - 1.0) * variation);
+        return radii;
+    }
+
+    /// <summary>
+    /// For each pre-determined cluster centre, rejection-samples bush positions within the
+    /// corresponding circle from <paramref name="clusterRadii"/>. Positions are kept on the
+    /// correct side of every wall line and at least <paramref name="wallSetback"/> away from it.
     /// </summary>
     public static List<BushCluster> PlaceClusterBushes(
         IReadOnlyList<Vector2> centres,
+        IReadOnlyList<float> clusterRadii,
         IReadOnlyList<WallSegment> walls,
-        float clusterRadius,
-        float clusterRadiusVariation,
         float wallSetback,
         int maxBushesPerCluster,
         float minBushSeparation,
@@ -609,9 +620,10 @@ public static class ProceduralPlacement
     {
         var result = new List<BushCluster>();
 
-        foreach (var centre in centres)
+        for (int ci = 0; ci < centres.Count; ci++)
         {
-            float radius = clusterRadius * (1f + (float)(rng.NextDouble() * 2.0 - 1.0) * clusterRadiusVariation);
+            var centre = centres[ci];
+            float radius = clusterRadii[ci];
 
             var bushPositions = new List<Vector2>();
             for (int b = 0; b < maxBushesPerCluster; b++)

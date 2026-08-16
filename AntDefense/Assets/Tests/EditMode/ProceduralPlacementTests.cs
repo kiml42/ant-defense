@@ -212,8 +212,9 @@ public class ProceduralPlacementTests
         var bushRng   = new System.Random(seed + 1);
         var centres = ProceduralPlacement.PlaceClusterCentres(
             regions, clusterCount, minAvoid, avoidPositions, centreRng);
+        var radii = ProceduralPlacement.SampleClusterRadii(centres.Count, radius, 0f, new System.Random(0));
         return ProceduralPlacement.PlaceClusterBushes(
-            centres, walls, radius, 0f, wallSetback, maxBushes, 0f, minAvoid, avoidPositions, bushRng);
+            centres, radii, walls, wallSetback, maxBushes, 0f, minAvoid, avoidPositions, bushRng);
     }
 
     [Test]
