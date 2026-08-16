@@ -127,7 +127,7 @@ public class ProceduralLevelConfigUI : MonoBehaviour
     private ProceduralLevelConfig ReadConfigFromSliders() => new ProceduralLevelConfig(
         Mathf.RoundToInt(NestCountSlider.value),
         Mathf.RoundToInt(ClusterCountSlider.value),
-        Mathf.RoundToInt(ClusterSizeSlider.value),
+        Mathf.RoundToInt(ClusterSizeSlider.value),   // slider wired in Inspector as ClusterSize
         Mathf.RoundToInt(WallDensitySlider.value),
         _generator.CurrentConfig.Seed);
 
@@ -136,7 +136,7 @@ public class ProceduralLevelConfigUI : MonoBehaviour
         _ignoreSliderEvents = true;
         NestCountSlider.value = config.NestCount;
         ClusterCountSlider.value = config.ClusterCount;
-        ClusterSizeSlider.value = config.ClusterSize;
+        ClusterSizeSlider.value = config.ClusterDensity;
         WallDensitySlider.value = config.WallDensity;
         _ignoreSliderEvents = false;
 
@@ -148,7 +148,7 @@ public class ProceduralLevelConfigUI : MonoBehaviour
     {
         SetLabel(NestCountLabel, config.NestCount);
         SetLabel(ClusterCountLabel, config.ClusterCount);
-        SetLabel(ClusterSizeLabel, config.ClusterSize);
+        SetLabel(ClusterSizeLabel, config.ClusterDensity);
         SetLabel(WallDensityLabel, config.WallDensity);
     }
 

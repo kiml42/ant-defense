@@ -120,7 +120,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         var centres = ProceduralPlacement.PlaceClusterCentres(
             regions, config.ClusterCount, MinClusterAvoidDistance, avoidPositions, centreRng);
         var clusters = ProceduralPlacement.PlaceClusterBushes(
-            centres, allWalls, ClusterRadius, WallSetback, config.ClusterSize,
+            centres, allWalls, ClusterRadius, WallSetback, config.ClusterDensity,
             MinBushSeparation, MinClusterAvoidDistance, avoidPositions, bushRng);
         SpawnClusters(clusters, rng, clusterParent.transform);
     }
