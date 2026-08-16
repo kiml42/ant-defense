@@ -68,11 +68,26 @@ public class ProceduralLevelConfigUI : MonoBehaviour
 
         ApplyConfigToSliders(initialConfig);
         Panel.SetActive(true);
+        SetBuildButtonsVisible(false);
     }
 
-    public void Show() => Panel.SetActive(true);
+    public void Show()
+    {
+        Panel.SetActive(true);
+        SetBuildButtonsVisible(false);
+    }
 
-    public void Hide() => Panel.SetActive(false);
+    public void Hide()
+    {
+        Panel.SetActive(false);
+        SetBuildButtonsVisible(true);
+    }
+
+    private static void SetBuildButtonsVisible(bool visible)
+    {
+        if (UiPlane.Instance != null)
+            UiPlane.Instance.QuickBarContainer.gameObject.SetActive(visible);
+    }
 
     // ── Event handlers ────────────────────────────────────────────────────────
 
