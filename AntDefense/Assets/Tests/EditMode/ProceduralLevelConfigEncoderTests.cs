@@ -33,7 +33,7 @@ public class ProceduralLevelConfigEncoderTests
         Assert.IsNotNull(decoded);
         Assert.AreEqual(original.NestCount, decoded.NestCount);
         Assert.AreEqual(original.ClusterCount, decoded.ClusterCount);
-        Assert.AreEqual(original.ClusterSize, decoded.ClusterSize);
+        Assert.AreEqual(original.ClusterDensity, decoded.ClusterDensity);
         Assert.AreEqual(original.WallDensity, decoded.WallDensity);
         Assert.AreEqual(original.Seed, decoded.Seed);
     }
