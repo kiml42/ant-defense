@@ -4424,7 +4424,8 @@ MonoBehaviour:
   PlateMargin: 20
   MinGapOffset: 8
   GapSize: 14
-  ClusterRadius: 8
+  ClusterRadius: 15
+  ClusterRadiusVariation: 0.2
   GapsPerUnitLength: 0.02
   MinWallAvoidDistance: 20
   MinWallSegmentLength: 10
