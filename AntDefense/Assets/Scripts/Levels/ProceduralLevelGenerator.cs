@@ -198,6 +198,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         {
             var cluster = clusters[i];
             var clusterGO = CreateParent($"Cluster_{i}", parent);
+            clusterGO.transform.position = Xz(cluster.Centre);
 
             SpawnClusterGround(cluster, clusterGO.transform);
 
@@ -224,13 +225,14 @@ public class ProceduralLevelGenerator : MonoBehaviour
         go.transform.SetParent(parent);
         go.transform.localPosition = Vector3.zero;
 
+        var localPoly = cluster.BoundaryPolygon.ConvertAll(p => p - cluster.Centre);
         var mf = go.AddComponent<MeshFilter>();
-        mf.mesh = BuildPolygonMesh(poly);
+        mf.mesh = BuildPolygonMesh(localPoly);
 
         var mr = go.AddComponent<MeshRenderer>();
         mr.material = ClusterGroundMaterial;
         mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        mr.receiveShadows = false;
+        mr.receiveShadows = true;
     }
 
     private static Mesh BuildPolygonMesh(List<Vector2> poly)
