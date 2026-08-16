@@ -4434,7 +4434,7 @@ MonoBehaviour:
   WallConnectivityCellSize: 4
   MinClusterAvoidDistance: 20
   WallSetback: 5
-  MinBushSeparation: 5
+  MinBushSeparation: 8
   MinIsolatedRegionCells: 30
   MinNestPlateSeparation: 30
   BlockingWallThreshold: 100
