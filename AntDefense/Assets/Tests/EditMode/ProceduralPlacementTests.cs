@@ -199,17 +199,32 @@ public class ProceduralPlacementTests
 
     // ── Cluster placement ─────────────────────────────────────────────────────
 
+    // Helper: run both placement steps with independent RNGs derived from one seed.
+    private static List<ProceduralPlacement.BushCluster> PlaceClusters(
+        IReadOnlyList<ProceduralPlacement.Region> regions,
+        List<ProceduralPlacement.WallSegment> walls,
+        int clusterCount, int maxBushes, float radius,
+        float wallSetback, float minAvoid,
+        IReadOnlyList<Vector2> avoidPositions,
+        int seed)
+    {
+        var centreRng = new System.Random(seed);
+        var bushRng   = new System.Random(seed + 1);
+        var centres = ProceduralPlacement.PlaceClusterCentres(
+            regions, clusterCount, minAvoid, avoidPositions, centreRng);
+        return ProceduralPlacement.PlaceClusterBushes(
+            centres, walls, radius, wallSetback, maxBushes, 0f, minAvoid, avoidPositions, bushRng);
+    }
+
     [Test]
     public void PlaceClusters_AllHaveAtLeastOneBush()
     {
-        var rng = new System.Random(10);
         var nests = new List<Vector2> { new Vector2(0f, 0f) };
         var plate = new Vector2(50f, 30f);
         var walls = new List<ProceduralPlacement.WallSegment>();
         var regions = ProceduralPlacement.BuildRegions(walls, StandardArea, 4f, nests, plate);
 
-        var clusters = ProceduralPlacement.PlaceClusters(
-            regions, 4f, 10, 5, 8f, 0f, 0f, null, walls, rng);
+        var clusters = PlaceClusters(regions, walls, 10, 5, 8f, 0f, 0f, null, seed: 10);
 
         Assert.Greater(clusters.Count, 0, "Should produce at least some clusters");
         foreach (var c in clusters)
@@ -224,13 +239,13 @@ public class ProceduralPlacementTests
         var walls = new List<ProceduralPlacement.WallSegment>();
         var regions = ProceduralPlacement.BuildRegions(walls, StandardArea, 4f, nests, plate);
 
-        var c1 = ProceduralPlacement.PlaceClusters(regions, 4f, 5, 4, 8f, 0f, 0f, null, walls, new System.Random(77));
-        var c2 = ProceduralPlacement.PlaceClusters(regions, 4f, 5, 4, 8f, 0f, 0f, null, walls, new System.Random(77));
+        var c1 = PlaceClusters(regions, walls, 5, 4, 8f, 0f, 0f, null, seed: 77);
+        var c2 = PlaceClusters(regions, walls, 5, 4, 8f, 0f, 0f, null, seed: 77);
 
         Assert.AreEqual(c1.Count, c2.Count);
         for (int i = 0; i < c1.Count; i++)
         {
-            Assert.AreEqual(c1[i].Centre,   c2[i].Centre);
+            Assert.AreEqual(c1[i].Centre,    c2[i].Centre);
             Assert.AreEqual(c1[i].BushCount, c2[i].BushCount);
         }
     }
@@ -238,7 +253,6 @@ public class ProceduralPlacementTests
     [Test]
     public void PlaceClusters_RespectsMinAvoidDistance()
     {
-        var rng = new System.Random(42);
         var nests = new List<Vector2> { new Vector2(0f, 0f) };
         var plate = new Vector2(70f, 40f);
         var avoid = new List<Vector2> { new Vector2(0f, 0f) };
@@ -247,10 +261,8 @@ public class ProceduralPlacementTests
         var walls = new List<ProceduralPlacement.WallSegment>();
         var regions = ProceduralPlacement.BuildRegions(walls, StandardArea, 4f, nests, plate);
 
-        var clusters = ProceduralPlacement.PlaceClusters(
-            regions, 4f, 10, 5, 8f, 0f, minDist, avoid, walls, rng);
+        var clusters = PlaceClusters(regions, walls, 10, 5, 8f, 0f, minDist, avoid, seed: 42);
 
-        // Cluster centres should mostly respect the minimum distance.
         int violations = 0;
         foreach (var c in clusters)
             if (Vector2.Distance(c.Centre, avoid[0]) < minDist) violations++;
@@ -262,8 +274,6 @@ public class ProceduralPlacementTests
     [Test]
     public void PlaceClusters_BushesRespectWallSetback()
     {
-        // Vertical wall at x=0 splits left and right regions.
-        // wallSetback=5 means no bush should be within 5 units of the wall line.
         const float wallSetback = 5f;
         var wall = new ProceduralPlacement.WallSegment(new Vector2(0f, 0f), 90f, 200f);
         var walls = new List<ProceduralPlacement.WallSegment> { wall };
@@ -272,8 +282,7 @@ public class ProceduralPlacementTests
         var plate = new Vector2(50f, 0f);
         var regions = ProceduralPlacement.BuildRegions(walls, StandardArea, 4f, nests, plate);
 
-        var clusters = ProceduralPlacement.PlaceClusters(
-            regions, 4f, 10, 5, 8f, wallSetback, 0f, null, walls, new System.Random(1));
+        var clusters = PlaceClusters(regions, walls, 10, 5, 8f, wallSetback, 0f, null, seed: 1);
 
         float wallRad = wall.AngleDegrees * Mathf.Deg2Rad;
         var wallNormal = new Vector2(-Mathf.Sin(wallRad), Mathf.Cos(wallRad));
@@ -299,13 +308,33 @@ public class ProceduralPlacementTests
         var walls = new List<ProceduralPlacement.WallSegment>();
         var regions = ProceduralPlacement.BuildRegions(walls, StandardArea, 4f, nests, plate);
 
-        var clusters = ProceduralPlacement.PlaceClusters(
-            regions, 4f, 10, 5, 8f, 0f, minDist, avoid, walls, new System.Random(2));
+        var clusters = PlaceClusters(regions, walls, 10, 5, 8f, 0f, minDist, avoid, seed: 2);
 
         foreach (var cluster in clusters)
             foreach (var bush in cluster.BushPositions)
                 Assert.GreaterOrEqual(Vector2.Distance(bush, avoidPoint), minDist - 0.001f,
                     $"Bush at {bush} is within minAvoidDistance={minDist} of avoid point");
+    }
+
+    [Test]
+    public void PlaceClusterCentres_StableWhenBushSettingsChange()
+    {
+        // Same seed → same centre positions regardless of maxBushesPerCluster.
+        var nests = new List<Vector2> { new Vector2(-50f, 0f) };
+        var plate = new Vector2(50f, 0f);
+        var walls = new List<ProceduralPlacement.WallSegment>();
+        var regions = ProceduralPlacement.BuildRegions(walls, StandardArea, 4f, nests, plate);
+
+        var centreRng1 = new System.Random(99);
+        var centreRng2 = new System.Random(99);
+
+        var centres1 = ProceduralPlacement.PlaceClusterCentres(regions, 6, 0f, null, centreRng1);
+        var centres2 = ProceduralPlacement.PlaceClusterCentres(regions, 6, 0f, null, centreRng2);
+
+        Assert.AreEqual(centres1.Count, centres2.Count);
+        for (int i = 0; i < centres1.Count; i++)
+            Assert.AreEqual(centres1[i], centres2[i],
+                "Cluster centres must be identical regardless of bush density settings");
     }
 
     // ── Edge walls ────────────────────────────────────────────────────────────

@@ -481,42 +481,31 @@ public static class ProceduralPlacement
     }
 
     /// <summary>
-    /// Distributes clusters across <paramref name="regions"/> proportionally by area.
-    /// For each cluster a centre is picked from the region's sample points; bush positions are
-    /// rejection-sampled within <paramref name="clusterRadius"/> to stay on the correct side of
-    /// every wall and at least <paramref name="wallSetback"/> away from the wall line.
-    /// Clusters with zero valid bush positions are discarded.
+    /// Distributes cluster centres across <paramref name="regions"/> proportionally by area.
+    /// Call this with a dedicated RNG stream so that changing bush-density settings later
+    /// does not alter where the centres land.
     /// </summary>
-    public static List<BushCluster> PlaceClusters(
+    public static List<Vector2> PlaceClusterCentres(
         IReadOnlyList<Region> regions,
-        float cellSize,
         int totalClusterCount,
-        int maxBushesPerCluster,
-        float clusterRadius,
-        float wallSetback,
         float minAvoidDistance,
         IReadOnlyList<Vector2> avoidPositions,
-        IReadOnlyList<WallSegment> walls,
-        System.Random rng,
-        float minBushSeparation = 0f)
+        System.Random rng)
     {
         int totalCells = 0;
         foreach (var r in regions) totalCells += r.CellCount;
-        if (totalCells == 0) return new List<BushCluster>();
+        if (totalCells == 0) return new List<Vector2>();
 
-        var result = new List<BushCluster>();
+        var centres = new List<Vector2>();
 
         foreach (var region in regions)
         {
             float expected = (float)totalClusterCount * region.CellCount / totalCells;
-            int clusterCount = Mathf.FloorToInt(expected);
-            float frac = expected - clusterCount;
-            if (rng.NextDouble() < frac) clusterCount++;
+            int count = Mathf.FloorToInt(expected);
+            if (rng.NextDouble() < (expected - count)) count++;
 
-            for (int i = 0; i < clusterCount; i++)
+            for (int i = 0; i < count; i++)
             {
-                // Pick a random centre from SamplePoints that respects minAvoidDistance.
-                Vector2? centre = null;
                 int maxAttempts = Mathf.Min(region.SamplePoints.Count, 50);
                 for (int a = 0; a < maxAttempts; a++)
                 {
@@ -524,40 +513,63 @@ public static class ProceduralPlacement
                     float dist = MinDistanceTo(candidate, avoidPositions);
                     if (minAvoidDistance <= 0f || dist < 0f || dist >= minAvoidDistance)
                     {
-                        centre = candidate;
+                        centres.Add(candidate);
                         break;
                     }
                 }
+            }
+        }
 
-                if (!centre.HasValue) continue;
+        return centres;
+    }
 
-                // Rejection-sample bush positions within the cluster circle.
-                var bushPositions = new List<Vector2>();
-                for (int b = 0; b < maxBushesPerCluster; b++)
+    /// <summary>
+    /// For each pre-determined cluster centre, rejection-samples bush positions within a circle
+    /// of <paramref name="clusterRadius"/>. Positions are kept on the correct side of every wall
+    /// line and at least <paramref name="wallSetback"/> away from it. Call this with a separate
+    /// RNG stream from <see cref="PlaceClusterCentres"/> so that adjusting bush density does not
+    /// move the cluster centres.
+    /// </summary>
+    public static List<BushCluster> PlaceClusterBushes(
+        IReadOnlyList<Vector2> centres,
+        IReadOnlyList<WallSegment> walls,
+        float clusterRadius,
+        float wallSetback,
+        int maxBushesPerCluster,
+        float minBushSeparation,
+        float minAvoidDistance,
+        IReadOnlyList<Vector2> avoidPositions,
+        System.Random rng)
+    {
+        var result = new List<BushCluster>();
+
+        foreach (var centre in centres)
+        {
+            var bushPositions = new List<Vector2>();
+            for (int b = 0; b < maxBushesPerCluster; b++)
+            {
+                float r = Mathf.Sqrt((float)rng.NextDouble()) * clusterRadius;
+                float theta = (float)rng.NextDouble() * 2f * Mathf.PI;
+                var candidate = centre + new Vector2(Mathf.Cos(theta) * r, Mathf.Sin(theta) * r);
+
+                if (!IsValidBushPosition(candidate, centre, clusterRadius,
+                        walls, wallSetback, avoidPositions, minAvoidDistance))
+                    continue;
+
+                if (minBushSeparation > 0f)
                 {
-                    float r = Mathf.Sqrt((float)rng.NextDouble()) * clusterRadius;
-                    float theta = (float)rng.NextDouble() * 2f * Mathf.PI;
-                    var bushCandidate = centre.Value + new Vector2(Mathf.Cos(theta) * r, Mathf.Sin(theta) * r);
-
-                    if (!IsValidBushPosition(bushCandidate, centre.Value, clusterRadius,
-                            walls, wallSetback, avoidPositions, minAvoidDistance))
-                        continue;
-
-                    if (minBushSeparation > 0f)
-                    {
-                        bool tooClose = false;
-                        foreach (var placed in bushPositions)
-                            if (Vector2.Distance(bushCandidate, placed) < minBushSeparation)
-                            { tooClose = true; break; }
-                        if (tooClose) continue;
-                    }
-
-                    bushPositions.Add(bushCandidate);
+                    bool tooClose = false;
+                    foreach (var placed in bushPositions)
+                        if (Vector2.Distance(candidate, placed) < minBushSeparation)
+                        { tooClose = true; break; }
+                    if (tooClose) continue;
                 }
 
-                if (bushPositions.Count > 0)
-                    result.Add(new BushCluster(centre.Value, bushPositions));
+                bushPositions.Add(candidate);
             }
+
+            if (bushPositions.Count > 0)
+                result.Add(new BushCluster(centre, bushPositions));
         }
 
         return result;

@@ -110,10 +110,18 @@ public class ProceduralLevelGenerator : MonoBehaviour
         SpawnWalls(allWalls, wallsParent.transform);
 
         var avoidPositions = new List<Vector2>(nestPositions) { platePos2D };
-        var clusters = ProceduralPlacement.PlaceClusters(
-            regions, WallConnectivityCellSize, config.ClusterCount, config.ClusterSize,
-            ClusterRadius, WallSetback, MinClusterAvoidDistance, avoidPositions, allWalls, rng,
-            MinBushSeparation);
+
+        // Derive two independent sub-seeds from the main stream so that cluster centres
+        // (driven by ClusterCount) and bush positions (driven by ClusterSize / ClusterRadius)
+        // use separate RNG streams. Changing one slider no longer shifts the other.
+        var centreRng = new System.Random(rng.Next());
+        var bushRng   = new System.Random(rng.Next());
+
+        var centres = ProceduralPlacement.PlaceClusterCentres(
+            regions, config.ClusterCount, MinClusterAvoidDistance, avoidPositions, centreRng);
+        var clusters = ProceduralPlacement.PlaceClusterBushes(
+            centres, allWalls, ClusterRadius, WallSetback, config.ClusterSize,
+            MinBushSeparation, MinClusterAvoidDistance, avoidPositions, bushRng);
         SpawnClusters(clusters, rng, clusterParent.transform);
     }
 
