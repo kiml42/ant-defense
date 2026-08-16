@@ -2,10 +2,10 @@ using System.Collections.Generic;
 
 public static class ProceduralLevelConfigEncoder
 {
-    private const string CurrentVersion = "v2";
+    private const string CurrentVersion = "v3";
 
     public static string Encode(ProceduralLevelConfig config) =>
-        $"{CurrentVersion}:nests={config.NestCount},clusters={config.ClusterCount},density={config.ClusterDensity},walls={config.WallDensity},seed={config.Seed}";
+        $"{CurrentVersion}:nests={config.NestCount},clusters={config.ClusterCount},radius={config.ClusterRadius},density={config.ClusterDensity},walls={config.WallDensity},seed={config.Seed}";
 
     public static bool TryDecode(string s, out ProceduralLevelConfig config)
     {
@@ -30,11 +30,12 @@ public static class ProceduralLevelConfigEncoder
 
         if (!TryGet(dict, "nests", out int nests)) return false;
         if (!TryGet(dict, "clusters", out int clusters)) return false;
+        if (!TryGet(dict, "radius", out int radius)) return false;
         if (!TryGet(dict, "density", out int density)) return false;
         if (!TryGet(dict, "walls", out int walls)) return false;
         if (!TryGet(dict, "seed", out int seed)) return false;
 
-        config = new ProceduralLevelConfig(nests, clusters, density, walls, seed);
+        config = new ProceduralLevelConfig(nests, clusters, radius, density, walls, seed);
         return true;
     }
 

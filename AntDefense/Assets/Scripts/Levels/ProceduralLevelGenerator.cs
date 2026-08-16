@@ -28,7 +28,6 @@ public class ProceduralLevelGenerator : MonoBehaviour
     public float PlateMargin = 20f;
     public float MinGapOffset = 8f;
     public float GapSize = 14f;
-    public float ClusterRadius = 40f;
     [Tooltip("Fractional variation in cluster radius (0 = all same size, 0.5 = ±50% of ClusterRadius).")]
     public float ClusterRadiusVariation = 0.5f;
     [Tooltip("How much two clusters in the same region may overlap. 0 = no overlap; higher values allow more.")]
@@ -125,7 +124,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
 
         var (centres, radii) = ProceduralPlacement.PlaceClusterCentres(
             regions, config.ClusterCount, MinClusterAvoidDistance, avoidPositions,
-            ClusterRadius, ClusterRadiusVariation, MaxClusterOverlap, centreRng);
+            config.ClusterRadius, ClusterRadiusVariation, MaxClusterOverlap, centreRng);
         var clusters = ProceduralPlacement.PlaceClusterBushes(
             centres, radii, allWalls, WallSetback, config.ClusterDensity,
             MinBushSeparation, MinClusterAvoidDistance, avoidPositions, bushRng);
