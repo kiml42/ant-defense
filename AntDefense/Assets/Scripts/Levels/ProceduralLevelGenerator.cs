@@ -13,6 +13,8 @@ public class ProceduralLevelGenerator : MonoBehaviour
     public GameObject BiscuitPlatePrefab;
     public GameObject[] BerryBushPrefabs;
     public GameObject EnvironmentWallPrefab;
+    [Tooltip("Material for the cluster ground polygon. Assign a slightly different shade of green.")]
+    public Material ClusterGroundMaterial;
 
     [Header("Scene References")]
     [Tooltip("The ground plane collider that defines the maximum play area.")]
@@ -197,6 +199,8 @@ public class ProceduralLevelGenerator : MonoBehaviour
             var cluster = clusters[i];
             var clusterGO = CreateParent($"Cluster_{i}", parent);
 
+            SpawnClusterGround(cluster, clusterGO.transform);
+
             bool mixed = rng.NextDouble() > 0.5;
             var prefabA = BerryBushPrefabs[rng.Next(BerryBushPrefabs.Length)];
             var prefabB = mixed ? BerryBushPrefabs[rng.Next(BerryBushPrefabs.Length)] : prefabA;
@@ -208,6 +212,47 @@ public class ProceduralLevelGenerator : MonoBehaviour
                 Track(Instantiate(prefab, Xz(cluster.BushPositions[j]), Quaternion.Euler(0f, yRot, 0f), clusterGO.transform));
             }
         }
+    }
+
+    private void SpawnClusterGround(ProceduralPlacement.BushCluster cluster, Transform parent)
+    {
+        if (ClusterGroundMaterial == null) return;
+        var poly = cluster.BoundaryPolygon;
+        if (poly == null || poly.Count < 3) return;
+
+        var go = new GameObject("ClusterGround");
+        go.transform.SetParent(parent);
+        go.transform.localPosition = Vector3.zero;
+
+        var mf = go.AddComponent<MeshFilter>();
+        mf.mesh = BuildPolygonMesh(poly);
+
+        var mr = go.AddComponent<MeshRenderer>();
+        mr.material = ClusterGroundMaterial;
+        mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        mr.receiveShadows = false;
+    }
+
+    private static Mesh BuildPolygonMesh(List<Vector2> poly)
+    {
+        var vertices = new Vector3[poly.Count];
+        for (int i = 0; i < poly.Count; i++)
+            vertices[i] = new Vector3(poly[i].x, 0.01f, poly[i].y);
+
+        // Fan triangulation from vertex 0 — valid for convex polygons.
+        var triangles = new int[(poly.Count - 2) * 3];
+        for (int i = 0; i < poly.Count - 2; i++)
+        {
+            triangles[i * 3]     = 0;
+            triangles[i * 3 + 1] = i + 2;
+            triangles[i * 3 + 2] = i + 1;
+        }
+
+        var mesh = new Mesh();
+        mesh.vertices  = vertices;
+        mesh.triangles = triangles;
+        mesh.RecalculateNormals();
+        return mesh;
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

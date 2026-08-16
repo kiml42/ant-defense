@@ -4415,6 +4415,7 @@ MonoBehaviour:
   BerryBushPrefabs:
   - {fileID: 6860792739033770158, guid: d10197047e81f784ab53911712b7cabb, type: 3}
   EnvironmentWallPrefab: {fileID: 7800001, guid: e7f23225dbf34176b3758c0cdb775a15, type: 3}
+  ClusterGroundMaterial: {fileID: 2100000, guid: 3a6db9ff6db05894e96b35322c02b457, type: 2}
   GroundCollider: {fileID: 1179184964}
   CameraRig: {fileID: 0}
   ConfigUI: {fileID: 1205140305}

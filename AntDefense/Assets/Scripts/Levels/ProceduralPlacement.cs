@@ -476,8 +476,73 @@ public static class ProceduralPlacement
     {
         public readonly Vector2 Centre;
         public readonly List<Vector2> BushPositions;
-        public BushCluster(Vector2 centre, List<Vector2> bushPositions) { Centre = centre; BushPositions = bushPositions; }
+        public readonly List<Vector2> BoundaryPolygon;
+        public BushCluster(Vector2 centre, List<Vector2> bushPositions, List<Vector2> boundaryPolygon)
+        {
+            Centre = centre;
+            BushPositions = bushPositions;
+            BoundaryPolygon = boundaryPolygon;
+        }
         public int BushCount => BushPositions?.Count ?? 0;
+    }
+
+    /// <summary>
+    /// Returns the polygon formed by clipping a circle of <paramref name="radius"/> centred at
+    /// <paramref name="centre"/> against each wall's infinite half-plane. The result is a convex
+    /// polygon in 2D (XZ world space), suitable for mesh generation.
+    /// </summary>
+    public static List<Vector2> BuildClusterPolygon(
+        Vector2 centre, float radius, IReadOnlyList<WallSegment> walls, int segments = 48)
+    {
+        var polygon = new List<Vector2>(segments);
+        for (int i = 0; i < segments; i++)
+        {
+            float angle = i * 2f * Mathf.PI / segments;
+            polygon.Add(centre + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius);
+        }
+
+        if (walls == null) return polygon;
+
+        foreach (var wall in walls)
+        {
+            if (polygon.Count == 0) break;
+
+            float wallRad = wall.AngleDegrees * Mathf.Deg2Rad;
+            var wallNormal = new Vector2(-Mathf.Sin(wallRad), Mathf.Cos(wallRad));
+
+            float centreSignedDist = Vector2.Dot(centre - wall.Centre, wallNormal);
+            if (Mathf.Abs(centreSignedDist) >= radius + 0.01f) continue; // wall doesn't clip circle
+            if (Mathf.Abs(centreSignedDist) < 0.01f) continue;           // centre on the wall
+
+            polygon = ClipPolygonByHalfPlane(polygon, wall.Centre, wallNormal,
+                Mathf.Sign(centreSignedDist));
+        }
+
+        return polygon;
+    }
+
+    private static List<Vector2> ClipPolygonByHalfPlane(
+        List<Vector2> polygon, Vector2 linePoint, Vector2 lineNormal, float keepSide)
+    {
+        var output = new List<Vector2>(polygon.Count);
+        for (int i = 0; i < polygon.Count; i++)
+        {
+            var current = polygon[i];
+            var next    = polygon[(i + 1) % polygon.Count];
+
+            float dCurrent = Vector2.Dot(current - linePoint, lineNormal) * keepSide;
+            float dNext    = Vector2.Dot(next    - linePoint, lineNormal) * keepSide;
+
+            if (dCurrent >= 0f) output.Add(current);
+
+            // Add intersection point when edge crosses the clip line.
+            if ((dCurrent >= 0f) != (dNext >= 0f))
+            {
+                float t = dCurrent / (dCurrent - dNext);
+                output.Add(current + t * (next - current));
+            }
+        }
+        return output;
     }
 
     /// <summary>
@@ -569,7 +634,10 @@ public static class ProceduralPlacement
             }
 
             if (bushPositions.Count > 0)
-                result.Add(new BushCluster(centre, bushPositions));
+            {
+                var polygon = BuildClusterPolygon(centre, clusterRadius, walls);
+                result.Add(new BushCluster(centre, bushPositions, polygon));
+            }
         }
 
         return result;
