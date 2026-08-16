@@ -210,9 +210,8 @@ public class ProceduralPlacementTests
     {
         var centreRng = new System.Random(seed);
         var bushRng   = new System.Random(seed + 1);
-        var centres = ProceduralPlacement.PlaceClusterCentres(
-            regions, clusterCount, minAvoid, avoidPositions, centreRng);
-        var radii = ProceduralPlacement.SampleClusterRadii(centres.Count, radius, 0f, new System.Random(0));
+        var (centres, radii) = ProceduralPlacement.PlaceClusterCentres(
+            regions, clusterCount, minAvoid, avoidPositions, radius, 0f, 0f, centreRng);
         return ProceduralPlacement.PlaceClusterBushes(
             centres, radii, walls, wallSetback, maxBushes, 0f, minAvoid, avoidPositions, bushRng);
     }
@@ -329,8 +328,8 @@ public class ProceduralPlacementTests
         var centreRng1 = new System.Random(99);
         var centreRng2 = new System.Random(99);
 
-        var centres1 = ProceduralPlacement.PlaceClusterCentres(regions, 6, 0f, null, centreRng1);
-        var centres2 = ProceduralPlacement.PlaceClusterCentres(regions, 6, 0f, null, centreRng2);
+        var (centres1, _) = ProceduralPlacement.PlaceClusterCentres(regions, 6, 0f, null, 8f, 0f, 0f, centreRng1);
+        var (centres2, _) = ProceduralPlacement.PlaceClusterCentres(regions, 6, 0f, null, 8f, 0f, 0f, centreRng2);
 
         Assert.AreEqual(centres1.Count, centres2.Count);
         for (int i = 0; i < centres1.Count; i++)

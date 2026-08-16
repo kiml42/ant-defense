@@ -546,22 +546,27 @@ public static class ProceduralPlacement
     }
 
     /// <summary>
-    /// Distributes cluster centres across <paramref name="regions"/> proportionally by area.
-    /// Call this with a dedicated RNG stream so that changing bush-density settings later
-    /// does not alter where the centres land.
+    /// Distributes cluster centres across <paramref name="regions"/> proportionally by area,
+    /// sampling a radius for each centre from the same RNG stream. Same-region clusters are
+    /// rejected when their circles overlap by more than <paramref name="maxOverlap"/>.
+    /// Clusters in different regions are not checked — walls clip them naturally.
     /// </summary>
-    public static List<Vector2> PlaceClusterCentres(
+    public static (List<Vector2> Centres, float[] Radii) PlaceClusterCentres(
         IReadOnlyList<Region> regions,
         int totalClusterCount,
         float minAvoidDistance,
         IReadOnlyList<Vector2> avoidPositions,
+        float baseRadius,
+        float radiusVariation,
+        float maxOverlap,
         System.Random rng)
     {
         int totalCells = 0;
         foreach (var r in regions) totalCells += r.CellCount;
-        if (totalCells == 0) return new List<Vector2>();
+        if (totalCells == 0) return (new List<Vector2>(), new float[0]);
 
         var centres = new List<Vector2>();
+        var radii   = new List<float>();
 
         foreach (var region in regions)
         {
@@ -569,37 +574,39 @@ public static class ProceduralPlacement
             int count = Mathf.FloorToInt(expected);
             if (rng.NextDouble() < (expected - count)) count++;
 
+            var regionCentres = new List<Vector2>();
+            var regionRadii   = new List<float>();
+
             for (int i = 0; i < count; i++)
             {
+                float radius = baseRadius * (1f + (float)(rng.NextDouble() * 2.0 - 1.0) * radiusVariation);
+
                 int maxAttempts = Mathf.Min(region.SamplePoints.Count, 50);
                 for (int a = 0; a < maxAttempts; a++)
                 {
                     var candidate = region.SamplePoints[rng.Next(region.SamplePoints.Count)];
+
                     float dist = MinDistanceTo(candidate, avoidPositions);
-                    if (minAvoidDistance <= 0f || dist < 0f || dist >= minAvoidDistance)
+                    if (minAvoidDistance > 0f && dist >= 0f && dist < minAvoidDistance) continue;
+
+                    bool overlaps = false;
+                    for (int j = 0; j < regionCentres.Count; j++)
                     {
-                        centres.Add(candidate);
-                        break;
+                        if (Vector2.Distance(candidate, regionCentres[j]) < regionRadii[j] + radius - maxOverlap)
+                        { overlaps = true; break; }
                     }
+                    if (overlaps) continue;
+
+                    regionCentres.Add(candidate);
+                    regionRadii.Add(radius);
+                    centres.Add(candidate);
+                    radii.Add(radius);
+                    break;
                 }
             }
         }
 
-        return centres;
-    }
-
-    /// <summary>
-    /// Samples a radius for each cluster centre using the same RNG stream as
-    /// <see cref="PlaceClusterCentres"/>. Call immediately after that method so that
-    /// radii are fixed before bush density is considered.
-    /// </summary>
-    public static float[] SampleClusterRadii(
-        int count, float baseRadius, float variation, System.Random rng)
-    {
-        var radii = new float[count];
-        for (int i = 0; i < count; i++)
-            radii[i] = baseRadius * (1f + (float)(rng.NextDouble() * 2.0 - 1.0) * variation);
-        return radii;
+        return (centres, radii.ToArray());
     }
 
     /// <summary>

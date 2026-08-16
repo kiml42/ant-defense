@@ -31,6 +31,8 @@ public class ProceduralLevelGenerator : MonoBehaviour
     public float ClusterRadius = 40f;
     [Tooltip("Fractional variation in cluster radius (0 = all same size, 0.5 = ±50% of ClusterRadius).")]
     public float ClusterRadiusVariation = 0.5f;
+    [Tooltip("How much two clusters in the same region may overlap. 0 = no overlap; higher values allow more.")]
+    public float MaxClusterOverlap = 4f;
     [Tooltip("Gaps per unit of wall length. A 200-unit wall with 0.02 gets ~4 gaps; a 50-unit wall gets ~1.")]
     public float GapsPerUnitLength = 0.02f;
     [Tooltip("Minimum distance walls must keep from nests and the plate. A gap is forced wherever a wall comes closer than this.")]
@@ -121,10 +123,9 @@ public class ProceduralLevelGenerator : MonoBehaviour
         var centreRng = new System.Random(rng.Next());
         var bushRng   = new System.Random(rng.Next());
 
-        var centres = ProceduralPlacement.PlaceClusterCentres(
-            regions, config.ClusterCount, MinClusterAvoidDistance, avoidPositions, centreRng);
-        var radii = ProceduralPlacement.SampleClusterRadii(
-            centres.Count, ClusterRadius, ClusterRadiusVariation, centreRng);
+        var (centres, radii) = ProceduralPlacement.PlaceClusterCentres(
+            regions, config.ClusterCount, MinClusterAvoidDistance, avoidPositions,
+            ClusterRadius, ClusterRadiusVariation, MaxClusterOverlap, centreRng);
         var clusters = ProceduralPlacement.PlaceClusterBushes(
             centres, radii, allWalls, WallSetback, config.ClusterDensity,
             MinBushSeparation, MinClusterAvoidDistance, avoidPositions, bushRng);
