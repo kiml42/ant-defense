@@ -630,7 +630,8 @@ public static class ProceduralPlacement
         IReadOnlyList<float> clusterRadii,
         IReadOnlyList<WallSegment> walls,
         float wallSetback,
-        int maxBushesPerCluster,
+        int densityPerBaseArea,
+        float baseRadius,
         float minBushSeparation,
         float minAvoidDistance,
         IReadOnlyList<Vector2> avoidPositions,
@@ -643,8 +644,11 @@ public static class ProceduralPlacement
             var centre = centres[ci];
             float radius = clusterRadii[ci];
 
+            float radiusRatio = baseRadius > 0f ? radius / baseRadius : 1f;
+            int maxAttempts = Mathf.Max(1, Mathf.RoundToInt(densityPerBaseArea * radiusRatio * radiusRatio));
+
             var bushPositions = new List<Vector2>();
-            for (int b = 0; b < maxBushesPerCluster; b++)
+            for (int b = 0; b < maxAttempts; b++)
             {
                 float r = Mathf.Sqrt((float)rng.NextDouble()) * radius;
                 float theta = (float)rng.NextDouble() * 2f * Mathf.PI;
