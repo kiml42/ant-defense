@@ -95,11 +95,11 @@ public static class ProceduralLevelSetup
         configUI.Panel            = panel;
         configUI.NestCountSlider   = nestSlider.slider;
         configUI.ClusterCountSlider = clusterSlider.slider;
-        configUI.ClusterSizeSlider  = sizeSlider.slider;
+        configUI.ClusterDensitySlider  = sizeSlider.slider;
         configUI.WallDensitySlider  = wallSlider.slider;
         configUI.NestCountLabel    = nestSlider.label;
         configUI.ClusterCountLabel  = clusterSlider.label;
-        configUI.ClusterSizeLabel   = sizeSlider.label;
+        configUI.ClusterDensityLabel   = sizeSlider.label;
         configUI.WallDensityLabel   = wallSlider.label;
         configUI.ConfigStringField  = configField;
         configUI.RegenerateButton   = regenBtn;
