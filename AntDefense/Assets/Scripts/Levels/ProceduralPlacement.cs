@@ -648,6 +648,19 @@ public static class ProceduralPlacement
                 bushPositions.Add(candidate);
             }
 
+            // Guarantee at least one bush per cluster regardless of density.
+            if (bushPositions.Count == 0)
+            {
+                for (int a = 0; a < 100 && bushPositions.Count == 0; a++)
+                {
+                    float r2 = Mathf.Sqrt((float)rng.NextDouble()) * radius;
+                    float th2 = (float)rng.NextDouble() * 2f * Mathf.PI;
+                    var candidate = centre + new Vector2(Mathf.Cos(th2) * r2, Mathf.Sin(th2) * r2);
+                    if (IsValidBushPosition(candidate, centre, radius, walls, wallSetback, avoidPositions, minAvoidDistance))
+                        bushPositions.Add(candidate);
+                }
+            }
+
             if (bushPositions.Count > 0)
             {
                 var polygon = BuildClusterPolygon(centre, radius, walls);
