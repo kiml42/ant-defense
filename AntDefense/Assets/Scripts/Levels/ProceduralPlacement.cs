@@ -510,15 +510,26 @@ public static class ProceduralPlacement
             float wallRad = wall.AngleDegrees * Mathf.Deg2Rad;
             var wallNormal = new Vector2(-Mathf.Sin(wallRad), Mathf.Cos(wallRad));
 
+            if (!WallSegmentReachesCircle(wall, centre, radius)) continue;
+
             float centreSignedDist = Vector2.Dot(centre - wall.Centre, wallNormal);
-            if (Mathf.Abs(centreSignedDist) >= radius + 0.01f) continue; // wall doesn't clip circle
-            if (Mathf.Abs(centreSignedDist) < 0.01f) continue;           // centre on the wall
+            if (Mathf.Abs(centreSignedDist) < 0.01f) continue; // centre on the wall
 
             polygon = ClipPolygonByHalfPlane(polygon, wall.Centre, wallNormal,
                 Mathf.Sign(centreSignedDist));
         }
 
         return polygon;
+    }
+
+    // True if the finite wall segment's closest point to centre is within radius.
+    // Prevents infinite-line extensions of short walls from clipping distant regions.
+    private static bool WallSegmentReachesCircle(WallSegment wall, Vector2 centre, float radius)
+    {
+        float wallRad = wall.AngleDegrees * Mathf.Deg2Rad;
+        var wallDir   = new Vector2(Mathf.Cos(wallRad), Mathf.Sin(wallRad));
+        float t       = Mathf.Clamp(Vector2.Dot(centre - wall.Centre, wallDir), -wall.Length * 0.5f, wall.Length * 0.5f);
+        return Vector2.Distance(centre, wall.Centre + wallDir * t) < radius;
     }
 
     private static List<Vector2> ClipPolygonByHalfPlane(
@@ -698,11 +709,11 @@ public static class ProceduralPlacement
                 float wallRad = wall.AngleDegrees * Mathf.Deg2Rad;
                 var wallNormal = new Vector2(-Mathf.Sin(wallRad), Mathf.Cos(wallRad));
 
-                float centreSignedDist  = Vector2.Dot(clusterCentre - wall.Centre, wallNormal);
-                float candidateSignedDist = Vector2.Dot(candidate   - wall.Centre, wallNormal);
+                // Skip walls whose segment doesn't reach this cluster region.
+                if (!WallSegmentReachesCircle(wall, clusterCentre, clusterRadius + wallSetback)) continue;
 
-                // Whole cluster circle is safely on one side — no check needed.
-                if (Mathf.Abs(centreSignedDist) > clusterRadius + wallSetback) continue;
+                float centreSignedDist    = Vector2.Dot(clusterCentre - wall.Centre, wallNormal);
+                float candidateSignedDist = Vector2.Dot(candidate     - wall.Centre, wallNormal);
 
                 // Reject if on the wrong side of the wall or within the setback zone.
                 if (Mathf.Sign(candidateSignedDist) != Mathf.Sign(centreSignedDist) ||
