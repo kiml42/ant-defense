@@ -213,7 +213,7 @@ public class ProceduralPlacementTests
         var centres = ProceduralPlacement.PlaceClusterCentres(
             regions, clusterCount, minAvoid, avoidPositions, centreRng);
         return ProceduralPlacement.PlaceClusterBushes(
-            centres, walls, radius, wallSetback, maxBushes, 0f, minAvoid, avoidPositions, bushRng);
+            centres, walls, radius, 0f, wallSetback, maxBushes, 0f, minAvoid, avoidPositions, bushRng);
     }
 
     [Test]

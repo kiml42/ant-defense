@@ -599,6 +599,7 @@ public static class ProceduralPlacement
         IReadOnlyList<Vector2> centres,
         IReadOnlyList<WallSegment> walls,
         float clusterRadius,
+        float clusterRadiusVariation,
         float wallSetback,
         int maxBushesPerCluster,
         float minBushSeparation,
@@ -610,14 +611,16 @@ public static class ProceduralPlacement
 
         foreach (var centre in centres)
         {
+            float radius = clusterRadius * (1f + (float)(rng.NextDouble() * 2.0 - 1.0) * clusterRadiusVariation);
+
             var bushPositions = new List<Vector2>();
             for (int b = 0; b < maxBushesPerCluster; b++)
             {
-                float r = Mathf.Sqrt((float)rng.NextDouble()) * clusterRadius;
+                float r = Mathf.Sqrt((float)rng.NextDouble()) * radius;
                 float theta = (float)rng.NextDouble() * 2f * Mathf.PI;
                 var candidate = centre + new Vector2(Mathf.Cos(theta) * r, Mathf.Sin(theta) * r);
 
-                if (!IsValidBushPosition(candidate, centre, clusterRadius,
+                if (!IsValidBushPosition(candidate, centre, radius,
                         walls, wallSetback, avoidPositions, minAvoidDistance))
                     continue;
 
@@ -635,7 +638,7 @@ public static class ProceduralPlacement
 
             if (bushPositions.Count > 0)
             {
-                var polygon = BuildClusterPolygon(centre, clusterRadius, walls);
+                var polygon = BuildClusterPolygon(centre, radius, walls);
                 result.Add(new BushCluster(centre, bushPositions, polygon));
             }
         }

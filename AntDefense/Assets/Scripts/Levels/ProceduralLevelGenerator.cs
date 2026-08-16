@@ -28,7 +28,9 @@ public class ProceduralLevelGenerator : MonoBehaviour
     public float PlateMargin = 20f;
     public float MinGapOffset = 8f;
     public float GapSize = 14f;
-    public float ClusterRadius = 20f;
+    public float ClusterRadius = 40f;
+    [Tooltip("Fractional variation in cluster radius (0 = all same size, 0.5 = ±50% of ClusterRadius).")]
+    public float ClusterRadiusVariation = 0.5f;
     [Tooltip("Gaps per unit of wall length. A 200-unit wall with 0.02 gets ~4 gaps; a 50-unit wall gets ~1.")]
     public float GapsPerUnitLength = 0.02f;
     [Tooltip("Minimum distance walls must keep from nests and the plate. A gap is forced wherever a wall comes closer than this.")]
@@ -122,7 +124,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         var centres = ProceduralPlacement.PlaceClusterCentres(
             regions, config.ClusterCount, MinClusterAvoidDistance, avoidPositions, centreRng);
         var clusters = ProceduralPlacement.PlaceClusterBushes(
-            centres, allWalls, ClusterRadius, WallSetback, config.ClusterDensity,
+            centres, allWalls, ClusterRadius, ClusterRadiusVariation, WallSetback, config.ClusterDensity,
             MinBushSeparation, MinClusterAvoidDistance, avoidPositions, bushRng);
         SpawnClusters(clusters, rng, clusterParent.transform);
     }
