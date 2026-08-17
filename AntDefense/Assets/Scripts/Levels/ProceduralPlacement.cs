@@ -716,20 +716,33 @@ public static class ProceduralPlacement
     private static void RelaxBushPositions(
         List<Vector2> positions, IReadOnlyList<Vector2> polygon,
         float minSeparation, IReadOnlyList<Vector2> avoidPositions, float avoidDistance,
-        int iterations = 15)
+        int iterations = 15, float boundaryRepulseRadius = 8f)
     {
         float influence = minSeparation * 3f;
         float step      = minSeparation * 0.4f;
         var pushes = new Vector2[positions.Count];
-        var centroid = PolygonCentroid(polygon);
+
+        // Pre-compute each edge's inward normal (left of edge direction for CCW polygon).
+        // Polygon edges include wall-clipped flat edges, so this covers walls too.
+        int edgeCount = polygon.Count;
+        var edgeInwardNormals = new Vector2[edgeCount];
+        var edgeOrigins       = new Vector2[edgeCount];
+        for (int e = 0; e < edgeCount; e++)
+        {
+            var a    = polygon[e];
+            var edge = polygon[(e + 1) % edgeCount] - a;
+            float len = edge.magnitude;
+            edgeOrigins[e]       = a;
+            edgeInwardNormals[e] = len > 0.001f ? new Vector2(-edge.y, edge.x) / len : Vector2.zero;
+        }
 
         for (int iter = 0; iter < iterations; iter++)
         {
             for (int i = 0; i < positions.Count; i++)
                 pushes[i] = Vector2.zero;
 
+            // Pairwise repulsion
             for (int i = 0; i < positions.Count; i++)
-            {
                 for (int j = i + 1; j < positions.Count; j++)
                 {
                     var diff = positions[i] - positions[j];
@@ -741,12 +754,10 @@ public static class ProceduralPlacement
                         pushes[j] -= force;
                     }
                 }
-            }
 
+            // Avoid-position repulsion
             if (avoidPositions != null && avoidDistance > 0f)
-            {
                 for (int i = 0; i < positions.Count; i++)
-                {
                     foreach (var avoid in avoidPositions)
                     {
                         var diff = positions[i] - avoid;
@@ -754,39 +765,29 @@ public static class ProceduralPlacement
                         if (dist < avoidDistance)
                             pushes[i] += diff / dist * (avoidDistance - dist);
                     }
+
+            // Boundary repulsion: push inward when within boundaryRepulseRadius of any edge.
+            // Only affects bushes actually close to the boundary, leaving interior ones alone.
+            for (int e = 0; e < edgeCount; e++)
+            {
+                var normal = edgeInwardNormals[e];
+                var origin = edgeOrigins[e];
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    float dist = Vector2.Dot(positions[i] - origin, normal);
+                    if (dist > 0f && dist < boundaryRepulseRadius)
+                        pushes[i] += normal * (boundaryRepulseRadius - dist);
                 }
             }
-
-            // Weak centroid spring so bushes near the edge always feel an inward
-            // restoring force and can drift back as neighbours spread out.
-            for (int i = 0; i < positions.Count; i++)
-                pushes[i] += (centroid - positions[i]) * 0.1f;
 
             for (int i = 0; i < positions.Count; i++)
             {
                 if (pushes[i].sqrMagnitude < 0.0001f) continue;
                 var newPos = positions[i] + pushes[i].normalized * step;
-                // Only accept moves that stay inside — no clamping, so no bush
-                // ever gets pinned to the boundary and stuck there permanently.
                 if (IsInsideConvexPolygon(newPos, polygon))
                     positions[i] = newPos;
             }
         }
-    }
-
-    private static Vector2 PolygonCentroid(IReadOnlyList<Vector2> poly)
-    {
-        float area = 0f, cx = 0f, cy = 0f;
-        for (int i = 0; i < poly.Count; i++)
-        {
-            var a = poly[i]; var b = poly[(i + 1) % poly.Count];
-            float cross = a.x * b.y - b.x * a.y;
-            area += cross;
-            cx += (a.x + b.x) * cross;
-            cy += (a.y + b.y) * cross;
-        }
-        area *= 0.5f;
-        return new Vector2(cx / (6f * area), cy / (6f * area));
     }
 
     private static bool IsInsideConvexPolygon(Vector2 point, IReadOnlyList<Vector2> poly)
