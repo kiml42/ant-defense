@@ -649,10 +649,16 @@ public static class ProceduralPlacement
             var polygon = BuildClusterPolygon(centre, radius, walls);
             if (polygon.Count < 3) continue;
 
-            // Derive bush count from actual polygon area so clipped clusters stay proportionally dense.
+            // Erode the placement polygon by wallSetback so bushes stay clear of all
+            // edges (including wall-clipped flat edges) without per-wall distance checks.
+            // The full polygon is kept for rendering and area calculation.
+            var placementPolygon = wallSetback > 0f ? ErodeConvexPolygon(polygon, wallSetback) : polygon;
+            if (placementPolygon.Count < 3) placementPolygon = polygon;
+
+            // Use full polygon area for count so visual cluster density is correct.
             int bushCount = Mathf.Max(1, Mathf.RoundToInt(densityPerBaseArea * PolygonArea(polygon) / baseArea));
 
-            var aabb = PolygonAABB(polygon);
+            var aabb = PolygonAABB(placementPolygon);
             var bushPositions = new List<Vector2>(bushCount);
 
             for (int a = 0; a < bushCount * 20 && bushPositions.Count < bushCount; a++)
@@ -661,21 +667,7 @@ public static class ProceduralPlacement
                     aabb.xMin + (float)rng.NextDouble() * aabb.width,
                     aabb.yMin + (float)rng.NextDouble() * aabb.height);
 
-                if (!IsInsideConvexPolygon(candidate, polygon)) continue;
-
-                if (wallSetback > 0f && walls != null)
-                {
-                    bool tooClose = false;
-                    foreach (var wall in walls)
-                    {
-                        if (!WallSegmentReachesCircle(wall, centre, radius + wallSetback)) continue;
-                        float wallRad = wall.AngleDegrees * Mathf.Deg2Rad;
-                        var wallNormal = new Vector2(-Mathf.Sin(wallRad), Mathf.Cos(wallRad));
-                        if (Mathf.Abs(Vector2.Dot(candidate - wall.Centre, wallNormal)) < wallSetback)
-                        { tooClose = true; break; }
-                    }
-                    if (tooClose) continue;
-                }
+                if (!IsInsideConvexPolygon(candidate, placementPolygon)) continue;
 
                 if (minAvoidDistance > 0f && avoidPositions != null)
                 {
@@ -697,14 +689,14 @@ public static class ProceduralPlacement
                     var candidate = new Vector2(
                         aabb.xMin + (float)rng.NextDouble() * aabb.width,
                         aabb.yMin + (float)rng.NextDouble() * aabb.height);
-                    if (IsInsideConvexPolygon(candidate, polygon))
+                    if (IsInsideConvexPolygon(candidate, placementPolygon))
                         bushPositions.Add(candidate);
                 }
             }
 
             if (bushPositions.Count == 0) continue;
 
-            RelaxBushPositions(bushPositions, polygon, minBushSeparation, avoidPositions, minAvoidDistance);
+            RelaxBushPositions(bushPositions, placementPolygon, minBushSeparation, avoidPositions, minAvoidDistance);
 
             result.Add(new BushCluster(centre, bushPositions, polygon));
         }
@@ -716,7 +708,7 @@ public static class ProceduralPlacement
     private static void RelaxBushPositions(
         List<Vector2> positions, IReadOnlyList<Vector2> polygon,
         float minSeparation, IReadOnlyList<Vector2> avoidPositions, float avoidDistance,
-        int iterations = 15, float boundaryRepulseRadius = 8f)
+        int iterations = 15, float boundaryRepulseRadius = 10f, float boundaryRepulseForceMultiplier = 2f)
     {
         float influence = minSeparation * 3f;
         float step      = minSeparation * 0.4f;
@@ -776,7 +768,7 @@ public static class ProceduralPlacement
                 {
                     float dist = Vector2.Dot(positions[i] - origin, normal);
                     if (dist > 0f && dist < boundaryRepulseRadius)
-                        pushes[i] += normal * (boundaryRepulseRadius - dist);
+                        pushes[i] += normal * (boundaryRepulseRadius - dist) * boundaryRepulseForceMultiplier;
                 }
             }
 
@@ -841,6 +833,47 @@ public static class ProceduralPlacement
             if (poly[i].y < minY) minY = poly[i].y; else if (poly[i].y > maxY) maxY = poly[i].y;
         }
         return new Rect(minX, minY, maxX - minX, maxY - minY);
+    }
+
+    // Returns a new convex polygon with every edge shifted inward by amount.
+    // New vertices are the intersections of adjacent shifted edges.
+    // Returns the original list unchanged if amount <= 0 or the result would degenerate.
+    private static List<Vector2> ErodeConvexPolygon(IReadOnlyList<Vector2> poly, float amount)
+    {
+        int n = poly.Count;
+        var offPoints = new Vector2[n];
+        var offDirs   = new Vector2[n];
+
+        for (int i = 0; i < n; i++)
+        {
+            var edge = poly[(i + 1) % n] - poly[i];
+            float len = edge.magnitude;
+            if (len < 0.001f) return new List<Vector2>(poly);
+            var dir    = edge / len;
+            var inward = new Vector2(-dir.y, dir.x); // left of CCW edge = inward
+            offPoints[i] = poly[i] + inward * amount;
+            offDirs[i]   = dir;
+        }
+
+        var result = new List<Vector2>(n);
+        for (int i = 0; i < n; i++)
+        {
+            int prev = (i + n - 1) % n;
+            var p1 = offPoints[prev]; var d1 = offDirs[prev];
+            var p2 = offPoints[i];   var d2 = offDirs[i];
+            float denom = d1.x * d2.y - d1.y * d2.x;
+            if (Mathf.Abs(denom) < 0.001f)
+            {
+                result.Add((p1 + p2) * 0.5f); // parallel edges — midpoint fallback
+            }
+            else
+            {
+                var dp = p2 - p1;
+                float t = (dp.x * d2.y - dp.y * d2.x) / denom;
+                result.Add(p1 + d1 * t);
+            }
+        }
+        return result;
     }
 
     // ── Region decomposition ──────────────────────────────────────────────────
