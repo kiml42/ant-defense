@@ -708,7 +708,7 @@ public static class ProceduralPlacement
     private static void RelaxBushPositions(
         List<Vector2> positions, IReadOnlyList<Vector2> polygon,
         float minSeparation, IReadOnlyList<Vector2> avoidPositions, float avoidDistance,
-        int iterations = 15, float boundaryRepulseRadius = 10f, float boundaryRepulseForceMultiplier = 2f)
+        int iterations = 15, float boundaryRepulseRadius = 8f, float boundaryRepulseForceMultiplier = 1.8f)
     {
         float influence = minSeparation * 3f;
         float step      = minSeparation * 0.4f;
