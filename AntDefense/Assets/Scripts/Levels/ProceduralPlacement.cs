@@ -649,10 +649,9 @@ public static class ProceduralPlacement
             var polygon = BuildClusterPolygon(centre, radius, walls);
             if (polygon.Count < 3) continue;
 
-            // Erode the placement polygon by wallSetback so bushes stay clear of all
-            // edges (including wall-clipped flat edges) without per-wall distance checks.
+            // Clip the placement polygon back from the walls so bushes never overlap them.
             // The full polygon is kept for rendering and area calculation.
-            var placementPolygon = wallSetback > 0f ? ErodeConvexPolygon(polygon, wallSetback, walls) : polygon;
+            var placementPolygon = ErodeByWalls(polygon, wallSetback, walls, centre, radius);
             if (placementPolygon.Count < 3) placementPolygon = polygon;
 
             // Use full polygon area for count so visual cluster density is correct.
@@ -837,67 +836,40 @@ public static class ProceduralPlacement
         return new Rect(minX, minY, maxX - minX, maxY - minY);
     }
 
-    // Returns a new polygon with only wall-clipped edges shifted inward by amount.
-    // Circular arc edges are left in place, so only the wall setback is enforced —
-    // the circular boundary is unaffected and small clusters don't lose usable area.
-    private static List<Vector2> ErodeConvexPolygon(
-        IReadOnlyList<Vector2> poly, float amount, IReadOnlyList<WallSegment> walls)
+    /// <summary>
+    /// Returns the polygon clipped back from every wall that reaches the cluster by
+    /// <paramref name="setback"/>. Only wall edges move in — the circular arc boundary is
+    /// untouched, so small clusters keep their usable area.
+    /// Uses half-plane clipping rather than edge-offset intersection: every output vertex is
+    /// interpolated between existing vertices, so a wall lying nearly tangent to the circle
+    /// can never fling a vertex far outside the shape.
+    /// </summary>
+    private static List<Vector2> ErodeByWalls(
+        List<Vector2> polygon, float setback,
+        IReadOnlyList<WallSegment> walls, Vector2 centre, float radius)
     {
-        int n = poly.Count;
-        var offPoints = new Vector2[n];
-        var offDirs   = new Vector2[n];
+        if (walls == null || setback <= 0f) return polygon;
 
-        for (int i = 0; i < n; i++)
-        {
-            var a    = poly[i];
-            var edge = poly[(i + 1) % n] - a;
-            float len = edge.magnitude;
-            if (len < 0.001f) return new List<Vector2>(poly);
-            var dir    = edge / len;
-            var inward = new Vector2(-dir.y, dir.x);
-            float offset = EdgeIsOnWall(a, poly[(i + 1) % n], dir, walls) ? amount : 0f;
-            offPoints[i] = a + inward * offset;
-            offDirs[i]   = dir;
-        }
-
-        var result = new List<Vector2>(n);
-        for (int i = 0; i < n; i++)
-        {
-            int prev = (i + n - 1) % n;
-            var p1 = offPoints[prev]; var d1 = offDirs[prev];
-            var p2 = offPoints[i];   var d2 = offDirs[i];
-            float denom = d1.x * d2.y - d1.y * d2.x;
-            if (Mathf.Abs(denom) < 0.001f)
-            {
-                result.Add((p1 + p2) * 0.5f);
-            }
-            else
-            {
-                var dp = p2 - p1;
-                float t = (dp.x * d2.y - dp.y * d2.x) / denom;
-                result.Add(p1 + d1 * t);
-            }
-        }
-        return result;
-    }
-
-    // Returns true if edge (a→b) lies on any wall — parallel to it and both
-    // endpoints within distTol of the wall's infinite line.
-    private static bool EdgeIsOnWall(
-        Vector2 a, Vector2 b, Vector2 edgeDir, IReadOnlyList<WallSegment> walls,
-        float angleTol = 0.02f, float distTol = 0.5f)
-    {
         foreach (var wall in walls)
         {
+            if (polygon.Count == 0) break;
+
             float wallRad = wall.AngleDegrees * Mathf.Deg2Rad;
-            var wallDir    = new Vector2(Mathf.Cos(wallRad), Mathf.Sin(wallRad));
-            var wallNormal = new Vector2(-wallDir.y, wallDir.x);
-            if (Mathf.Abs(Vector2.Dot(edgeDir, wallDir)) < 1f - angleTol) continue;
-            if (Mathf.Abs(Vector2.Dot(a - wall.Centre, wallNormal)) > distTol) continue;
-            if (Mathf.Abs(Vector2.Dot(b - wall.Centre, wallNormal)) > distTol) continue;
-            return true;
+            var wallNormal = new Vector2(-Mathf.Sin(wallRad), Mathf.Cos(wallRad));
+
+            if (!WallSegmentReachesCircle(wall, centre, radius + setback)) continue;
+
+            float centreSignedDist = Vector2.Dot(centre - wall.Centre, wallNormal);
+            if (Mathf.Abs(centreSignedDist) < 0.01f) continue;
+
+            // Shift the clip line off the wall toward the cluster centre by setback.
+            float keepSide = Mathf.Sign(centreSignedDist);
+            var linePoint = wall.Centre + wallNormal * keepSide * setback;
+
+            polygon = ClipPolygonByHalfPlane(polygon, linePoint, wallNormal, keepSide);
         }
-        return false;
+
+        return polygon;
     }
 
     // ── Region decomposition ──────────────────────────────────────────────────
