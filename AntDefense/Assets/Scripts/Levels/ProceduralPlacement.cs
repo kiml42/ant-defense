@@ -720,35 +720,48 @@ public static class ProceduralPlacement
     {
         float influence = minSeparation * 3f;
         float step      = minSeparation * 0.4f;
+        var pushes = new Vector2[positions.Count];
 
         for (int iter = 0; iter < iterations; iter++)
         {
+            // Accumulate all forces from current positions before moving anything,
+            // so no bush gets an advantage from being processed earlier in the loop.
+            for (int i = 0; i < positions.Count; i++)
+                pushes[i] = Vector2.zero;
+
             for (int i = 0; i < positions.Count; i++)
             {
-                var push = Vector2.zero;
-
-                for (int j = 0; j < positions.Count; j++)
+                for (int j = i + 1; j < positions.Count; j++)
                 {
-                    if (i == j) continue;
                     var diff = positions[i] - positions[j];
                     float dist = Mathf.Max(diff.magnitude, 0.01f);
                     if (dist < influence)
-                        push += diff / dist * (influence - dist);
+                    {
+                        var force = diff / dist * (influence - dist);
+                        pushes[i] += force;
+                        pushes[j] -= force;
+                    }
                 }
+            }
 
-                if (avoidPositions != null && avoidDistance > 0f)
+            if (avoidPositions != null && avoidDistance > 0f)
+            {
+                for (int i = 0; i < positions.Count; i++)
                 {
                     foreach (var avoid in avoidPositions)
                     {
                         var diff = positions[i] - avoid;
                         float dist = Mathf.Max(diff.magnitude, 0.01f);
                         if (dist < avoidDistance)
-                            push += diff / dist * (avoidDistance - dist);
+                            pushes[i] += diff / dist * (avoidDistance - dist);
                     }
                 }
+            }
 
-                if (push.sqrMagnitude < 0.0001f) continue;
-                positions[i] = ClampToConvexPolygon(positions[i] + push.normalized * step, polygon);
+            for (int i = 0; i < positions.Count; i++)
+            {
+                if (pushes[i].sqrMagnitude < 0.0001f) continue;
+                positions[i] = ClampToConvexPolygon(positions[i] + pushes[i].normalized * step, polygon);
             }
         }
     }
