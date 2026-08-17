@@ -621,9 +621,10 @@ public static class ProceduralPlacement
     }
 
     /// <summary>
-    /// For each pre-determined cluster centre, rejection-samples bush positions within the
-    /// corresponding circle from <paramref name="clusterRadii"/>. Positions are kept on the
-    /// correct side of every wall line and at least <paramref name="wallSetback"/> away from it.
+    /// For each pre-determined cluster centre, places bushes inside the cluster polygon.
+    /// Count is derived from <paramref name="densityPerBaseArea"/> scaled by the polygon's actual
+    /// area relative to the base circle, so clipped clusters get proportionally fewer bushes.
+    /// Lloyd relaxation spreads positions evenly after initial random sampling.
     /// </summary>
     public static List<BushCluster> PlaceClusterBushes(
         IReadOnlyList<Vector2> centres,
@@ -638,31 +639,49 @@ public static class ProceduralPlacement
         System.Random rng)
     {
         var result = new List<BushCluster>();
+        float baseArea = Mathf.PI * baseRadius * baseRadius;
 
         for (int ci = 0; ci < centres.Count; ci++)
         {
             var centre = centres[ci];
             float radius = clusterRadii[ci];
 
-            float radiusRatio = baseRadius > 0f ? radius / baseRadius : 1f;
-            int maxAttempts = Mathf.Max(1, Mathf.RoundToInt(densityPerBaseArea * radiusRatio * radiusRatio));
+            var polygon = BuildClusterPolygon(centre, radius, walls);
+            if (polygon.Count < 3) continue;
 
-            var bushPositions = new List<Vector2>();
-            for (int b = 0; b < maxAttempts; b++)
+            // Derive bush count from actual polygon area so clipped clusters stay proportionally dense.
+            int bushCount = Mathf.Max(1, Mathf.RoundToInt(densityPerBaseArea * PolygonArea(polygon) / baseArea));
+
+            var aabb = PolygonAABB(polygon);
+            var bushPositions = new List<Vector2>(bushCount);
+
+            for (int a = 0; a < bushCount * 20 && bushPositions.Count < bushCount; a++)
             {
-                float r = Mathf.Sqrt((float)rng.NextDouble()) * radius;
-                float theta = (float)rng.NextDouble() * 2f * Mathf.PI;
-                var candidate = centre + new Vector2(Mathf.Cos(theta) * r, Mathf.Sin(theta) * r);
+                var candidate = new Vector2(
+                    aabb.xMin + (float)rng.NextDouble() * aabb.width,
+                    aabb.yMin + (float)rng.NextDouble() * aabb.height);
 
-                if (!IsValidBushPosition(candidate, centre, radius,
-                        walls, wallSetback, avoidPositions, minAvoidDistance))
-                    continue;
+                if (!IsInsideConvexPolygon(candidate, polygon)) continue;
 
-                if (minBushSeparation > 0f)
+                if (wallSetback > 0f && walls != null)
                 {
                     bool tooClose = false;
-                    foreach (var placed in bushPositions)
-                        if (Vector2.Distance(candidate, placed) < minBushSeparation)
+                    foreach (var wall in walls)
+                    {
+                        if (!WallSegmentReachesCircle(wall, centre, radius + wallSetback)) continue;
+                        float wallRad = wall.AngleDegrees * Mathf.Deg2Rad;
+                        var wallNormal = new Vector2(-Mathf.Sin(wallRad), Mathf.Cos(wallRad));
+                        if (Mathf.Abs(Vector2.Dot(candidate - wall.Centre, wallNormal)) < wallSetback)
+                        { tooClose = true; break; }
+                    }
+                    if (tooClose) continue;
+                }
+
+                if (minAvoidDistance > 0f && avoidPositions != null)
+                {
+                    bool tooClose = false;
+                    foreach (var avoid in avoidPositions)
+                        if (Vector2.Distance(candidate, avoid) < minAvoidDistance)
                         { tooClose = true; break; }
                     if (tooClose) continue;
                 }
@@ -670,63 +689,121 @@ public static class ProceduralPlacement
                 bushPositions.Add(candidate);
             }
 
-            // Guarantee at least one bush per cluster regardless of density.
+            // Guarantee at least one bush even when constraints leave no valid spots.
             if (bushPositions.Count == 0)
             {
                 for (int a = 0; a < 100 && bushPositions.Count == 0; a++)
                 {
-                    float r2 = Mathf.Sqrt((float)rng.NextDouble()) * radius;
-                    float th2 = (float)rng.NextDouble() * 2f * Mathf.PI;
-                    var candidate = centre + new Vector2(Mathf.Cos(th2) * r2, Mathf.Sin(th2) * r2);
-                    if (IsValidBushPosition(candidate, centre, radius, walls, wallSetback, avoidPositions, minAvoidDistance))
+                    var candidate = new Vector2(
+                        aabb.xMin + (float)rng.NextDouble() * aabb.width,
+                        aabb.yMin + (float)rng.NextDouble() * aabb.height);
+                    if (IsInsideConvexPolygon(candidate, polygon))
                         bushPositions.Add(candidate);
                 }
             }
 
-            if (bushPositions.Count > 0)
-            {
-                var polygon = BuildClusterPolygon(centre, radius, walls);
-                result.Add(new BushCluster(centre, bushPositions, polygon));
-            }
+            if (bushPositions.Count == 0) continue;
+
+            RelaxBushPositions(bushPositions, polygon, minBushSeparation, avoidPositions, minAvoidDistance);
+
+            result.Add(new BushCluster(centre, bushPositions, polygon));
         }
 
         return result;
     }
 
-    private static bool IsValidBushPosition(
-        Vector2 candidate, Vector2 clusterCentre, float clusterRadius,
-        IReadOnlyList<WallSegment> walls, float wallSetback,
-        IReadOnlyList<Vector2> avoidPositions, float minAvoidDistance)
+    // Spreads bush positions evenly using Lloyd-style force relaxation, clamped to the polygon.
+    private static void RelaxBushPositions(
+        List<Vector2> positions, IReadOnlyList<Vector2> polygon,
+        float minSeparation, IReadOnlyList<Vector2> avoidPositions, float avoidDistance,
+        int iterations = 15)
     {
-        if (Vector2.Distance(candidate, clusterCentre) > clusterRadius) return false;
+        float influence = minSeparation * 3f;
+        float step      = minSeparation * 0.4f;
 
-        if (minAvoidDistance > 0f && avoidPositions != null)
+        for (int iter = 0; iter < iterations; iter++)
         {
-            foreach (var avoid in avoidPositions)
-                if (Vector2.Distance(candidate, avoid) < minAvoidDistance) return false;
-        }
-
-        if (walls != null)
-        {
-            foreach (var wall in walls)
+            for (int i = 0; i < positions.Count; i++)
             {
-                float wallRad = wall.AngleDegrees * Mathf.Deg2Rad;
-                var wallNormal = new Vector2(-Mathf.Sin(wallRad), Mathf.Cos(wallRad));
+                var push = Vector2.zero;
 
-                // Skip walls whose segment doesn't reach this cluster region.
-                if (!WallSegmentReachesCircle(wall, clusterCentre, clusterRadius + wallSetback)) continue;
+                for (int j = 0; j < positions.Count; j++)
+                {
+                    if (i == j) continue;
+                    var diff = positions[i] - positions[j];
+                    float dist = Mathf.Max(diff.magnitude, 0.01f);
+                    if (dist < influence)
+                        push += diff / dist * (influence - dist);
+                }
 
-                float centreSignedDist    = Vector2.Dot(clusterCentre - wall.Centre, wallNormal);
-                float candidateSignedDist = Vector2.Dot(candidate     - wall.Centre, wallNormal);
+                if (avoidPositions != null && avoidDistance > 0f)
+                {
+                    foreach (var avoid in avoidPositions)
+                    {
+                        var diff = positions[i] - avoid;
+                        float dist = Mathf.Max(diff.magnitude, 0.01f);
+                        if (dist < avoidDistance)
+                            push += diff / dist * (avoidDistance - dist);
+                    }
+                }
 
-                // Reject if on the wrong side of the wall or within the setback zone.
-                if (Mathf.Sign(candidateSignedDist) != Mathf.Sign(centreSignedDist) ||
-                    Mathf.Abs(candidateSignedDist) < wallSetback)
-                    return false;
+                if (push.sqrMagnitude < 0.0001f) continue;
+                positions[i] = ClampToConvexPolygon(positions[i] + push.normalized * step, polygon);
             }
         }
+    }
 
+    private static bool IsInsideConvexPolygon(Vector2 point, IReadOnlyList<Vector2> poly)
+    {
+        for (int i = 0; i < poly.Count; i++)
+        {
+            var edge = poly[(i + 1) % poly.Count] - poly[i];
+            var toPoint = point - poly[i];
+            if (edge.x * toPoint.y - edge.y * toPoint.x < 0f) return false;
+        }
         return true;
+    }
+
+    private static Vector2 ClampToConvexPolygon(Vector2 point, IReadOnlyList<Vector2> poly)
+    {
+        for (int pass = 0; pass < 2; pass++)
+        {
+            for (int i = 0; i < poly.Count; i++)
+            {
+                var a    = poly[i];
+                var edge = poly[(i + 1) % poly.Count] - a;
+                var toPoint = point - a;
+                if (edge.x * toPoint.y - edge.y * toPoint.x < 0f)
+                {
+                    float edgeLenSq = edge.sqrMagnitude;
+                    float t = edgeLenSq > 0f ? Mathf.Clamp01(Vector2.Dot(toPoint, edge) / edgeLenSq) : 0f;
+                    point = a + edge * t;
+                }
+            }
+        }
+        return point;
+    }
+
+    private static float PolygonArea(IReadOnlyList<Vector2> poly)
+    {
+        float area = 0f;
+        for (int i = 0; i < poly.Count; i++)
+        {
+            var a = poly[i]; var b = poly[(i + 1) % poly.Count];
+            area += a.x * b.y - b.x * a.y;
+        }
+        return Mathf.Abs(area) * 0.5f;
+    }
+
+    private static Rect PolygonAABB(IReadOnlyList<Vector2> poly)
+    {
+        float minX = poly[0].x, maxX = poly[0].x, minY = poly[0].y, maxY = poly[0].y;
+        for (int i = 1; i < poly.Count; i++)
+        {
+            if (poly[i].x < minX) minX = poly[i].x; else if (poly[i].x > maxX) maxX = poly[i].x;
+            if (poly[i].y < minY) minY = poly[i].y; else if (poly[i].y > maxY) maxY = poly[i].y;
+        }
+        return new Rect(minX, minY, maxX - minX, maxY - minY);
     }
 
     // ── Region decomposition ──────────────────────────────────────────────────
