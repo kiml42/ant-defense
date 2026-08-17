@@ -38,7 +38,7 @@ public class ProceduralLevelConfigUI : MonoBehaviour
     private const int NestMin = 1, NestMax = 5;
     private const int ClusterMin = 1, ClusterMax = 15;
     private const int RadiusMin = 10, RadiusMax = 80;
-    private const int DensityMin = 1, DensityMax = 10;
+    private const int DensityMin = 1, DensityMax = 20;
     private const int WallMin = 0, WallMax = 10;
 
     // ── Internal state ────────────────────────────────────────────────────────
