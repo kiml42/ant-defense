@@ -721,11 +721,10 @@ public static class ProceduralPlacement
         float influence = minSeparation * 3f;
         float step      = minSeparation * 0.4f;
         var pushes = new Vector2[positions.Count];
+        var centroid = PolygonCentroid(polygon);
 
         for (int iter = 0; iter < iterations; iter++)
         {
-            // Accumulate all forces from current positions before moving anything,
-            // so no bush gets an advantage from being processed earlier in the loop.
             for (int i = 0; i < positions.Count; i++)
                 pushes[i] = Vector2.zero;
 
@@ -758,12 +757,36 @@ public static class ProceduralPlacement
                 }
             }
 
+            // Weak centroid spring so bushes near the edge always feel an inward
+            // restoring force and can drift back as neighbours spread out.
+            for (int i = 0; i < positions.Count; i++)
+                pushes[i] += (centroid - positions[i]) * 0.1f;
+
             for (int i = 0; i < positions.Count; i++)
             {
                 if (pushes[i].sqrMagnitude < 0.0001f) continue;
-                positions[i] = ClampToConvexPolygon(positions[i] + pushes[i].normalized * step, polygon);
+                var newPos = positions[i] + pushes[i].normalized * step;
+                // Only accept moves that stay inside — no clamping, so no bush
+                // ever gets pinned to the boundary and stuck there permanently.
+                if (IsInsideConvexPolygon(newPos, polygon))
+                    positions[i] = newPos;
             }
         }
+    }
+
+    private static Vector2 PolygonCentroid(IReadOnlyList<Vector2> poly)
+    {
+        float area = 0f, cx = 0f, cy = 0f;
+        for (int i = 0; i < poly.Count; i++)
+        {
+            var a = poly[i]; var b = poly[(i + 1) % poly.Count];
+            float cross = a.x * b.y - b.x * a.y;
+            area += cross;
+            cx += (a.x + b.x) * cross;
+            cy += (a.y + b.y) * cross;
+        }
+        area *= 0.5f;
+        return new Vector2(cx / (6f * area), cy / (6f * area));
     }
 
     private static bool IsInsideConvexPolygon(Vector2 point, IReadOnlyList<Vector2> poly)
