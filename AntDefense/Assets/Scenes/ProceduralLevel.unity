@@ -2098,7 +2098,7 @@ GameObject:
   - component: {fileID: 933920247}
   - component: {fileID: 933920248}
   m_Layer: 5
-  m_Name: Cluster SizeSlider
+  m_Name: Cluster DensitySlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3164,11 +3164,13 @@ MonoBehaviour:
   Panel: {fileID: 1205140304}
   NestCountSlider: {fileID: 1444589127}
   ClusterCountSlider: {fileID: 1782172956}
-  ClusterSizeSlider: {fileID: 933920248}
+  ClusterRadiusSlider: {fileID: 341379496}
+  ClusterDensitySlider: {fileID: 933920248}
   WallDensitySlider: {fileID: 1377705021}
   NestCountLabel: {fileID: 1199782041}
   ClusterCountLabel: {fileID: 1124056671}
-  ClusterSizeLabel: {fileID: 1977927293}
+  ClusterRadiusLabel: {fileID: 817410214}
+  ClusterDensityLabel: {fileID: 1977927293}
   WallDensityLabel: {fileID: 1324429645}
   ConfigStringField: {fileID: 1162034202}
   RegenerateButton: {fileID: 725867865}
@@ -3248,7 +3250,7 @@ GameObject:
   - component: {fileID: 1228166662}
   - component: {fileID: 1228166661}
   m_Layer: 5
-  m_Name: Cluster SizeLabel
+  m_Name: Cluster DensityLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4891,7 +4893,7 @@ GameObject:
   - component: {fileID: 1977927292}
   - component: {fileID: 1977927293}
   m_Layer: 5
-  m_Name: Cluster SizeValueLabel
+  m_Name: Cluster DensityValueLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5334,7 +5336,6 @@ MonoBehaviour:
   PlateMargin: 20
   MinGapOffset: 8
   GapSize: 14
-  ClusterRadius: 15
   ClusterRadiusVariation: 0.2
   MaxClusterOverlap: 4
   GapsPerUnitLength: 0.02
