@@ -652,7 +652,7 @@ public static class ProceduralPlacement
             // Erode the placement polygon by wallSetback so bushes stay clear of all
             // edges (including wall-clipped flat edges) without per-wall distance checks.
             // The full polygon is kept for rendering and area calculation.
-            var placementPolygon = wallSetback > 0f ? ErodeConvexPolygon(polygon, wallSetback) : polygon;
+            var placementPolygon = wallSetback > 0f ? ErodeConvexPolygon(polygon, wallSetback, walls) : polygon;
             if (placementPolygon.Count < 3) placementPolygon = polygon;
 
             // Use full polygon area for count so visual cluster density is correct.
@@ -835,10 +835,11 @@ public static class ProceduralPlacement
         return new Rect(minX, minY, maxX - minX, maxY - minY);
     }
 
-    // Returns a new convex polygon with every edge shifted inward by amount.
-    // New vertices are the intersections of adjacent shifted edges.
-    // Returns the original list unchanged if amount <= 0 or the result would degenerate.
-    private static List<Vector2> ErodeConvexPolygon(IReadOnlyList<Vector2> poly, float amount)
+    // Returns a new polygon with only wall-clipped edges shifted inward by amount.
+    // Circular arc edges are left in place, so only the wall setback is enforced —
+    // the circular boundary is unaffected and small clusters don't lose usable area.
+    private static List<Vector2> ErodeConvexPolygon(
+        IReadOnlyList<Vector2> poly, float amount, IReadOnlyList<WallSegment> walls)
     {
         int n = poly.Count;
         var offPoints = new Vector2[n];
@@ -846,12 +847,14 @@ public static class ProceduralPlacement
 
         for (int i = 0; i < n; i++)
         {
-            var edge = poly[(i + 1) % n] - poly[i];
+            var a    = poly[i];
+            var edge = poly[(i + 1) % n] - a;
             float len = edge.magnitude;
             if (len < 0.001f) return new List<Vector2>(poly);
             var dir    = edge / len;
-            var inward = new Vector2(-dir.y, dir.x); // left of CCW edge = inward
-            offPoints[i] = poly[i] + inward * amount;
+            var inward = new Vector2(-dir.y, dir.x);
+            float offset = EdgeIsOnWall(a, poly[(i + 1) % n], dir, walls) ? amount : 0f;
+            offPoints[i] = a + inward * offset;
             offDirs[i]   = dir;
         }
 
@@ -864,7 +867,7 @@ public static class ProceduralPlacement
             float denom = d1.x * d2.y - d1.y * d2.x;
             if (Mathf.Abs(denom) < 0.001f)
             {
-                result.Add((p1 + p2) * 0.5f); // parallel edges — midpoint fallback
+                result.Add((p1 + p2) * 0.5f);
             }
             else
             {
@@ -874,6 +877,25 @@ public static class ProceduralPlacement
             }
         }
         return result;
+    }
+
+    // Returns true if edge (a→b) lies on any wall — parallel to it and both
+    // endpoints within distTol of the wall's infinite line.
+    private static bool EdgeIsOnWall(
+        Vector2 a, Vector2 b, Vector2 edgeDir, IReadOnlyList<WallSegment> walls,
+        float angleTol = 0.02f, float distTol = 0.5f)
+    {
+        foreach (var wall in walls)
+        {
+            float wallRad = wall.AngleDegrees * Mathf.Deg2Rad;
+            var wallDir    = new Vector2(Mathf.Cos(wallRad), Mathf.Sin(wallRad));
+            var wallNormal = new Vector2(-wallDir.y, wallDir.x);
+            if (Mathf.Abs(Vector2.Dot(edgeDir, wallDir)) < 1f - angleTol) continue;
+            if (Mathf.Abs(Vector2.Dot(a - wall.Centre, wallNormal)) > distTol) continue;
+            if (Mathf.Abs(Vector2.Dot(b - wall.Centre, wallNormal)) > distTol) continue;
+            return true;
+        }
+        return false;
     }
 
     // ── Region decomposition ──────────────────────────────────────────────────
