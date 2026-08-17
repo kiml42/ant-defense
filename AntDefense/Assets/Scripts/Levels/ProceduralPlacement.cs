@@ -694,9 +694,11 @@ public static class ProceduralPlacement
                 }
             }
 
-            if (bushPositions.Count == 0) continue;
+            // TODO: re-enable this culling once placement is reliable
+            //if (bushPositions.Count == 0) continue;
 
-            RelaxBushPositions(bushPositions, placementPolygon, minBushSeparation, avoidPositions, minAvoidDistance);
+            if (bushPositions.Count > 0)
+                RelaxBushPositions(bushPositions, placementPolygon, minBushSeparation, avoidPositions, minAvoidDistance);
 
             result.Add(new BushCluster(centre, bushPositions, polygon));
         }
